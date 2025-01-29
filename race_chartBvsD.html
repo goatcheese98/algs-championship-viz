@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AvsB_points Race Chart</title>
+    <title>BvsD Race Chart</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -396,7 +396,7 @@
 <body>
     <div class="container">
         <div class="header-container">
-            <h1 class="main-title">ALGS Championship: Groups C vs. D</h1>
+            <h1 class="main-title">ALGS Championship: Groups B vs. D</h1>
         </div>
         <div id="chart">
             <div class="sidebar">
@@ -529,7 +529,7 @@
         }
 
         // Load and process the data
-        fetch('AvsB_points.csv')
+        fetch('BvsD_points.csv')
             .then(response => response.text())
             .then(csvData => {
                 currentData = parseCSV(csvData);
