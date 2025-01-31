@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ALGS Championship: Groups A vs. B</title>
+    <title>ALGS Championship: Groups A vs. C</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="teamConfig.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -400,7 +400,7 @@
 <body>
     <div class="container">
         <div class="header-container">
-            <h1 class="main-title">ALGS Championship: Groups A vs. B</h1>
+            <h1 class="main-title">ALGS Championship: Groups A vs. C</h1>
         </div>
         <div id="chart">
             <div class="sidebar">
@@ -445,33 +445,34 @@
 
         // Colors for each game (including start state)
         const colors = [
-            '#15616d',  // Game 1
-            '#3998aa',  // Game 2
+
             '#ff7d00',  // Game 3
             '#ffb366',  // Game 4
             '#a4243b',  // Game 5
-            '#F07167'   // Game 6 (new color)
+            '#F07167',   // Game 6 (new color)
+            '#15616d',  // Game 1
+            '#3998aa',  // Game 2
         ];
 
         // Background colors for game counter
         const gameCounterColors = {
-            0: '#1C110A',  // Start (dark brown)
-            1: '#15616d',  // Game 1
-            2: '#3998aa',  // Game 2
-            3: '#ff7d00',  // Game 3
-            4: '#ffb366',  // Game 4
-            5: '#a4243b',  // Game 5
-            6: '#F07167'   // Game 6
+            0: '#1C110A',    // Start (dark brown)
+            1: '#ff7d00',    // Game 3
+            2: '#ffb366',    // Game 4
+            3: '#a4243b',    // Game 5
+            4: '#F07167',    // Game 6
+            5: '#15616d',    // Game 1
+            6: '#3998aa'     // Game 2
         };
 
         // Map information
         const mapInfo = {
-            1: "E-DISTRICT",
-            2: "E-DISTRICT",
-            3: "STORM POINT",
-            4: "STORM POINT",
-            5: "WORLD'S EDGE",
-            6: "WORLD'S EDGE"
+            1: "SRORM POINT",
+            2: "STORM POINT",
+            3: "WORLD'S EDGE",
+            4: "WORLD'S EDGE",
+            5: "E-DISTRICT",
+            6: "E-DISTRICT"
         };
 
         // Initialize variables
@@ -533,7 +534,7 @@
         }
 
         // Load and process the data
-        fetch('AvsB_points.csv')
+        fetch('AvsC_points.csv')
             .then(response => response.text())
             .then(csvData => {
                 currentData = parseCSV(csvData);
@@ -584,11 +585,6 @@
                 document.querySelector('#chart').innerHTML = 
                     '<div style="color: red; padding: 20px;">Error loading the data. Please make sure you\'re running this through a web server.</div>';
             });
-
-        // Define custom colors for team names
-        function getTeamTextColor(teamName, isTop10) {
-            return teamConfig.getTeamTextColor(teamName, isTop10);
-        }
 
         function updateChart(gameIndex, previousIndex = gameIndex - 1) {
             if (gameIndex > 6) return;
@@ -705,11 +701,6 @@
                 .style("opacity", 1)
                 .attr("transform", d => `translate(0,${yScale(d.team)})`);
 
-            // Update existing labels
-            allTeams.select(".team-label")
-                .style("fill", (d, i) => getTeamTextColor(d.team, i < 10))
-                .style("font-weight", (d, i) => teamConfig.getTeamFontWeight(i < 10));
-
             // Update bars with optimized data binding
             allTeams.each(function(d) {
                 const team = d3.select(this);
@@ -797,6 +788,11 @@
                 animationTimer = setTimeout(() => updateChart(gameIndex + 1), 
                     TRANSITION_DURATION + HOLD_DURATION + SHINE_DURATION);
             }
+        }
+
+        // Define custom colors for team names
+        function getTeamTextColor(teamName, isTop10) {
+            return teamConfig.getTeamTextColor(teamName, isTop10);
         }
 
         // Optimized resize handler

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ALGS Championship: Groups A vs. B</title>
+    <title>ALGS Championship: Elimination Round 1</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="teamConfig.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -25,15 +25,15 @@
             position: relative;
             width: 100%;
             max-width: 1350px;
-            height: 850px;
+            height: 950px;
             overflow: hidden;
             margin: 0 auto;
         }
         #chart {
             position: absolute;
-            left: 0;
+            left: 40px;
             top: 100px;
-            width: 100%;
+            width: calc(100% - 40px);
             height: calc(100% - 140px);
             overflow: visible;
         }
@@ -48,7 +48,7 @@
             gap: 20px;
         }
         .game-counter-container {
-            background-color: #1C110A;  /* Initial state color - dark brown */
+            background-color: #1C110A;  
             border-radius: 8px;
             padding: 15px;
             text-align: center;
@@ -87,7 +87,7 @@
                        0 4px 8px rgba(0,0,0,0.1);
         }
         .current-map-container {
-            background-color: #1C110A;  /* Initial state color - dark brown */
+            background-color: #1C110A;  
             border-radius: 8px;
             padding: 15px;
             color: white;
@@ -128,6 +128,7 @@
         }
         .header-container {
             text-align: center;
+            margin-top: 10px;
             margin-bottom: 10px;
         }
         .main-title {
@@ -135,7 +136,7 @@
             color: #333;
             font-size: 1.7em;
             font-weight: 600;
-            margin: 0 0 10px 0;
+            margin: 0;
         }
         .controls-container {
             position: absolute;
@@ -304,11 +305,9 @@
         }
         .team-label {
             font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            dominant-baseline: central;
-            text-anchor: end;
-            pointer-events: none;
-            user-select: none;
+            font-size: 20px;
+            font-weight: 500;
+            letter-spacing: 0.02em;
         }
         .axis-label {
             font-family: 'Inter', sans-serif;
@@ -326,24 +325,47 @@
             font-size: 14px;
             font-weight: 500;
         }
-        @keyframes highlight {
-            0% { opacity: 1; }
-            25% { opacity: 0.85; }
-            50% { opacity: 0.95; }
-            75% { opacity: 0.85; }
-            100% { opacity: 1; }
+        .y-axis text {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            fill: #333;
         }
-        .highlight {
-            animation: highlight 0.8s ease-in-out;
+        .team-label-bg {
+            fill: none;
+            rx: 6;
+            ry: 6;
+        }
+        .team-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            dominant-baseline: middle;
+            text-anchor: end;  
+        }
+        .team-label-container {
+            transition: all 0.3s ease;
+        }
+        .team-label-container:hover .team-label-bg {
+            filter: brightness(1.1);
+        }
+        .team-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            dominant-baseline: central;
+            pointer-events: none;
+            user-select: none;
+            text-anchor: end;  
         }
         @keyframes columnHover {
             0% { filter: brightness(1); }
             100% { filter: brightness(1.1); }
         }
-        .game0, .game1, .game2, .game3, .game4, .game5 {
+        .game0, .game1, .game2, .game3, .game4, .game5, .game6, .game7 {
             transition: all 0.3s ease;
         }
-        .game0:hover, .game1:hover, .game2:hover, .game3:hover, .game4:hover, .game5:hover {
+        .game0:hover, .game1:hover, .game2:hover, .game3:hover, .game4:hover, .game5:hover, .game6:hover, .game7:hover {
             animation: columnHover 0.3s ease forwards;
             cursor: pointer;
         }
@@ -381,10 +403,10 @@
             transform: translateZ(0);
         }
         #playPauseBtn {
-            background-color: #E9B44C;  /* Gold for play/pause */
+            background-color: #E9B44C;  
         }
         #restartBtn {
-            background-color: #9B2915;  /* Dark red for restart */
+            background-color: #9B2915;  
         }
         #playPauseBtn:hover, #restartBtn:hover {
             transform: translateY(-1px) translateZ(0);
@@ -395,12 +417,51 @@
             transform: translateY(1px) translateZ(0);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        
+        .y-axis .tick text {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            fill: #333;
+        }
+        
+        .y-axis .tick line {
+            display: none;
+        }
+        
+        .y-axis .domain {
+            display: none;
+        }
+        
+        .team-background {
+            fill-opacity: 0.95;
+            rx: 6px;
+            ry: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .tick:hover .team-background {
+            fill-opacity: 1;
+            filter: brightness(1.05) drop-shadow(0px 2px 3px rgba(0,0,0,0.15)) !important;
+            cursor: pointer;
+        }
+        
+        .team-label {
+            fill: #333;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            dominant-baseline: central;
+            pointer-events: none;
+            user-select: none;
+            text-anchor: end;  
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-container">
-            <h1 class="main-title">ALGS Championship: Groups A vs. B</h1>
+            <h1 class="main-title">ALGS Championship: Elimination Round 1</h1>
         </div>
         <div id="chart">
             <div class="sidebar">
@@ -416,7 +477,7 @@
                         <button id="playPauseBtn">Pause</button>
                         <button id="restartBtn">Restart</button>
                     </div>
-                    <input type="range" id="gameSlider" min="0" max="6" value="0" step="1">
+                    <input type="range" id="gameSlider" min="0" max="8" value="0" step="1">
                 </div>
                 <div class="current-map-container">
                     <p class="current-map">-</p>
@@ -432,8 +493,8 @@
         const width = container.clientWidth - margin.left - margin.right;
         const height = container.clientHeight - margin.top - margin.bottom;
 
-        // Game columns definition (moved to global scope)
-        const gameColumns = ['Game 1', 'Game 2', 'Game 3', 'Game 4', 'Game 5', 'Game 6'];
+        // Game columns definition (updated for 8 games)
+        const gameColumns = ['Game 1', 'Game 2', 'Game 3', 'Game 4', 'Game 5', 'Game 6', 'Game 7', 'Game 8'];
 
         // Cache DOM elements
         const gameCounterContainer = document.querySelector('.game-counter-container');
@@ -445,33 +506,39 @@
 
         // Colors for each game (including start state)
         const colors = [
-            '#15616d',  // Game 1
-            '#3998aa',  // Game 2
-            '#ff7d00',  // Game 3
-            '#ffb366',  // Game 4
-            '#a4243b',  // Game 5
-            '#F07167'   // Game 6 (new color)
+            '#15616d',    // Game 1
+            '#3998aa',    // Game 2
+            '#8bbbc4',    // Game 3
+            '#ff7d00',    // Game 4
+            '#ffb366',    // Game 5
+            '#a4243b',    // Game 6
+            '#F07167',    // Game 7
+            '#f59189'     // Game 8
         ];
 
         // Background colors for game counter
         const gameCounterColors = {
-            0: '#1C110A',  // Start (dark brown)
-            1: '#15616d',  // Game 1
-            2: '#3998aa',  // Game 2
-            3: '#ff7d00',  // Game 3
-            4: '#ffb366',  // Game 4
-            5: '#a4243b',  // Game 5
-            6: '#F07167'   // Game 6
+            0: '#1C110A',    // Start (dark brown)
+            1: '#15616d',    // Game 1
+            2: '#3998aa',    // Game 2
+            3: '#8bbbc4',    // Game 3
+            4: '#ff7d00',    // Game 4
+            5: '#ffb366',    // Game 5
+            6: '#a4243b',    // Game 6
+            7: '#F07167',    // Game 7
+            8: '#f59189'     // Game 8
         };
 
         // Map information
         const mapInfo = {
             1: "E-DISTRICT",
             2: "E-DISTRICT",
-            3: "STORM POINT",
+            3: "E-DISTRICT",
             4: "STORM POINT",
-            5: "WORLD'S EDGE",
-            6: "WORLD'S EDGE"
+            5: "STORM POINT",
+            6: "WORLD'S EDGE",
+            7: "WORLD'S EDGE",
+            8: "WORLD'S EDGE"
         };
 
         // Initialize variables
@@ -533,7 +600,7 @@
         }
 
         // Load and process the data
-        fetch('AvsB_points.csv')
+        fetch('ER1_points.csv')
             .then(response => response.text())
             .then(csvData => {
                 currentData = parseCSV(csvData);
@@ -557,7 +624,7 @@
                 playPauseBtn.addEventListener('click', () => {
                     isPlaying = !isPlaying;
                     playPauseBtn.textContent = isPlaying ? 'Pause' : 'Play';
-                    if (isPlaying && currentGameIndex < 6) {
+                    if (isPlaying && currentGameIndex < 8) {
                         updateChart(currentGameIndex + 1);
                     }
                 });
@@ -589,9 +656,9 @@
         function getTeamTextColor(teamName, isTop10) {
             return teamConfig.getTeamTextColor(teamName, isTop10);
         }
-
+        
         function updateChart(gameIndex, previousIndex = gameIndex - 1) {
-            if (gameIndex > 6) return;
+            if (gameIndex > 8) return;
 
             currentGameIndex = gameIndex;
             gameSlider.value = gameIndex;
@@ -641,7 +708,22 @@
             // Sort teams by their current game points
             const sortedTeams = currentTotals.sort((a, b) => b.total - a.total);
             
-            // Select or create team groups in yAxis
+            // Calculate max text width for dynamic background sizing
+            const tempText = yAxisGroup.append('text')
+                .attr('class', 'team-label')
+                .style('visibility', 'hidden');
+            
+            const maxWidth = d3.max(sortedTeams, d => {
+                tempText.text(d.team);
+                return tempText.node().getComputedTextLength();
+            });
+            
+            tempText.remove();
+            
+            const padding = 12;  
+            const backgroundWidth = maxWidth + (padding * 2);
+            
+            // Select or create team groups
             const teamGroups = yAxisGroup.selectAll('.tick')
                 .data(sortedTeams, d => d.team);
             
@@ -660,7 +742,7 @@
                 .attr('x', -10)
                 .attr('y', 0)
                 .text(d => d.team)
-                .style('fill', (d, i) => getTeamTextColor(d.team, i < 10))
+                .style('fill', (d, i) => teamConfig.getTeamTextColor(d.team, i < 10))
                 .style('font-weight', (d, i) => teamConfig.getTeamFontWeight(i < 10))
                 .style('font-family', teamConfig.defaultSettings.fontFamily)
                 .style('font-size', teamConfig.defaultSettings.fontSize);
@@ -679,9 +761,9 @@
                 .transition()
                 .duration(TRANSITION_DURATION)
                 .attr('x', -10)
-                .style('fill', (d, i) => getTeamTextColor(d.team, i < 10))
+                .style('fill', (d, i) => teamConfig.getTeamTextColor(d.team, i < 10))
                 .style('font-weight', (d, i) => teamConfig.getTeamFontWeight(i < 10));
-
+            
             // Update bars efficiently
             const teams = mainGroup.selectAll(".team")
                 .data(currentTotals, d => d.team);
@@ -689,7 +771,7 @@
             const teamsEnter = teams.enter()
                 .append("g")
                 .attr("class", "team")
-                .style("opacity", 0);
+                .style("opacity", 0);  
 
             teams.exit()
                 .transition()
@@ -702,13 +784,8 @@
                 .transition()
                 .duration(TRANSITION_DURATION)
                 .ease(axisEasing)
-                .style("opacity", 1)
+                .style("opacity", 1)  
                 .attr("transform", d => `translate(0,${yScale(d.team)})`);
-
-            // Update existing labels
-            allTeams.select(".team-label")
-                .style("fill", (d, i) => getTeamTextColor(d.team, i < 10))
-                .style("font-weight", (d, i) => teamConfig.getTeamFontWeight(i < 10));
 
             // Update bars with optimized data binding
             allTeams.each(function(d) {
@@ -792,7 +869,7 @@
             });
 
             // Schedule next update if playing
-            if (gameIndex < 6 && isPlaying) {
+            if (gameIndex < 8 && isPlaying) {
                 if (animationTimer) clearTimeout(animationTimer);
                 animationTimer = setTimeout(() => updateChart(gameIndex + 1), 
                     TRANSITION_DURATION + HOLD_DURATION + SHINE_DURATION);

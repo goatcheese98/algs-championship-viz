@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>BvsD Race Chart</title>
+    <title>ALGS Championship: Groups B vs. D</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="teamConfig.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -303,9 +304,11 @@
         }
         .team-label {
             font-family: 'Inter', sans-serif;
-            font-size: 20px;
-            font-weight: 500;
-            letter-spacing: 0.02em;
+            font-size: 13px;
+            dominant-baseline: central;
+            text-anchor: end;
+            pointer-events: none;
+            user-select: none;
         }
         .axis-label {
             font-family: 'Inter', sans-serif;
@@ -629,10 +632,51 @@
                 .ease(axisEasing)
                 .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
 
-            yAxisGroup.transition()
+            const yAxis = d3.axisLeft(yScale);
+            
+            // Sort teams by their current game points
+            const sortedTeams = currentTotals.sort((a, b) => b.total - a.total);
+            
+            // Select or create team groups in yAxis
+            const teamGroups = yAxisGroup.selectAll('.tick')
+                .data(sortedTeams, d => d.team);
+            
+            // Remove exiting teams
+            teamGroups.exit().remove();
+            
+            // Add new teams
+            const teamGroupsEnter = teamGroups.enter()
+                .append('g')
+                .attr('class', 'tick')
+                .attr('transform', d => `translate(0,${yScale(d.team) + yScale.bandwidth() / 2})`);
+            
+            // Add team names for new teams
+            teamGroupsEnter.append('text')
+                .attr('class', 'team-label')
+                .attr('x', -10)
+                .attr('y', 0)
+                .text(d => d.team)
+                .style('fill', (d, i) => getTeamTextColor(d.team, i < 10))
+                .style('font-weight', (d, i) => teamConfig.getTeamFontWeight(i < 10))
+                .style('font-family', teamConfig.defaultSettings.fontFamily)
+                .style('font-size', teamConfig.defaultSettings.fontSize);
+            
+            // Update all teams (including new ones)
+            const teamGroupsMerge = teamGroups.merge(teamGroupsEnter);
+            
+            // Animate position updates
+            teamGroupsMerge.transition()
                 .duration(TRANSITION_DURATION)
                 .ease(axisEasing)
-                .call(d3.axisLeft(yScale));
+                .attr('transform', d => `translate(0,${yScale(d.team) + yScale.bandwidth() / 2})`);
+            
+            // Update text positions and colors
+            teamGroupsMerge.select('.team-label')
+                .transition()
+                .duration(TRANSITION_DURATION)
+                .attr('x', -10)
+                .style('fill', (d, i) => getTeamTextColor(d.team, i < 10))
+                .style('font-weight', (d, i) => teamConfig.getTeamFontWeight(i < 10));
 
             // Update bars efficiently
             const teams = mainGroup.selectAll(".team")
@@ -641,7 +685,7 @@
             const teamsEnter = teams.enter()
                 .append("g")
                 .attr("class", "team")
-                .style("opacity", 0);  // Start invisible
+                .style("opacity", 0);
 
             teams.exit()
                 .transition()
@@ -654,9 +698,9 @@
                 .transition()
                 .duration(TRANSITION_DURATION)
                 .ease(axisEasing)
-                .style("opacity", 1)  // Fade in
+                .style("opacity", 1)
                 .attr("transform", d => `translate(0,${yScale(d.team)})`);
-
+            
             // Update bars with optimized data binding
             allTeams.each(function(d) {
                 const team = d3.select(this);
@@ -744,6 +788,11 @@
                 animationTimer = setTimeout(() => updateChart(gameIndex + 1), 
                     TRANSITION_DURATION + HOLD_DURATION + SHINE_DURATION);
             }
+        }
+
+        // Define custom colors for team names
+        function getTeamTextColor(teamName, isTop10) {
+            return teamConfig.getTeamTextColor(teamName, isTop10);
         }
 
         // Optimized resize handler

@@ -1,0 +1,1029 @@
+BvsC
+------
+OVERALL
+#1
+Noctem LogoNoctem
+60
+Points
+1st
+Best placement
+32
+Kills
+#2
+AURORA LogoAURORA
+60
+Points
+1st
+Best placement
+25
+Kills
+#3
+GaiminGladiators LogoGaiminGladiators
+59
+Points
+1st
+Best placement
+28
+Kills
+#4
+Complexity LogoComplexity
+55
+Points
+2nd
+Best placement
+26
+Kills
+#5
+Team Falcons LogoTeam Falcons
+51
+Points
+2nd
+Best placement
+33
+Kills
+#6
+GUILD LogoGUILD
+46
+Points
+4th
+Best placement
+26
+Kills
+#7
+FNATIC LogoFNATIC
+43
+Points
+1st
+Best placement
+22
+Kills
+#8
+GREEN STEGO LogoGREEN STEGO
+39
+Points
+3rd
+Best placement
+18
+Kills
+#9
+SOURCE XNY LogoSOURCE XNY
+36
+Points
+2nd
+Best placement
+19
+Kills
+#10
+DRAGONS LogoDRAGONS
+30
+Points
+2nd
+Best placement
+13
+Kills
+#11
+VK GAMING LogoVK GAMING
+30
+Points
+4th
+Best placement
+15
+Kills
+#12
+Virtus.pro LogoVirtus.pro
+24
+Points
+6th
+Best placement
+15
+Kills
+#13
+Team Burger LogoTeam Burger
+23
+Points
+3rd
+Best placement
+11
+Kills
+#14
+LG LogoLG
+22
+Points
+6th
+Best placement
+15
+Kills
+#15
+disguised Logodisguised
+22
+Points
+6th
+Best placement
+14
+Kills
+#16
+Zero Tenacity LogoZero Tenacity
+20
+Points
+3rd
+Best placement
+9
+Kills
+#17
+REIGNITE LogoREIGNITE
+14
+Points
+3rd
+Best placement
+3
+Kills
+#18
+Apex LogoOrglessAndHungry
+12
+Points
+9th
+Best placement
+8
+Kills
+#19
+GHS Professional LogoGHS Professional
+11
+Points
+7th
+Best placement
+5
+Kills
+#20
+Meteor LogoMeteor
+11
+Points
+12th
+Best placement
+7
+Kills
+-----
+
+-----
+Game 1
+GaiminGladiators LogoGaiminGladiators
+25
+Points
+1st
+Placement
+13
+Kills
+Team Falcons LogoTeam Falcons
+18
+Points
+2nd
+Placement
+9
+Kills
+REIGNITE LogoREIGNITE
+8
+Points
+3rd
+Placement
+1
+Kills
+GREEN STEGO LogoGREEN STEGO
+8
+Points
+4th
+Placement
+3
+Kills
+GUILD LogoGUILD
+8
+Points
+5th
+Placement
+4
+Kills
+FNATIC LogoFNATIC
+5
+Points
+6th
+Placement
+2
+Kills
+Complexity LogoComplexity
+4
+Points
+7th
+Placement
+1
+Kills
+SOURCE XNY LogoSOURCE XNY
+3
+Points
+8th
+Placement
+1
+Kills
+Apex LogoOrglessAndHungry
+3
+Points
+9th
+Placement
+1
+Kills
+Noctem LogoNoctem
+7
+Points
+10th
+Placement
+5
+Kills
+DRAGONS LogoDRAGONS
+5
+Points
+11th
+Placement
+4
+Kills
+VK GAMING LogoVK GAMING
+1
+Points
+12th
+Placement
+0
+Kills
+LG LogoLG
+1
+Points
+13th
+Placement
+0
+Kills
+Virtus.pro LogoVirtus.pro
+6
+Points
+14th
+Placement
+5
+Kills
+Zero Tenacity LogoZero Tenacity
+3
+Points
+15th
+Placement
+2
+Kills
+AURORA LogoAURORA
+2
+Points
+16th
+Placement
+2
+Kills
+Team Burger LogoTeam Burger
+0
+Points
+17th
+Placement
+0
+Kills
+GHS Professional LogoGHS Professional
+0
+Points
+18th
+Placement
+0
+Kills
+Meteor LogoMeteor
+0
+Points
+19th
+Placement
+0
+Kills
+disguised Logodisguised
+1
+Points
+20th
+Placement
+1
+Kills
+-----
+
+-----
+Game 2
+AURORA LogoAURORA
+18
+Points
+1st
+Placement
+6
+Kills
+DRAGONS LogoDRAGONS
+13
+Points
+2nd
+Placement
+4
+Kills
+Zero Tenacity LogoZero Tenacity
+8
+Points
+3rd
+Placement
+1
+Kills
+FNATIC LogoFNATIC
+15
+Points
+4th
+Placement
+10
+Kills
+GUILD LogoGUILD
+9
+Points
+5th
+Placement
+5
+Kills
+disguised Logodisguised
+7
+Points
+6th
+Placement
+4
+Kills
+Complexity LogoComplexity
+9
+Points
+7th
+Placement
+6
+Kills
+GREEN STEGO LogoGREEN STEGO
+4
+Points
+8th
+Placement
+2
+Kills
+Virtus.pro LogoVirtus.pro
+5
+Points
+9th
+Placement
+3
+Kills
+Team Falcons LogoTeam Falcons
+10
+Points
+10th
+Placement
+8
+Kills
+VK GAMING LogoVK GAMING
+1
+Points
+11th
+Placement
+0
+Kills
+GaiminGladiators LogoGaiminGladiators
+2
+Points
+12th
+Placement
+1
+Kills
+Team Burger LogoTeam Burger
+2
+Points
+13th
+Placement
+1
+Kills
+REIGNITE LogoREIGNITE
+1
+Points
+14th
+Placement
+0
+Kills
+Meteor LogoMeteor
+6
+Points
+15th
+Placement
+5
+Kills
+GHS Professional LogoGHS Professional
+1
+Points
+16th
+Placement
+1
+Kills
+Noctem LogoNoctem
+0
+Points
+17th
+Placement
+0
+Kills
+Apex LogoOrglessAndHungry
+0
+Points
+18th
+Placement
+0
+Kills
+SOURCE XNY LogoSOURCE XNY
+0
+Points
+19th
+Placement
+0
+Kills
+LG LogoLG
+0
+Points
+20th
+Placement
+0
+Kill
+-----
+
+-----
+Game 3
+Noctem LogoNoctem
+22
+Points
+1st
+Placement
+10
+Kills
+Complexity LogoComplexity
+18
+Points
+2nd
+Placement
+9
+Kills
+Team Burger LogoTeam Burger
+13
+Points
+3rd
+Placement
+6
+Kills
+AURORA LogoAURORA
+8
+Points
+4th
+Placement
+3
+Kills
+GUILD LogoGUILD
+12
+Points
+5th
+Placement
+8
+Kills
+GREEN STEGO LogoGREEN STEGO
+9
+Points
+6th
+Placement
+6
+Kills
+GHS Professional LogoGHS Professional
+7
+Points
+7th
+Placement
+4
+Kills
+Virtus.pro LogoVirtus.pro
+3
+Points
+8th
+Placement
+1
+Kills
+GaiminGladiators LogoGaiminGladiators
+4
+Points
+9th
+Placement
+2
+Kills
+LG LogoLG
+3
+Points
+10th
+Placement
+1
+Kills
+VK GAMING LogoVK GAMING
+2
+Points
+11th
+Placement
+1
+Kills
+REIGNITE LogoREIGNITE
+1
+Points
+12th
+Placement
+0
+Kills
+SOURCE XNY LogoSOURCE XNY
+1
+Points
+13th
+Placement
+0
+Kills
+Zero Tenacity LogoZero Tenacity
+2
+Points
+14th
+Placement
+1
+Kills
+Apex LogoOrglessAndHungry
+6
+Points
+15th
+Placement
+5
+Kills
+DRAGONS LogoDRAGONS
+0
+Points
+16th
+Placement
+0
+Kills
+FNATIC LogoFNATIC
+0
+Points
+17th
+Placement
+0
+Kills
+Team Falcons LogoTeam Falcons
+0
+Points
+18th
+Placement
+0
+Kills
+Meteor LogoMeteor
+0
+Points
+19th
+Placement
+0
+Kills
+disguised Logodisguised
+0
+Points
+20th
+Placement
+0
+Kills
+-----
+
+-----
+Game 4
+Noctem LogoNoctem
+18
+Points
+1st
+Placement
+6
+Kills
+SOURCE XNY LogoSOURCE XNY
+18
+Points
+2nd
+Placement
+9
+Kills
+GREEN STEGO LogoGREEN STEGO
+10
+Points
+3rd
+Placement
+3
+Kills
+GUILD LogoGUILD
+6
+Points
+4th
+Placement
+1
+Kills
+VK GAMING LogoVK GAMING
+10
+Points
+5th
+Placement
+6
+Kills
+LG LogoLG
+15
+Points
+6th
+Placement
+12
+Kills
+Complexity LogoComplexity
+5
+Points
+7th
+Placement
+2
+Kills
+AURORA LogoAURORA
+5
+Points
+8th
+Placement
+3
+Kills
+Zero Tenacity LogoZero Tenacity
+5
+Points
+9th
+Placement
+3
+Kills
+DRAGONS LogoDRAGONS
+3
+Points
+10th
+Placement
+1
+Kills
+REIGNITE LogoREIGNITE
+1
+Points
+11th
+Placement
+0
+Kills
+Team Burger LogoTeam Burger
+1
+Points
+12th
+Placement
+0
+Kills
+Meteor LogoMeteor
+2
+Points
+13th
+Placement
+1
+Kills
+FNATIC LogoFNATIC
+2
+Points
+14th
+Placement
+1
+Kills
+disguised Logodisguised
+4
+Points
+15th
+Placement
+3
+Kills
+Team Falcons LogoTeam Falcons
+2
+Points
+16th
+Placement
+2
+Kills
+GaiminGladiators LogoGaiminGladiators
+0
+Points
+17th
+Placement
+0
+Kills
+Virtus.pro LogoVirtus.pro
+4
+Points
+18th
+Placement
+4
+Kills
+GHS Professional LogoGHS Professional
+0
+Points
+19th
+Placement
+0
+Kills
+Apex LogoOrglessAndHungry
+0
+Points
+20th
+Placement
+0
+Kills
+-----
+
+-----
+Game 5
+GaiminGladiators LogoGaiminGladiators
+19
+Points
+1st
+Placement
+7
+Kills
+AURORA LogoAURORA
+14
+Points
+2nd
+Placement
+5
+Kills
+Team Falcons LogoTeam Falcons
+21
+Points
+3rd
+Placement
+14
+Kills
+DRAGONS LogoDRAGONS
+9
+Points
+4th
+Placement
+4
+Kills
+SOURCE XNY LogoSOURCE XNY
+8
+Points
+5th
+Placement
+4
+Kills
+Virtus.pro LogoVirtus.pro
+5
+Points
+6th
+Placement
+2
+Kills
+VK GAMING LogoVK GAMING
+9
+Points
+7th
+Placement
+6
+Kills
+Complexity LogoComplexity
+2
+Points
+8th
+Placement
+0
+Kills
+GREEN STEGO LogoGREEN STEGO
+3
+Points
+9th
+Placement
+1
+Kills
+Team Burger LogoTeam Burger
+5
+Points
+10th
+Placement
+3
+Kills
+LG LogoLG
+3
+Points
+11th
+Placement
+2
+Kills
+Apex LogoOrglessAndHungry
+3
+Points
+12th
+Placement
+2
+Kills
+GHS Professional LogoGHS Professional
+1
+Points
+13th
+Placement
+0
+Kills
+disguised Logodisguised
+3
+Points
+14th
+Placement
+2
+Kills
+Meteor LogoMeteor
+2
+Points
+15th
+Placement
+1
+Kills
+REIGNITE LogoREIGNITE
+2
+Points
+16th
+Placement
+2
+Kills
+Noctem LogoNoctem
+4
+Points
+17th
+Placement
+4
+Kills
+FNATIC LogoFNATIC
+1
+Points
+18th
+Placement
+1
+Kills
+Zero Tenacity LogoZero Tenacity
+2
+Points
+19th
+Placement
+2
+Kills
+GUILD LogoGUILD
+0
+Points
+20th
+Placement
+0
+Kills
+-----
+
+-----
+Game 6
+FNATIC LogoFNATIC
+20
+Points
+1st
+Placement
+8
+Kills
+Complexity LogoComplexity
+17
+Points
+2nd
+Placement
+8
+Kills
+AURORA LogoAURORA
+13
+Points
+3rd
+Placement
+6
+Kills
+VK GAMING LogoVK GAMING
+7
+Points
+4th
+Placement
+2
+Kills
+GaiminGladiators LogoGaiminGladiators
+9
+Points
+5th
+Placement
+5
+Kills
+GUILD LogoGUILD
+11
+Points
+6th
+Placement
+8
+Kills
+disguised Logodisguised
+7
+Points
+7th
+Placement
+4
+Kills
+Noctem LogoNoctem
+9
+Points
+8th
+Placement
+7
+Kills
+GHS Professional LogoGHS Professional
+2
+Points
+9th
+Placement
+0
+Kills
+GREEN STEGO LogoGREEN STEGO
+5
+Points
+10th
+Placement
+3
+Kills
+Team Burger LogoTeam Burger
+2
+Points
+11th
+Placement
+1
+Kills
+Meteor LogoMeteor
+1
+Points
+12th
+Placement
+0
+Kills
+SOURCE XNY LogoSOURCE XNY
+6
+Points
+13th
+Placement
+5
+Kills
+Virtus.pro LogoVirtus.pro
+1
+Points
+14th
+Placement
+0
+Kills
+REIGNITE LogoREIGNITE
+1
+Points
+15th
+Placement
+0
+Kills
+DRAGONS LogoDRAGONS
+0
+Points
+16th
+Placement
+0
+Kills
+Team Falcons LogoTeam Falcons
+0
+Points
+17th
+Placement
+0
+Kills
+Apex LogoOrglessAndHungry
+0
+Points
+18th
+Placement
+0
+Kills
+Zero Tenacity LogoZero Tenacity
+0
+Points
+19th
+Placement
+0
+Kills
+LG LogoLG
+0
+Points
+20th
+Placement
+0
+Kills
+-----
+

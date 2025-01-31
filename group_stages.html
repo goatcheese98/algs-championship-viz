@@ -34,6 +34,8 @@
             width: 100%;
             box-sizing: border-box;
             overflow: hidden;
+            min-height: 900px;
+            position: relative;
         }
         .container {
             width: 100%;
@@ -59,23 +61,179 @@
             text-align: center;
             font-weight: 600;
         }
+        /* Tab Styles */
+        .tab-container {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            background-color: #f5f5f5;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+        .tab-button {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #333;
+        }
+        .tab-button.active {
+            background-color: #15616d;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .chart-placeholder {
+            width: 100%;
+            height: 900px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f8f8;
+            border-radius: 10px;
+            font-size: 1.2em;
+            color: #666;
+        }
     </style>
 </head>
 <body>
     <div class="mega-container">
-        <h1 class="main-title">ALGS Championship - Group Stages Overview</h1>
+        <h1 class="main-title">ALGS Championship - Tournament Overview</h1>
         
-        <div class="chart-section">
-            <iframe src="race_chartAvsB.html"></iframe>
-        </div>
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="openTab('day1')">Day 1 Group Stage</button>
+                <button class="tab-button" onclick="openTab('day2')">Day 2 Group Stage</button>
+                <button class="tab-button" onclick="openTab('day3')">Day 3: Bracket Stages</button>
+            </div>
 
-        <div class="chart-section">
-            <iframe src="race_chartCvsD.html"></iframe>
-        </div>
+            <div id="day1" class="tab-content active">
+                <div class="chart-section" data-src="race_chartAvsB.html">
+                    <div class="chart-placeholder">Scroll to load Group A vs B</div>
+                </div>
 
-        <div class="chart-section">
-            <iframe src="race_chartBvsD.html"></iframe>
+                <div class="chart-section" data-src="race_chartCvsD.html">
+                    <div class="chart-placeholder">Scroll to load Group C vs D</div>
+                </div>
+
+                <div class="chart-section" data-src="race_chartBvsD.html">
+                    <div class="chart-placeholder">Scroll to load Group B vs D</div>
+                </div>
+            </div>
+
+            <div id="day2" class="tab-content">
+                <div class="chart-section" data-src="2.race_chartAvsC.html">
+                    <div class="chart-placeholder">Scroll to load Group A vs C</div>
+                </div>
+
+                <div class="chart-section" data-src="2.race_chartBvsC.html">
+                    <div class="chart-placeholder">Scroll to load Group B vs C</div>
+                </div>
+
+                <div class="chart-section" data-src="2.race_chartAvsD.html">
+                    <div class="chart-placeholder">Scroll to load Group A vs D</div>
+                </div>
+            </div>
+
+            <div id="day3" class="tab-content">
+                <div class="chart-section" data-src="3.race_chartER1.html">
+                    <div class="chart-placeholder">Scroll to load Elimination Round 1</div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        let day2Loaded = false;
+        let day3Loaded = false;
+        const loadedCharts = new Set();
+
+        // Create Intersection Observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const section = entry.target;
+                    const src = section.getAttribute('data-src');
+                    
+                    // Only load if not already loaded
+                    if (!loadedCharts.has(src)) {
+                        loadChart(section, src);
+                        loadedCharts.add(src);
+                    }
+                }
+            });
+        }, {
+            root: null,
+            rootMargin: '100px', // Start loading slightly before the chart comes into view
+            threshold: 0.1
+        });
+
+        function loadChart(section, src) {
+            const iframe = document.createElement('iframe');
+            iframe.src = src;
+            section.innerHTML = '';
+            section.appendChild(iframe);
+        }
+
+        // Start observing all chart sections in Day 1
+        document.querySelectorAll('#day1 .chart-section').forEach(section => {
+            observer.observe(section);
+        });
+
+        function openTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let content of tabContents) {
+                content.classList.remove('active');
+            }
+
+            // Remove active class from all buttons
+            const tabButtons = document.getElementsByClassName('tab-button');
+            for (let button of tabButtons) {
+                button.classList.remove('active');
+            }
+
+            // Show selected tab content and add active class to button
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`button[onclick="openTab('${tabName}')"]`).classList.add('active');
+
+            // Start observing charts in the newly opened tab if not already loaded
+            if (tabName === 'day2' && !day2Loaded) {
+                document.querySelectorAll('#day2 .chart-section').forEach(section => {
+                    observer.observe(section);
+                });
+                day2Loaded = true;
+            }
+            if (tabName === 'day3' && !day3Loaded) {
+                document.querySelectorAll('#day3 .chart-section').forEach(section => {
+                    observer.observe(section);
+                });
+                day3Loaded = true;
+            }
+        }
+
+        // Load the first visible chart immediately
+        const firstChart = document.querySelector('#day1 .chart-section');
+        if (firstChart) {
+            const src = firstChart.getAttribute('data-src');
+            loadChart(firstChart, src);
+            loadedCharts.add(src);
+        }
+    </script>
 </body>
 </html>

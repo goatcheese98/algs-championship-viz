@@ -1,0 +1,1316 @@
+ER 1
+
+-----
+OVERALL
+#1
+Apex LogoOrglessAndHungry
+96
+Points
+1st
+Best placement
+52
+Kills
+#2
+LG LogoLG
+70
+Points
+2nd
+Best placement
+41
+Kills
+#3
+GHS Professional LogoGHS Professional
+66
+Points
+2nd
+Best placement
+39
+Kills
+#4
+VK GAMING LogoVK GAMING
+58
+Points
+1st
+Best placement
+25
+Kills
+#5
+DRAGONS LogoDRAGONS
+58
+Points
+1st
+Best placement
+19
+Kills
+#6
+Zero Tenacity LogoZero Tenacity
+54
+Points
+1st
+Best placement
+27
+Kills
+#7
+Envy LogoEnvy
+53
+Points
+2nd
+Best placement
+28
+Kills
+#8
+disguised Logodisguised
+51
+Points
+1st
+Best placement
+23
+Kills
+#9
+FaZe Clan LogoFaZe Clan
+42
+Points
+1st
+Best placement
+17
+Kills
+#10
+Team Burger LogoTeam Burger
+41
+Points
+2nd
+Best placement
+16
+Kills
+#11
+NRG LogoNRG
+41
+Points
+6th
+Best placement
+29
+Kills
+#12
+Ninjas LogoNinjas
+40
+Points
+3rd
+Best placement
+18
+Kills
+#13
+SOURCE XNY LogoSOURCE XNY
+37
+Points
+3rd
+Best placement
+21
+Kills
+#14
+Supernova LogoSupernova
+36
+Points
+1st
+Best placement
+18
+Kills
+#15
+DreamFire LogoDreamFire
+34
+Points
+5th
+Best placement
+21
+Kills
+#16
+Oblivion LogoOblivion
+30
+Points
+4th
+Best placement
+18
+Kills
+#17
+REIGNITE LogoREIGNITE
+27
+Points
+3rd
+Best placement
+8
+Kills
+#18
+shadow3690 Logoshadow3690
+22
+Points
+7th
+Best placement
+15
+Kills
+#19
+STALLIONS LogoSTALLIONS
+18
+Points
+6th
+Best placement
+10
+Kills
+#20
+Meteor LogoMeteor
+10
+Points
+13th
+Best placement
+7
+Kills
+-----
+
+------
+Game 1
+Apex LogoOrglessAndHungry
+25
+Points
+1st
+Placement
+13
+Kills
+DRAGONS LogoDRAGONS
+14
+Points
+2nd
+Placement
+5
+Kills
+REIGNITE LogoREIGNITE
+8
+Points
+3rd
+Placement
+1
+Kills
+FaZe Clan LogoFaZe Clan
+5
+Points
+4th
+Placement
+0
+Kills
+disguised Logodisguised
+10
+Points
+5th
+Placement
+6
+Kills
+DreamFire LogoDreamFire
+5
+Points
+6th
+Placement
+2
+Kills
+LG LogoLG
+6
+Points
+7th
+Placement
+3
+Kills
+VK GAMING LogoVK GAMING
+5
+Points
+8th
+Placement
+3
+Kills
+STALLIONS LogoSTALLIONS
+4
+Points
+9th
+Placement
+2
+Kills
+Envy LogoEnvy
+7
+Points
+10th
+Placement
+5
+Kills
+NRG LogoNRG
+6
+Points
+11th
+Placement
+5
+Kills
+Supernova LogoSupernova
+3
+Points
+12th
+Placement
+2
+Kills
+Oblivion LogoOblivion
+2
+Points
+13th
+Placement
+1
+Kills
+GHS Professional LogoGHS Professional
+1
+Points
+14th
+Placement
+0
+Kills
+Team Burger LogoTeam Burger
+2
+Points
+15th
+Placement
+1
+Kills
+Meteor LogoMeteor
+0
+Points
+16th
+Placement
+0
+Kills
+Zero Tenacity LogoZero Tenacity
+1
+Points
+17th
+Placement
+1
+Kills
+shadow3690 Logoshadow3690
+3
+Points
+18th
+Placement
+3
+Kills
+Ninjas LogoNinjas
+0
+Points
+19th
+Placement
+0
+Kills
+SOURCE XNY LogoSOURCE XNY
+0
+Points
+20th
+Placement
+0
+Kills
+------
+
+------
+Supernova LogoSupernova
+25
+Points
+1st
+Placement
+13
+Kills
+Team Burger LogoTeam Burger
+12
+Points
+2nd
+Placement
+3
+Kills
+Apex LogoOrglessAndHungry
+10
+Points
+3rd
+Placement
+3
+Kills
+Ninjas LogoNinjas
+9
+Points
+4th
+Placement
+4
+Kills
+VK GAMING LogoVK GAMING
+7
+Points
+5th
+Placement
+3
+Kills
+Zero Tenacity LogoZero Tenacity
+4
+Points
+6th
+Placement
+1
+Kills
+FaZe Clan LogoFaZe Clan
+10
+Points
+7th
+Placement
+7
+Kills
+SOURCE XNY LogoSOURCE XNY
+6
+Points
+8th
+Placement
+4
+Kills
+Oblivion LogoOblivion
+4
+Points
+9th
+Placement
+2
+Kills
+NRG LogoNRG
+11
+Points
+10th
+Placement
+9
+Kills
+STALLIONS LogoSTALLIONS
+1
+Points
+11th
+Placement
+0
+Kills
+disguised Logodisguised
+3
+Points
+12th
+Placement
+2
+Kills
+DreamFire LogoDreamFire
+3
+Points
+13th
+Placement
+2
+Kills
+Meteor LogoMeteor
+2
+Points
+14th
+Placement
+1
+Kills
+Envy LogoEnvy
+1
+Points
+15th
+Placement
+0
+Kills
+shadow3690 Logoshadow3690
+0
+Points
+16th
+Placement
+0
+Kills
+LG LogoLG
+0
+Points
+17th
+Placement
+0
+Kills
+REIGNITE LogoREIGNITE
+0
+Points
+18th
+Placement
+0
+Kills
+GHS Professional LogoGHS Professional
+0
+Points
+19th
+Placement
+0
+Kills
+DRAGONS LogoDRAGONS
+0
+Points
+20th
+Placement
+0
+Kills
+-----
+
+-----
+Game 3
+Zero Tenacity LogoZero Tenacity
+24
+Points
+1st
+Placement
+12
+Kills
+LG LogoLG
+15
+Points
+2nd
+Placement
+6
+Kills
+Ninjas LogoNinjas
+12
+Points
+3rd
+Placement
+5
+Kills
+REIGNITE LogoREIGNITE
+8
+Points
+4th
+Placement
+3
+Kills
+DreamFire LogoDreamFire
+9
+Points
+5th
+Placement
+5
+Kills
+NRG LogoNRG
+8
+Points
+6th
+Placement
+5
+Kills
+Supernova LogoSupernova
+3
+Points
+7th
+Placement
+0
+Kills
+SOURCE XNY LogoSOURCE XNY
+4
+Points
+8th
+Placement
+2
+Kills
+GHS Professional LogoGHS Professional
+11
+Points
+9th
+Placement
+9
+Kills
+shadow3690 Logoshadow3690
+3
+Points
+10th
+Placement
+1
+Kills
+FaZe Clan LogoFaZe Clan
+2
+Points
+11th
+Placement
+1
+Kills
+DRAGONS LogoDRAGONS
+2
+Points
+12th
+Placement
+1
+Kills
+Meteor LogoMeteor
+1
+Points
+13th
+Placement
+0
+Kills
+disguised Logodisguised
+3
+Points
+14th
+Placement
+2
+Kills
+Apex LogoOrglessAndHungry
+4
+Points
+15th
+Placement
+3
+Kills
+Oblivion LogoOblivion
+0
+Points
+16th
+Placement
+0
+Kills
+VK GAMING LogoVK GAMING
+0
+Points
+17th
+Placement
+0
+Kills
+Team Burger LogoTeam Burger
+0
+Points
+18th
+Placement
+0
+Kills
+STALLIONS LogoSTALLIONS
+1
+Points
+19th
+Placement
+1
+Kills
+Envy LogoEnvy
+0
+Points
+20th
+Placement
+0
+Kills
+------
+
+-----
+Game 4
+VK GAMING LogoVK GAMING
+22
+Points
+1st
+Placement
+10
+Kills
+disguised Logodisguised
+13
+Points
+2nd
+Placement
+4
+Kills
+GHS Professional LogoGHS Professional
+15
+Points
+3rd
+Placement
+8
+Kills
+Ninjas LogoNinjas
+7
+Points
+4th
+Placement
+2
+Kills
+Envy LogoEnvy
+9
+Points
+5th
+Placement
+5
+Kills
+Oblivion LogoOblivion
+6
+Points
+6th
+Placement
+3
+Kills
+Apex LogoOrglessAndHungry
+10
+Points
+7th
+Placement
+7
+Kills
+Zero Tenacity LogoZero Tenacity
+3
+Points
+8th
+Placement
+1
+Kills
+LG LogoLG
+12
+Points
+9th
+Placement
+10
+Kills
+REIGNITE LogoREIGNITE
+2
+Points
+10th
+Placement
+0
+Kills
+DreamFire LogoDreamFire
+1
+Points
+11th
+Placement
+0
+Kills
+DRAGONS LogoDRAGONS
+3
+Points
+12th
+Placement
+2
+Kills
+SOURCE XNY LogoSOURCE XNY
+2
+Points
+13th
+Placement
+1
+Kills
+STALLIONS LogoSTALLIONS
+1
+Points
+14th
+Placement
+0
+Kills
+shadow3690 Logoshadow3690
+3
+Points
+15th
+Placement
+2
+Kills
+Meteor LogoMeteor
+0
+Points
+16th
+Placement
+0
+Kills
+Supernova LogoSupernova
+0
+Points
+17th
+Placement
+0
+Kills
+NRG LogoNRG
+0
+Points
+18th
+Placement
+0
+Kills
+Team Burger LogoTeam Burger
+0
+Points
+19th
+Placement
+0
+Kills
+FaZe Clan LogoFaZe Clan
+0
+Points
+20th
+Placement
+0
+-----
+
+-----
+Game 5
+FaZe Clan LogoFaZe Clan
+15
+Points
+1st
+Placement
+3
+Kills
+GHS Professional LogoGHS Professional
+16
+Points
+2nd
+Placement
+7
+Kills
+SOURCE XNY LogoSOURCE XNY
+13
+Points
+3rd
+Placement
+6
+Kills
+Oblivion LogoOblivion
+11
+Points
+4th
+Placement
+6
+Kills
+Zero Tenacity LogoZero Tenacity
+6
+Points
+5th
+Placement
+2
+Kills
+Team Burger LogoTeam Burger
+9
+Points
+6th
+Placement
+6
+Kills
+NRG LogoNRG
+7
+Points
+7th
+Placement
+4
+Kills
+Envy LogoEnvy
+4
+Points
+8th
+Placement
+2
+Kills
+DRAGONS LogoDRAGONS
+5
+Points
+9th
+Placement
+3
+Kills
+Apex LogoOrglessAndHungry
+5
+Points
+10th
+Placement
+3
+Kills
+shadow3690 Logoshadow3690
+5
+Points
+11th
+Placement
+4
+Kills
+LG LogoLG
+5
+Points
+12th
+Placement
+4
+Kills
+REIGNITE LogoREIGNITE
+2
+Points
+13th
+Placement
+1
+Kills
+Supernova LogoSupernova
+3
+Points
+14th
+Placement
+2
+Kills
+VK GAMING LogoVK GAMING
+4
+Points
+15th
+Placement
+3
+Kills
+Meteor LogoMeteor
+0
+Points
+16th
+Placement
+0
+Kills
+STALLIONS LogoSTALLIONS
+0
+Points
+17th
+Placement
+0
+Kills
+DreamFire LogoDreamFire
+2
+Points
+18th
+Placement
+2
+Kills
+disguised Logodisguised
+0
+Points
+19th
+Placement
+0
+Kills
+Ninjas LogoNinjas
+0
+Points
+20th
+Placement
+0
+Kills
+-----
+
+-----
+Game 6
+World's Edge
+DRAGONS LogoDRAGONS
+18
+Points
+1st
+Placement
+6
+Kills
+LG LogoLG
+19
+Points
+2nd
+Placement
+10
+Kills
+GHS Professional LogoGHS Professional
+17
+Points
+3rd
+Placement
+10
+Kills
+VK GAMING LogoVK GAMING
+5
+Points
+4th
+Placement
+0
+Kills
+Team Burger LogoTeam Burger
+6
+Points
+5th
+Placement
+2
+Kills
+Apex LogoOrglessAndHungry
+7
+Points
+6th
+Placement
+4
+Kills
+Zero Tenacity LogoZero Tenacity
+11
+Points
+7th
+Placement
+8
+Kills
+SOURCE XNY LogoSOURCE XNY
+10
+Points
+8th
+Placement
+8
+Kills
+Ninjas LogoNinjas
+5
+Points
+9th
+Placement
+3
+Kills
+Envy LogoEnvy
+4
+Points
+10th
+Placement
+2
+Kills
+FaZe Clan LogoFaZe Clan
+3
+Points
+11th
+Placement
+2
+Kills
+NRG LogoNRG
+3
+Points
+12th
+Placement
+2
+Kills
+REIGNITE LogoREIGNITE
+1
+Points
+13th
+Placement
+0
+Kills
+DreamFire LogoDreamFire
+4
+Points
+14th
+Placement
+3
+Kills
+Oblivion LogoOblivion
+3
+Points
+15th
+Placement
+2
+Kills
+Meteor LogoMeteor
+0
+Points
+16th
+Placement
+0
+Kills
+disguised Logodisguised
+0
+Points
+17th
+Placement
+0
+Kills
+Supernova LogoSupernova
+0
+Points
+18th
+Placement
+0
+Kills
+STALLIONS LogoSTALLIONS
+0
+Points
+19th
+Placement
+0
+Kills
+shadow3690 Logoshadow3690
+0
+Points
+20th
+Placement
+0
+Kills
+-----
+
+-----
+Game 7
+disguised Logodisguised
+18
+Points
+1st
+Placement
+6
+Kills
+Envy LogoEnvy
+20
+Points
+2nd
+Placement
+11
+Kills
+VK GAMING LogoVK GAMING
+9
+Points
+3rd
+Placement
+2
+Kills
+DRAGONS LogoDRAGONS
+5
+Points
+4th
+Placement
+0
+Kills
+Apex LogoOrglessAndHungry
+11
+Points
+5th
+Placement
+7
+Kills
+FaZe Clan LogoFaZe Clan
+7
+Points
+6th
+Placement
+4
+Kills
+shadow3690 Logoshadow3690
+8
+Points
+7th
+Placement
+5
+Kills
+SOURCE XNY LogoSOURCE XNY
+2
+Points
+8th
+Placement
+0
+Kills
+REIGNITE LogoREIGNITE
+5
+Points
+9th
+Placement
+3
+Kills
+Ninjas LogoNinjas
+4
+Points
+10th
+Placement
+2
+Kills
+GHS Professional LogoGHS Professional
+6
+Points
+11th
+Placement
+5
+Kills
+STALLIONS LogoSTALLIONS
+2
+Points
+12th
+Placement
+1
+Kills
+LG LogoLG
+2
+Points
+13th
+Placement
+1
+Kills
+Team Burger LogoTeam Burger
+1
+Points
+14th
+Placement
+0
+Kills
+DreamFire LogoDreamFire
+4
+Points
+15th
+Placement
+3
+Kills
+Zero Tenacity LogoZero Tenacity
+2
+Points
+16th
+Placement
+2
+Kills
+Oblivion LogoOblivion
+1
+Points
+17th
+Placement
+1
+Kills
+NRG LogoNRG
+0
+Points
+18th
+Placement
+0
+Kills
+Meteor LogoMeteor
+3
+Points
+19th
+Placement
+3
+Kills
+Supernova LogoSupernova
+0
+Points
+20th
+Placement
+0
+Kills
+-----
+
+-----
+Game 8
+Apex LogoOrglessAndHungry
+24
+Points
+1st
+Placement
+12
+Kills
+DRAGONS LogoDRAGONS
+11
+Points
+2nd
+Placement
+2
+Kills
+Team Burger LogoTeam Burger
+11
+Points
+3rd
+Placement
+4
+Kills
+Envy LogoEnvy
+8
+Points
+4th
+Placement
+3
+Kills
+LG LogoLG
+11
+Points
+5th
+Placement
+7
+Kills
+STALLIONS LogoSTALLIONS
+9
+Points
+6th
+Placement
+6
+Kills
+Zero Tenacity LogoZero Tenacity
+3
+Points
+7th
+Placement
+0
+Kills
+VK GAMING LogoVK GAMING
+6
+Points
+8th
+Placement
+4
+Kills
+NRG LogoNRG
+6
+Points
+9th
+Placement
+4
+Kills
+DreamFire LogoDreamFire
+6
+Points
+10th
+Placement
+4
+Kills
+disguised Logodisguised
+4
+Points
+11th
+Placement
+3
+Kills
+Supernova LogoSupernova
+2
+Points
+12th
+Placement
+1
+Kills
+REIGNITE LogoREIGNITE
+1
+Points
+13th
+Placement
+0
+Kills
+Ninjas LogoNinjas
+3
+Points
+14th
+Placement
+2
+Kills
+Meteor LogoMeteor
+4
+Points
+15th
+Placement
+3
+Kills
+SOURCE XNY LogoSOURCE XNY
+0
+Points
+16th
+Placement
+0
+Kills
+shadow3690 Logoshadow3690
+0
+Points
+17th
+Placement
+0
+Kills
+Oblivion LogoOblivion
+3
+Points
+18th
+Placement
+3
+Kills
+GHS Professional LogoGHS Professional
+0
+Points
+19th
+Placement
+0
+Kills
+FaZe Clan LogoFaZe Clan
+0
+Points
+20th
+Placement
+0
+Kills
+-----
