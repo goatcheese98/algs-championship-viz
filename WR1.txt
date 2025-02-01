@@ -1171,3 +1171,147 @@ Placement
 0
 Kills
 -----
+
+-----
+Game 8
+AURORA LogoAURORA
+19
+Points
+1st
+Placement
+7
+Kills
+GUILD LogoGUILD
+12
+Points
+2nd
+Placement
+3
+Kills
+FURIA LogoFURIA
+26
+Points
+3rd
+Placement
+19
+Kills
+Cloud9 LogoCloud9
+7
+Points
+4th
+Placement
+2
+Kills
+ShopifyRebellion LogoShopifyRebellion
+7
+Points
+5th
+Placement
+3
+Kills
+Exo Clan LogoExo Clan
+5
+Points
+6th
+Placement
+2
+Kills
+GaiminGladiators LogoGaiminGladiators
+3
+Points
+7th
+Placement
+0
+Kills
+Liquid Alienware LogoLiquid Alienware
+7
+Points
+8th
+Placement
+5
+Kills
+Complexity LogoComplexity
+2
+Points
+9th
+Placement
+0
+Kills
+Virtus.pro LogoVirtus.pro
+11
+Points
+10th
+Placement
+9
+Kills
+GoNext LogoGoNext
+2
+Points
+11th
+Placement
+1
+Kills
+Noctem LogoNoctem
+4
+Points
+12th
+Placement
+3
+Kills
+Alliance LogoAlliance
+6
+Points
+13th
+Placement
+5
+Kills
+GREEN STEGO LogoGREEN STEGO
+2
+Points
+14th
+Placement
+1
+Kills
+FNATIC LogoFNATIC
+1
+Points
+15th
+Placement
+0
+Kills
+100 Thieves Logo100 Thieves
+1
+Points
+16th
+Placement
+1
+Kills
+Team Falcons LogoTeam Falcons
+0
+Points
+17th
+Placement
+0
+Kills
+ENTER FORCE.36 LogoENTER FORCE.36
+0
+Points
+18th
+Placement
+0
+Kills
+TSM LogoTSM
+0
+Points
+19th
+Placement
+0
+Kills
+CRAZY RACCOON LogoCRAZY RACCOON
+0
+Points
+20th
+Placement
+0
+Kills
+------

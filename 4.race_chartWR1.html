@@ -465,22 +465,19 @@
         </div>
         <div id="chart">
             <div class="sidebar">
-                <div class="game-counter-container">
-                    <p class="game-counter">Game Start</p>
-                </div>
-                <div class="legend">
-                    <h3>Games</h3>
-                    <!-- Legend items will be added here -->
-                </div>
-                <div class="slider-container">
-                    <div class="controls">
-                        <button id="playPauseBtn">Pause</button>
-                        <button id="restartBtn">Restart</button>
-                    </div>
-                    <input type="range" id="gameSlider" min="0" max="8" value="0" step="1">
-                </div>
                 <div class="current-map-container">
-                    <p class="current-map">-</p>
+                    <p class="current-map">Map: <span id="currentMap">World's Edge</span></p>
+                </div>
+                <div class="legend"></div>
+                <div class="slider-container">
+                    <input type="range" min="0" max="8" value="0" class="game-slider" id="gameSlider">
+                </div>
+                <div class="button-group">
+                    <button id="playPauseBtn" class="control-button">Pause</button>
+                    <button id="restartBtn" class="control-button">Restart</button>
+                </div>
+                <div class="game-counter-container">
+                    <p class="game-counter">Game <span id="gameCounter">1</span></p>
                 </div>
             </div>
         </div>
