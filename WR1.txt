@@ -1,0 +1,1173 @@
+WR1
+
+------
+OVERALL
+#1
+AURORA LogoAURORA
+79
+Points
+1st
+Best placement
+36
+Kills
+#2
+ENTER FORCE.36 LogoENTER FORCE.36
+78
+Points
+1st
+Best placement
+42
+Kills
+#3
+Alliance LogoAlliance
+55
+Points
+2nd
+Best placement
+34
+Kills
+#4
+GUILD LogoGUILD
+55
+Points
+1st
+Best placement
+27
+Kills
+#5
+TSM LogoTSM
+55
+Points
+1st
+Best placement
+26
+Kills
+#6
+Liquid Alienware LogoLiquid Alienware
+44
+Points
+1st
+Best placement
+25
+Kills
+#7
+GoNext LogoGoNext
+42
+Points
+1st
+Best placement
+21
+Kills
+#8
+GaiminGladiators LogoGaiminGladiators
+41
+Points
+2nd
+Best placement
+16
+Kills
+#9
+FURIA LogoFURIA
+40
+Points
+4th
+Best placement
+18
+Kills
+#10
+Team Falcons LogoTeam Falcons
+39
+Points
+3rd
+Best placement
+18
+Kills
+#11
+ShopifyRebellion LogoShopifyRebellion
+35
+Points
+3rd
+Best placement
+20
+Kills
+#12
+100 Thieves Logo100 Thieves
+32
+Points
+4th
+Best placement
+17
+Kills
+#13
+CRAZY RACCOON LogoCRAZY RACCOON
+31
+Points
+2nd
+Best placement
+13
+Kills
+#14
+Cloud9 LogoCloud9
+31
+Points
+4th
+Best placement
+16
+Kills
+#15
+Exo Clan LogoExo Clan
+25
+Points
+3rd
+Best placement
+11
+Kills
+#16
+Noctem LogoNoctem
+24
+Points
+4th
+Best placement
+16
+Kills
+#17
+Complexity LogoComplexity
+24
+Points
+6th
+Best placement
+13
+Kills
+#18
+FNATIC LogoFNATIC
+17
+Points
+5th
+Best placement
+10
+Kills
+#19
+GREEN STEGO LogoGREEN STEGO
+10
+Points
+6th
+Best placement
+4
+Kills
+#20
+Virtus.pro LogoVirtus.pro
+10
+Points
+9th
+Best placement
+6
+Kills
+------
+
+------
+Game 1
+AURORA LogoAURORA
+23
+Points
+1st
+Placement
+11
+Kills
+Alliance LogoAlliance
+17
+Points
+2nd
+Placement
+8
+Kills
+Team Falcons LogoTeam Falcons
+8
+Points
+3rd
+Placement
+1
+Kills
+CRAZY RACCOON LogoCRAZY RACCOON
+10
+Points
+4th
+Placement
+5
+Kills
+FNATIC LogoFNATIC
+6
+Points
+5th
+Placement
+2
+Kills
+TSM LogoTSM
+7
+Points
+6th
+Placement
+4
+Kills
+100 Thieves Logo100 Thieves
+11
+Points
+7th
+Placement
+8
+Kills
+ShopifyRebellion LogoShopifyRebellion
+3
+Points
+8th
+Placement
+1
+Kills
+GoNext LogoGoNext
+5
+Points
+9th
+Placement
+3
+Kills
+FURIA LogoFURIA
+2
+Points
+10th
+Placement
+0
+Kills
+Cloud9 LogoCloud9
+2
+Points
+11th
+Placement
+1
+Kills
+GUILD LogoGUILD
+5
+Points
+12th
+Placement
+4
+Kills
+GaiminGladiators LogoGaiminGladiators
+1
+Points
+13th
+Placement
+0
+Kills
+Liquid Alienware LogoLiquid Alienware
+2
+Points
+14th
+Placement
+1
+Kills
+ENTER FORCE.36 LogoENTER FORCE.36
+7
+Points
+15th
+Placement
+6
+Kills
+Complexity LogoComplexity
+1
+Points
+16th
+Placement
+1
+Kills
+GREEN STEGO LogoGREEN STEGO
+0
+Points
+17th
+Placement
+0
+Kills
+Virtus.pro LogoVirtus.pro
+0
+Points
+18th
+Placement
+0
+Kills
+Noctem LogoNoctem
+0
+Points
+19th
+Placement
+0
+Kills
+Exo Clan LogoExo Clan
+0
+Points
+20th
+Placement
+0
+Kills
+-----
+
+-----
+Game 2
+Liquid Alienware LogoLiquid Alienware
+22
+Points
+1st
+Placement
+10
+Kills
+GUILD LogoGUILD
+15
+Points
+2nd
+Placement
+6
+Kills
+ShopifyRebellion LogoShopifyRebellion
+13
+Points
+3rd
+Placement
+6
+Kills
+Cloud9 LogoCloud9
+10
+Points
+4th
+Placement
+5
+Kills
+100 Thieves Logo100 Thieves
+5
+Points
+5th
+Placement
+1
+Kills
+GaiminGladiators LogoGaiminGladiators
+4
+Points
+6th
+Placement
+1
+Kills
+AURORA LogoAURORA
+11
+Points
+7th
+Placement
+8
+Kills
+GoNext LogoGoNext
+5
+Points
+8th
+Placement
+3
+Kills
+Alliance LogoAlliance
+2
+Points
+9th
+Placement
+0
+Kills
+Exo Clan LogoExo Clan
+4
+Points
+10th
+Placement
+2
+Kills
+TSM LogoTSM
+8
+Points
+11th
+Placement
+7
+Kills
+FURIA LogoFURIA
+5
+Points
+12th
+Placement
+4
+Kills
+Noctem LogoNoctem
+1
+Points
+13th
+Placement
+0
+Kills
+Team Falcons LogoTeam Falcons
+3
+Points
+14th
+Placement
+2
+Kills
+Complexity LogoComplexity
+1
+Points
+15th
+Placement
+0
+Kills
+ENTER FORCE.36 LogoENTER FORCE.36
+0
+Points
+16th
+Placement
+0
+Kills
+CRAZY RACCOON LogoCRAZY RACCOON
+0
+Points
+17th
+Placement
+0
+Kills
+GREEN STEGO LogoGREEN STEGO
+0
+Points
+18th
+Placement
+0
+Kills
+FNATIC LogoFNATIC
+0
+Points
+19th
+Placement
+0
+Kills
+Virtus.pro LogoVirtus.pro
+0
+Points
+20th
+Placement
+0
+Kills
+-----
+
+-----
+Game 3
+ENTER FORCE.36 LogoENTER FORCE.36
+33
+Points
+1st
+Placement
+21
+Kills
+TSM LogoTSM
+12
+Points
+2nd
+Placement
+3
+Kills
+GaiminGladiators LogoGaiminGladiators
+10
+Points
+3rd
+Placement
+3
+Kills
+100 Thieves Logo100 Thieves
+8
+Points
+4th
+Placement
+3
+Kills
+FURIA LogoFURIA
+5
+Points
+5th
+Placement
+1
+Kills
+Liquid Alienware LogoLiquid Alienware
+12
+Points
+6th
+Placement
+9
+Kills
+Cloud9 LogoCloud9
+7
+Points
+7th
+Placement
+4
+Kills
+Complexity LogoComplexity
+6
+Points
+8th
+Placement
+4
+Kills
+Exo Clan LogoExo Clan
+3
+Points
+9th
+Placement
+1
+Kills
+Team Falcons LogoTeam Falcons
+4
+Points
+10th
+Placement
+2
+Kills
+Noctem LogoNoctem
+7
+Points
+11th
+Placement
+6
+Kills
+ShopifyRebellion LogoShopifyRebellion
+4
+Points
+12th
+Placement
+3
+Kills
+CRAZY RACCOON LogoCRAZY RACCOON
+2
+Points
+13th
+Placement
+1
+Kills
+GUILD LogoGUILD
+1
+Points
+14th
+Placement
+0
+Kills
+Virtus.pro LogoVirtus.pro
+1
+Points
+15th
+Placement
+0
+Kills
+AURORA LogoAURORA
+0
+Points
+16th
+Placement
+0
+Kills
+Alliance LogoAlliance
+0
+Points
+17th
+Placement
+0
+Kills
+GoNext LogoGoNext
+0
+Points
+18th
+Placement
+0
+Kills
+GREEN STEGO LogoGREEN STEGO
+0
+Points
+19th
+Placement
+0
+Kills
+FNATIC LogoFNATIC
+0
+Points
+20th
+Placement
+0
+Kills
+------
+
+------
+Game 4
+AURORA LogoAURORA
+22
+Points
+1st
+Placement
+10
+Kills
+ENTER FORCE.36 LogoENTER FORCE.36
+9
+Points
+2nd
+Placement
+0
+Kills
+Exo Clan LogoExo Clan
+13
+Points
+3rd
+Placement
+6
+Kills
+Noctem LogoNoctem
+11
+Points
+4th
+Placement
+6
+Kills
+FURIA LogoFURIA
+7
+Points
+5th
+Placement
+3
+Kills
+ShopifyRebellion LogoShopifyRebellion
+11
+Points
+6th
+Placement
+8
+Kills
+GaiminGladiators LogoGaiminGladiators
+5
+Points
+7th
+Placement
+2
+Kills
+Team Falcons LogoTeam Falcons
+2
+Points
+8th
+Placement
+0
+Kills
+Alliance LogoAlliance
+10
+Points
+9th
+Placement
+8
+Kills
+GREEN STEGO LogoGREEN STEGO
+3
+Points
+10th
+Placement
+1
+Kills
+GoNext LogoGoNext
+1
+Points
+11th
+Placement
+0
+Kills
+GUILD LogoGUILD
+1
+Points
+12th
+Placement
+0
+Kills
+Complexity LogoComplexity
+3
+Points
+13th
+Placement
+2
+Kills
+Cloud9 LogoCloud9
+2
+Points
+14th
+Placement
+1
+Kills
+CRAZY RACCOON LogoCRAZY RACCOON
+1
+Points
+15th
+Placement
+0
+Kills
+100 Thieves Logo100 Thieves
+0
+Points
+16th
+Placement
+0
+Kills
+FNATIC LogoFNATIC
+0
+Points
+17th
+Placement
+0
+Kills
+TSM LogoTSM
+2
+Points
+18th
+Placement
+2
+Kills
+Liquid Alienware LogoLiquid Alienware
+1
+Points
+19th
+Placement
+1
+Kills
+Virtus.pro LogoVirtus.pro
+0
+Points
+20th
+Placement
+0
+Kills
+-----
+
+-----
+Game 5
+TSM LogoTSM
+16
+Points
+1st
+Placement
+4
+Kills
+AURORA LogoAURORA
+12
+Points
+2nd
+Placement
+3
+Kills
+Team Falcons LogoTeam Falcons
+13
+Points
+3rd
+Placement
+6
+Kills
+FURIA LogoFURIA
+8
+Points
+4th
+Placement
+3
+Kills
+ENTER FORCE.36 LogoENTER FORCE.36
+6
+Points
+5th
+Placement
+2
+Kills
+GUILD LogoGUILD
+13
+Points
+6th
+Placement
+10
+Kills
+100 Thieves Logo100 Thieves
+7
+Points
+7th
+Placement
+4
+Kills
+Complexity LogoComplexity
+4
+Points
+8th
+Placement
+2
+Kills
+GaiminGladiators LogoGaiminGladiators
+3
+Points
+9th
+Placement
+1
+Kills
+Cloud9 LogoCloud9
+3
+Points
+10th
+Placement
+1
+Kills
+Alliance LogoAlliance
+6
+Points
+11th
+Placement
+5
+Kills
+FNATIC LogoFNATIC
+5
+Points
+12th
+Placement
+4
+Kills
+GoNext LogoGoNext
+4
+Points
+13th
+Placement
+3
+Kills
+CRAZY RACCOON LogoCRAZY RACCOON
+2
+Points
+14th
+Placement
+1
+Kills
+Exo Clan LogoExo Clan
+1
+Points
+15th
+Placement
+0
+Kills
+ShopifyRebellion LogoShopifyRebellion
+2
+Points
+16th
+Placement
+2
+Kills
+Noctem LogoNoctem
+0
+Points
+17th
+Placement
+0
+Kills
+Virtus.pro LogoVirtus.pro
+3
+Points
+18th
+Placement
+3
+Kills
+GREEN STEGO LogoGREEN STEGO
+0
+Points
+19th
+Placement
+0
+Kills
+Liquid Alienware LogoLiquid Alienware
+0
+Points
+20th
+Placement
+0
+Kills
+------
+
+------
+Game 6
+GUILD LogoGUILD
+19
+Points
+1st
+Placement
+7
+Kills
+CRAZY RACCOON LogoCRAZY RACCOON
+15
+Points
+2nd
+Placement
+6
+Kills
+AURORA LogoAURORA
+11
+Points
+3rd
+Placement
+4
+Kills
+ENTER FORCE.36 LogoENTER FORCE.36
+13
+Points
+4th
+Placement
+8
+Kills
+FURIA LogoFURIA
+7
+Points
+5th
+Placement
+3
+Kills
+GREEN STEGO LogoGREEN STEGO
+6
+Points
+6th
+Placement
+3
+Kills
+GoNext LogoGoNext
+12
+Points
+7th
+Placement
+9
+Kills
+Complexity LogoComplexity
+4
+Points
+8th
+Placement
+2
+Kills
+Exo Clan LogoExo Clan
+3
+Points
+9th
+Placement
+1
+Kills
+FNATIC LogoFNATIC
+6
+Points
+10th
+Placement
+4
+Kills
+ShopifyRebellion LogoShopifyRebellion
+1
+Points
+11th
+Placement
+0
+Kills
+Cloud9 LogoCloud9
+1
+Points
+12th
+Placement
+0
+Kills
+Virtus.pro LogoVirtus.pro
+1
+Points
+13th
+Placement
+0
+Kills
+Team Falcons LogoTeam Falcons
+6
+Points
+14th
+Placement
+5
+Kills
+Noctem LogoNoctem
+5
+Points
+15th
+Placement
+4
+Kills
+Liquid Alienware LogoLiquid Alienware
+0
+Points
+16th
+Placement
+0
+Kills
+100 Thieves Logo100 Thieves
+0
+Points
+17th
+Placement
+0
+Kills
+GaiminGladiators LogoGaiminGladiators
+0
+Points
+18th
+Placement
+0
+Kills
+Alliance LogoAlliance
+0
+Points
+19th
+Placement
+0
+Kills
+TSM LogoTSM
+0
+Points
+20th
+Placement
+0
+Kills
+-----
+
+-----
+Game 7
+GoNext LogoGoNext
+15
+Points
+1st
+Placement
+3
+Kills
+GaiminGladiators LogoGaiminGladiators
+18
+Points
+2nd
+Placement
+9
+Kills
+Alliance LogoAlliance
+20
+Points
+3rd
+Placement
+13
+Kills
+ENTER FORCE.36 LogoENTER FORCE.36
+10
+Points
+4th
+Placement
+5
+Kills
+TSM LogoTSM
+10
+Points
+5th
+Placement
+6
+Kills
+Complexity LogoComplexity
+5
+Points
+6th
+Placement
+2
+Kills
+Liquid Alienware LogoLiquid Alienware
+7
+Points
+7th
+Placement
+4
+Kills
+Cloud9 LogoCloud9
+6
+Points
+8th
+Placement
+4
+Kills
+Virtus.pro LogoVirtus.pro
+5
+Points
+9th
+Placement
+3
+Kills
+FURIA LogoFURIA
+6
+Points
+10th
+Placement
+4
+Kills
+ShopifyRebellion LogoShopifyRebellion
+1
+Points
+11th
+Placement
+0
+Kills
+Team Falcons LogoTeam Falcons
+3
+Points
+12th
+Placement
+2
+Kills
+CRAZY RACCOON LogoCRAZY RACCOON
+1
+Points
+13th
+Placement
+0
+Kills
+GREEN STEGO LogoGREEN STEGO
+1
+Points
+14th
+Placement
+0
+Kills
+GUILD LogoGUILD
+1
+Points
+15th
+Placement
+0
+Kills
+AURORA LogoAURORA
+0
+Points
+16th
+Placement
+0
+Kills
+100 Thieves Logo100 Thieves
+1
+Points
+17th
+Placement
+1
+Kills
+Exo Clan LogoExo Clan
+1
+Points
+18th
+Placement
+1
+Kills
+FNATIC LogoFNATIC
+0
+Points
+19th
+Placement
+0
+Kills
+Noctem LogoNoctem
+0
+Points
+20th
+Placement
+0
+Kills
+-----
