@@ -119,7 +119,9 @@
             <div class="tab-buttons">
                 <button class="tab-button active" onclick="openTab('day1')">Day 1 Group Stage</button>
                 <button class="tab-button" onclick="openTab('day2')">Day 2 Group Stage</button>
-                <button class="tab-button" onclick="openTab('day3')">Day 3: Bracket Stages</button>
+                <button class="tab-button" onclick="openTab('day3')">Day 3 Bracket Stage</button>
+                <button class="tab-button" onclick="openTab('day4')">Day 4 Bracket Stage</button>
+                <button class="tab-button" onclick="openTab('day5')">Day 5 Finals</button>
             </div>
 
             <div id="day1" class="tab-content active">
@@ -155,32 +157,66 @@
                     <div class="chart-placeholder">Scroll to load Elimination Round 1</div>
                 </div>
             </div>
+
+            <div id="day4" class="tab-content">
+                <div class="chart-section" data-src="4.race_chartWR1.html">
+                    <div class="chart-placeholder">Scroll to load Winners Round 1</div>
+                </div>
+
+                <div class="chart-section" data-src="5.race_chartER2.html">
+                    <div class="chart-placeholder">Scroll to load Elimination Round 2</div>
+                </div>
+            </div>
+
+            <div id="day5" class="tab-content">
+                <div class="chart-section">
+                    <div class="chart-placeholder">Finals data to be updated</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         let day2Loaded = false;
         let day3Loaded = false;
+        let day4Loaded = false;
+        let day5Loaded = false;
         const loadedCharts = new Set();
 
         // Create Intersection Observer
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
+                if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {  // Only trigger when 50% visible
                     const section = entry.target;
                     const src = section.getAttribute('data-src');
                     
                     // Only load if not already loaded
                     if (!loadedCharts.has(src)) {
+                        // Unobserve previous sections to prevent simultaneous animations
+                        document.querySelectorAll('.chart-section').forEach(otherSection => {
+                            if (otherSection !== section) {
+                                observer.unobserve(otherSection);
+                            }
+                        });
+                        
                         loadChart(section, src);
                         loadedCharts.add(src);
+                        
+                        // Re-observe other sections after a delay
+                        setTimeout(() => {
+                            document.querySelectorAll('.chart-section').forEach(otherSection => {
+                                if (otherSection !== section && !loadedCharts.has(otherSection.getAttribute('data-src'))) {
+                                    observer.observe(otherSection);
+                                }
+                            });
+                        }, 3000); // Wait for 3 seconds before allowing next animation
                     }
                 }
             });
         }, {
             root: null,
-            rootMargin: '100px', // Start loading slightly before the chart comes into view
-            threshold: 0.1
+            rootMargin: '0px',
+            threshold: 0.5  // Trigger when 50% of the element is visible
         });
 
         function loadChart(section, src) {
@@ -224,6 +260,18 @@
                     observer.observe(section);
                 });
                 day3Loaded = true;
+            }
+            if (tabName === 'day4' && !day4Loaded) {
+                document.querySelectorAll('#day4 .chart-section').forEach(section => {
+                    observer.observe(section);
+                });
+                day4Loaded = true;
+            }
+            if (tabName === 'day5' && !day5Loaded) {
+                document.querySelectorAll('#day5 .chart-section').forEach(section => {
+                    observer.observe(section);
+                });
+                day5Loaded = true;
             }
         }
 
