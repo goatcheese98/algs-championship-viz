@@ -4,6 +4,157 @@
  * with consistent styling and behavior across the application.
  */
 
+// Centralized Chart Manager for consistent deployment
+class ChartManager {
+    constructor() {
+        this.instances = new Map();
+        this.initializationPromises = new Map();
+        this.retryAttempts = new Map();
+        this.maxRetries = 3;
+        this.retryDelay = 500;
+    }
+
+    async ensureChartEngine(containerId, options = {}) {
+        // Return existing instance if available and valid
+        if (this.instances.has(containerId)) {
+            const instance = this.instances.get(containerId);
+            if (this.isValidInstance(instance, containerId)) {
+                console.log('📊 Reusing existing ChartEngine for:', containerId);
+                return instance;
+            } else {
+                console.log('♻️ Cleaning up invalid ChartEngine for:', containerId);
+                this.cleanup(containerId);
+            }
+        }
+
+        // Return pending initialization promise if one exists
+        if (this.initializationPromises.has(containerId)) {
+            console.log('⏳ Waiting for pending ChartEngine initialization:', containerId);
+            return await this.initializationPromises.get(containerId);
+        }
+
+        // Create new initialization promise
+        const initPromise = this.initializeWithRetry(containerId, options);
+        this.initializationPromises.set(containerId, initPromise);
+
+        try {
+            const instance = await initPromise;
+            this.instances.set(containerId, instance);
+            return instance;
+        } finally {
+            this.initializationPromises.delete(containerId);
+        }
+    }
+
+    async initializeWithRetry(containerId, options) {
+        const attempts = this.retryAttempts.get(containerId) || 0;
+
+        try {
+            // Wait for container to be available
+            await this.waitForContainer(containerId);
+            
+            console.log(`🔧 Creating ChartEngine for: ${containerId} (attempt ${attempts + 1})`);
+            const instance = new ChartEngine(containerId, options);
+            
+            // Validate the instance was created successfully
+            if (!this.isValidInstance(instance, containerId)) {
+                throw new Error('ChartEngine initialization failed - invalid instance created');
+            }
+
+            // Reset retry counter on success
+            this.retryAttempts.delete(containerId);
+            console.log('✅ ChartEngine created successfully for:', containerId);
+            return instance;
+
+        } catch (error) {
+            console.error(`❌ ChartEngine initialization failed for ${containerId}:`, error);
+            
+            if (attempts < this.maxRetries) {
+                this.retryAttempts.set(containerId, attempts + 1);
+                console.log(`🔄 Retrying in ${this.retryDelay}ms... (${attempts + 1}/${this.maxRetries})`);
+                
+                await this.delay(this.retryDelay);
+                return this.initializeWithRetry(containerId, options);
+            } else {
+                this.retryAttempts.delete(containerId);
+                throw new Error(`Failed to initialize ChartEngine after ${this.maxRetries} attempts: ${error.message}`);
+            }
+        }
+    }
+
+    async waitForContainer(containerId, maxWait = 5000) {
+        const startTime = Date.now();
+        
+        return new Promise((resolve, reject) => {
+            const checkContainer = () => {
+                const container = document.getElementById(containerId);
+                
+                if (container && container.offsetParent !== null) {
+                    console.log('📦 Container ready:', containerId, container.offsetWidth + 'x' + container.offsetHeight);
+                    resolve(container);
+                    return;
+                }
+
+                if (Date.now() - startTime > maxWait) {
+                    reject(new Error(`Container ${containerId} not available after ${maxWait}ms`));
+                    return;
+                }
+
+                // Use requestAnimationFrame for better timing
+                requestAnimationFrame(checkContainer);
+            };
+
+            checkContainer();
+        });
+    }
+
+    isValidInstance(instance, containerId) {
+        if (!instance) return false;
+        if (!instance.container) return false;
+        if (instance.container.empty()) return false;
+        
+        // Check if the DOM container still exists
+        const domContainer = document.getElementById(containerId);
+        if (!domContainer) return false;
+        
+        return true;
+    }
+
+    cleanup(containerId) {
+        const instance = this.instances.get(containerId);
+        if (instance) {
+            // Clean up any timers
+            if (instance.animationTimer) {
+                clearTimeout(instance.animationTimer);
+            }
+            if (instance.resizeHandler) {
+                window.removeEventListener('resize', instance.resizeHandler);
+            }
+            this.instances.delete(containerId);
+        }
+        this.retryAttempts.delete(containerId);
+        this.initializationPromises.delete(containerId);
+    }
+
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Get existing instance without creating new one
+    getInstance(containerId) {
+        return this.instances.get(containerId);
+    }
+
+    // Force refresh of instance
+    async refreshInstance(containerId, options = {}) {
+        this.cleanup(containerId);
+        return await this.ensureChartEngine(containerId, options);
+    }
+}
+
+// Global chart manager instance
+const chartManager = new ChartManager();
+
 class ChartEngine {
     constructor(containerId, options = {}) {
         this.containerId = containerId;
@@ -12,6 +163,7 @@ class ChartEngine {
         this.currentGameIndex = 1;
         this.isPlaying = false;
         this.animationTimer = null;
+        this.initializationError = null;
         
         // Check for external controls early (before any setup)
         this.hasExternalControls = document.getElementById('matchup-select') !== null;
@@ -25,14 +177,62 @@ class ChartEngine {
             ...options
         };
         
-        // Check if container exists
+        // Initialize with better error handling
+        try {
+            this.initializeChart();
+        } catch (error) {
+            this.initializationError = error;
+            console.error('ChartEngine initialization failed:', error);
+            throw error;
+        }
+    }
+
+    initializeChart() {
+        // Get container with multiple fallback strategies
+        this.container = this.getContainer();
+        
         if (!this.container || this.container.empty()) {
-            console.error(`Container with ID '${containerId}' not found`);
-            return;
+            throw new Error(`Container with ID '${this.containerId}' not found or not ready`);
         }
         
-        // Initialize chart only (controls are handled in setupActionPanel)
+        console.log('📊 Initializing chart for container:', this.containerId);
+        
+        // Initialize chart only (controls are handled separately)
         this.setupChart();
+        
+        console.log('✅ Chart initialization complete');
+    }
+
+    getContainer() {
+        // Try multiple selection strategies
+        let container = null;
+        
+        // Strategy 1: Direct D3 selection
+        try {
+            container = d3.select(`#${this.containerId}`);
+            if (!container.empty()) {
+                console.log('📍 Container found via D3 selection');
+                return container;
+            }
+        } catch (e) {
+            console.warn('D3 selection failed:', e);
+        }
+
+        // Strategy 2: DOM query + D3 wrap
+        try {
+            const domElement = document.getElementById(this.containerId);
+            if (domElement) {
+                container = d3.select(domElement);
+                console.log('📍 Container found via DOM query');
+                return container;
+            }
+        } catch (e) {
+            console.warn('DOM query failed:', e);
+        }
+
+        // Strategy 3: Wait and retry (for timing issues)
+        console.warn('Container not immediately available, this might cause issues');
+        return null;
     }
 
     setupChart() {
@@ -958,4 +1158,23 @@ class ChartEngine {
 }
 
 // Export for use in other modules
-window.ChartEngine = ChartEngine; 
+window.ChartEngine = ChartEngine;
+window.chartManager = chartManager;
+
+// Debug helper for troubleshooting
+window.debugChartManager = () => {
+    console.log('📊 Chart Manager Debug Info:');
+    console.log('Active instances:', chartManager.instances.size);
+    console.log('Pending initializations:', chartManager.initializationPromises.size);
+    console.log('Retry attempts:', chartManager.retryAttempts.size);
+    
+    chartManager.instances.forEach((instance, containerId) => {
+        console.log(`📍 Instance ${containerId}:`, {
+            hasContainer: !!instance.container,
+            isEmpty: instance.container ? instance.container.empty() : 'N/A',
+            hasData: !!instance.data,
+            currentGame: instance.currentGameIndex,
+            isPlaying: instance.isPlaying
+        });
+    });
+}; 

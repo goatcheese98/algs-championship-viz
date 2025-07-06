@@ -917,6 +917,14 @@
             #vue-chart-container {
                 width: 100%;
                 height: 100%;
+                min-height: 500px;
+                background: transparent;
+                display: block;
+                position: relative;
+                overflow: visible;
+                
+                /* Debug border to see if container exists */
+                /* border: 1px solid rgba(217, 119, 6, 0.2); */
             }
 
             .loading-overlay {
@@ -989,6 +997,23 @@
                 0 0 20px rgba(217, 119, 6, 0.1),
                 inset 0 1px 0 rgba(255, 255, 255, 0.05);
             z-index: 1000;
+            cursor: grab;
+            transition: all 0.2s ease;
+        }
+        
+        .enhanced-action-panel:hover {
+            border-color: rgba(217, 119, 6, 0.5);
+            box-shadow: 
+                0 16px 32px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(217, 119, 6, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .enhanced-action-panel:active {
+            cursor: grabbing;
+        }
+        
+        .enhanced-action-panel {
             cursor: move;
             user-select: none;
             
@@ -1388,16 +1413,12 @@
                 </div>
 
                 <transition name="fade" mode="out-in">
-                    <div v-for="day in tournamentDays" 
-                         :key="day.id"
-                         v-show="selectedDay === day.id"
-                         class="day-content active"
-                    >
-                        <p style="color: #cbd5e1; margin-bottom: 20px;">{{ day.description }}</p>
+                    <div :key="selectedDay" class="day-content active">
+                        <p style="color: #cbd5e1; margin-bottom: 20px;">{{ currentDayInfo.description }}</p>
                         
                         <div class="matchups-grid">
                             <div 
-                                v-for="matchup in day.matchups" 
+                                v-for="matchup in currentDayMatchups" 
                                 :key="matchup.id"
                                 :class="['matchup-card', { selected: selectedMatchup === matchup.id }]"
                                 @click="selectMatchup(matchup.id)"
@@ -1462,12 +1483,11 @@
                             <div v-if="chartEngine" 
                             ref="actionPanel"
                             class="enhanced-action-panel"
-                            :class="{ expanded: panelExpanded }"
-                                 @mousedown="startDrag">
+                            :class="{ expanded: panelExpanded }">
                                 
-                                <div class="panel-header" ref="dragHandle">
+                                <div class="panel-header">
                                 <div class="panel-title">
-                                    <span class="drag-handle">⋮⋮</span>
+                                    <span class="drag-handle">⋮⋮ Drag Anywhere ⋮⋮</span>
                                         Enhanced Controls
                                 </div>
                                     <button class="expand-btn" @click="togglePanel" @mousedown.stop>
@@ -1560,6 +1580,234 @@
     </div>
 
     <script>
+        // Simple Native JavaScript Draggable System - No Dependencies Required!
+        const NativeDraggableManager = {
+            instances: new Map(),
+            
+            // Initialize native dragging for a panel
+            initializeDraggable(panelElement, options = {}) {
+                const panelId = panelElement.id || 'enhanced-panel-' + Date.now();
+                
+                // Clean up existing instance
+                this.destroyDraggable(panelId);
+                
+                console.log(`🎯 Initializing native draggable for: ${panelId}`);
+                
+                let isDragging = false;
+                let currentX = 0;
+                let currentY = 0;
+                let initialX = 0;
+                let initialY = 0;
+                let xOffset = 0;
+                let yOffset = 0;
+                
+                // Mouse Events
+                const mouseDown = (e) => {
+                    // Ignore if clicking on controls
+                    if (e.target.closest('.control-btn, .progress-slider, .expand-btn, button, input, select, textarea')) {
+                        return;
+                    }
+                    
+                    initialX = e.clientX - xOffset;
+                    initialY = e.clientY - yOffset;
+                    
+                    if (e.target === panelElement || panelElement.contains(e.target)) {
+                        isDragging = true;
+                        panelElement.style.cursor = 'grabbing';
+                        panelElement.style.userSelect = 'none';
+                        panelElement.style.zIndex = '9999';
+                        console.log('🎯 Native drag started');
+                        e.preventDefault();
+                    }
+                };
+                
+                const mouseUp = () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        panelElement.style.cursor = 'grab';
+                        panelElement.style.userSelect = '';
+                        panelElement.style.zIndex = '1000';
+                        console.log('📍 Native drag completed');
+                    }
+                };
+                
+                const mouseMove = (e) => {
+                    if (!isDragging) return;
+                    
+                    e.preventDefault();
+                    
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                    
+                    xOffset = currentX;
+                    yOffset = currentY;
+                    
+                    // Apply transform with hardware acceleration
+                    panelElement.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+                };
+                
+                // Touch Events for Mobile Support
+                const touchStart = (e) => {
+                    // Ignore if clicking on controls
+                    if (e.target.closest('.control-btn, .progress-slider, .expand-btn, button, input, select, textarea')) {
+                        return;
+                    }
+                    
+                    const touch = e.touches[0];
+                    initialX = touch.clientX - xOffset;
+                    initialY = touch.clientY - yOffset;
+                    
+                    if (e.target === panelElement || panelElement.contains(e.target)) {
+                        isDragging = true;
+                        panelElement.style.cursor = 'grabbing';
+                        panelElement.style.userSelect = 'none';
+                        panelElement.style.zIndex = '9999';
+                        console.log('📱 Native touch drag started');
+                        e.preventDefault();
+                    }
+                };
+                
+                const touchEnd = (e) => {
+                    if (isDragging) {
+                        isDragging = false;
+                        panelElement.style.cursor = 'grab';
+                        panelElement.style.userSelect = '';
+                        panelElement.style.zIndex = '1000';
+                        console.log('📱 Native touch drag completed');
+                        e.preventDefault();
+                    }
+                };
+                
+                const touchMove = (e) => {
+                    if (!isDragging) return;
+                    
+                    e.preventDefault();
+                    
+                    const touch = e.touches[0];
+                    currentX = touch.clientX - initialX;
+                    currentY = touch.clientY - initialY;
+                    
+                    xOffset = currentX;
+                    yOffset = currentY;
+                    
+                    // Apply transform with hardware acceleration
+                    panelElement.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+                };
+                
+                // Add event listeners
+                panelElement.addEventListener('mousedown', mouseDown);
+                document.addEventListener('mousemove', mouseMove);
+                document.addEventListener('mouseup', mouseUp);
+                
+                // Touch events with passive: false for preventDefault
+                panelElement.addEventListener('touchstart', touchStart, { passive: false });
+                document.addEventListener('touchmove', touchMove, { passive: false });
+                document.addEventListener('touchend', touchEnd, { passive: false });
+                
+                // Set initial styles for optimal performance
+                panelElement.style.cursor = 'grab';
+                panelElement.style.userSelect = 'none';
+                panelElement.style.willChange = 'transform';
+                panelElement.style.transform = 'translate3d(0, 0, 0)'; // Enable hardware acceleration
+                panelElement.style.backfaceVisibility = 'hidden'; // Prevent flickering
+                
+                // Store instance for cleanup
+                const instance = {
+                    element: panelElement,
+                    cleanup: () => {
+                        panelElement.removeEventListener('mousedown', mouseDown);
+                        document.removeEventListener('mousemove', mouseMove);
+                        document.removeEventListener('mouseup', mouseUp);
+                        panelElement.removeEventListener('touchstart', touchStart);
+                        document.removeEventListener('touchmove', touchMove);
+                        document.removeEventListener('touchend', touchEnd);
+                        
+                        // Reset styles
+                        panelElement.style.cursor = '';
+                        panelElement.style.userSelect = '';
+                        panelElement.style.willChange = '';
+                        panelElement.style.transform = '';
+                        panelElement.style.zIndex = '';
+                        panelElement.style.backfaceVisibility = '';
+                    }
+                };
+                
+                this.instances.set(panelId, instance);
+                console.log(`⚡ Native draggable initialized successfully for: ${panelId}`);
+                
+                return instance;
+            },
+            
+            // Clean up draggable instance
+            destroyDraggable(panelId) {
+                if (this.instances.has(panelId)) {
+                    const instance = this.instances.get(panelId);
+                    if (instance && instance.cleanup) {
+                        instance.cleanup();
+                    }
+                    this.instances.delete(panelId);
+                    console.log(`🗑️ Cleaned up native draggable: ${panelId}`);
+                }
+            },
+            
+            // Cleanup all instances
+            destroyAll() {
+                this.instances.forEach((instance, panelId) => {
+                    this.destroyDraggable(panelId);
+                });
+                console.log('🧹 All native draggable instances cleaned up');
+            },
+            
+            // Get status of all instances
+            getStatus() {
+                const status = {};
+                this.instances.forEach((instance, panelId) => {
+                    status[panelId] = {
+                        active: !!instance,
+                        element: instance ? instance.element : null
+                    };
+                });
+                return status;
+            }
+        };
+        
+        // Make manager globally available
+        window.NativeDraggableManager = NativeDraggableManager;
+
+        // Enhanced Draggable Initialization Function for Vue Components
+        function initializeEnhancedDraggable(panelRef) {
+            if (!panelRef) {
+                console.warn('Panel ref not available for draggable initialization');
+                return null;
+            }
+            
+            // Add unique ID if not present
+            if (!panelRef.id) {
+                panelRef.id = 'enhanced-panel-' + Math.random().toString(36).substr(2, 9);
+            }
+            
+            const instance = NativeDraggableManager.initializeDraggable(panelRef);
+            
+            if (instance) {
+                console.log('⚡ Enhanced native draggable initialized successfully');
+            } else {
+                console.error('❌ Failed to initialize native draggable');
+            }
+            
+            return instance;
+        }
+        
+        // Global cleanup function
+        function cleanupAllDraggables() {
+            if (window.NativeDraggableManager) {
+                window.NativeDraggableManager.destroyAll();
+            }
+        }
+        
+        // Make functions globally available
+        window.initializeEnhancedDraggable = initializeEnhancedDraggable;
+        window.cleanupAllDraggables = cleanupAllDraggables;
+
         const { createApp } = Vue;
 
         createApp({
@@ -1706,49 +1954,52 @@
                             label: matchup.title
                         }))
                     );
+                },
+                
+                currentDayMatchups() {
+                    const currentDay = this.tournamentDays.find(day => day.id === this.selectedDay);
+                    return currentDay ? currentDay.matchups : [];
+                },
+                
+                currentDayInfo() {
+                    return this.tournamentDays.find(day => day.id === this.selectedDay) || {};
                 }
             },
             methods: {
                 selectDay(dayId) {
                     this.selectedDay = dayId;
                     
-                    // Clear current selection when switching days
+                    // Clear previous matchup selection when switching days
                     this.selectedMatchup = '';
+                    
+                    // Use centralized chart manager for proper cleanup
+                    if (window.chartManager) {
+                        window.chartManager.cleanup('vue-chart-container');
+                        console.log('🧹 Centralized chart cleanup completed for day switch');
+                    }
+                    
+                    // Clear Vue chart engine reference
+                    this.chartEngine = null;
+                    
+                    // Reset panel state and clear loaded/loading trackers
                     this.currentGame = 1;
                     this.maxGames = 6;
                     this.currentMap = '';
                     this.selectedGames = [];
                     this.isPlaying = false;
+                    this.isLoading = false;
                     this.errorMessage = '';
                     
-                    // Clear chart container and reset engine state
-                    if (this.chartEngine) {
-                        const container = document.getElementById('vue-chart-container');
-                        if (container) {
-                            container.innerHTML = '';
-                        }
-                        // Reset chart engine for fresh start
-                        this.chartEngine.data = null;
-                        this.chartEngine.currentGameIndex = 1;
-                        this.chartEngine.isPlaying = false;
-                    }
+                    // Clear status tracking for clean slate
+                    this.loadedMatchups.clear();
+                    this.loadingMatchups.clear();
                     
-                    console.log(`🔄 Switched to ${dayId} - cleared previous selections and reset chart state`);
+                    console.log(`✅ Switched to ${dayId} with centralized management - select a matchup to load chart`);
                 },
                 
                 selectMatchup(matchupId) {
-                    // Clear any previous state before loading new matchup
-                    this.currentGame = 1;
-                    this.maxGames = 6;
-                    this.currentMap = '';
-                    this.selectedGames = [];
-                    this.isPlaying = false;
-                    this.errorMessage = '';
-                    
                     this.selectedMatchup = matchupId;
                     this.loadMatchup();
-                    
-                    console.log(`Selected matchup: ${matchupId} for ${this.selectedDay}`);
                 },
                 
                 getStatusClass(matchupId) {
@@ -1776,23 +2027,24 @@
                     this.errorMessage = '';
                     
                     try {
-                        // Clear chart container first
-                        const container = document.getElementById('vue-chart-container');
-                        if (container) {
-                            container.innerHTML = '';
-                        }
+                        console.log('🚀 Starting centralized chart loading for:', this.selectedMatchup);
                         
-                        // Initialize chart engine if not exists or re-initialize for new day
-                        if (!this.chartEngine) {
-                            this.chartEngine = new ChartEngine('vue-chart-container');
-                        }
+                        // Use centralized chart manager for consistent deployment
+                        this.chartEngine = await window.chartManager.ensureChartEngine('vue-chart-container', {
+                            transitionDuration: 1500,
+                            holdDuration: 800
+                        });
                         
-                        // Load the appropriate CSV data and render chart
+                        console.log('✅ ChartEngine ready via ChartManager');
+                        
+                        // Load the appropriate CSV data (this will automatically render the chart)
                         const csvFile = `${this.selectedMatchup}_points.csv`;
-                        console.log(`Loading CSV file: ${csvFile} for day: ${this.selectedDay}`);
+                        console.log('📄 Loading data for matchup:', this.selectedMatchup, 'from file:', csvFile);
                         
                         await this.chartEngine.loadData(csvFile);
-                        await this.chartEngine.renderChart({ matchup: this.selectedMatchup });
+                        
+                        // Verify chart rendered successfully
+                        await this.verifyChartRender();
                         
                         // Update game state for enhanced panel
                         this.updateGameState();
@@ -1801,19 +2053,70 @@
                         setTimeout(() => {
                             this.currentGame = this.chartEngine.currentGameIndex || 1;
                             this.updateCurrentMap();
-                            console.log(`✅ Loaded ${this.selectedMatchup} - currentGame:`, this.currentGame, 'engineIndex:', this.chartEngine.currentGameIndex);
-                        }, 100);
+                            console.log('🎯 Chart loaded and synced - currentGame:', this.currentGame, 'engineIndex:', this.chartEngine.currentGameIndex);
+                        }, 200);
                         
                         this.loadedMatchups.add(this.selectedMatchup);
                         
-                        console.log(`🎯 Vue.js Group Stages: Chart loaded successfully for ${this.selectedMatchup} (${this.selectedDay})`);
+                        console.log('🎉 Vue.js Group Stages: Chart loaded successfully for', this.selectedMatchup);
                         
                     } catch (error) {
-                        console.error(`❌ Vue.js Group Stages: Error loading chart for ${this.selectedMatchup}:`, error);
-                        this.errorMessage = `Failed to load chart for ${this.selectedMatchup}: ${error.message}`;
+                        console.error('💥 Vue.js Group Stages: Error loading chart:', error);
+                        this.errorMessage = `Failed to load chart: ${error.message}`;
+                        
+                        // Show user-friendly error
+                        this.showChartError(error);
+                        
                     } finally {
                         this.isLoading = false;
                         this.loadingMatchups.delete(this.selectedMatchup);
+                    }
+                },
+
+                async verifyChartRender() {
+                    return new Promise((resolve, reject) => {
+                        let attempts = 0;
+                        const maxAttempts = 10;
+                        const checkInterval = 100;
+                        
+                        const checkRender = () => {
+                            const container = document.getElementById('vue-chart-container');
+                            if (container && container.children.length > 0) {
+                                console.log('✅ Chart render verified - container has', container.children.length, 'child elements');
+                                resolve();
+                                return;
+                            }
+                            
+                            attempts++;
+                            if (attempts >= maxAttempts) {
+                                console.error('❌ Chart render verification failed after', maxAttempts, 'attempts');
+                                reject(new Error('Chart failed to render within expected time'));
+                                return;
+                            }
+                            
+                            setTimeout(checkRender, checkInterval);
+                        };
+                        
+                        checkRender();
+                    });
+                },
+
+                showChartError(error) {
+                    const chartContainer = document.getElementById('vue-chart-container');
+                    if (chartContainer) {
+                        chartContainer.innerHTML = `
+                            <div style="display: flex; align-items: center; justify-content: center; height: 400px; color: #ef4444; font-size: 1.2rem; text-align: center; padding: 20px;">
+                                <div>
+                                    <div style="font-size: 3rem; margin-bottom: 10px;">⚠️</div>
+                                    <div style="font-weight: bold; margin-bottom: 10px;">Chart Loading Failed</div>
+                                    <div style="font-size: 1rem; margin-bottom: 15px; opacity: 0.9;">${error.message}</div>
+                                    <div style="font-size: 0.9rem; margin-bottom: 10px; opacity: 0.7;">Expected file: ${this.selectedMatchup}_points.csv</div>
+                                    <button onclick="location.reload()" style="background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
+                                        🔄 Reload Page
+                                    </button>
+                                </div>
+                            </div>
+                        `;
                     }
                 },
                 
@@ -1843,60 +2146,23 @@
                     }
                 },
                 
-                startDrag(event) {
-                    // Prevent dragging when clicking controls
-                    if (event.target.closest('.expand-btn') || 
-                        event.target.closest('.expanded-controls') ||
-                        event.target.closest('.control-btn')) {
+                initNativeDraggable() {
+                    if (!this.$refs.actionPanel) {
+                        console.warn('Action panel ref not available');
                         return;
                     }
                     
-                    // GSAP handles dragging - this is just a compatibility wrapper
-                    event.preventDefault();
-                },
-                
-                initGSAPDraggable() {
-                    if (!this.$refs.actionPanel || !this.$refs.dragHandle) return;
+                    console.log('🔧 Initializing native draggable...');
                     
-                    // Clean up existing instance
+                    // Use centralized native draggable manager
+                    this.draggableInstance = initializeEnhancedDraggable(this.$refs.actionPanel);
+                    
                     if (this.draggableInstance) {
-                        this.draggableInstance.kill();
+                        console.log('⚡ Native draggable initialized successfully');
+                        console.log('✨ Panel is now draggable from any edge or corner!');
+                    } else {
+                        console.error('❌ Failed to initialize native draggable');
                     }
-                    
-                    // Register GSAP plugins
-                    gsap.registerPlugin(Draggable);
-                    
-                    // Ultra-lightweight draggable with maximum performance
-                    this.draggableInstance = Draggable.create(this.$refs.actionPanel, {
-                        type: "x,y",
-                        trigger: this.$refs.dragHandle,
-                        // NO BOUNDS - complete freedom
-                        inertia: true,
-                        // Minimal resistance for maximum smoothness
-                        edgeResistance: 0,
-                        dragResistance: 0,
-                        
-                        // Maximum performance settings
-                        force3D: true,
-                        minimumMovement: 1,
-                        
-                        // Streamlined event handlers
-                        onDragStart: () => {
-                            gsap.set(this.$refs.actionPanel, { 
-                                willChange: "transform",
-                                zIndex: 9999
-                            });
-                        },
-                        
-                        onDragEnd: () => {
-                            gsap.set(this.$refs.actionPanel, { 
-                                willChange: "auto",
-                                zIndex: 1000
-                            });
-                        }
-                    })[0];
-                    
-                    console.log('⚡ Ultra-performance GSAP draggable initialized');
                 },
                 
                 toggleGameFilter(gameNum) {
@@ -2135,11 +2401,48 @@
                     if (this.chartEngine) {
                         this.chartEngine.exportData(this.selectedMatchup);
                     }
+                },
+
+                // Manual recovery method for troubleshooting
+                async forceReloadChart() {
+                    if (!this.selectedMatchup) {
+                        console.warn('No matchup selected for reload');
+                        return;
+                    }
+                    
+                    console.log('🔄 Force reloading chart for:', this.selectedMatchup);
+                    
+                    try {
+                        // Force refresh the chart instance
+                        if (window.chartManager) {
+                            this.chartEngine = await window.chartManager.refreshInstance('vue-chart-container');
+                            await this.chartEngine.loadData(`${this.selectedMatchup}_points.csv`);
+                            this.updateGameState();
+                            console.log('✅ Chart force reload successful');
+                        }
+                    } catch (error) {
+                        console.error('❌ Chart force reload failed:', error);
+                        this.showChartError(error);
+                    }
                 }
             },
             
             mounted() {
-                console.log('Vue.js Enhanced Group Stages app mounted with GSAP-powered action panel! 🚀');
+                console.log('Vue.js Enhanced Group Stages app mounted with native-powered action panel! 🚀');
+                
+                // Verify centralized chart manager is available
+                if (window.chartManager) {
+                    console.log('✅ Centralized Chart Manager detected and ready');
+                } else {
+                    console.warn('⚠️ Chart Manager not available - charts may not work properly');
+                }
+                
+                // Verify centralized draggable manager is available
+                if (window.NativeDraggableManager) {
+                    console.log('✅ Centralized Native Draggable Manager detected and ready');
+                } else {
+                    console.warn('⚠️ Native Draggable Manager not available - dragging may not work properly');
+                }
                 
                 // Set up periodic updates for game state
                 this.gameStateInterval = setInterval(() => {
@@ -2161,29 +2464,22 @@
                     }
                 }, 300); // Slightly slower for better performance
                 
-                // Initialize GSAP dragging when DOM is ready
+                // Initialize native dragging when DOM is ready
                 this.$nextTick(() => {
-                    if (this.$refs.actionPanel) {
-                        this.initGSAPDraggable();
-                    }
+                    this.initNativeDraggable();
                 });
                 
-                // Auto-select first Day 1 matchup (AvsB) on initial load only
-                if (!this.selectedMatchup && this.selectedDay === 'day1' && this.tournamentDays[0].matchups.length > 0) {
-                    this.selectedMatchup = this.tournamentDays[0].matchups[0].id; // AvsB
-                    setTimeout(() => {
-                        this.loadMatchup();
-                    }, 1000); // Small delay to ensure everything is loaded
-                }
+                // Don't auto-select matchup on load - let user choose from tournament overview
+                console.log('Vue.js Group Stages ready with centralized chart and draggable management - select a day and matchup to begin');
             },
             
             updated() {
-                // Re-initialize GSAP draggable when action panel becomes available
-                if (this.$refs.actionPanel && !this.draggableInstance) {
-                    this.$nextTick(() => {
-                        this.initGSAPDraggable();
-                    });
-                }
+                // Re-initialize native draggable when action panel becomes available or content changes
+                this.$nextTick(() => {
+                    if (this.$refs.actionPanel && !this.draggableInstance) {
+                        this.initNativeDraggable();
+                    }
+                });
             },
             
             beforeUnmount() {
@@ -2192,12 +2488,93 @@
                     clearInterval(this.gameStateInterval);
                 }
                 
-                // Clean up GSAP instances
-                if (this.draggableInstance) {
-                    this.draggableInstance.kill();
+                // Clean up native draggable instances via centralized manager
+                if (this.$refs.actionPanel && this.$refs.actionPanel.id && window.NativeDraggableManager) {
+                    window.NativeDraggableManager.destroyDraggable(this.$refs.actionPanel.id);
                 }
+                
+                // Also clean up any remaining instances as fallback
+                if (this.draggableInstance && this.draggableInstance.cleanup) {
+                    this.draggableInstance.cleanup();
+                }
+                
+                console.log('🧹 Vue component cleanup completed');
             }
         }).mount('#app');
+        
+        // Enhanced Debug Tools for Native Draggable Troubleshooting
+        window.debugNativeDraggable = function() {
+            console.log('🔍 Native Draggable Debug Information:');
+            
+            // Check managers
+            console.log('NativeDraggableManager Available:', !!window.NativeDraggableManager);
+            if (window.NativeDraggableManager) {
+                console.log('Active Draggable Instances:', window.NativeDraggableManager.getStatus());
+            }
+            
+            // Check action panel
+            const actionPanel = document.querySelector('.enhanced-action-panel');
+            if (actionPanel) {
+                console.log('Action Panel Found:', {
+                    id: actionPanel.id,
+                    visible: actionPanel.offsetParent !== null,
+                    computed: window.getComputedStyle(actionPanel).cursor,
+                    bounds: actionPanel.getBoundingClientRect(),
+                    transform: window.getComputedStyle(actionPanel).transform
+                });
+            } else {
+                console.log('❌ Action Panel not found in DOM');
+            }
+            
+            // Check initialization function
+            console.log('InitializeEnhancedDraggable Available:', !!window.initializeEnhancedDraggable);
+        };
+        
+        // Force reinitialize draggable for current panel
+        window.forceReinitDraggable = function() {
+            const actionPanel = document.querySelector('.enhanced-action-panel');
+            if (!actionPanel) {
+                console.error('Action panel not found');
+                return;
+            }
+            
+            console.log('🔄 Force reinitializing native draggable...');
+            
+            // Clean up existing instance
+            if (actionPanel.id && window.NativeDraggableManager) {
+                window.NativeDraggableManager.destroyDraggable(actionPanel.id);
+            }
+            
+            // Reinitialize
+            if (window.initializeEnhancedDraggable) {
+                const newInstance = window.initializeEnhancedDraggable(actionPanel);
+                console.log('Reinitialize result:', !!newInstance);
+                return newInstance;
+            } else {
+                console.error('initializeEnhancedDraggable function not available');
+            }
+        };
+        
+        // Quick status check
+        window.quickDragCheck = function() {
+            const panel = document.querySelector('.enhanced-action-panel');
+            const managerOk = !!window.NativeDraggableManager;
+            const panelOk = !!panel && panel.offsetParent !== null;
+            const initOk = !!window.initializeEnhancedDraggable;
+            
+            console.log(`📊 Quick Status: Manager=${managerOk}, Panel=${panelOk}, InitFunction=${initOk}`);
+            
+            if (managerOk && panelOk && initOk) {
+                console.log('✅ All systems ready for native dragging');
+            } else {
+                console.log('❌ Issues detected - run debugNativeDraggable() for details');
+            }
+        };
+        
+        console.log('🛠️ Native Draggable debug tools loaded:');
+        console.log('  - debugNativeDraggable() - Full debug info');
+        console.log('  - forceReinitDraggable() - Force reinitialize current panel');
+        console.log('  - quickDragCheck() - Quick status check');
     </script>
 </body>
 </html> 
