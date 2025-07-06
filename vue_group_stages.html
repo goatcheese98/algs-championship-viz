@@ -8,9 +8,13 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <!-- D3.js for charts -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="js/mapSequences.js?v=3"></script>
-    <script src="js/chartEngine.js?v=3"></script>
-    <script src="js/vueChartComponents.js"></script>
+    <!-- GSAP for optimized animations and dragging -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
+    <script src="teamConfig.js"></script>
+    <script src="js/mapSequences.js?v=7"></script>
+    <script src="js/chartEngine.js?v=7"></script>
+    <script src="js/vueChartComponents.js?v=2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -154,8 +158,8 @@
 
         .matchups-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
             margin-top: 30px;
         }
 
@@ -223,6 +227,20 @@
             color: #cbd5e1;
             font-size: 0.9rem;
             line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .matchup-stats {
+            display: flex;
+            gap: 15px;
+            color: #9ca3af;
+            font-size: 0.8rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .chart-section {
@@ -282,6 +300,184 @@
             opacity: 0;
         }
 
+        /* Mini-Dashboard is now handled by ChartEngine internal styles */
+        .chart-section .mini-dashboard {
+            /* Override any conflicting styles here if needed */
+        }
+
+        .control-section {
+            margin-bottom: 15px;
+        }
+
+        .control-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #d97706;
+            margin-bottom: 8px;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-value {
+            font-size: 0.8rem;
+            color: #f1f5f9;
+            font-weight: 500;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .progress-slider {
+            flex: 1;
+            height: 6px;
+            background: rgba(75, 85, 99, 0.6);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .progress-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #d97706;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .progress-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #d97706;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .game-filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .game-filter-btn {
+            background: rgba(75, 85, 99, 0.6);
+            border: 1px solid rgba(156, 163, 175, 0.4);
+            border-radius: 6px;
+            color: #f1f5f9;
+            padding: 6px 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.8rem;
+            font-weight: 500;
+            min-width: 32px;
+        }
+
+        .game-filter-btn:hover {
+            background: rgba(107, 114, 128, 0.8);
+            border-color: rgba(156, 163, 175, 0.6);
+        }
+
+        .game-filter-btn.active {
+            background: rgba(217, 119, 6, 0.6);
+            border-color: #d97706;
+            color: white;
+        }
+
+        .game-filter-btn.current {
+            background: rgba(79, 192, 141, 0.6);
+            border-color: #4fc08d;
+            color: white;
+        }
+
+        .game-filter-btn.active.current {
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.8) 0%, rgba(79, 192, 141, 0.8) 100%);
+            border-color: #d97706;
+        }
+
+        .reset-filter-btn {
+            background: rgba(239, 68, 68, 0.6);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 6px;
+            color: white;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .reset-filter-btn:hover {
+            background: rgba(239, 68, 68, 0.8);
+            border-color: #ef4444;
+        }
+
+        .speed-select {
+            width: 100%;
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid rgba(75, 85, 99, 0.6);
+            border-radius: 6px;
+            color: #f1f5f9;
+            padding: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+
+        .speed-select:focus {
+            outline: none;
+            border-color: #d97706;
+        }
+
+        .export-btn {
+            width: 100%;
+            background: rgba(16, 185, 129, 0.6);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .export-btn:hover:not(:disabled) {
+            background: rgba(16, 185, 129, 0.8);
+            transform: translateY(-1px);
+        }
+
+        .export-btn:disabled {
+            background: rgba(107, 114, 128, 0.6);
+            cursor: not-allowed;
+        }
+
+        .slide-down-enter-active, .slide-down-leave-active {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .slide-down-enter-from, .slide-down-leave-to {
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        .slide-down-enter-to, .slide-down-leave-from {
+            max-height: 500px;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .matchups-grid {
@@ -296,6 +492,865 @@
                 flex-direction: column;
                 gap: 20px;
             }
+            /* Old action panel styles removed - ChartEngine handles controls */
+
+                    /* Enhanced GSAP-Powered Draggable Action Panel - Optimized positioning */
+        .enhanced-action-panel {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, rgba(17, 24, 39, 0.4) 0%, rgba(31, 41, 55, 0.4) 100%);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(217, 119, 6, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            min-width: 220px;
+            max-width: 280px;
+            box-shadow: 
+                0 12px 24px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(217, 119, 6, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            z-index: 1001;
+            cursor: move;
+            user-select: none;
+            will-change: transform;
+            transform: translate3d(0, 0, 0);
+            /* Ensure it stays within bounds */
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .enhanced-action-panel.expanded {
+            min-width: 260px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+                margin-bottom: 16px;
+                padding-bottom: 12px;
+            border-bottom: 1px solid rgba(217, 119, 6, 0.3);
+            cursor: move;
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+                font-weight: 700;
+                font-size: 1rem;
+            color: #f1f5f9;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.6);
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .drag-handle {
+            color: rgba(217, 119, 6, 0.8);
+                font-size: 1.2rem;
+                line-height: 1;
+            cursor: move;
+        }
+
+        .expand-btn {
+                background: rgba(217, 119, 6, 0.2);
+                border: 1px solid rgba(217, 119, 6, 0.4);
+                border-radius: 8px;
+                color: #d97706;
+                width: 32px;
+                height: 32px;
+                cursor: pointer;
+                font-size: 1.2rem;
+                font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+                transition: all 0.3s ease;
+                will-change: transform;
+        }
+
+        .expand-btn:hover {
+                background: rgba(217, 119, 6, 0.4);
+                border-color: #d97706;
+            transform: scale(1.1);
+        }
+
+        .compact-status {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .game-progress-section {
+                margin-bottom: 8px;
+            }
+
+            .section-label {
+                display: block;
+                font-size: 0.8rem;
+                font-weight: 600;
+                color: #d97706;
+                margin-bottom: 8px;
+                background: rgba(0, 0, 0, 0.6);
+                padding: 4px 8px;
+                border-radius: 4px;
+                text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+            }
+
+            .progress-container {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .progress-value {
+                font-size: 0.8rem;
+                color: #f1f5f9;
+                font-weight: 500;
+                min-width: 16px;
+                text-align: center;
+                background: rgba(0, 0, 0, 0.6);
+                padding: 2px 6px;
+                border-radius: 4px;
+                text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+            }
+
+            .progress-slider {
+                flex: 1;
+                height: 6px;
+                background: rgba(75, 85, 99, 0.6);
+                border-radius: 3px;
+                outline: none;
+                -webkit-appearance: none;
+                cursor: pointer;
+            }
+
+            .progress-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 16px;
+                height: 16px;
+                background: #d97706;
+                border-radius: 50%;
+                cursor: pointer;
+                will-change: transform;
+                transition: transform 0.2s ease;
+            }
+
+            .progress-slider::-webkit-slider-thumb:hover {
+                transform: scale(1.1);
+            }
+
+            .progress-slider::-moz-range-thumb {
+                width: 16px;
+                height: 16px;
+                background: #d97706;
+                border-radius: 50%;
+                cursor: pointer;
+                border: none;
+        }
+
+        .quick-controls {
+            display: flex;
+                gap: 12px;
+        }
+
+        .control-btn {
+                background: linear-gradient(135deg, #1f2937 0%, #374151 50%, #1f2937 100%);
+                border: 2px solid #dc2626;
+                border-radius: 12px;
+            color: white;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 1rem;
+                font-weight: 700;
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 0 16px rgba(220, 38, 38, 0.3);
+                position: relative;
+                overflow: hidden;
+                will-change: transform;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+                min-width: 60px;
+                flex: 1;
+            }
+
+            .control-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: left 0.6s;
+        }
+
+        .control-btn:hover:not(:disabled) {
+                transform: translateY(-4px) scale(1.05);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(220, 38, 38, 0.5);
+                border-color: #ef4444;
+            }
+
+            .control-btn:hover:not(:disabled)::before {
+                left: 100%;
+            }
+
+            .control-btn:active:not(:disabled) {
+                transform: translateY(-2px) scale(1.02);
+                transition: all 0.1s ease;
+            }
+
+            .play-btn {
+                background: linear-gradient(135deg, #059669 0%, #10b981 50%, #059669 100%);
+                border-color: #10b981;
+                box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 30px rgba(16, 185, 129, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.1);
+            }
+
+            .play-btn:hover:not(:disabled) {
+                background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+                border-color: #34d399;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 40px rgba(16, 185, 129, 0.8), inset 0 2px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .control-btn:disabled {
+            background: #6b7280;
+            border-color: #4b5563;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+                opacity: 0.5;
+            }
+
+            .current-map-display {
+                display: flex;
+                justify-content: center;
+                margin-top: 8px;
+            }
+
+            .map-badge {
+                /* Background will be set dynamically by getCurrentMapStyle() to match chart colors exactly */
+                border: 1px solid rgba(156, 163, 175, 0.4);
+                border-radius: 20px;
+                padding: 8px 16px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: white;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9); /* Strong shadow for readability */
+                transition: all 0.3s ease;
+            }
+
+            .map-icon {
+                font-size: 1.1rem;
+        }
+
+        .expanded-controls {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(217, 119, 6, 0.3);
+        }
+
+        .control-section {
+            margin-bottom: 15px;
+        }
+
+        .control-section:last-child {
+            margin-bottom: 0;
+            }
+
+            .game-filter-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin-bottom: 8px;
+            }
+
+            .filter-action-buttons {
+                display: flex;
+                gap: 6px;
+                margin-top: 8px;
+            }
+
+            .game-filter-btn {
+                background: rgba(75, 85, 99, 0.6);
+                border: 1px solid rgba(156, 163, 175, 0.4);
+                border-radius: 6px;
+                color: #f1f5f9;
+                padding: 6px 10px;
+                cursor: pointer;
+                font-size: 0.8rem;
+                font-weight: 500;
+                min-width: 32px;
+                will-change: transform;
+                transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+            }
+
+            .game-filter-btn:hover {
+                background: rgba(107, 114, 128, 0.8);
+                border-color: rgba(156, 163, 175, 0.6);
+                transform: scale(1.05);
+            }
+
+            .game-filter-btn.active {
+                background: rgba(217, 119, 6, 0.6);
+                border-color: #d97706;
+                color: white;
+            }
+
+            .game-filter-btn.current {
+                background: rgba(79, 192, 141, 0.6);
+                border-color: #4fc08d;
+                color: white;
+            }
+
+            .game-filter-btn.active.current {
+                background: linear-gradient(135deg, rgba(217, 119, 6, 0.8) 0%, rgba(79, 192, 141, 0.8) 100%);
+                border-color: #d97706;
+            }
+
+            .reset-filter-btn {
+                background: rgba(239, 68, 68, 0.6);
+                border: 1px solid rgba(239, 68, 68, 0.4);
+                border-radius: 6px;
+                color: white;
+                padding: 6px 12px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                font-size: 0.8rem;
+                font-weight: 500;
+            }
+
+            .reset-filter-btn:hover {
+                background: rgba(239, 68, 68, 0.8);
+                border-color: #ef4444;
+            }
+
+            .export-btn {
+                background: linear-gradient(135deg, rgba(59, 130, 246, 0.6) 0%, rgba(37, 99, 235, 0.6) 100%);
+                border: 1px solid rgba(59, 130, 246, 0.4);
+                border-radius: 8px;
+                color: white;
+                padding: 10px 16px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                font-weight: 600;
+                width: 100%;
+                transition: all 0.3s ease;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            }
+
+            .export-btn:hover:not(:disabled) {
+                background: linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(37, 99, 235, 0.8) 100%);
+                border-color: #3b82f6;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            }
+
+            .export-btn:disabled {
+                background: rgba(107, 114, 128, 0.6);
+                border-color: rgba(107, 114, 128, 0.4);
+                cursor: not-allowed;
+                opacity: 0.5;
+                transform: none;
+            }
+
+            /* Slide-down transition for expanded controls */
+            .slide-down-enter-active, .slide-down-leave-active {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .slide-down-enter-from {
+                opacity: 0;
+                transform: translateY(-10px);
+                max-height: 0;
+            }
+
+            .slide-down-leave-to {
+                opacity: 0;
+                transform: translateY(-10px);
+                max-height: 0;
+            }
+        }
+                /* Chart display styles - simplified */
+            .chart-display {
+                background: transparent;
+                position: relative;
+                width: 100%;
+                height: 100%;
+                min-height: 600px;
+                padding: 0;
+                margin: 0;
+                overflow: visible;
+            }
+
+            .chart-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                padding-bottom: 20px;
+                border-bottom: 2px solid #d97706;
+            }
+
+            .chart-title {
+                font-size: 1.8rem;
+                font-weight: 600;
+                color: #f1f5f9;
+            }
+
+            .chart-info {
+                display: flex;
+                gap: 20px;
+                color: #d97706;
+                font-weight: 500;
+            }
+
+            .chart-area {
+                width: 100%;
+                height: 500px;
+                position: relative;
+            }
+
+            #vue-chart-container {
+                width: 100%;
+                height: 100%;
+            }
+
+            .loading-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+                z-index: 10;
+            }
+
+            .loading-spinner {
+                width: 40px;
+                height: 40px;
+                border: 4px solid #4a4a4a;
+                border-top: 4px solid #d97706;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            .fade-enter-active, .fade-leave-active {
+                transition: opacity 0.5s ease;
+            }
+
+            .fade-enter-from, .fade-leave-to {
+                opacity: 0;
+            }
+
+            .slide-down-enter-active, .slide-down-leave-active {
+                transition: all 0.3s ease;
+                overflow: hidden;
+            }
+
+            .slide-down-enter-from, .slide-down-leave-to {
+                max-height: 0;
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            .slide-down-enter-to, .slide-down-leave-from {
+                max-height: 500px;
+                opacity: 1;
+                transform: translateY(0);
+                    }
+
+        /* Enhanced GSAP-Powered Draggable Action Panel - Performance Optimized */
+        .enhanced-action-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(17, 24, 39, 0.4) 0%, rgba(31, 41, 55, 0.4) 100%);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(217, 119, 6, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            min-width: 220px;
+            max-width: 280px;
+            box-shadow: 
+                0 12px 24px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(217, 119, 6, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            z-index: 1000;
+            cursor: move;
+            user-select: none;
+            
+            /* Performance optimizations for smooth dragging */
+            will-change: transform;
+            transform: translate3d(0, 0, 0); /* Hardware acceleration */
+            backface-visibility: hidden; /* Prevent flickering */
+            
+            /* Optimize rendering */
+            contain: layout style paint; /* Browser optimization hint */
+        }
+
+        .enhanced-action-panel.expanded {
+            min-width: 260px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(217, 119, 6, 0.3);
+            cursor: move;
+            
+            /* Performance optimization for drag handle */
+            will-change: transform;
+            transform: translate3d(0, 0, 0);
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #f1f5f9;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .drag-handle {
+            color: rgba(217, 119, 6, 0.8);
+            font-size: 1rem;
+            cursor: move;
+        }
+
+        .expand-btn {
+            background: rgba(217, 119, 6, 0.6);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+        }
+
+        .expand-btn:hover {
+            background: rgba(217, 119, 6, 0.8);
+            transform: scale(1.1);
+        }
+
+        .compact-status {
+            margin-bottom: 12px;
+        }
+
+        .game-progress-section {
+            margin-bottom: 8px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+        }
+
+        .section-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #d97706;
+            margin-bottom: 8px;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-value {
+            font-size: 0.8rem;
+            color: #f1f5f9;
+            font-weight: 500;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .progress-slider {
+            flex: 1;
+            height: 6px;
+            background: rgba(75, 85, 99, 0.6);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .progress-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #d97706;
+            border-radius: 50%;
+            cursor: pointer;
+            will-change: transform;
+            transition: transform 0.2s ease;
+        }
+
+        .progress-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .progress-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #d97706;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .quick-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 50%, #1f2937 100%);
+            border: 2px solid #dc2626;
+            border-radius: 12px;
+            color: white;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6), 0 0 16px rgba(220, 38, 38, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            will-change: transform;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+            min-width: 60px;
+            flex: 1;
+        }
+
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .control-btn:hover::before {
+            left: 100%;
+        }
+
+        .control-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.05) 100%);
+            border-radius: 20px;
+            pointer-events: none;
+        }
+
+        .control-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 50%, #dc2626 100%);
+            transform: translateY(-6px) scale(1.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 40px rgba(220, 38, 38, 0.8), inset 0 2px 0 rgba(255, 255, 255, 0.2);
+            border-color: #ef4444;
+        }
+
+        .control-btn:active:not(:disabled) {
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6), 0 0 20px rgba(220, 38, 38, 0.6);
+        }
+
+        .play-btn {
+            background: linear-gradient(135deg, #059669 0%, #10b981 50%, #059669 100%);
+            border-color: #10b981;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 30px rgba(16, 185, 129, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .play-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            border-color: #34d399;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 40px rgba(16, 185, 129, 0.8), inset 0 2px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .control-btn:disabled {
+            background: #6b7280;
+            border-color: #4b5563;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.5;
+        }
+
+        .current-map-display {
+            margin: 8px 0;
+        }
+
+        .map-badge {
+            background: linear-gradient(135deg, rgba(75, 85, 99, 0.8) 0%, rgba(107, 114, 128, 0.8) 100%);
+            border: 1px solid rgba(156, 163, 175, 0.4);
+            border-radius: 20px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .map-icon {
+            font-size: 1.1rem;
+        }
+
+        .expanded-controls {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(217, 119, 6, 0.3);
+        }
+
+        .control-section {
+            margin-bottom: 15px;
+        }
+
+        .control-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .game-filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .filter-action-buttons {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .game-filter-btn {
+            background: rgba(75, 85, 99, 0.6);
+            border: 1px solid rgba(156, 163, 175, 0.4);
+            border-radius: 6px;
+            color: #f1f5f9;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            min-width: 32px;
+            will-change: transform;
+            transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .game-filter-btn:hover {
+            background: rgba(107, 114, 128, 0.8);
+            border-color: rgba(156, 163, 175, 0.6);
+            transform: scale(1.05);
+        }
+
+        .game-filter-btn.active {
+            background: rgba(217, 119, 6, 0.6);
+            border-color: #d97706;
+            color: white;
+        }
+
+        .game-filter-btn.current {
+            background: rgba(79, 192, 141, 0.6);
+            border-color: #4fc08d;
+            color: white;
+        }
+
+        .game-filter-btn.active.current {
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.8) 0%, rgba(79, 192, 141, 0.8) 100%);
+            border-color: #d97706;
+        }
+
+        .reset-filter-btn {
+            background: rgba(239, 68, 68, 0.6);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 6px;
+            color: white;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .reset-filter-btn:hover {
+            background: rgba(239, 68, 68, 0.8);
+            border-color: #ef4444;
+        }
+
+        .export-btn {
+            width: 100%;
+            background: rgba(16, 185, 129, 0.6);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .export-btn:hover:not(:disabled) {
+            background: rgba(16, 185, 129, 0.8);
+            transform: translateY(-1px);
+        }
+
+        .export-btn:disabled {
+            background: rgba(107, 114, 128, 0.6);
+            cursor: not-allowed;
+        }
+
+        .slide-down-enter-active, .slide-down-leave-active {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .slide-down-enter-from, .slide-down-leave-to {
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        .slide-down-enter-to, .slide-down-leave-from {
+            max-height: 500px;
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -354,6 +1409,20 @@
                                     </span>
                                 </div>
                                 <p class="matchup-info">{{ matchup.description }}</p>
+                                <div class="matchup-stats">
+                                    <div class="stat-item">
+                                        <span>👥</span>
+                                        <span>{{ matchup.teams }} Teams</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span>🎮</span>
+                                        <span>{{ matchup.games }} Games</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span>🗺️</span>
+                                        <span>{{ matchup.maps }}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -369,49 +1438,121 @@
                 </div>
 
                 <template v-else>
-                    <div class="chart-controls">
-                        <chart-status-display
-                            :chart-status="chartStatus"
-                            :data-status="dataStatus"
-                            :current-matchup="selectedMatchup"
-                            :current-map="currentMap"
-                            :current-game="currentGame"
-                            :max-games="maxGames"
-                        ></chart-status-display>
-
-                        <chart-control-panel
-                            :matchups="availableMatchups"
-                            v-model:selected-matchup="selectedMatchup"
-                            v-model:current-game="currentGame"
-                            v-model:animation-speed="animationSpeed"
-                            :is-loading="isLoading"
-                            :max-games="maxGames"
-                            :is-playing="isPlaying"
-                            @load-matchup="loadMatchup"
-                            @toggle-playback="togglePlayback"
-                            @restart="restart"
-                            @export-data="exportData"
-                            @jump-to-game="jumpToGame"
-                        ></chart-control-panel>
-                    </div>
-
                     <div class="chart-display">
-                        <chart-container
-                            :title="getMatchupTitle(selectedMatchup)"
-                            :is-loading="isLoading"
-                            :error="errorMessage"
-                        >
-                            <template #actions>
-                                <button 
-                                    v-if="chartEngine"
-                                    @click="fullscreenChart"
-                                    class="btn btn-secondary"
-                                    style="padding: 8px 16px; font-size: 0.9rem;"
-                                >
-                                    🔍 Fullscreen
+                        <!-- Chart Container with proper ID for ChartEngine -->
+                        <div class="chart-header">
+                            <h3 class="chart-title">{{ getMatchupTitle(selectedMatchup) }}</h3>
+                            <div class="chart-info">
+                                <span v-if="currentMap">Map: {{ currentMap }}</span>
+                                <span v-if="maxGames">Games: {{ maxGames }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-area">
+                            <div id="vue-chart-container"></div>
+                            <transition name="fade">
+                                <div v-if="isLoading" class="loading-overlay">
+                                    <div class="loading-spinner"></div>
+                                </div>
+                            </transition>
+
+                            <!-- ChartEngine now handles all controls internally via mini-dashboard -->
+                        
+                            <!-- Enhanced GSAP-powered Draggable Action Panel -->
+                            <div v-if="chartEngine" 
+                            ref="actionPanel"
+                            class="enhanced-action-panel"
+                            :class="{ expanded: panelExpanded }"
+                                 @mousedown="startDrag">
+                                
+                                <div class="panel-header" ref="dragHandle">
+                                <div class="panel-title">
+                                    <span class="drag-handle">⋮⋮</span>
+                                        Enhanced Controls
+                                </div>
+                                    <button class="expand-btn" @click="togglePanel" @mousedown.stop>
+                                    {{ panelExpanded ? '−' : '+' }}
                                 </button>
-                            </template>
-                        </chart-container>
+                            </div>
+
+                                <!-- Always visible: Game Progress and Controls -->
+                            <div class="compact-status">
+                                    <!-- Game Progress (always visible) -->
+                                    <div class="game-progress-section">
+                                        <label class="section-label">Game Progress: {{ currentGame }} / {{ maxGames }}</label>
+                                        <div class="progress-container">
+                                            <span class="progress-value">{{ currentGame }}</span>
+                                            <input type="range" 
+                                                   :min="1" 
+                                                   :max="maxGames" 
+                                                   v-model.number="currentGame"
+                                                   @input="updateGameFromSlider"
+                                                   @change="updateGameFromSlider"
+                                                   @mousedown="startSliderControl"
+                                                   @mouseup="endSliderControl"
+                                                   @touchstart="startSliderControl"
+                                                   @touchend="endSliderControl"
+                                                   class="progress-slider">
+                                            <span class="progress-value">{{ maxGames }}</span>
+                            </div>
+                            </div>
+
+                                    <!-- Quick Controls (Play/Reset) -->
+                            <div class="quick-controls">
+                                        <button @click="togglePlayback" class="control-btn play-btn">
+                                            {{ isPlaying ? 'Pause' : 'Play' }}
+                                </button>
+                                        <button @click="restart" class="control-btn">
+                                            Reset
+                                </button>
+                            </div>
+
+                                    <!-- Current Map Info -->
+                                    <div class="current-map-display">
+                                        <div class="map-badge" :style="getCurrentMapStyle()">
+                                            <span class="map-icon">🗺️</span>
+                                            <span class="map-name">{{ currentMap || 'Loading...' }}</span>
+                                        </div>
+                                        </div>
+                                    </div>
+
+                                <!-- Expanded Controls (Game Filtering & Export) -->
+                                <transition name="slide-down">
+                                    <div v-if="panelExpanded" class="expanded-controls" @mousedown.stop>
+                                        <!-- Game Filtering -->
+                                    <div class="control-section">
+                                            <label class="section-label">🎮 Game {{ currentGame }} / {{ maxGames }}</label>
+                                        <div class="game-filter-buttons">
+                                                <button v-for="game in maxGames" 
+                                                        :key="game"
+                                                        @click="toggleGameFilter(game)"
+                                                        class="game-filter-btn"
+                                                        :class="{ 
+                                                            active: selectedGames.includes(game),
+                                                            current: game === currentGame 
+                                                        }"
+                                                        :style="getGameButtonStyle(game)">
+                                                    {{ game }}
+                                        </button>
+                                            </div>
+                                            <div class="filter-action-buttons">
+                                                <button @click="resetGameFilter" class="reset-filter-btn">
+                                                    Clear
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                        <!-- Export Controls -->
+                                    <div class="control-section">
+                                            <label class="section-label">Export Data</label>
+                                            <button @click="exportData" :disabled="!chartEngine" class="export-btn">
+                                                📊 Export CSV
+                                        </button>
+                                    </div>
+                                </div>
+                            </transition>
+                            </div>
+                        </div>
                     </div>
                 </template>
             </div>
@@ -421,15 +1562,7 @@
     <script>
         const { createApp } = Vue;
 
-        // Import Vue components
-        const { ChartControlPanel, ChartStatusDisplay, ChartContainer } = window.VueChartComponents;
-
         createApp({
-            components: {
-                ChartControlPanel,
-                ChartStatusDisplay,
-                ChartContainer
-            },
             data() {
                 return {
                     // Tournament structure
@@ -438,51 +1571,100 @@
                         {
                             id: 'day1',
                             name: 'Day 1 - Group Stages',
-                            description: 'Initial group stage matchups determining bracket positions for the tournament.',
+                            description: 'Initial group stage matchups determining bracket positions for the tournament. Teams compete across E-District, Storm Point, and World\'s Edge.',
                             matchups: [
                                 {
                                     id: 'AvsB',
                                     title: 'Group A vs Group B',
-                                    description: 'First group stage matchup featuring teams from Groups A and B competing across multiple maps.'
+                                    description: 'Opening group stage matchup featuring teams from Groups A and B. 6 games across E-District (2), Storm Point (2), and World\'s Edge (2).',
+                                    teams: 20,
+                                    games: 6,
+                                    maps: 'E-District → Storm Point → World\'s Edge'
                                 },
                                 {
                                     id: 'CvsD',
                                     title: 'Group C vs Group D',
-                                    description: 'Second group stage matchup with teams from Groups C and D battling for bracket positioning.'
+                                    description: 'Second group stage matchup with teams from Groups C and D. Same map rotation as A vs B for fair competition.',
+                                    teams: 20,
+                                    games: 6,
+                                    maps: 'E-District → Storm Point → World\'s Edge'
                                 },
                                 {
                                     id: 'BvsD',
                                     title: 'Group B vs Group D',
-                                    description: 'Cross-group matchup between Groups B and D with strategic implications for the bracket.'
+                                    description: 'Cross-group matchup between Groups B and D. Rotated map order starting with Storm Point for strategic variety.',
+                                    teams: 20,
+                                    games: 6,
+                                    maps: 'Storm Point → World\'s Edge → E-District'
                                 }
                             ]
                         },
                         {
                             id: 'day2',
-                            name: 'Day 2 - Eliminations',
-                            description: 'Elimination rounds determining which teams advance to the winners bracket.',
+                            name: 'Day 2 - Cross Groups',
+                            description: 'Cross-group matchups determining final bracket seeding. Advanced map rotations test team adaptability.',
                             matchups: [
                                 {
-                                    id: 'ER1',
-                                    title: 'Elimination Round 1',
-                                    description: 'First elimination round where teams fight to stay alive in the tournament.'
+                                    id: 'AvsC',
+                                    title: 'Group A vs Group C',
+                                    description: 'Day 2 cross-group matchup between Groups A and C. 6 games with E-District focus.',
+                                    teams: 20,
+                                    games: 6,
+                                    maps: 'E-District → Storm Point → World\'s Edge'
                                 },
                                 {
-                                    id: 'ER2',
-                                    title: 'Elimination Round 2',
-                                    description: 'Second elimination round with higher stakes and fewer teams remaining.'
+                                    id: 'BvsC',
+                                    title: 'Group B vs Group C',
+                                    description: 'Strategic cross-group battle between Groups B and C. Storm Point opening rotation.',
+                                    teams: 20,
+                                    games: 6,
+                                    maps: 'Storm Point → World\'s Edge → E-District'
+                                },
+                                {
+                                    id: 'AvsD',
+                                    title: 'Group A vs Group D',
+                                    description: 'Final day 2 matchup between Groups A and D. Classic E-District to World\'s Edge progression.',
+                                    teams: 20,
+                                    games: 6,
+                                    maps: 'E-District → Storm Point → World\'s Edge'
                                 }
                             ]
                         },
                         {
                             id: 'day3',
-                            name: 'Day 3 - Winners',
-                            description: 'Winners bracket rounds for teams that have advanced successfully.',
+                            name: 'Day 3 - Elimination Rounds',
+                            description: 'High-stakes elimination rounds where teams fight for tournament survival. Extended 8-game series with diverse map pools.',
                             matchups: [
+                                {
+                                    id: 'ER1',
+                                    title: 'Elimination Round 1',
+                                    description: 'First elimination round featuring 8 intense games. Heavy E-District focus with World\'s Edge finale.',
+                                    teams: 20,
+                                    games: 8,
+                                    maps: 'E-District (3) → Storm Point (2) → World\'s Edge (3)'
+                                }
+                            ]
+                        },
+                        {
+                            id: 'day4',
+                            name: 'Day 4 - Finals',
+                            description: 'Championship finals featuring the ultimate competition. Winners and elimination rounds determine the ALGS Champion.',
+                            matchups: [
+                                {
+                                    id: 'ER2',
+                                    title: 'Elimination Round 2',
+                                    description: 'Second elimination round with 8 crucial games. Balanced map rotation for fair competition.',
+                                    teams: 20,
+                                    games: 8,
+                                    maps: 'Storm Point (2) → World\'s Edge (2) → E-District (2) → Mixed (2)'
+                                },
                                 {
                                     id: 'WR1',
                                     title: 'Winners Round 1',
-                                    description: 'First winners bracket round featuring the top performing teams.'
+                                    description: 'Winners bracket final featuring the top teams. 8 games across all three maps for ultimate victory.',
+                                    teams: 20,
+                                    games: 8,
+                                    maps: 'World\'s Edge (2) → E-District (2) → Storm Point (2) → Mixed (2)'
                                 }
                             ]
                         }
@@ -495,17 +1677,25 @@
                     isPlaying: false,
                     errorMessage: '',
                     
-                    // Game state
+                    // Game state for enhanced panel
                     currentGame: 1,
                     maxGames: 6,
                     currentMap: '',
+                    manualSliderControl: false, // Flag to prevent sync conflicts with manual slider
                     
-                    // Settings
-                    animationSpeed: 'normal',
+                    // Enhanced Action Panel (GSAP-optimized)
+                    panelExpanded: false,
+                    isDragging: false,
+                    selectedGames: [],
+                    
+                    // GSAP instances
+                    draggableInstance: null,
                     
                     // Status tracking
                     loadedMatchups: new Set(),
-                    loadingMatchups: new Set()
+                    loadingMatchups: new Set(),
+                    
+                    // ChartEngine now handles internal controls
                 }
             },
             computed: {
@@ -516,26 +1706,49 @@
                             label: matchup.title
                         }))
                     );
-                },
-                chartStatus() {
-                    if (this.isLoading) return 'loading';
-                    if (this.chartEngine) return 'ready';
-                    return 'idle';
-                },
-                dataStatus() {
-                    if (this.isLoading) return 'loading';
-                    if (this.chartEngine && this.chartEngine.data) return 'ready';
-                    return 'idle';
                 }
             },
             methods: {
                 selectDay(dayId) {
                     this.selectedDay = dayId;
+                    
+                    // Clear current selection when switching days
+                    this.selectedMatchup = '';
+                    this.currentGame = 1;
+                    this.maxGames = 6;
+                    this.currentMap = '';
+                    this.selectedGames = [];
+                    this.isPlaying = false;
+                    this.errorMessage = '';
+                    
+                    // Clear chart container and reset engine state
+                    if (this.chartEngine) {
+                        const container = document.getElementById('vue-chart-container');
+                        if (container) {
+                            container.innerHTML = '';
+                        }
+                        // Reset chart engine for fresh start
+                        this.chartEngine.data = null;
+                        this.chartEngine.currentGameIndex = 1;
+                        this.chartEngine.isPlaying = false;
+                    }
+                    
+                    console.log(`🔄 Switched to ${dayId} - cleared previous selections and reset chart state`);
                 },
                 
                 selectMatchup(matchupId) {
+                    // Clear any previous state before loading new matchup
+                    this.currentGame = 1;
+                    this.maxGames = 6;
+                    this.currentMap = '';
+                    this.selectedGames = [];
+                    this.isPlaying = false;
+                    this.errorMessage = '';
+                    
                     this.selectedMatchup = matchupId;
                     this.loadMatchup();
+                    
+                    console.log(`Selected matchup: ${matchupId} for ${this.selectedDay}`);
                 },
                 
                 getStatusClass(matchupId) {
@@ -563,62 +1776,324 @@
                     this.errorMessage = '';
                     
                     try {
-                        // Initialize chart engine if not exists
-                        if (!this.chartEngine) {
-                            this.chartEngine = new ChartEngine('vue-chart-area');
+                        // Clear chart container first
+                        const container = document.getElementById('vue-chart-container');
+                        if (container) {
+                            container.innerHTML = '';
                         }
                         
-                        // Load the chart with selected matchup
-                        await this.chartEngine.renderChart({
-                            matchup: this.selectedMatchup
-                        });
+                        // Initialize chart engine if not exists or re-initialize for new day
+                        if (!this.chartEngine) {
+                            this.chartEngine = new ChartEngine('vue-chart-container');
+                        }
                         
-                        // Update game state
+                        // Load the appropriate CSV data and render chart
+                        const csvFile = `${this.selectedMatchup}_points.csv`;
+                        console.log(`Loading CSV file: ${csvFile} for day: ${this.selectedDay}`);
+                        
+                        await this.chartEngine.loadData(csvFile);
+                        await this.chartEngine.renderChart({ matchup: this.selectedMatchup });
+                        
+                        // Update game state for enhanced panel
                         this.updateGameState();
+                        
+                        // Force initial sync after small delay to ensure everything is loaded
+                        setTimeout(() => {
+                            this.currentGame = this.chartEngine.currentGameIndex || 1;
+                            this.updateCurrentMap();
+                            console.log(`✅ Loaded ${this.selectedMatchup} - currentGame:`, this.currentGame, 'engineIndex:', this.chartEngine.currentGameIndex);
+                        }, 100);
+                        
                         this.loadedMatchups.add(this.selectedMatchup);
                         
-                        console.log('Vue.js Group Stages: Chart loaded successfully for', this.selectedMatchup);
+                        console.log(`🎯 Vue.js Group Stages: Chart loaded successfully for ${this.selectedMatchup} (${this.selectedDay})`);
                         
                     } catch (error) {
-                        console.error('Vue.js Group Stages: Error loading chart:', error);
-                        this.errorMessage = `Failed to load chart: ${error.message}`;
+                        console.error(`❌ Vue.js Group Stages: Error loading chart for ${this.selectedMatchup}:`, error);
+                        this.errorMessage = `Failed to load chart for ${this.selectedMatchup}: ${error.message}`;
                     } finally {
                         this.isLoading = false;
                         this.loadingMatchups.delete(this.selectedMatchup);
                     }
                 },
                 
-                updateGameState() {
-                    if (this.chartEngine && this.chartEngine.data) {
-                        // Calculate max games from data
-                        const gameColumns = Object.keys(this.chartEngine.data[0] || {})
-                            .filter(key => key.startsWith('Game') && key !== 'Game')
-                            .length;
-                        this.maxGames = Math.max(gameColumns, 6);
-                        this.currentGame = this.chartEngine.currentGameIndex || 1;
-                        this.updateCurrentMap();
+
+                
+                // Keep these for potential fullscreen functionality
+                // All other controls are now handled by ChartEngine internally
+                
+                fullscreenChart() {
+                    const chartArea = document.getElementById('vue-chart-container');
+                    if (chartArea && chartArea.requestFullscreen) {
+                        chartArea.requestFullscreen();
                     }
                 },
                 
-                updateCurrentMap() {
-                    if (this.chartEngine) {
-                        this.currentMap = this.chartEngine.getCurrentMap();
+                // Enhanced Action Panel Methods (GSAP-Optimized)
+                togglePanel() {
+                    this.panelExpanded = !this.panelExpanded;
+                    
+                    // Smooth GSAP animation for expansion
+                    if (this.$refs.actionPanel) {
+                        gsap.to(this.$refs.actionPanel, {
+                            scale: this.panelExpanded ? 1.05 : 1,
+                            duration: 0.3,
+                            ease: "back.out(1.2)"
+                        });
                     }
                 },
                 
-                jumpToGame(gameNumber) {
-                    this.currentGame = gameNumber;
+                startDrag(event) {
+                    // Prevent dragging when clicking controls
+                    if (event.target.closest('.expand-btn') || 
+                        event.target.closest('.expanded-controls') ||
+                        event.target.closest('.control-btn')) {
+                        return;
+                    }
+                    
+                    // GSAP handles dragging - this is just a compatibility wrapper
+                    event.preventDefault();
+                },
+                
+                initGSAPDraggable() {
+                    if (!this.$refs.actionPanel || !this.$refs.dragHandle) return;
+                    
+                    // Clean up existing instance
+                    if (this.draggableInstance) {
+                        this.draggableInstance.kill();
+                    }
+                    
+                    // Register GSAP plugins
+                    gsap.registerPlugin(Draggable);
+                    
+                    // Ultra-lightweight draggable with maximum performance
+                    this.draggableInstance = Draggable.create(this.$refs.actionPanel, {
+                        type: "x,y",
+                        trigger: this.$refs.dragHandle,
+                        // NO BOUNDS - complete freedom
+                        inertia: true,
+                        // Minimal resistance for maximum smoothness
+                        edgeResistance: 0,
+                        dragResistance: 0,
+                        
+                        // Maximum performance settings
+                        force3D: true,
+                        minimumMovement: 1,
+                        
+                        // Streamlined event handlers
+                        onDragStart: () => {
+                            gsap.set(this.$refs.actionPanel, { 
+                                willChange: "transform",
+                                zIndex: 9999
+                            });
+                        },
+                        
+                        onDragEnd: () => {
+                            gsap.set(this.$refs.actionPanel, { 
+                                willChange: "auto",
+                                zIndex: 1000
+                            });
+                        }
+                    })[0];
+                    
+                    console.log('⚡ Ultra-performance GSAP draggable initialized');
+                },
+                
+                toggleGameFilter(gameNum) {
+                    const index = this.selectedGames.indexOf(gameNum);
+                    if (index === -1) {
+                        this.selectedGames.push(gameNum);
+                    } else {
+                        this.selectedGames.splice(index, 1);
+                    }
+                    // Automatically apply filter when games are selected/deselected
+                    this.applyGameFilter();
+                },
+                
+                resetGameFilter() {
+                    this.selectedGames = [];
+                    this.applyGameFilter();
+                },
+                
+                applyGameFilter() {
+                    if (!this.chartEngine) return;
+                    
+                    if (this.selectedGames.length > 0) {
+                        // Apply filter to chart engine
+                        this.chartEngine.filterByGames(this.selectedGames);
+                        console.log('Vue: Applied game filter for games:', this.selectedGames);
+                    } else {
+                        // Show all games
+                        this.chartEngine.clearGameFilter();
+                        console.log('Vue: Cleared game filter');
+                    }
+                },
+
+                getGameButtonStyle(gameNum) {
+                    if (!this.chartEngine || !this.selectedMatchup) return {};
+                    
+                    // Get map sequence from MapSequences
+                    const mapSequence = window.MapSequences && window.MapSequences[this.selectedMatchup];
+                    if (!mapSequence || !mapSequence.maps || !mapSequence.maps[gameNum]) {
+                        return {};
+                    }
+                    
+                    const mapName = mapSequence.maps[gameNum];
+                    
+                    // Use consistent HSL color schema based on map occurrence
+                    let occurrenceCount = 0;
+                    for (let i = 1; i <= gameNum; i++) {
+                        if (mapSequence.maps[i] === mapName) {
+                            occurrenceCount++;
+                        }
+                    }
+                    
+                    // HSL color schemas for each map type
+                    const colorSchemes = {
+                        'STORM POINT': {
+                            1: 'hsl(28, 100%, 60%)',  // Orange - 1st occurrence
+                            2: 'hsl(28, 100%, 70%)',  // Lighter orange - 2nd occurrence  
+                            3: 'hsl(28, 100%, 80%)'   // Very light orange - 3rd occurrence
+                        },
+                        'WORLD\'S EDGE': {
+                            1: 'hsl(10, 100%, 60%)', // Red - 1st occurrence
+                            2: 'hsl(10, 100%, 70%)', // Lighter red - 2nd occurrence
+                            3: 'hsl(10, 100%, 80%)'  // Very light red - 3rd occurrence
+                        },
+                        'E-DISTRICT': {
+                            1: 'hsl(250, 100%, 60%)', // Purple - 1st occurrence
+                            2: 'hsl(250, 100%, 70%)', // Lighter purple - 2nd occurrence
+                            3: 'hsl(250, 100%, 80%)'  // Very light purple - 3rd occurrence
+                        }
+                    };
+                    
+                    // Get color for this map and occurrence
+                    const scheme = colorSchemes[mapName];
+                    const mapColor = (scheme && scheme[occurrenceCount]) ? scheme[occurrenceCount] : '#d97706';
+                    
+                    // Style based on selection state
+                    if (this.selectedGames.includes(gameNum)) {
+                        return {
+                            backgroundColor: mapColor,
+                            borderColor: mapColor,
+                            color: 'white',
+                            fontWeight: '700',
+                            transform: 'scale(1.1)',
+                            boxShadow: `0 0 10px ${mapColor}`
+                        };
+                    } else if (this.currentGame === gameNum) {
+                        return {
+                            backgroundColor: `${mapColor}40`,
+                            borderColor: mapColor,
+                            color: mapColor,
+                            fontWeight: '600'
+                        };
+                    }
+                    
+                    return {
+                        backgroundColor: 'rgba(75, 85, 99, 0.6)',
+                        borderColor: `${mapColor}60`,
+                        color: `${mapColor}cc`
+                    };
+                },
+
+                getCurrentMapStyle() {
+                    if (!this.selectedMatchup) return {};
+                    
+                    // Get map sequence from MapSequences
+                    const mapSequence = window.MapSequences && window.MapSequences[this.selectedMatchup];
+                    if (!mapSequence || !mapSequence.maps) return {};
+                    
+                    const currentMapName = mapSequence.maps[this.currentGame];
+                    if (!currentMapName) return {};
+                    
+                    // Count occurrence for current map at current game
+                    let occurrenceCount = 0;
+                    for (let i = 1; i <= this.currentGame; i++) {
+                        if (mapSequence.maps[i] === currentMapName) {
+                            occurrenceCount++;
+                        }
+                    }
+                    
+                    // EXACT HSL color schemas matching chart engine
+                    const colorSchemes = {
+                        'STORM POINT': {
+                            1: 'hsl(28, 100%, 60%)',  // Orange - 1st occurrence
+                            2: 'hsl(28, 100%, 70%)',  // Lighter orange - 2nd occurrence  
+                            3: 'hsl(28, 100%, 80%)'   // Very light orange - 3rd occurrence
+                        },
+                        'WORLD\'S EDGE': {
+                            1: 'hsl(10, 100%, 60%)', // Red - 1st occurrence
+                            2: 'hsl(10, 100%, 70%)', // Lighter red - 2nd occurrence
+                            3: 'hsl(10, 100%, 80%)'  // Very light red - 3rd occurrence
+                        },
+                        'E-DISTRICT': {
+                            1: 'hsl(250, 100%, 60%)', // Purple - 1st occurrence
+                            2: 'hsl(250, 100%, 70%)', // Lighter purple - 2nd occurrence
+                            3: 'hsl(250, 100%, 80%)'  // Very light purple - 3rd occurrence
+                        }
+                    };
+                    
+                    const scheme = colorSchemes[currentMapName];
+                    const backgroundColor = (scheme && scheme[occurrenceCount]) ? scheme[occurrenceCount] : 'hsl(45, 100%, 60%)';
+                    
+                    // Return PURE colors without any modifications to match chart exactly
+                    return {
+                        background: backgroundColor,  // Pure color, no gradient
+                        borderColor: backgroundColor,
+                        color: 'white',
+                        fontWeight: '700',
+                        textShadow: '0 1px 2px rgba(0, 0, 0, 0.9)', // Darker shadow for readability
+                        boxShadow: 'none' // Remove glow that changes color perception
+                    };
+                },
+
+                // Game control methods
+                jumpToGame() {
                     if (this.chartEngine) {
-                        this.chartEngine.currentGameIndex = gameNumber;
+                        this.chartEngine.currentGameIndex = this.currentGame;
                         this.chartEngine.updateChart();
                         this.updateCurrentMap();
                     }
+                },
+
+                updateGameFromSlider() {
+                    if (this.chartEngine) {
+                        // Convert to number to ensure proper comparison
+                        const gameIndex = parseInt(this.currentGame);
+                        
+                        // Update chart engine immediately
+                        this.chartEngine.currentGameIndex = gameIndex;
+                        this.chartEngine.updateChart();
+                        this.updateCurrentMap();
+                        
+                        console.log('SLIDER CONTROL: Updated to game:', gameIndex);
+                    }
+                },
+
+                startSliderControl() {
+                    this.manualSliderControl = true;
+                    console.log('Started manual slider control');
+                },
+
+                endSliderControl() {
+                    // Short delay to allow the final input event to process
+                    setTimeout(() => {
+                        this.manualSliderControl = false;
+                        console.log('Ended manual slider control');
+                    }, 100);
                 },
                 
                 togglePlayback() {
                     if (this.chartEngine) {
                         this.chartEngine.togglePlayback();
                         this.isPlaying = this.chartEngine.isPlaying;
+                        
+                        // Force immediate sync when toggling playback
+                        setTimeout(() => {
+                            this.currentGame = this.chartEngine.currentGameIndex || 1;
+                            this.updateCurrentMap();
+                        }, 50);
                     }
                 },
                 
@@ -628,44 +2103,98 @@
                         this.currentGame = 1;
                         this.isPlaying = false;
                         this.updateCurrentMap();
+                        console.log('Chart restarted - reset to game 1');
                     }
                 },
-                
+
+                updateCurrentMap() {
+                    if (this.chartEngine && this.selectedMatchup) {
+                        // Get map directly from MapSequences for consistency
+                        const mapSequence = window.MapSequences && window.MapSequences[this.selectedMatchup];
+                        if (mapSequence && mapSequence.maps) {
+                            this.currentMap = mapSequence.maps[this.currentGame] || 'Unknown';
+                        } else {
+                            this.currentMap = this.chartEngine.getCurrentMap();
+                        }
+                    }
+                },
+
+                updateGameState() {
+                    if (this.chartEngine && this.chartEngine.data) {
+                        // Calculate max games from data
+                        const gameColumns = Object.keys(this.chartEngine.data[0] || {})
+                            .filter(key => key.startsWith('Game') && key !== 'Game')
+                            .length;
+                        this.maxGames = Math.max(gameColumns, 6);
+                        
+                        this.updateCurrentMap();
+                    }
+                },
+
                 exportData() {
                     if (this.chartEngine) {
                         this.chartEngine.exportData(this.selectedMatchup);
-                    }
-                },
-                
-                fullscreenChart() {
-                    const chartArea = document.getElementById('vue-chart-area');
-                    if (chartArea && chartArea.requestFullscreen) {
-                        chartArea.requestFullscreen();
                     }
                 }
             },
             
             mounted() {
-                console.log('Vue.js Enhanced Group Stages app mounted!');
+                console.log('Vue.js Enhanced Group Stages app mounted with GSAP-powered action panel! 🚀');
                 
                 // Set up periodic updates for game state
                 this.gameStateInterval = setInterval(() => {
                     if (this.chartEngine) {
-                        this.currentGame = this.chartEngine.currentGameIndex || 1;
+                        // Sync game state, but be gentle about currentGame updates
+                        const engineGameIndex = this.chartEngine.currentGameIndex || 1;
+                        
+                        // Only update currentGame if there's a significant difference
+                        // This prevents conflicts during manual sliding while allowing play button updates
+                        if (Math.abs(this.currentGame - engineGameIndex) > 0 && !this.manualSliderControl) {
+                            this.currentGame = engineGameIndex;
+                            console.log('Auto-sync: Updated currentGame to', engineGameIndex);
+                        }
+                        
+                        // Always sync playing state and map
                         this.isPlaying = this.chartEngine.isPlaying || false;
                         this.updateCurrentMap();
+                        this.updateGameState();
                     }
-                }, 500);
+                }, 300); // Slightly slower for better performance
                 
-                // Auto-select first matchup if none selected
-                if (!this.selectedMatchup && this.tournamentDays[0].matchups.length > 0) {
-                    this.selectedMatchup = this.tournamentDays[0].matchups[0].id;
+                // Initialize GSAP dragging when DOM is ready
+                this.$nextTick(() => {
+                    if (this.$refs.actionPanel) {
+                        this.initGSAPDraggable();
+                    }
+                });
+                
+                // Auto-select first Day 1 matchup (AvsB) on initial load only
+                if (!this.selectedMatchup && this.selectedDay === 'day1' && this.tournamentDays[0].matchups.length > 0) {
+                    this.selectedMatchup = this.tournamentDays[0].matchups[0].id; // AvsB
+                    setTimeout(() => {
+                        this.loadMatchup();
+                    }, 1000); // Small delay to ensure everything is loaded
+                }
+            },
+            
+            updated() {
+                // Re-initialize GSAP draggable when action panel becomes available
+                if (this.$refs.actionPanel && !this.draggableInstance) {
+                    this.$nextTick(() => {
+                        this.initGSAPDraggable();
+                    });
                 }
             },
             
             beforeUnmount() {
+                // Clean up intervals
                 if (this.gameStateInterval) {
                     clearInterval(this.gameStateInterval);
+                }
+                
+                // Clean up GSAP instances
+                if (this.draggableInstance) {
+                    this.draggableInstance.kill();
                 }
             }
         }).mount('#app');

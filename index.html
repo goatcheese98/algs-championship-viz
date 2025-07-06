@@ -24,6 +24,59 @@
             overflow-x: hidden;
         }
 
+        .vue-navbar {
+            width: 100%;
+            background: linear-gradient(135deg, #2d1b1b 0%, #3d2424 100%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border-bottom: 2px solid #d97706;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .vue-navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+        .vue-navbar-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .vue-navbar-links {
+            display: flex;
+            gap: 18px;
+        }
+        .vue-navbar-link {
+            color: #f1f5f9;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .vue-navbar-link:hover {
+            background: rgba(217, 119, 6, 0.15);
+            border-color: #d97706;
+            color: #fbbf24;
+        }
+        .vue-navbar-link.active {
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            color: #fff;
+            border-color: #d97706;
+            box-shadow: 0 0 12px rgba(217, 119, 6, 0.25);
+        }
         .hero-section {
             min-height: 100vh;
             display: flex;
@@ -33,13 +86,11 @@
             padding: 0 20px;
             position: relative;
         }
-
         .hero-content {
             text-align: center;
             max-width: 1200px;
             z-index: 2;
         }
-
         .hero-title {
             font-size: 4rem;
             font-weight: 700;
@@ -50,14 +101,12 @@
             margin-bottom: 1rem;
             text-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
-
         .hero-subtitle {
             font-size: 1.5rem;
             color: #cbd5e1;
             margin-bottom: 3rem;
             font-weight: 400;
         }
-
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -65,7 +114,6 @@
             margin: 3rem 0;
             max-width: 1000px;
         }
-
         .feature-card {
             background: linear-gradient(135deg, #2d1b1b 0%, #3d2424 100%);
             border-radius: 12px;
@@ -74,37 +122,31 @@
             transition: all 0.3s ease;
             cursor: pointer;
         }
-
         .feature-card:hover {
             border-color: #d97706;
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(217, 119, 6, 0.3);
         }
-
         .feature-icon {
             font-size: 3rem;
             margin-bottom: 1rem;
         }
-
         .feature-title {
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 1rem;
             color: #f1f5f9;
         }
-
         .feature-description {
             color: #cbd5e1;
             line-height: 1.6;
         }
-
         .cta-buttons {
             display: flex;
             gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
         }
-
         .btn {
             padding: 1rem 2rem;
             border: none;
@@ -117,31 +159,26 @@
             display: inline-block;
             text-align: center;
         }
-
         .btn-primary {
             background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
             color: white;
             border: 2px solid #d97706;
         }
-
         .btn-primary:hover {
             background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(217, 119, 6, 0.4);
         }
-
         .btn-secondary {
             background: transparent;
             color: #f1f5f9;
             border: 2px solid #6b7280;
         }
-
         .btn-secondary:hover {
             background: #374151;
             border-color: #d97706;
             color: #fbbf24;
         }
-
         .background-pattern {
             position: absolute;
             top: 0;
@@ -155,18 +192,15 @@
             background-size: 50px 50px;
             animation: float 20s ease-in-out infinite;
         }
-
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
         }
-
         .stats-section {
             background: linear-gradient(135deg, #2d1b1b 0%, #3d2424 100%);
             padding: 4rem 2rem;
             margin-top: 4rem;
         }
-
         .stats-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -175,48 +209,44 @@
             gap: 2rem;
             text-align: center;
         }
-
         .stat-item {
             padding: 2rem;
         }
-
         .stat-number {
             font-size: 3rem;
             font-weight: 700;
             color: #d97706;
             margin-bottom: 0.5rem;
         }
-
         .stat-label {
             font-size: 1.2rem;
             color: #cbd5e1;
         }
-
-        /* Responsive Design */
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2.5rem;
             }
-            
             .hero-subtitle {
                 font-size: 1.2rem;
             }
-            
             .features-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
             }
-            
             .cta-buttons {
                 flex-direction: column;
                 align-items: center;
             }
+            .vue-navbar-content {
+                flex-direction: column;
+                gap: 10px;
+                height: auto;
+                padding: 10px 0;
+            }
         }
-
         .fade-in {
             animation: fadeIn 0.8s ease-in;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
@@ -225,6 +255,35 @@
 </head>
 <body>
     <div id="app">
+        <!-- Vue Navigation Bar -->
+        <nav class="vue-navbar">
+            <div class="vue-navbar-content">
+                <div class="vue-navbar-title">
+                    <span>🏆</span> ALGS Championship
+                </div>
+                <div class="vue-navbar-links">
+                    <a 
+                        class="vue-navbar-link" 
+                        :class="{ active: currentPage === 'home' }"
+                        @click.prevent="navigate('home')"
+                        href="#"
+                    >Home</a>
+                    <a 
+                        class="vue-navbar-link" 
+                        :class="{ active: currentPage === 'group' }"
+                        @click.prevent="navigate('group')"
+                        href="#"
+                    >Group Stages</a>
+                    <a 
+                        class="vue-navbar-link" 
+                        :class="{ active: currentPage === 'experiment' }"
+                        @click.prevent="navigate('experiment')"
+                        href="#"
+                    >Experimental Charts</a>
+                </div>
+            </div>
+        </nav>
+        <!-- End Vue Navigation Bar -->
         <div class="hero-section">
             <div class="background-pattern"></div>
             
@@ -284,28 +343,28 @@
                             icon: '📊',
                             title: 'Real-time Race Charts',
                             description: 'Dynamic visualizations showing team progress across multiple games with smooth animations and interactive controls.',
-                            link: 'experiment_page.html'
+                            link: 'vue_experiment_page.html'
                         },
                         {
                             id: 2,
                             icon: '🎮',
                             title: 'Group Stage Analysis',
                             description: 'Comprehensive breakdown of Day 1 group stages with detailed matchup analysis and team performance metrics.',
-                            link: 'group_stages.html'
+                            link: 'vue_group_stages.html'
                         },
                         {
                             id: 3,
                             icon: '🗺️',
                             title: 'Map-based Insights',
                             description: 'Color-coded visualizations based on Apex Legends maps including E-District, Storm Point, and World\'s Edge.',
-                            link: 'experiment_page.html'
+                            link: 'vue_experiment_page.html'
                         },
                         {
                             id: 4,
                             icon: '⚡',
                             title: 'Interactive Controls',
                             description: 'Play, pause, and navigate through tournament progression with intuitive controls and game-by-game breakdowns.',
-                            link: 'experiment_page.html'
+                            link: 'vue_experiment_page.html'
                         }
                     ],
                     stats: [
@@ -329,7 +388,8 @@
                             number: '∞',
                             label: 'Data Points'
                         }
-                    ]
+                    ],
+                    currentPage: 'home',
                 }
             },
             methods: {
@@ -337,9 +397,28 @@
                     if (link) {
                         window.location.href = link;
                     }
+                },
+                navigate(page) {
+                    // Set active state
+                    this.currentPage = page;
+                    // Route to correct HTML file
+                    if (page === 'home') {
+                        window.location.href = 'index.html';
+                    } else if (page === 'group') {
+                        window.location.href = 'vue_group_stages.html';
+                    } else if (page === 'experiment') {
+                        window.location.href = 'vue_experiment_page.html';
+                    }
+                },
+                getCurrentPage() {
+                    const path = window.location.pathname;
+                    if (path.endsWith('vue_group_stages.html')) return 'group';
+                    if (path.endsWith('vue_experiment_page.html')) return 'experiment';
+                    return 'home';
                 }
             },
             mounted() {
+                this.currentPage = this.getCurrentPage();
                 console.log('Vue.js ALGS Championship app mounted successfully!');
             }
         }).mount('#app');

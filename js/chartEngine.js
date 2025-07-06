@@ -45,16 +45,15 @@ class ChartEngine {
         // Clear existing content
         this.container.html('');
         
-        // Create mini-dashboard container with ultra-dark theme
-        this.miniDashboard = this.container.append('div')
-            .attr('class', 'mini-dashboard')
-            .style('background', 'linear-gradient(145deg, #000000 0%, #030303 25%, #080808 50%, #030303 75%, #000000 100%)')  // Much darker
-            .style('border-radius', '12px')
-            .style('padding', '24px')
-            .style('margin', '0')
-            .style('max-width', 'none')
+        // Create simplified single chart container with gaming aesthetic
+        this.chartPanel = this.container.append('div')
+            .attr('class', 'chart-panel')
             .style('width', '100%')
             .style('height', '100%')
+            .style('background', 'linear-gradient(145deg, #000000 0%, #030303 25%, #080808 50%, #030303 75%, #000000 100%)')
+            .style('border-radius', '12px')
+            .style('padding', '20px')
+            .style('margin', '0')
             .style('box-shadow', '0 0 30px rgba(220, 38, 38, 0.4), 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(220, 38, 38, 0.3)')
             .style('border', '3px solid #dc2626')
             .style('position', 'relative')
@@ -63,8 +62,8 @@ class ChartEngine {
             .style('display', 'flex')
             .style('flex-direction', 'column');
         
-        // Add gaming-style inner glow with red theme
-        this.miniDashboard.append('div')
+        // Add gaming-style inner glow
+        this.chartPanel.append('div')
             .style('position', 'absolute')
             .style('top', '0')
             .style('left', '0')
@@ -74,41 +73,16 @@ class ChartEngine {
             .style('box-shadow', 'inset 0 0 20px rgba(220, 38, 38, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.9)')
             .style('pointer-events', 'none');
         
-        // Create single full-width chart layout inside mini-dashboard
-        this.mainLayout = this.miniDashboard.append('div')
-            .attr('class', 'main-layout')
-            .style('width', '100%')
-            .style('flex', '1')  // Take remaining height
-            .style('min-width', '1200px')  // Ensure minimum width for expanded layout
-            .style('position', 'relative')
-            .style('z-index', '1')
-            .style('display', 'flex')
-            .style('flex-direction', 'column');
-        
-        // FULL CHART PANEL: Chart Area with ALGS gaming aesthetic - DARKER
-        this.chartPanel = this.mainLayout.append('div')
-            .attr('class', 'chart-panel')
-            .style('width', '100%')
-            .style('flex', '1')  // Take remaining height
-            .style('background', 'linear-gradient(135deg, #000000 0%, #050505 25%, #0a0a0a 50%, #050505 75%, #000000 100%)')  // Much darker
-            .style('border-radius', '8px')
-            .style('box-shadow', '0 0 20px rgba(220, 38, 38, 0.4), 0 8px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(220, 38, 38, 0.2)')
-            .style('border', '2px solid #dc2626')
-            .style('padding', '20px')
-            .style('position', 'relative')
-            .style('overflow', 'visible')
-            .style('display', 'flex')
-            .style('flex-direction', 'column');
-        
-        // Setup SVG in left panel
+        // Setup SVG directly in chart panel
         this.svg = this.chartPanel.append('svg')
             .style('width', '100%')
-            .style('flex', '1')  // Take remaining height
+            .style('height', '100%')
             .style('display', 'block')
-            .style('min-height', '300px');
+            .style('position', 'relative')
+            .style('z-index', '1');
         
-        // Setup dimensions with more space for team labels, logos, and ranking numbers
-        this.margin = { top: 30, right: 60, bottom: 70, left: 280 };
+        // Setup dimensions with more space for team labels, logos, and ranking numbers - Extended for longer panel
+        this.margin = { top: 30, right: 60, bottom: 70, left: 320 };
         this.updateDimensions();
         
         // Ensure dimensions are valid
@@ -141,8 +115,7 @@ class ChartEngine {
         // Setup custom Y-axis with team logos and larger text
         this.setupCustomYAxis();
         
-        // RIGHT PANEL: Action Panel
-        this.setupActionPanel();
+        // Action panel removed - using integrated GSAP-powered draggable controls
         
         // Apply styles
         this.applyStyles();
@@ -199,199 +172,46 @@ class ChartEngine {
         console.log('Data exported for:', matchup);
     }
 
-    setupActionPanel() {
-        // COMPACT DASHBOARD: Quarter-size gaming-style HUD panel
-        this.actionPanel = this.chartPanel.append('div')
-            .attr('class', 'action-panel-overlay')
-            .style('position', 'absolute')
-            .style('bottom', '20px')  
-            .style('right', '20px')
-            .style('width', '200px')  // Quarter size (was 380px)
-            .style('height', 'auto')  // Auto height instead of full height
-            .style('max-height', '300px')  // Limit maximum height
-            .style('max-width', 'calc(100% - 40px)')  
-            .style('background', 'rgba(5, 5, 5, 0.3)')  // Much more translucent
-            .style('backdrop-filter', 'blur(15px)')  
-            .style('border-radius', '8px')
-            .style('box-shadow', '0 0 15px rgba(220, 38, 38, 0.2), 0 8px 16px rgba(0,0,0,0.3)')  
-            .style('border', '1px solid rgba(220, 38, 38, 0.2)')  // More translucent border
-            .style('z-index', '1000')
-            .style('transition', 'all 0.3s ease')
-            .style('transform', 'translateY(0)')
-            .style('opacity', '1')
-            .style('display', 'flex')
-            .style('flex-direction', 'column');
-        
-        // Create compact content container
-        this.mainContent = this.actionPanel.append('div')
-            .attr('class', 'main-content')
-            .style('padding', '12px')  // Reduced padding
-            .style('display', 'flex')
-            .style('flex-direction', 'column')
-            .style('gap', '10px')  // Reduced gap
-            .style('overflow-y', 'auto');
-        
-        // Game Numbers Section (smaller buttons)
-        this.setupGameNumbers();
-        
-        // Direct Play/Pause Controls (always visible)
-        this.setupDirectControls();
-        
-        // Map Info Section  
-        this.setupMapInfo();
-        
-        // Map Image Area
-        this.setupMapImageArea();
-        
-        // Additional Controls Section (only if no external controls exist)
-        if (!this.hasExternalControls) {
-            console.log('Setting up internal controls');
-            this.setupAdditionalControls();
-        } else {
-            console.log('Skipping internal controls - external controls detected');
+    // Game filtering methods for Enhanced Action Panel
+    filterByGames(selectedGames) {
+        if (!this.data || !selectedGames || selectedGames.length === 0) {
+            this.clearGameFilter();
+            return;
         }
+        
+        this.selectedGames = selectedGames;
+        this.applyGameFilter();
+        console.log('Applied game filter:', selectedGames);
     }
+
+    clearGameFilter() {
+        this.selectedGames = [];
+        this.isFiltered = false;
+        this.filteredGameIndices = [];
+        this.updateChart();
+        console.log('Cleared game filter');
+    }
+
+    applyGameFilter() {
+        // Store filter state
+        this.isFiltered = this.selectedGames && this.selectedGames.length > 0;
+        this.filteredGameIndices = this.selectedGames || [];
+        
+        // Update chart with filter applied
+        this.updateChart();
+    }
+
+    // Old action panel removed - now using GSAP-powered draggable enhanced controls
     
 
 
-    setupGameNumbers() {
-        const gameSection = this.mainContent.append('div')
-            .attr('class', 'game-numbers-section');
-            
-        gameSection.append('h3')
-            .style('margin', '0 0 6px 0')  // Reduced margin
-            .style('font-size', '0.8rem')  // Smaller font
-            .style('font-weight', '600')
-            .style('color', '#f1f5f9')
-            .text('Game Progress');
-            
-        this.gameNumbersContainer = gameSection.append('div')
-            .attr('class', 'game-numbers')
-            .style('display', 'flex')
-            .style('flex-wrap', 'wrap')
-            .style('gap', '4px');  // Reduced gap
-    }
+    // setupGameNumbers removed - old action panel functionality
     
-    setupDirectControls() {
-        const controlsSection = this.mainContent.append('div')
-            .attr('class', 'direct-controls-section');
-            
-        controlsSection.append('h3')
-            .style('margin', '0 0 6px 0')  // Reduced margin
-            .style('font-size', '0.8rem')  // Smaller font
-            .style('font-weight', '600')
-            .style('color', '#f1f5f9')
-            .text('Controls');
-        
-        // Direct Play/Pause buttons container
-        this.directButtonContainer = controlsSection.append('div')
-            .style('display', 'flex')
-            .style('gap', '6px')  // Reduced gap
-            .style('margin-bottom', '8px');  // Reduced margin
-        
-        this.playButton = this.directButtonContainer.append('button')
-            .text('▶ Play')
-            .attr('class', 'control-button direct-control')
-            .style('flex', '1')
-            .style('padding', '6px 10px')  // Smaller padding
-            .style('background', 'linear-gradient(135deg, #dc2626 0%, #991b1b 50%, #dc2626 100%)')
-            .style('color', 'white')
-            .style('border', '1px solid #000000')  // Thinner border
-            .style('border-radius', '4px')  // Smaller radius
-            .style('cursor', 'pointer')
-            .style('font-weight', '600')  // Lighter weight
-            .style('font-size', '0.7rem')  // Smaller font
-            .style('font-family', 'Inter, Roboto Mono, monospace')
-            .style('text-shadow', '0 1px 2px rgba(0,0,0,0.8)')
-            .style('box-shadow', '0 0 6px rgba(220, 38, 38, 0.4), 0 2px 4px rgba(0,0,0,0.3)')  // Smaller shadow
-            .style('transition', 'all 0.3s ease')
-            .on('click', () => this.togglePlayback());
-        
-        this.restartButton = this.directButtonContainer.append('button')
-            .text('⟲ Reset')
-            .attr('class', 'control-button direct-control')
-            .style('flex', '1')
-            .style('padding', '6px 10px')  // Smaller padding
-            .style('background', 'linear-gradient(135deg, #374151 0%, #1f2937 50%, #374151 100%)')
-            .style('color', '#f1f5f9')
-            .style('border', '1px solid #dc2626')  // Thinner border
-            .style('border-radius', '4px')  // Smaller radius
-            .style('cursor', 'pointer')
-            .style('font-weight', '600')  // Lighter weight
-            .style('font-size', '0.7rem')  // Smaller font
-            .style('font-family', 'Inter, Roboto Mono, monospace')
-            .style('text-shadow', '0 1px 2px rgba(0,0,0,0.8)')
-            .style('box-shadow', '0 0 6px rgba(220, 38, 38, 0.3), 0 2px 4px rgba(0,0,0,0.3)')  // Smaller shadow
-            .style('transition', 'all 0.3s ease')
-            .on('click', () => this.restart());
-    }
+    // setupDirectControls removed - old action panel functionality
     
-    setupMapInfo() {
-        const mapSection = this.mainContent.append('div')
-            .attr('class', 'map-info-section');
-            
-        mapSection.append('h3')
-            .style('margin', '0 0 6px 0')  // Reduced margin
-            .style('font-size', '0.8rem')  // Smaller font
-            .style('font-weight', '600')
-            .style('color', '#f1f5f9')
-            .text('Current Map');
-        
-        // Matchup title (for compatibility) - hidden
-        this.matchupTitle = mapSection.append('div')
-            .attr('class', 'matchup-title')
-            .style('display', 'none');
-            
-        // Current game indicator - hidden
-        this.currentGameIndicator = mapSection.append('div')
-            .attr('class', 'current-game-indicator')
-            .style('display', 'none');
-            
-        // Map title with colored background - smaller
-        this.currentMapTitle = mapSection.append('div')
-            .attr('class', 'current-map-title')
-            .style('font-size', '0.9rem')  // Smaller font
-            .style('font-weight', '600')
-            .style('text-align', 'center')
-            .style('padding', '6px 10px')  // Smaller padding
-            .style('background', '#2E86AB')
-            .style('color', 'white')
-            .style('border-radius', '6px')  // Smaller radius
-            .style('box-shadow', '0 2px 6px rgba(0,0,0,0.3)')  // Smaller shadow
-            .text('E-DISTRICT');
-    }
+    // setupMapInfo removed - old action panel functionality
     
-    setupMapImageArea() {
-        // Skip map image area to save space in compact dashboard
-    }
-
-    setupAdditionalControls() {
-        // Compact slider section
-        const controlsSection = this.mainContent.append('div')
-            .attr('class', 'additional-controls-section');
-            
-        controlsSection.append('h3')
-            .style('margin', '0 0 6px 0')  // Reduced margin
-            .style('font-size', '0.8rem')  // Smaller font
-            .style('font-weight', '600')
-            .style('color', '#f1f5f9')
-            .text('Game Slider');
-        
-        // Compact slider
-        this.slider = controlsSection.append('input')
-            .attr('type', 'range')
-            .attr('min', 1)
-            .attr('max', 6)
-            .attr('value', 1)
-            .attr('class', 'game-slider')
-            .style('width', '100%')
-            .style('margin', '6px 0')  // Reduced margin
-            .style('height', '6px')  // Smaller height
-            .on('input', (event) => {
-                this.currentGameIndex = +event.target.value;
-                this.updateChart();
-            });
-    }
+    // setupMapImageArea and setupAdditionalControls removed - old action panel functionality
 
     applyStyles() {
         // Add CSS for ALGS Apex Esports gaming aesthetic
@@ -583,29 +403,46 @@ class ChartEngine {
     updateDimensions() {
         if (!this.chartPanel || !this.chartPanel.node()) {
             console.warn('Chart panel not available for dimension calculation');
-            this.width = 600;
-            this.height = 500;
+            this.width = 800;
+            this.height = 600;
         } else {
             const containerRect = this.chartPanel.node().getBoundingClientRect();
-            this.width = Math.max(containerRect.width - this.margin.left - this.margin.right, 800);  // Increased minimum width
-            this.height = Math.max(containerRect.height - this.margin.top - this.margin.bottom, 500);
+            
+            // Account for padding (20px on each side = 40px total) and border (3px on each side = 6px total)
+            const availableWidth = Math.max(containerRect.width - 46, 400);  // 40px padding + 6px border
+            const availableHeight = Math.max(containerRect.height - 46, 300); // 40px padding + 6px border
+            
+            // Calculate chart dimensions by subtracting margins - Extended width for longer panel
+            this.width = Math.max(availableWidth - this.margin.left - this.margin.right, 600);
+            this.height = Math.max(availableHeight - this.margin.top - this.margin.bottom, 300);
+            
+            // Ensure reasonable aspect ratio for readability
+            const aspectRatio = this.width / this.height;
+            if (aspectRatio > 3.5) {
+                this.height = this.width / 3.5;
+            } else if (aspectRatio < 1.2) {
+                this.width = this.height * 1.2;
+            }
         }
         
-        // Update SVG dimensions with responsive scaling
+        // Update SVG with proper responsive dimensions
         if (this.svg) {
             const totalWidth = this.width + this.margin.left + this.margin.right;
             const totalHeight = this.height + this.margin.top + this.margin.bottom;
             
+            // Remove viewBox to prevent zooming issues and use natural scaling
             this.svg
-                .attr('width', '100%')
-                .attr('height', '100%')
-                .attr('viewBox', `0 0 ${totalWidth} ${totalHeight}`)
-                .attr('preserveAspectRatio', 'xMidYMid meet');
+                .attr('width', totalWidth)
+                .attr('height', totalHeight)
+                .style('width', '100%')
+                .style('height', 'auto')
+                .style('max-width', '100%')
+                .style('max-height', '100%');
         }
         
         // Update scale ranges
         if (this.xScale) this.xScale.range([0, this.width]);
-        if (this.yScale) this.yScale.range([0, this.height]); // Correct range for bars
+        if (this.yScale) this.yScale.range([0, this.height]);
         
         // Update axis positions
         if (this.xAxisGroup) {
@@ -625,17 +462,13 @@ class ChartEngine {
             console.log('Detected game columns:', this.gameColumns);
             console.log('Max games:', this.maxGames);
             
-            // Update slider max (only if slider exists)
-            if (this.slider) {
-                this.slider.attr('max', this.maxGames);
-            }
+            // Slider removed - using new draggable controls
             
             // Get matchup info
             const matchupKey = this.extractMatchupFromPath(csvPath);
             this.matchupInfo = MapSequenceUtils.getSequence(matchupKey);
             
-            // Update UI
-            this.updateMatchupDisplay();
+            // Update chart
             this.updateChart();
             
         } catch (error) {
@@ -649,78 +482,11 @@ class ChartEngine {
         return filename.replace('_points', '');
     }
 
-    updateMatchupDisplay() {
-        if (this.matchupInfo) {
-            // Only update the small matchup title, not the main map display
-            this.matchupTitle.text(this.matchupInfo.name);
-            this.updateCurrentMap();
-        }
-    }
+    // updateMatchupDisplay removed - old action panel functionality
 
-    updateCurrentMap() {
-        if (this.matchupInfo && this.matchupInfo.maps) {
-            const currentMap = this.getCurrentMap();
-            const mapColor = this.getMapColor(currentMap, this.currentGameIndex); // Use unified coloring
-            
-            this.currentMapTitle
-                .text(currentMap.toUpperCase())
-                .style('background', mapColor); // Update background color
-                
-            this.currentGameIndicator.text(`Game ${this.currentGameIndex} of ${this.maxGames}`);
-        }
-    }
+    // updateCurrentMap removed - old action panel functionality
     
-    updateGameNumbers() {
-        if (!this.gameNumbersContainer || !this.maxGames) return;
-        
-        // Clear existing game numbers
-        this.gameNumbersContainer.selectAll('.game-number').remove();
-        
-        // Create compact game number buttons
-        for (let i = 1; i <= this.maxGames; i++) {
-            const isCurrentGame = i === this.currentGameIndex;
-            const mapForGame = this.getMapForGame(i);
-            const mapColor = this.getMapColor(mapForGame, i); // Pass game number for unified coloring
-            
-            this.gameNumbersContainer.append('div')
-                .attr('class', 'game-number')
-                .style('width', '20px')        // Much smaller buttons
-                .style('height', '20px')       // Much smaller buttons
-                .style('display', 'flex')
-                .style('align-items', 'center')
-                .style('justify-content', 'center')
-                .style('border-radius', '3px')  // Smaller radius
-                .style('font-weight', '600')
-                .style('font-size', '0.65rem') // Much smaller font
-                .style('cursor', 'pointer')
-                .style('transition', 'all 0.3s ease')
-                .style('background', isCurrentGame ? mapColor : 'rgba(30, 30, 30, 0.8)')
-                .style('color', isCurrentGame ? 'white' : '#f1f5f9')
-                .style('border', isCurrentGame ? `1px solid ${mapColor}` : '1px solid rgba(220, 38, 38, 0.3)')  // Thinner border
-                .style('box-shadow', isCurrentGame ? '0 2px 6px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.2)')  // Smaller shadow
-                .text(i)
-                .on('click', () => {
-                    this.currentGameIndex = i;
-                    this.updateChart();
-                })
-                .on('mouseover', function() {
-                    if (!isCurrentGame) {
-                        d3.select(this)
-                            .style('background', mapColor) // Uses the unified color for this game
-                            .style('color', 'white')
-                            .style('transform', 'translateY(-2px)');
-                    }
-                })
-                .on('mouseout', function() {
-                    if (!isCurrentGame) {
-                        d3.select(this)
-                            .style('background', 'rgba(30, 30, 30, 0.8)')
-                            .style('color', '#f1f5f9')
-                            .style('transform', 'translateY(0)');
-                    }
-                });
-        }
-    }
+    // updateGameNumbers removed - old action panel functionality
 
     getCurrentMap() {
         if (!this.matchupInfo || !this.matchupInfo.maps) return 'Unknown';
@@ -805,8 +571,8 @@ class ChartEngine {
     updateChart() {
         if (!this.data || !this.gameColumns) return;
         
-        this.updateCurrentMap();
-        this.updateGameNumbers();
+        // Ensure currentGameIndex is within valid bounds
+        this.currentGameIndex = Math.max(1, Math.min(this.currentGameIndex, this.maxGames));
         
         // Process data for stacked visualization
         const processedData = this.data.map(d => {
@@ -816,15 +582,25 @@ class ChartEngine {
                 cumulativeScore: 0
             };
             
-            // Build game-by-game data with colors
-            for (let i = 1; i <= this.currentGameIndex; i++) {
-                const gameCol = this.gameColumns[i - 1];
+            // Determine which games to include
+            let gamesToInclude;
+            if (this.isFiltered && this.filteredGameIndices.length > 0) {
+                // When filtering, only show selected games
+                gamesToInclude = this.filteredGameIndices.slice().sort((a, b) => a - b);
+            } else {
+                // When not filtering, show games up to current index
+                gamesToInclude = Array.from({length: this.currentGameIndex}, (_, i) => i + 1);
+            }
+            
+            // Build game-by-game data with colors based on ORIGINAL game numbers for proper color coding
+            gamesToInclude.forEach(originalGameNum => {
+                const gameCol = this.gameColumns[originalGameNum - 1];
                 const gamePoints = +d[gameCol] || 0;
-                const mapForGame = this.getMapForGame(i);
-                const gameColor = this.getMapColor(mapForGame, i);
+                const mapForGame = this.getMapForGame(originalGameNum);
+                const gameColor = this.getMapColor(mapForGame, originalGameNum); // Use original game number for proper color
                 
                 teamData.games.push({
-                    gameNumber: i,
+                    gameNumber: originalGameNum, // Keep original game number for reference
                     points: gamePoints,
                     color: gameColor,
                     map: mapForGame,
@@ -832,7 +608,7 @@ class ChartEngine {
                 });
                 
                 teamData.cumulativeScore += gamePoints;
-            }
+            });
             
             return teamData;
         });
@@ -873,10 +649,7 @@ class ChartEngine {
         // Render stacked bars
         this.renderStackedBars(processedData);
         
-        // Update slider position (only if slider exists)
-        if (this.slider) {
-            this.slider.property('value', this.currentGameIndex);
-        }
+        // Slider removed - using new draggable controls
     }
 
     renderStackedBars(data) {
@@ -1006,11 +779,6 @@ class ChartEngine {
     togglePlayback() {
         this.isPlaying = !this.isPlaying;
         
-        // Update button text with icons
-        if (this.playButton) {
-            this.playButton.text(this.isPlaying ? '⏸ Pause' : '▶ Play');
-        }
-        
         if (this.isPlaying) {
             this.playAnimation();
         } else {
@@ -1023,11 +791,6 @@ class ChartEngine {
     playAnimation() {
         if (!this.isPlaying || this.currentGameIndex >= this.maxGames) {
             this.isPlaying = false;
-            
-            // Update button text with icon
-            if (this.playButton) {
-                this.playButton.text('▶ Play');
-            }
             return;
         }
         
@@ -1041,12 +804,6 @@ class ChartEngine {
 
     restart() {
         this.isPlaying = false;
-        
-        // Update button text only if button exists
-        if (this.playButton) {
-            this.playButton.text('Play');
-        }
-        
         this.currentGameIndex = 1;
         if (this.animationTimer) {
             clearTimeout(this.animationTimer);
@@ -1165,28 +922,35 @@ class ChartEngine {
     }
     
     setupResizeListener() {
-        // Debounced resize handler to prevent excessive redraws
+        // High-performance debounced resize handler to prevent excessive redraws
         let resizeTimeout;
+        let isResizing = false;
+        
         const handleResize = () => {
+            if (isResizing) return; // Prevent overlapping resize operations
+            
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                console.log('Window resized, updating chart dimensions...');
-                this.updateDimensions();
+                isResizing = true;
                 
-                // Redraw chart if data is loaded
-                if (this.data) {
-                    this.updateChart();
-                }
-                
-                // Update action panel position if it exists
-                if (this.actionPanel) {
-                    // Action panel will adjust automatically due to its responsive positioning
-                }
-            }, 250); // 250ms debounce
+                // Use requestAnimationFrame for smooth resize updates
+                requestAnimationFrame(() => {
+                    console.log('Window resized, updating chart dimensions...');
+                    this.updateDimensions();
+                    
+                    // Redraw chart if data is loaded
+                    if (this.data) {
+                        this.updateChart();
+                    }
+                    
+                    // Reset resize flag
+                    isResizing = false;
+                });
+            }, 200); // Reduced debounce for more responsive feel
         };
         
-        // Add resize listener
-        window.addEventListener('resize', handleResize);
+        // Use passive listener for better performance
+        window.addEventListener('resize', handleResize, { passive: true });
         
         // Store reference for cleanup if needed
         this.resizeHandler = handleResize;
