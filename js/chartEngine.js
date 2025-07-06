@@ -252,7 +252,7 @@ class ChartEngine {
             .style('height', '100%')
             .style('background', 'linear-gradient(145deg, #000000 0%, #030303 25%, #080808 50%, #030303 75%, #000000 100%)')
             .style('border-radius', '12px')
-            .style('padding', '20px')
+            .style('padding', '20px 20px 40px 20px')
             .style('margin', '0')
             .style('box-shadow', '0 0 30px rgba(220, 38, 38, 0.4), 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(220, 38, 38, 0.3)')
             .style('border', '3px solid #dc2626')
@@ -279,10 +279,11 @@ class ChartEngine {
             .style('height', '100%')
             .style('display', 'block')
             .style('position', 'relative')
-            .style('z-index', '1');
+            .style('z-index', '1')
+            .style('overflow', 'visible');
         
         // Setup dimensions with more space for team labels, logos, and ranking numbers - Extended for longer panel
-        this.margin = { top: 30, right: 60, bottom: 70, left: 320 };
+        this.margin = { top: 30, right: 60, bottom: 100, left: 320 };
         this.updateDimensions();
         
         // Ensure dimensions are valid
@@ -604,17 +605,17 @@ class ChartEngine {
         if (!this.chartPanel || !this.chartPanel.node()) {
             console.warn('Chart panel not available for dimension calculation');
             this.width = 800;
-            this.height = 600;
+            this.height = 900;
         } else {
             const containerRect = this.chartPanel.node().getBoundingClientRect();
             
-            // Account for padding (20px on each side = 40px total) and border (3px on each side = 6px total)
+            // Account for padding (20px left/right, 20px top, 40px bottom = 60px total) and border (3px on each side = 6px total)
             const availableWidth = Math.max(containerRect.width - 46, 400);  // 40px padding + 6px border
-            const availableHeight = Math.max(containerRect.height - 46, 300); // 40px padding + 6px border
+            const availableHeight = Math.max(containerRect.height - 66, 800); // 60px padding + 6px border
             
             // Calculate chart dimensions by subtracting margins - Extended width for longer panel
             this.width = Math.max(availableWidth - this.margin.left - this.margin.right, 600);
-            this.height = Math.max(availableHeight - this.margin.top - this.margin.bottom, 300);
+            this.height = Math.max(availableHeight - this.margin.top - this.margin.bottom, 800);
             
             // Ensure reasonable aspect ratio for readability
             const aspectRatio = this.width / this.height;
@@ -911,22 +912,42 @@ class ChartEngine {
             
             // Update segments with rounded corners and sliding reveal effect
             allSegments.select('.segment-bar')
-                .style('opacity', d => d.gameNumber <= this.currentGameIndex ? 1 : 0)
+                .style('opacity', d => {
+                    // When filtering is active, show all filtered games regardless of current game index
+                    if (this.isFiltered && this.filteredGameIndices.length > 0) {
+                        return this.filteredGameIndices.includes(d.gameNumber) ? 1 : 0;
+                    }
+                    // When not filtering, use current game index
+                    return d.gameNumber <= this.currentGameIndex ? 1 : 0;
+                })
                 .transition()
                 .duration(this.config.transitionDuration)
                 .attr('x', d => {
-                    // Create sliding effect: new segments start from under previous ones
+                    // When filtering is active, show all filtered segments
+                    if (this.isFiltered && this.filteredGameIndices.length > 0) {
+                        if (this.filteredGameIndices.includes(d.gameNumber)) {
+                            return this.xScale(d.startX);
+                        } else {
+                            // Hide non-filtered segments
+                            return this.xScale(teamData.cumulativeScore);
+                        }
+                    }
+                    // Original sliding effect for non-filtered mode
                     if (d.gameNumber > this.currentGameIndex) {
-                        // Hide future segments by positioning them at the end of current visible area
                         return this.xScale(teamData.cumulativeScore);
                     }
                     return this.xScale(d.startX);
                 })
                 .attr('width', d => {
+                    // When filtering is active, show full width for filtered games
+                    if (this.isFiltered && this.filteredGameIndices.length > 0) {
+                        return this.filteredGameIndices.includes(d.gameNumber) ? this.xScale(d.points) : 0;
+                    }
+                    // Original logic for non-filtered mode
                     if (d.gameNumber <= this.currentGameIndex) {
                         return this.xScale(d.points);
                     }
-                    return 0; // Future segments have no width
+                    return 0;
                 })
                 .attr('height', this.yScale.bandwidth() * 1.5)
                 .attr('y', -this.yScale.bandwidth() * 0.25)  // Center the thicker bar
@@ -945,6 +966,17 @@ class ChartEngine {
                 .attr('y', this.yScale.bandwidth() / 2)
                 .text(d => d.points > 0 ? d.points : '')
                 .style('opacity', d => {
+                    // When filtering is active, only show labels for filtered games
+                    if (this.isFiltered && this.filteredGameIndices.length > 0) {
+                        if (!this.filteredGameIndices.includes(d.gameNumber)) {
+                            return 0; // Hide labels for non-filtered games
+                        }
+                    } else {
+                        // Original logic: hide labels for future games
+                        if (d.gameNumber > this.currentGameIndex) {
+                            return 0;
+                        }
+                    }
                     // Hide text if segment is too narrow
                     const segmentWidth = this.xScale(d.points);
                     return segmentWidth > 30 ? 1 : 0;

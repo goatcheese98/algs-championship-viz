@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALGS Championship - Vue.js Group Stages</title>
+    <title>ALGS Year 4 Championship - Sapporo, Japan</title>
     <!-- Vue.js 3 via CDN -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <!-- D3.js for charts -->
@@ -31,41 +31,301 @@
             overflow-x: hidden;
         }
 
-        .vue-header {
-            background: linear-gradient(135deg, #2d1b1b 0%, #3d2424 50%, #2d1b1b 100%);
+        /* Professional ALGS Championship Header */
+        .championship-header {
+            background: 
+                linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(10, 10, 15, 0.98) 50%, rgba(0, 0, 0, 0.95) 100%),
+                radial-gradient(circle at 25% 25%, rgba(217, 119, 6, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(220, 38, 38, 0.08) 0%, transparent 50%);
             color: #f1f5f9;
-            padding: 20px 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            border-bottom: 2px solid #d97706;
+            padding: 30px 0;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.6),
+                0 0 100px rgba(217, 119, 6, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border-bottom: 3px solid transparent;
+            border-image: linear-gradient(90deg, transparent, #d97706, #dc2626, #d97706, transparent) 1;
             position: sticky;
             top: 0;
             z-index: 1000;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.3;
+            animation: floatGlow 8s ease-in-out infinite;
+        }
+
+        .glow-orb-1 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #d97706, transparent);
+            top: -100px;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .glow-orb-2 {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, #dc2626, transparent);
+            top: -75px;
+            right: 20%;
+            animation-delay: -3s;
+        }
+
+        .glow-orb-3 {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #f59e0b, transparent);
+            bottom: -50px;
+            left: 70%;
+            animation-delay: -6s;
+        }
+
+        @keyframes floatGlow {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-20px) scale(1.1); }
         }
 
         .header-content {
             max-width: 1800px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            z-index: 2;
         }
 
-        .header-title {
-            font-size: 1.8rem;
-            font-weight: 700;
+        .championship-branding {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 25px;
         }
 
-        .vue-logo {
-            background: linear-gradient(135deg, #4fc08d 0%, #44a08d 100%);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+        .championship-logo {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon {
+            font-size: 3.5rem;
+            filter: drop-shadow(0 0 20px rgba(217, 119, 6, 0.8));
+            animation: trophyGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes trophyGlow {
+            0% { 
+                filter: drop-shadow(0 0 20px rgba(217, 119, 6, 0.8)) drop-shadow(0 0 40px rgba(217, 119, 6, 0.4));
+                transform: scale(1);
+            }
+            100% { 
+                filter: drop-shadow(0 0 30px rgba(217, 119, 6, 1)) drop-shadow(0 0 60px rgba(217, 119, 6, 0.6));
+                transform: scale(1.05);
+            }
+        }
+
+        .logo-particles {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .logo-particles::before,
+        .logo-particles::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #d97706;
+            border-radius: 50%;
+            animation: particles 4s linear infinite;
+        }
+
+        .logo-particles::before {
+            top: 10%;
+            left: 20%;
+            animation-delay: 0s;
+        }
+
+        .logo-particles::after {
+            bottom: 10%;
+            right: 20%;
+            animation-delay: 2s;
+        }
+
+        @keyframes particles {
+            0% { opacity: 0; transform: scale(0) translateY(0); }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; transform: scale(1) translateY(-30px); }
+        }
+
+        .championship-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .championship-title {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .title-main {
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #f1f5f9 0%, #d97706 50%, #dc2626 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(217, 119, 6, 0.5);
+            animation: titleShimmer 4s ease-in-out infinite;
+        }
+
+        .title-sub {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #cbd5e1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            margin-top: -8px;
+        }
+
+        @keyframes titleShimmer {
+            0%, 100% { text-shadow: 0 0 30px rgba(217, 119, 6, 0.5); }
+            50% { text-shadow: 0 0 40px rgba(217, 119, 6, 0.8), 0 0 60px rgba(220, 38, 38, 0.3); }
+        }
+
+        .event-details {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .location-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .location-icon {
+            font-size: 1.2rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .location-highlight {
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
+            color: #000;
+            padding: 6px 14px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-shadow: none;
+            box-shadow: 
+                0 4px 15px rgba(217, 119, 6, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            animation: locationGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes locationGlow {
+            0% { 
+                box-shadow: 
+                    0 4px 15px rgba(217, 119, 6, 0.4),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            }
+            100% { 
+                box-shadow: 
+                    0 6px 25px rgba(217, 119, 6, 0.6),
+                    0 0 20px rgba(217, 119, 6, 0.3),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            }
+        }
+
+        .date-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(217, 119, 6, 0.3);
+        }
+
+        .date-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .date-label {
+            font-size: 0.7rem;
+            color: #94a3b8;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .date-value {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: dateFlash 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes dateFlash {
+            0% { 
+                filter: brightness(1);
+                text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+            }
+            100% { 
+                filter: brightness(1.2);
+                text-shadow: 0 0 15px rgba(220, 38, 38, 0.8);
+            }
+        }
+
+        .date-separator {
+            color: #d97706;
+            font-weight: 700;
+            font-size: 1.2rem;
         }
 
         .nav-links {
@@ -910,14 +1170,14 @@
 
             .chart-area {
                 width: 100%;
-                height: 500px;
+                height: 900px;
                 position: relative;
             }
 
             #vue-chart-container {
                 width: 100%;
                 height: 100%;
-                min-height: 500px;
+                min-height: 900px;
                 background: transparent;
                 display: block;
                 position: relative;
@@ -1381,12 +1641,54 @@
 </head>
 <body>
     <div id="app">
-        <div class="vue-header">
+        <!-- Enhanced Professional Championship Header -->
+        <div class="championship-header">
+            <div class="header-background">
+                <div class="glow-orb glow-orb-1"></div>
+                <div class="glow-orb glow-orb-2"></div>
+                <div class="glow-orb glow-orb-3"></div>
+            </div>
+            
             <div class="header-content">
-                <div class="header-title">
-                    🏆 ALGS Championship - Group Stages
-                    <span class="vue-logo">Vue.js</span>
+                <!-- Main Championship Branding -->
+                <div class="championship-branding">
+                    <div class="championship-logo">
+                        <span class="logo-icon">🏆</span>
+                        <div class="logo-particles"></div>
+                    </div>
+                    
+                    <div class="championship-info">
+                        <h1 class="championship-title">
+                            <span class="title-main">ALGS Year 4</span>
+                            <span class="title-sub">Championship</span>
+                        </h1>
+                        
+                        <div class="event-details">
+                            <div class="location-info">
+                                <span class="location-icon">📍</span>
+                                <span class="location-text">
+                                    <span class="location-highlight">Sapporo, Japan</span>
+                                </span>
+                            </div>
+                            
+                            <div class="date-info">
+                                <div class="date-range">
+                                    <div class="date-item date-start">
+                                        <span class="date-label">Start</span>
+                                        <span class="date-value">Jan 29, 2025</span>
+                                    </div>
+                                    <div class="date-separator">—</div>
+                                    <div class="date-item date-end">
+                                        <span class="date-label">End</span>
+                                        <span class="date-value">Feb 2, 2025</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- Navigation Links -->
                 <div class="nav-links">
                     <a href="index.html" class="nav-link">🏠 Home</a>
                     <a href="experiment_page.html" class="nav-link">📊 Original Charts</a>
@@ -1580,162 +1882,157 @@
     </div>
 
     <script>
-        // Simple Native JavaScript Draggable System - No Dependencies Required!
-        const NativeDraggableManager = {
+        // Optimized GSAP Draggable System for Consistent Performance
+        const GSAPDraggableManager = {
             instances: new Map(),
             
-            // Initialize native dragging for a panel
+            // Initialize GSAP dragging for a panel
             initializeDraggable(panelElement, options = {}) {
                 const panelId = panelElement.id || 'enhanced-panel-' + Date.now();
                 
                 // Clean up existing instance
                 this.destroyDraggable(panelId);
                 
-                console.log(`🎯 Initializing native draggable for: ${panelId}`);
+                console.log(`🎯 Initializing GSAP draggable for: ${panelId}`);
                 
-                let isDragging = false;
-                let currentX = 0;
-                let currentY = 0;
-                let initialX = 0;
-                let initialY = 0;
-                let xOffset = 0;
-                let yOffset = 0;
-                
-                // Mouse Events
-                const mouseDown = (e) => {
-                    // Ignore if clicking on controls
-                    if (e.target.closest('.control-btn, .progress-slider, .expand-btn, button, input, select, textarea')) {
-                        return;
+                try {
+                    // Register GSAP plugins
+                    gsap.registerPlugin(Draggable);
+                    
+                    // Enhanced trigger selection with fallback hierarchy
+                    let dragHandle = panelElement.querySelector('.panel-header, .enhanced-action-panel > div:first-child, .drag-handle');
+                    
+                    // If no specific handle found, use the panel itself but avoid interactive elements
+                    if (!dragHandle) {
+                        dragHandle = panelElement;
+                        console.log('⚠️ Using entire panel as drag handle - this might cause interaction issues');
                     }
                     
-                    initialX = e.clientX - xOffset;
-                    initialY = e.clientY - yOffset;
+                    console.log('🎯 Using drag handle:', dragHandle?.className || 'entire panel');
                     
-                    if (e.target === panelElement || panelElement.contains(e.target)) {
-                        isDragging = true;
-                        panelElement.style.cursor = 'grabbing';
-                        panelElement.style.userSelect = 'none';
-                        panelElement.style.zIndex = '9999';
-                        console.log('🎯 Native drag started');
-                        e.preventDefault();
-                    }
-                };
-                
-                const mouseUp = () => {
-                    if (isDragging) {
-                        isDragging = false;
-                        panelElement.style.cursor = 'grab';
-                        panelElement.style.userSelect = '';
-                        panelElement.style.zIndex = '1000';
-                        console.log('📍 Native drag completed');
-                    }
-                };
-                
-                const mouseMove = (e) => {
-                    if (!isDragging) return;
-                    
-                    e.preventDefault();
-                    
-                    currentX = e.clientX - initialX;
-                    currentY = e.clientY - initialY;
-                    
-                    xOffset = currentX;
-                    yOffset = currentY;
-                    
-                    // Apply transform with hardware acceleration
-                    panelElement.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-                };
-                
-                // Touch Events for Mobile Support
-                const touchStart = (e) => {
-                    // Ignore if clicking on controls
-                    if (e.target.closest('.control-btn, .progress-slider, .expand-btn, button, input, select, textarea')) {
-                        return;
-                    }
-                    
-                    const touch = e.touches[0];
-                    initialX = touch.clientX - xOffset;
-                    initialY = touch.clientY - yOffset;
-                    
-                    if (e.target === panelElement || panelElement.contains(e.target)) {
-                        isDragging = true;
-                        panelElement.style.cursor = 'grabbing';
-                        panelElement.style.userSelect = 'none';
-                        panelElement.style.zIndex = '9999';
-                        console.log('📱 Native touch drag started');
-                        e.preventDefault();
-                    }
-                };
-                
-                const touchEnd = (e) => {
-                    if (isDragging) {
-                        isDragging = false;
-                        panelElement.style.cursor = 'grab';
-                        panelElement.style.userSelect = '';
-                        panelElement.style.zIndex = '1000';
-                        console.log('📱 Native touch drag completed');
-                        e.preventDefault();
-                    }
-                };
-                
-                const touchMove = (e) => {
-                    if (!isDragging) return;
-                    
-                    e.preventDefault();
-                    
-                    const touch = e.touches[0];
-                    currentX = touch.clientX - initialX;
-                    currentY = touch.clientY - initialY;
-                    
-                    xOffset = currentX;
-                    yOffset = currentY;
-                    
-                    // Apply transform with hardware acceleration
-                    panelElement.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-                };
-                
-                // Add event listeners
-                panelElement.addEventListener('mousedown', mouseDown);
-                document.addEventListener('mousemove', mouseMove);
-                document.addEventListener('mouseup', mouseUp);
-                
-                // Touch events with passive: false for preventDefault
-                panelElement.addEventListener('touchstart', touchStart, { passive: false });
-                document.addEventListener('touchmove', touchMove, { passive: false });
-                document.addEventListener('touchend', touchEnd, { passive: false });
-                
-                // Set initial styles for optimal performance
-                panelElement.style.cursor = 'grab';
-                panelElement.style.userSelect = 'none';
-                panelElement.style.willChange = 'transform';
-                panelElement.style.transform = 'translate3d(0, 0, 0)'; // Enable hardware acceleration
-                panelElement.style.backfaceVisibility = 'hidden'; // Prevent flickering
-                
-                // Store instance for cleanup
-                const instance = {
-                    element: panelElement,
-                    cleanup: () => {
-                        panelElement.removeEventListener('mousedown', mouseDown);
-                        document.removeEventListener('mousemove', mouseMove);
-                        document.removeEventListener('mouseup', mouseUp);
-                        panelElement.removeEventListener('touchstart', touchStart);
-                        document.removeEventListener('touchmove', touchMove);
-                        document.removeEventListener('touchend', touchEnd);
+                    // Create ultra-smooth GSAP draggable instance with enhanced configuration
+                    const draggableInstance = Draggable.create(panelElement, {
+                        type: "x,y",
+                        trigger: dragHandle,
                         
-                        // Reset styles
-                        panelElement.style.cursor = '';
-                        panelElement.style.userSelect = '';
-                        panelElement.style.willChange = '';
-                        panelElement.style.transform = '';
-                        panelElement.style.zIndex = '';
-                        panelElement.style.backfaceVisibility = '';
+                        // Momentum and physics
+                        inertia: true,
+                        edgeResistance: 0.65,
+                        dragResistance: 0,
+                        
+                        // Advanced performance settings
+                        force3D: true,
+                        allowEventDefault: false,
+                        allowContextMenu: true,
+                        autoScroll: false,
+                        
+                        // Interaction filtering to avoid conflicts with buttons/inputs
+                        clickableTest: (element) => {
+                            // Prevent dragging when clicking on interactive elements
+                            return !element.closest('.control-btn, .progress-slider, .expand-btn, button, input, select, textarea, [data-no-drag]');
+                        },
+                        
+                        onPress: () => {
+                            console.log('🎯 GSAP drag press detected');
+                            // Immediate visual feedback on press
+                            gsap.set(panelElement, { 
+                                cursor: 'grabbing',
+                                userSelect: 'none',
+                                scale: 1.02,
+                                zIndex: 9999
+                            });
+                        },
+                        
+                        onDragStart: () => {
+                            console.log('🎯 GSAP drag started');
+                            // Enhanced visual feedback during drag
+                            gsap.set(panelElement, { 
+                                boxShadow: "0 25px 50px rgba(0,0,0,0.5), 0 0 30px rgba(217, 119, 6, 0.3)",
+                                filter: "brightness(1.15) drop-shadow(0 0 10px rgba(217, 119, 6, 0.4))",
+                                scale: 1.05
+                            });
+                        },
+                        
+                        onDrag: () => {
+                            // Minimal drag processing for maximum performance
+                            // Just maintain the enhanced visual state
+                        },
+                        
+                        onDragEnd: () => {
+                            console.log('📍 GSAP drag completed');
+                            // Smooth transition back to normal state
+                            gsap.to(panelElement, {
+                                duration: 0.3,
+                                ease: "power2.out",
+                                boxShadow: "0 12px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(217, 119, 6, 0.1)",
+                                filter: "brightness(1)",
+                                scale: 1,
+                                cursor: 'grab',
+                                userSelect: '',
+                                zIndex: 1000
+                            });
+                        },
+                        
+                        onRelease: () => {
+                            console.log('📍 GSAP drag released');
+                            // Ensure cursor returns to normal even on release without drag
+                            gsap.set(panelElement, { 
+                                cursor: 'grab',
+                                userSelect: ''
+                            });
+                        }
+                    })[0]; // Get first (and only) instance
+                    
+                    // Validate draggable instance creation
+                    if (!draggableInstance) {
+                        throw new Error('Failed to create GSAP Draggable instance');
                     }
-                };
-                
-                this.instances.set(panelId, instance);
-                console.log(`⚡ Native draggable initialized successfully for: ${panelId}`);
-                
-                return instance;
+                    
+                    // Set initial optimizations and accessibility
+                    gsap.set(panelElement, {
+                        cursor: 'grab',
+                        userSelect: 'none',
+                        willChange: 'transform',
+                        force3D: true, // Hardware acceleration
+                        transformOrigin: 'center center'
+                    });
+                    
+                    // Add data attributes for better interaction filtering
+                    panelElement.setAttribute('data-draggable', 'true');
+                    
+                    // Mark interactive elements to prevent drag conflicts
+                    const interactiveElements = panelElement.querySelectorAll('.control-btn, .progress-slider, .expand-btn, button, input, select, textarea');
+                    interactiveElements.forEach(el => el.setAttribute('data-no-drag', 'true'));
+                    
+                    // Store instance for cleanup
+                    const instance = {
+                        element: panelElement,
+                        gsapInstance: draggableInstance,
+                        cleanup: () => {
+                            if (draggableInstance) {
+                                draggableInstance.kill();
+                            }
+                            // Reset styles
+                            gsap.set(panelElement, {
+                                cursor: '',
+                                userSelect: '',
+                                willChange: '',
+                                transform: '',
+                                zIndex: '',
+                                clearProps: 'all'
+                            });
+                        }
+                    };
+                    
+                    this.instances.set(panelId, instance);
+                    console.log(`⚡ GSAP draggable initialized successfully for: ${panelId}`);
+                    
+                    return instance;
+                    
+                } catch (error) {
+                    console.error('❌ Error initializing GSAP draggable:', error);
+                    return null;
+                }
             },
             
             // Clean up draggable instance
@@ -1746,7 +2043,7 @@
                         instance.cleanup();
                     }
                     this.instances.delete(panelId);
-                    console.log(`🗑️ Cleaned up native draggable: ${panelId}`);
+                    console.log(`🗑️ Cleaned up GSAP draggable: ${panelId}`);
                 }
             },
             
@@ -1755,7 +2052,7 @@
                 this.instances.forEach((instance, panelId) => {
                     this.destroyDraggable(panelId);
                 });
-                console.log('🧹 All native draggable instances cleaned up');
+                console.log('🧹 All GSAP draggable instances cleaned up');
             },
             
             // Get status of all instances
@@ -1764,7 +2061,8 @@
                 this.instances.forEach((instance, panelId) => {
                     status[panelId] = {
                         active: !!instance,
-                        element: instance ? instance.element : null
+                        element: instance ? instance.element : null,
+                        gsapInstance: instance ? instance.gsapInstance : null
                     };
                 });
                 return status;
@@ -1772,12 +2070,12 @@
         };
         
         // Make manager globally available
-        window.NativeDraggableManager = NativeDraggableManager;
+        window.GSAPDraggableManager = GSAPDraggableManager;
 
-        // Enhanced Draggable Initialization Function for Vue Components
+        // Enhanced GSAP Draggable Initialization Function for Vue Components
         function initializeEnhancedDraggable(panelRef) {
             if (!panelRef) {
-                console.warn('Panel ref not available for draggable initialization');
+                console.warn('Panel ref not available for GSAP draggable initialization');
                 return null;
             }
             
@@ -1786,12 +2084,12 @@
                 panelRef.id = 'enhanced-panel-' + Math.random().toString(36).substr(2, 9);
             }
             
-            const instance = NativeDraggableManager.initializeDraggable(panelRef);
+            const instance = GSAPDraggableManager.initializeDraggable(panelRef);
             
             if (instance) {
-                console.log('⚡ Enhanced native draggable initialized successfully');
+                console.log('⚡ Enhanced GSAP draggable initialized successfully');
             } else {
-                console.error('❌ Failed to initialize native draggable');
+                console.error('❌ Failed to initialize GSAP draggable');
             }
             
             return instance;
@@ -1799,8 +2097,8 @@
         
         // Global cleanup function
         function cleanupAllDraggables() {
-            if (window.NativeDraggableManager) {
-                window.NativeDraggableManager.destroyAll();
+            if (window.GSAPDraggableManager) {
+                window.GSAPDraggableManager.destroyAll();
             }
         }
         
@@ -1965,7 +2263,123 @@
                     return this.tournamentDays.find(day => day.id === this.selectedDay) || {};
                 }
             },
+            mounted() {
+                // Initialize professional header animations with GSAP
+                this.initializeHeaderAnimations();
+                
+                // Initialize GSAP dragging when DOM is ready
+                this.$nextTick(() => {
+                    this.initGSAPDraggable();
+                });
+                
+                // Verify centralized draggable manager is available
+                if (window.GSAPDraggableManager) {
+                    console.log('✅ Centralized GSAP Draggable Manager detected and ready');
+                } else {
+                    console.warn('⚠️ GSAP Draggable Manager not available - dragging may not work properly');
+                }
+            },
             methods: {
+                // Professional Championship Header Animations
+                initializeHeaderAnimations() {
+                    console.log('🎭 Initializing professional header animations...');
+                    
+                    // Animate championship title entrance
+                    gsap.fromTo('.title-main', {
+                        y: -50,
+                        opacity: 0,
+                        scale: 0.8
+                    }, {
+                        y: 0,
+                        opacity: 1,
+                        scale: 1,
+                        duration: 1.2,
+                        ease: "back.out(1.7)",
+                        delay: 0.3
+                    });
+                    
+                    // Animate subtitle with slight delay
+                    gsap.fromTo('.title-sub', {
+                        y: -30,
+                        opacity: 0
+                    }, {
+                        y: 0,
+                        opacity: 1,
+                        duration: 0.8,
+                        ease: "power3.out",
+                        delay: 0.6
+                    });
+                    
+                    // Animate location with bounce effect
+                    gsap.fromTo('.location-highlight', {
+                        x: -100,
+                        opacity: 0,
+                        rotation: -10
+                    }, {
+                        x: 0,
+                        opacity: 1,
+                        rotation: 0,
+                        duration: 1,
+                        ease: "elastic.out(1, 0.3)",
+                        delay: 0.9
+                    });
+                    
+                    // Animate dates with stagger effect
+                    gsap.fromTo('.date-item', {
+                        scale: 0,
+                        opacity: 0,
+                        y: 20
+                    }, {
+                        scale: 1,
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.6,
+                        ease: "back.out(1.7)",
+                        delay: 1.2,
+                        stagger: 0.1
+                    });
+                    
+                    // Animate trophy logo with dramatic entrance
+                    gsap.fromTo('.logo-icon', {
+                        scale: 0,
+                        rotation: -180,
+                        opacity: 0
+                    }, {
+                        scale: 1,
+                        rotation: 0,
+                        opacity: 1,
+                        duration: 1.5,
+                        ease: "elastic.out(1, 0.5)",
+                        delay: 0.1
+                    });
+                    
+                    // Animate navigation links with slide-in effect
+                    gsap.fromTo('.nav-link', {
+                        x: 50,
+                        opacity: 0
+                    }, {
+                        x: 0,
+                        opacity: 1,
+                        duration: 0.6,
+                        ease: "power3.out",
+                        delay: 1.5,
+                        stagger: 0.1
+                    });
+                    
+                    // Add continuous floating animation to glow orbs (already defined in CSS)
+                    gsap.set('.glow-orb', { transformOrigin: 'center center' });
+                    
+                    // Create pulsing glow effect for the championship header
+                    gsap.to('.championship-header', {
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6), 0 0 120px rgba(217, 119, 6, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                        duration: 3,
+                        ease: "power2.inOut",
+                        repeat: -1,
+                        yoyo: true
+                    });
+                    
+                    console.log('✨ Professional header animations initialized successfully');
+                },
                 selectDay(dayId) {
                     this.selectedDay = dayId;
                     
@@ -2146,22 +2560,22 @@
                     }
                 },
                 
-                initNativeDraggable() {
+                initGSAPDraggable() {
                     if (!this.$refs.actionPanel) {
                         console.warn('Action panel ref not available');
                         return;
                     }
                     
-                    console.log('🔧 Initializing native draggable...');
+                    console.log('🔧 Initializing GSAP draggable...');
                     
-                    // Use centralized native draggable manager
+                    // Use centralized GSAP draggable manager
                     this.draggableInstance = initializeEnhancedDraggable(this.$refs.actionPanel);
                     
                     if (this.draggableInstance) {
-                        console.log('⚡ Native draggable initialized successfully');
-                        console.log('✨ Panel is now draggable from any edge or corner!');
+                        console.log('⚡ GSAP draggable initialized successfully');
+                        console.log('✨ Panel is now draggable with smooth GSAP performance!');
                     } else {
-                        console.error('❌ Failed to initialize native draggable');
+                        console.error('❌ Failed to initialize GSAP draggable');
                     }
                 },
                 
@@ -2438,10 +2852,10 @@
                 }
                 
                 // Verify centralized draggable manager is available
-                if (window.NativeDraggableManager) {
-                    console.log('✅ Centralized Native Draggable Manager detected and ready');
+                if (window.GSAPDraggableManager) {
+                    console.log('✅ Centralized GSAP Draggable Manager detected and ready');
                 } else {
-                    console.warn('⚠️ Native Draggable Manager not available - dragging may not work properly');
+                    console.warn('⚠️ GSAP Draggable Manager not available - dragging may not work properly');
                 }
                 
                 // Set up periodic updates for game state
@@ -2464,9 +2878,9 @@
                     }
                 }, 300); // Slightly slower for better performance
                 
-                // Initialize native dragging when DOM is ready
+                // Initialize GSAP dragging when DOM is ready
                 this.$nextTick(() => {
-                    this.initNativeDraggable();
+                    this.initGSAPDraggable();
                 });
                 
                 // Don't auto-select matchup on load - let user choose from tournament overview
@@ -2474,10 +2888,10 @@
             },
             
             updated() {
-                // Re-initialize native draggable when action panel becomes available or content changes
+                // Re-initialize GSAP draggable when action panel becomes available or content changes
                 this.$nextTick(() => {
                     if (this.$refs.actionPanel && !this.draggableInstance) {
-                        this.initNativeDraggable();
+                        this.initGSAPDraggable();
                     }
                 });
             },
@@ -2488,9 +2902,9 @@
                     clearInterval(this.gameStateInterval);
                 }
                 
-                // Clean up native draggable instances via centralized manager
-                if (this.$refs.actionPanel && this.$refs.actionPanel.id && window.NativeDraggableManager) {
-                    window.NativeDraggableManager.destroyDraggable(this.$refs.actionPanel.id);
+                // Clean up GSAP draggable instances via centralized manager
+                if (this.$refs.actionPanel && this.$refs.actionPanel.id && window.GSAPDraggableManager) {
+                    window.GSAPDraggableManager.destroyDraggable(this.$refs.actionPanel.id);
                 }
                 
                 // Also clean up any remaining instances as fallback
@@ -2502,14 +2916,14 @@
             }
         }).mount('#app');
         
-        // Enhanced Debug Tools for Native Draggable Troubleshooting
-        window.debugNativeDraggable = function() {
-            console.log('🔍 Native Draggable Debug Information:');
+        // Enhanced Debug Tools for GSAP Draggable Troubleshooting
+        window.debugGSAPDraggable = function() {
+            console.log('🔍 GSAP Draggable Debug Information:');
             
             // Check managers
-            console.log('NativeDraggableManager Available:', !!window.NativeDraggableManager);
-            if (window.NativeDraggableManager) {
-                console.log('Active Draggable Instances:', window.NativeDraggableManager.getStatus());
+            console.log('GSAPDraggableManager Available:', !!window.GSAPDraggableManager);
+            if (window.GSAPDraggableManager) {
+                console.log('Active Draggable Instances:', window.GSAPDraggableManager.getStatus());
             }
             
             // Check action panel
@@ -2538,11 +2952,11 @@
                 return;
             }
             
-            console.log('🔄 Force reinitializing native draggable...');
+            console.log('🔄 Force reinitializing GSAP draggable...');
             
             // Clean up existing instance
-            if (actionPanel.id && window.NativeDraggableManager) {
-                window.NativeDraggableManager.destroyDraggable(actionPanel.id);
+            if (actionPanel.id && window.GSAPDraggableManager) {
+                window.GSAPDraggableManager.destroyDraggable(actionPanel.id);
             }
             
             // Reinitialize
@@ -2558,21 +2972,21 @@
         // Quick status check
         window.quickDragCheck = function() {
             const panel = document.querySelector('.enhanced-action-panel');
-            const managerOk = !!window.NativeDraggableManager;
+            const managerOk = !!window.GSAPDraggableManager;
             const panelOk = !!panel && panel.offsetParent !== null;
             const initOk = !!window.initializeEnhancedDraggable;
             
             console.log(`📊 Quick Status: Manager=${managerOk}, Panel=${panelOk}, InitFunction=${initOk}`);
             
             if (managerOk && panelOk && initOk) {
-                console.log('✅ All systems ready for native dragging');
+                console.log('✅ All systems ready for GSAP dragging');
             } else {
-                console.log('❌ Issues detected - run debugNativeDraggable() for details');
+                console.log('❌ Issues detected - run debugGSAPDraggable() for details');
             }
         };
         
-        console.log('🛠️ Native Draggable debug tools loaded:');
-        console.log('  - debugNativeDraggable() - Full debug info');
+        console.log('🛠️ GSAP Draggable debug tools loaded:');
+        console.log('  - debugGSAPDraggable() - Full debug info');
         console.log('  - forceReinitDraggable() - Force reinitialize current panel');
         console.log('  - quickDragCheck() - Quick status check');
     </script>
