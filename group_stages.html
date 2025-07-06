@@ -22,7 +22,7 @@
             display: flex;
             flex-direction: column;
             gap: 30px;
-            padding: 10px;
+            padding: 30px 10px;
             box-sizing: border-box;
             margin: 0 auto;
         }
@@ -72,10 +72,12 @@
             margin-bottom: 20px;
             justify-content: center;
             position: sticky;
-            top: 0;
+            top: 80px;
             background-color: #f5f5f5;
             padding: 10px 0;
-            z-index: 1000;
+            z-index: 999;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .tab-button {
             padding: 12px 24px;
@@ -218,12 +220,76 @@
             cursor: pointer;
             border: none;
         }
+        
+        /* Navigation Header Styles */
+        .navigation-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-content {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        @media (max-width: 768px) {
+            .nav-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-title {
+                font-size: 1.4rem;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="navigation-header">
+        <div class="nav-content">
+            <h1 class="nav-title">ALGS Championship - Tournament Overview</h1>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">← Home</a>
+                <a href="experiment_page.html" class="nav-link">🧪 Experimental Charts</a>
+            </div>
+        </div>
+    </div>
+
     <div class="mega-container">
-        <h1 class="main-title">ALGS Championship - Tournament Overview</h1>
-        
         <div class="tab-container">
             <div class="tab-buttons">
                 <button class="tab-button active" onclick="openTab('day1')">Day 1 Group Stage</button>

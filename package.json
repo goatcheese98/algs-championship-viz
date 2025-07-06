@@ -1,0 +1,38 @@
+{
+  "name": "algs-championship-viz",
+  "version": "1.0.0",
+  "description": "ALGS Championship Tournament Visualization with interactive race charts",
+  "main": "index.js",
+  "scripts": {
+    "dev": "live-server --port=3000 --open=/index.html --watch=. --ignore=node_modules",
+    "start": "live-server --port=3000 --open=/index.html",
+    "build": "echo 'Static site - no build needed'",
+    "serve": "live-server --port=8080 --no-browser",
+    "experiment": "live-server --port=3000 --open=/experiment_page.html --watch=. --ignore=node_modules",
+    "tournament": "live-server --port=3000 --open=/group_stages.html --watch=. --ignore=node_modules",
+    "test": "echo 'No tests specified'",
+    "lint": "echo 'No linting configured'"
+  },
+  "keywords": [
+    "algs",
+    "apex-legends",
+    "championship",
+    "visualization",
+    "d3js",
+    "race-chart",
+    "tournament"
+  ],
+  "author": "ALGS Viz Team",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gareth-Seaward/algs-y4-viz.git"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  }
+} 
