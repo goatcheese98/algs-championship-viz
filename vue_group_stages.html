@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALGS Championship - Vue.js Group Stages</title>
+    <!-- Vue.js 3 via CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- D3.js for charts -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="js/mapSequences.js?v=3"></script>
+    <script src="js/chartEngine.js?v=3"></script>
+    <script src="js/vueChartComponents.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a0f0f 0%, #2d1b1b 50%, #1a0f0f 100%);
+            min-height: 100vh;
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        .vue-header {
+            background: linear-gradient(135deg, #2d1b1b 0%, #3d2424 50%, #2d1b1b 100%);
+            color: #f1f5f9;
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            border-bottom: 2px solid #d97706;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .vue-logo {
+            background: linear-gradient(135deg, #4fc08d 0%, #44a08d 100%);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: #f1f5f9;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: rgba(217, 119, 6, 0.2);
+            border-color: #d97706;
+            transform: translateY(-1px);
+            color: #fbbf24;
+        }
+
+        .mega-container {
+            width: 100%;
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            min-height: calc(100vh - 120px);
+        }
+
+        .tournament-overview {
+            background: linear-gradient(135deg, #2d1b1b 0%, #3d2424 100%);
+            border-radius: 16px;
+            padding: 30px;
+            border: 2px solid #d97706;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .overview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .overview-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .day-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .day-tab {
+            padding: 10px 20px;
+            border: 2px solid #4a4a4a;
+            border-radius: 8px;
+            background: transparent;
+            color: #f1f5f9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .day-tab:hover {
+            border-color: #d97706;
+        }
+
+        .day-tab.active {
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            border-color: #d97706;
+            color: white;
+        }
+
+        .day-content {
+            display: none;
+        }
+
+        .day-content.active {
+            display: block;
+        }
+
+        .matchups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .matchup-card {
+            background: linear-gradient(135deg, #1e1414 0%, #2d1b1b 50%, #1e1414 100%);
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px solid #4a4a4a;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .matchup-card:hover {
+            border-color: #d97706;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(217, 119, 6, 0.3);
+        }
+
+        .matchup-card.selected {
+            border-color: #4fc08d;
+            box-shadow: 0 0 20px rgba(79, 192, 141, 0.4);
+        }
+
+        .matchup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .matchup-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .matchup-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-available {
+            background: rgba(16, 185, 129, 0.2);
+            color: #86efac;
+            border: 1px solid #10b981;
+        }
+
+        .status-loading {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid #f59e0b;
+        }
+
+        .status-loaded {
+            background: rgba(79, 192, 141, 0.2);
+            color: #4fc08d;
+            border: 1px solid #4fc08d;
+        }
+
+        .matchup-info {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .chart-section {
+            background: linear-gradient(135deg, #1a0f0f 0%, #2d1b1b 50%, #1a0f0f 100%);
+            border-radius: 16px;
+            padding: 30px;
+            border: 2px solid #d97706;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            min-height: 800px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-controls {
+            margin-bottom: 30px;
+        }
+
+        .chart-display {
+            flex: 1;
+            min-height: 600px;
+        }
+
+        .no-selection {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        .no-selection-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity 0.5s ease;
+        }
+
+        .fade-enter-from, .fade-leave-to {
+            opacity: 0;
+        }
+
+        .slide-enter-active, .slide-leave-active {
+            transition: all 0.3s ease;
+        }
+
+        .slide-enter-from {
+            transform: translateX(100px);
+            opacity: 0;
+        }
+
+        .slide-leave-to {
+            transform: translateX(-100px);
+            opacity: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .matchups-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .day-selector {
+                flex-wrap: wrap;
+            }
+            
+            .overview-header {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="vue-header">
+            <div class="header-content">
+                <div class="header-title">
+                    🏆 ALGS Championship - Group Stages
+                    <span class="vue-logo">Vue.js</span>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">🏠 Home</a>
+                    <a href="experiment_page.html" class="nav-link">📊 Original Charts</a>
+                    <a href="vue_experiment_page.html" class="nav-link">⚡ Vue Experiment</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="mega-container">
+            <!-- Tournament Overview Section -->
+            <div class="tournament-overview">
+                <div class="overview-header">
+                    <h1 class="overview-title">Tournament Overview</h1>
+                    <div class="day-selector">
+                        <button 
+                            v-for="day in tournamentDays" 
+                            :key="day.id"
+                            :class="['day-tab', { active: selectedDay === day.id }]"
+                            @click="selectDay(day.id)"
+                        >
+                            {{ day.name }}
+                        </button>
+                    </div>
+                </div>
+
+                <transition name="fade" mode="out-in">
+                    <div v-for="day in tournamentDays" 
+                         :key="day.id"
+                         v-show="selectedDay === day.id"
+                         class="day-content active"
+                    >
+                        <p style="color: #cbd5e1; margin-bottom: 20px;">{{ day.description }}</p>
+                        
+                        <div class="matchups-grid">
+                            <div 
+                                v-for="matchup in day.matchups" 
+                                :key="matchup.id"
+                                :class="['matchup-card', { selected: selectedMatchup === matchup.id }]"
+                                @click="selectMatchup(matchup.id)"
+                            >
+                                <div class="matchup-header">
+                                    <h3 class="matchup-title">{{ matchup.title }}</h3>
+                                    <span :class="['matchup-status', getStatusClass(matchup.id)]">
+                                        {{ getStatusText(matchup.id) }}
+                                    </span>
+                                </div>
+                                <p class="matchup-info">{{ matchup.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+
+            <!-- Chart Section -->
+            <div class="chart-section">
+                <div v-if="!selectedMatchup" class="no-selection">
+                    <div class="no-selection-icon">📊</div>
+                    <h3>Select a matchup to view the interactive chart</h3>
+                    <p>Choose from the tournament matchups above to see detailed race charts with game-by-game progression.</p>
+                </div>
+
+                <template v-else>
+                    <div class="chart-controls">
+                        <chart-status-display
+                            :chart-status="chartStatus"
+                            :data-status="dataStatus"
+                            :current-matchup="selectedMatchup"
+                            :current-map="currentMap"
+                            :current-game="currentGame"
+                            :max-games="maxGames"
+                        ></chart-status-display>
+
+                        <chart-control-panel
+                            :matchups="availableMatchups"
+                            v-model:selected-matchup="selectedMatchup"
+                            v-model:current-game="currentGame"
+                            v-model:animation-speed="animationSpeed"
+                            :is-loading="isLoading"
+                            :max-games="maxGames"
+                            :is-playing="isPlaying"
+                            @load-matchup="loadMatchup"
+                            @toggle-playback="togglePlayback"
+                            @restart="restart"
+                            @export-data="exportData"
+                            @jump-to-game="jumpToGame"
+                        ></chart-control-panel>
+                    </div>
+
+                    <div class="chart-display">
+                        <chart-container
+                            :title="getMatchupTitle(selectedMatchup)"
+                            :is-loading="isLoading"
+                            :error="errorMessage"
+                        >
+                            <template #actions>
+                                <button 
+                                    v-if="chartEngine"
+                                    @click="fullscreenChart"
+                                    class="btn btn-secondary"
+                                    style="padding: 8px 16px; font-size: 0.9rem;"
+                                >
+                                    🔍 Fullscreen
+                                </button>
+                            </template>
+                        </chart-container>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        // Import Vue components
+        const { ChartControlPanel, ChartStatusDisplay, ChartContainer } = window.VueChartComponents;
+
+        createApp({
+            components: {
+                ChartControlPanel,
+                ChartStatusDisplay,
+                ChartContainer
+            },
+            data() {
+                return {
+                    // Tournament structure
+                    selectedDay: 'day1',
+                    tournamentDays: [
+                        {
+                            id: 'day1',
+                            name: 'Day 1 - Group Stages',
+                            description: 'Initial group stage matchups determining bracket positions for the tournament.',
+                            matchups: [
+                                {
+                                    id: 'AvsB',
+                                    title: 'Group A vs Group B',
+                                    description: 'First group stage matchup featuring teams from Groups A and B competing across multiple maps.'
+                                },
+                                {
+                                    id: 'CvsD',
+                                    title: 'Group C vs Group D',
+                                    description: 'Second group stage matchup with teams from Groups C and D battling for bracket positioning.'
+                                },
+                                {
+                                    id: 'BvsD',
+                                    title: 'Group B vs Group D',
+                                    description: 'Cross-group matchup between Groups B and D with strategic implications for the bracket.'
+                                }
+                            ]
+                        },
+                        {
+                            id: 'day2',
+                            name: 'Day 2 - Eliminations',
+                            description: 'Elimination rounds determining which teams advance to the winners bracket.',
+                            matchups: [
+                                {
+                                    id: 'ER1',
+                                    title: 'Elimination Round 1',
+                                    description: 'First elimination round where teams fight to stay alive in the tournament.'
+                                },
+                                {
+                                    id: 'ER2',
+                                    title: 'Elimination Round 2',
+                                    description: 'Second elimination round with higher stakes and fewer teams remaining.'
+                                }
+                            ]
+                        },
+                        {
+                            id: 'day3',
+                            name: 'Day 3 - Winners',
+                            description: 'Winners bracket rounds for teams that have advanced successfully.',
+                            matchups: [
+                                {
+                                    id: 'WR1',
+                                    title: 'Winners Round 1',
+                                    description: 'First winners bracket round featuring the top performing teams.'
+                                }
+                            ]
+                        }
+                    ],
+
+                    // Chart state
+                    selectedMatchup: '',
+                    chartEngine: null,
+                    isLoading: false,
+                    isPlaying: false,
+                    errorMessage: '',
+                    
+                    // Game state
+                    currentGame: 1,
+                    maxGames: 6,
+                    currentMap: '',
+                    
+                    // Settings
+                    animationSpeed: 'normal',
+                    
+                    // Status tracking
+                    loadedMatchups: new Set(),
+                    loadingMatchups: new Set()
+                }
+            },
+            computed: {
+                availableMatchups() {
+                    return this.tournamentDays.flatMap(day => 
+                        day.matchups.map(matchup => ({
+                            value: matchup.id,
+                            label: matchup.title
+                        }))
+                    );
+                },
+                chartStatus() {
+                    if (this.isLoading) return 'loading';
+                    if (this.chartEngine) return 'ready';
+                    return 'idle';
+                },
+                dataStatus() {
+                    if (this.isLoading) return 'loading';
+                    if (this.chartEngine && this.chartEngine.data) return 'ready';
+                    return 'idle';
+                }
+            },
+            methods: {
+                selectDay(dayId) {
+                    this.selectedDay = dayId;
+                },
+                
+                selectMatchup(matchupId) {
+                    this.selectedMatchup = matchupId;
+                    this.loadMatchup();
+                },
+                
+                getStatusClass(matchupId) {
+                    if (this.loadingMatchups.has(matchupId)) return 'status-loading';
+                    if (this.loadedMatchups.has(matchupId)) return 'status-loaded';
+                    return 'status-available';
+                },
+                
+                getStatusText(matchupId) {
+                    if (this.loadingMatchups.has(matchupId)) return 'Loading...';
+                    if (this.loadedMatchups.has(matchupId)) return 'Loaded';
+                    return 'Available';
+                },
+                
+                getMatchupTitle(matchupId) {
+                    const matchup = this.availableMatchups.find(m => m.value === matchupId);
+                    return matchup ? matchup.label : 'ALGS Championship Chart';
+                },
+                
+                async loadMatchup() {
+                    if (!this.selectedMatchup) return;
+                    
+                    this.isLoading = true;
+                    this.loadingMatchups.add(this.selectedMatchup);
+                    this.errorMessage = '';
+                    
+                    try {
+                        // Initialize chart engine if not exists
+                        if (!this.chartEngine) {
+                            this.chartEngine = new ChartEngine('vue-chart-area');
+                        }
+                        
+                        // Load the chart with selected matchup
+                        await this.chartEngine.renderChart({
+                            matchup: this.selectedMatchup
+                        });
+                        
+                        // Update game state
+                        this.updateGameState();
+                        this.loadedMatchups.add(this.selectedMatchup);
+                        
+                        console.log('Vue.js Group Stages: Chart loaded successfully for', this.selectedMatchup);
+                        
+                    } catch (error) {
+                        console.error('Vue.js Group Stages: Error loading chart:', error);
+                        this.errorMessage = `Failed to load chart: ${error.message}`;
+                    } finally {
+                        this.isLoading = false;
+                        this.loadingMatchups.delete(this.selectedMatchup);
+                    }
+                },
+                
+                updateGameState() {
+                    if (this.chartEngine && this.chartEngine.data) {
+                        // Calculate max games from data
+                        const gameColumns = Object.keys(this.chartEngine.data[0] || {})
+                            .filter(key => key.startsWith('Game') && key !== 'Game')
+                            .length;
+                        this.maxGames = Math.max(gameColumns, 6);
+                        this.currentGame = this.chartEngine.currentGameIndex || 1;
+                        this.updateCurrentMap();
+                    }
+                },
+                
+                updateCurrentMap() {
+                    if (this.chartEngine) {
+                        this.currentMap = this.chartEngine.getCurrentMap();
+                    }
+                },
+                
+                jumpToGame(gameNumber) {
+                    this.currentGame = gameNumber;
+                    if (this.chartEngine) {
+                        this.chartEngine.currentGameIndex = gameNumber;
+                        this.chartEngine.updateChart();
+                        this.updateCurrentMap();
+                    }
+                },
+                
+                togglePlayback() {
+                    if (this.chartEngine) {
+                        this.chartEngine.togglePlayback();
+                        this.isPlaying = this.chartEngine.isPlaying;
+                    }
+                },
+                
+                restart() {
+                    if (this.chartEngine) {
+                        this.chartEngine.restart();
+                        this.currentGame = 1;
+                        this.isPlaying = false;
+                        this.updateCurrentMap();
+                    }
+                },
+                
+                exportData() {
+                    if (this.chartEngine) {
+                        this.chartEngine.exportData(this.selectedMatchup);
+                    }
+                },
+                
+                fullscreenChart() {
+                    const chartArea = document.getElementById('vue-chart-area');
+                    if (chartArea && chartArea.requestFullscreen) {
+                        chartArea.requestFullscreen();
+                    }
+                }
+            },
+            
+            mounted() {
+                console.log('Vue.js Enhanced Group Stages app mounted!');
+                
+                // Set up periodic updates for game state
+                this.gameStateInterval = setInterval(() => {
+                    if (this.chartEngine) {
+                        this.currentGame = this.chartEngine.currentGameIndex || 1;
+                        this.isPlaying = this.chartEngine.isPlaying || false;
+                        this.updateCurrentMap();
+                    }
+                }, 500);
+                
+                // Auto-select first matchup if none selected
+                if (!this.selectedMatchup && this.tournamentDays[0].matchups.length > 0) {
+                    this.selectedMatchup = this.tournamentDays[0].matchups[0].id;
+                }
+            },
+            
+            beforeUnmount() {
+                if (this.gameStateInterval) {
+                    clearInterval(this.gameStateInterval);
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html> 

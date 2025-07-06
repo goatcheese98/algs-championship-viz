@@ -1,7 +1,7 @@
 {
   "name": "algs-championship-viz",
   "version": "1.0.0",
-  "description": "ALGS Championship Tournament Visualization with interactive race charts",
+  "description": "ALGS Championship Tournament Visualization with interactive race charts powered by Vue.js and D3.js",
   "main": "index.js",
   "scripts": {
     "dev": "live-server --port=3000 --open=/index.html --watch=. --ignore=node_modules",
@@ -9,7 +9,9 @@
     "build": "echo 'Static site - no build needed'",
     "serve": "live-server --port=8080 --no-browser",
     "experiment": "live-server --port=3000 --open=/experiment_page.html --watch=. --ignore=node_modules",
+    "vue-experiment": "live-server --port=3000 --open=/vue_experiment_page.html --watch=. --ignore=node_modules",
     "tournament": "live-server --port=3000 --open=/group_stages.html --watch=. --ignore=node_modules",
+    "vue-dev": "live-server --port=3001 --open=/vue_experiment_page.html --watch=. --ignore=node_modules",
     "test": "echo 'No tests specified'",
     "lint": "echo 'No linting configured'"
   },
@@ -19,6 +21,9 @@
     "championship",
     "visualization",
     "d3js",
+    "vue",
+    "vuejs",
+    "reactive",
     "race-chart",
     "tournament"
   ],
@@ -26,6 +31,9 @@
   "license": "MIT",
   "devDependencies": {
     "live-server": "^1.2.2"
+  },
+  "dependencies": {
+    "vue": "^3.0.0"
   },
   "repository": {
     "type": "git",

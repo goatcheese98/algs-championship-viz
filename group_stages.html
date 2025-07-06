@@ -3,7 +3,9 @@
 <head>
     <title>ALGS Championship - Group Stages</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="js/mapSequences.js?v=3"></script>
+    <script src="js/chartEngine.js?v=3"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -12,30 +14,82 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #f5f5f5;
+            background: linear-gradient(135deg, #1a0f0f 0%, #2d1b1b 50%, #1a0f0f 100%);
             min-height: 100vh;
             overflow-x: hidden;
+            color: #f1f5f9;
         }
         .mega-container {
             width: 100%;
-            max-width: 1500px;
+            max-width: 1800px;
             display: flex;
             flex-direction: column;
-            gap: 30px;
-            padding: 30px 10px;
+            gap: 40px;
+            padding: 40px 20px;
             box-sizing: border-box;
             margin: 0 auto;
+            min-height: calc(100vh - 120px);
         }
         .chart-section {
-            background-color: white;
-            padding: 10px;
+            background: linear-gradient(135deg, #1a0f0f 0%, #2d1b1b 50%, #1a0f0f 100%);
+            padding: 30px;
             border-radius: 16px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            border: 2px solid #d97706;
             width: 100%;
             box-sizing: border-box;
-            overflow: hidden;
-            min-height: 900px;
+            overflow: visible;
+            min-height: 1200px;
+            height: auto;
             position: relative;
+            margin-bottom: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Centralized Chart Styles */
+        .centralized-chart .chart-container {
+            background: transparent;
+            border: none;
+            padding: 0;
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            min-height: 1100px;
+        }
+        
+        .centralized-chart .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #d97706;
+            flex-shrink: 0;
+        }
+        
+        .centralized-chart .chart-title {
+            color: #f1f5f9;
+            font-size: 2.0em;
+            font-weight: 600;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .centralized-chart .chart-info {
+            display: flex;
+            gap: 25px;
+            color: #d97706;
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+        
+        .centralized-chart .chart-area {
+            width: 100%;
+            flex: 1;
+            position: relative;
+            min-height: 1000px;
         }
         .container {
             width: 100%;
@@ -43,9 +97,9 @@
         }
         iframe {
             width: 100%;
-            height: 900px;
+            height: 1100px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
             display: block;
             scrollbar-width: none;  /* Firefox */
@@ -73,26 +127,35 @@
             justify-content: center;
             position: sticky;
             top: 80px;
-            background-color: #f5f5f5;
-            padding: 10px 0;
+            background: linear-gradient(135deg, #2d1b1b 0%, #3d2424 100%);
+            padding: 15px;
             z-index: 999;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            border: 1px solid #d97706;
         }
         .tab-button {
             padding: 12px 24px;
             font-size: 1.1em;
-            background-color: #e0e0e0;
-            border: none;
+            background: linear-gradient(135deg, #1e1414 0%, #2d1b1b 100%);
+            border: 2px solid #666;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 500;
-            color: #333;
+            color: #f1f5f9;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .tab-button:hover {
+            border-color: #d97706;
+            box-shadow: 0 0 15px rgba(217, 119, 6, 0.3);
+            transform: translateY(-1px);
         }
         .tab-button.active {
-            background-color: #15616d;
+            background: linear-gradient(135deg, #d97706 0%, #f18f01 100%);
+            border-color: #d97706;
             color: white;
+            box-shadow: 0 0 20px rgba(217, 119, 6, 0.4);
         }
         .tab-content {
             display: none;
@@ -233,9 +296,9 @@
         }
         
         .nav-content {
-            max-width: 1500px;
+            max-width: 1800px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -266,14 +329,101 @@
             transform: translateY(-1px);
         }
         
+        /* Responsive Design */
+        @media (max-width: 1600px) {
+            .mega-container {
+                max-width: 1400px;
+                padding: 30px 15px;
+            }
+            
+            .nav-content {
+                max-width: 1400px;
+                padding: 0 30px;
+            }
+            
+            .centralized-chart .chart-area {
+                min-height: 900px;
+            }
+            
+            .chart-section {
+                min-height: 1000px;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .mega-container {
+                max-width: 1100px;
+                padding: 25px 10px;
+            }
+            
+            .nav-content {
+                max-width: 1100px;
+                padding: 0 20px;
+            }
+            
+            .centralized-chart .chart-title {
+                font-size: 1.6em;
+            }
+            
+            .centralized-chart .chart-area {
+                min-height: 800px;
+            }
+            
+            .chart-section {
+                min-height: 900px;
+                padding: 25px;
+            }
+            
+            iframe {
+                height: 950px;
+            }
+        }
+        
         @media (max-width: 768px) {
             .nav-content {
                 flex-direction: column;
                 gap: 15px;
+                padding: 0 15px;
             }
             
             .nav-title {
                 font-size: 1.4rem;
+            }
+            
+            .mega-container {
+                padding: 20px 10px;
+            }
+            
+            .chart-section {
+                padding: 20px;
+                min-height: 700px;
+            }
+            
+            .centralized-chart .chart-title {
+                font-size: 1.4em;
+            }
+            
+            .centralized-chart .chart-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .centralized-chart .chart-area {
+                min-height: 600px;
+            }
+            
+            iframe {
+                height: 750px;
+            }
+            
+            .tab-buttons {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .tab-button {
+                padding: 10px 16px;
+                font-size: 1.0em;
             }
         }
     </style>
@@ -300,16 +450,46 @@
             </div>
 
             <div id="day1" class="tab-content active">
-                <div class="chart-section" data-src="race_chartAvsB.html">
-                    <div class="chart-placeholder">Scroll to load Group A vs B</div>
+                <!-- Group A vs B Chart -->
+                <div class="chart-section centralized-chart" data-matchup="AvsB">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h2 class="chart-title">Group A vs B - Day 1 Group Stage</h2>
+                            <div class="chart-info">
+                                <span class="team-count">20 Teams</span>
+                                <span class="game-count">6 Games</span>
+                            </div>
+                        </div>
+                        <div id="chart-area-avsb" class="chart-area"></div>
+                    </div>
                 </div>
 
-                <div class="chart-section" data-src="race_chartCvsD.html">
-                    <div class="chart-placeholder">Scroll to load Group C vs D</div>
+                <!-- Group C vs D Chart -->
+                <div class="chart-section centralized-chart" data-matchup="CvsD">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h2 class="chart-title">Group C vs D - Day 1 Group Stage</h2>
+                            <div class="chart-info">
+                                <span class="team-count">20 Teams</span>
+                                <span class="game-count">6 Games</span>
+                            </div>
+                        </div>
+                        <div id="chart-area-cvsd" class="chart-area"></div>
+                    </div>
                 </div>
 
-                <div class="chart-section" data-src="race_chartBvsD.html">
-                    <div class="chart-placeholder">Scroll to load Group B vs D</div>
+                <!-- Group B vs D Chart -->
+                <div class="chart-section centralized-chart" data-matchup="BvsD">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h2 class="chart-title">Group B vs D - Day 1 Group Stage</h2>
+                            <div class="chart-info">
+                                <span class="team-count">20 Teams</span>
+                                <span class="game-count">6 Games</span>
+                            </div>
+                        </div>
+                        <div id="chart-area-bvsd" class="chart-area"></div>
+                    </div>
                 </div>
             </div>
 
@@ -357,30 +537,67 @@
         let day4Loaded = false;
         let day5Loaded = false;
         const loadedCharts = new Set();
+        const chartEngines = new Map();
 
-        // Create Intersection Observer
+        // Create Intersection Observer for centralized charts
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const section = entry.target;
-                    const src = section.getAttribute('data-src');
                     
-                    // Only load if not already loaded
-                    if (!loadedCharts.has(src)) {
-                        loadChart(section, src);
-                        loadedCharts.add(src);
+                    if (section.classList.contains('centralized-chart')) {
+                        // Load centralized chart
+                        const matchup = section.getAttribute('data-matchup');
+                        if (!loadedCharts.has(matchup)) {
+                            loadCentralizedChart(section, matchup);
+                            loadedCharts.add(matchup);
+                        }
+                    } else {
+                        // Load legacy iframe chart
+                        const src = section.getAttribute('data-src');
+                        if (src && !loadedCharts.has(src)) {
+                            loadChart(section, src);
+                            loadedCharts.add(src);
+                        }
                     }
                 }
             });
         }, {
             root: null,
-            rootMargin: '100px', // Start loading slightly before the chart comes into view
+            rootMargin: '100px',
             threshold: 0.1
         });
 
+        function loadCentralizedChart(section, matchup) {
+            const chartAreaId = `chart-area-${matchup.toLowerCase()}`;
+            const chartArea = section.querySelector(`#${chartAreaId}`);
+            
+            if (chartArea && window.ChartEngine) {
+                console.log(`Loading centralized chart for ${matchup}`);
+                
+                // Create chart engine instance
+                const engine = new ChartEngine(chartAreaId, {
+                    hasExternalControls: false // Use built-in controls
+                });
+                
+                // Load the appropriate CSV data
+                const csvFile = `${matchup}_points.csv`;
+                engine.loadData(csvFile).then(() => {
+                    console.log(`Chart ${matchup} loaded successfully`);
+                }).catch(error => {
+                    console.error(`Error loading chart ${matchup}:`, error);
+                    chartArea.innerHTML = `<div style="color: #dc2626; text-align: center; padding: 40px;">Error loading ${matchup} data</div>`;
+                });
+                
+                // Store engine reference
+                chartEngines.set(matchup, engine);
+            } else {
+                console.error(`Chart area ${chartAreaId} not found or ChartEngine not available`);
+            }
+        }
+
         function loadChart(section, src) {
             const iframe = document.createElement('iframe');
-            // Add cache-busting query parameter
             iframe.src = src + '?v=' + new Date().getTime();
             section.innerHTML = '';
             section.appendChild(iframe);
@@ -435,13 +652,17 @@
             }
         }
 
-        // Load the first visible chart immediately
-        const firstChart = document.querySelector('#day1 .chart-section');
-        if (firstChart) {
-            const src = firstChart.getAttribute('data-src');
-            loadChart(firstChart, src);
-            loadedCharts.add(src);
-        }
+        // Wait for DOM and scripts to load, then initialize first chart
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const firstChart = document.querySelector('#day1 .centralized-chart');
+                if (firstChart) {
+                    const matchup = firstChart.getAttribute('data-matchup');
+                    loadCentralizedChart(firstChart, matchup);
+                    loadedCharts.add(matchup);
+                }
+            }, 500); // Small delay to ensure scripts are loaded
+        });
     </script>
 </body>
 </html>

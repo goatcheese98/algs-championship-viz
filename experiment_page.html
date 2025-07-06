@@ -16,12 +16,19 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            height: 100%;
+            overflow-x: auto;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #1a0f0f 0%, #2d1b1b 50%, #1a0f0f 100%);
             min-height: 100vh;
             min-width: 1200px;  /* Ensure minimum width for expanded layout */
             color: #f1f5f9;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
@@ -30,6 +37,7 @@
             padding: 20px 0;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
             border-bottom: 2px solid #d97706;
+            flex-shrink: 0;  /* Don't shrink header */
         }
 
         .header-content {
@@ -72,6 +80,9 @@
             max-width: 1600px;  /* Increased by 200px */
             margin: 0 auto;
             padding: 30px 20px;
+            flex: 1;  /* Take remaining height */
+            display: flex;
+            flex-direction: column;
         }
 
         .controls-panel {
@@ -81,6 +92,7 @@
             margin-bottom: 30px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
             border: 1px solid #d97706;
+            flex-shrink: 0;  /* Don't shrink controls */
         }
 
         .controls-grid {
@@ -166,11 +178,13 @@
             padding: 30px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
             border: 2px solid #d97706;
-            min-height: 900px;
-            height: auto;
             position: relative;
             max-width: none; /* Remove width restrictions */
             width: 100%;
+            flex: 1;  /* Take remaining height */
+            display: flex;
+            flex-direction: column;
+            min-height: 600px;  /* Minimum chart height */
         }
 
         .chart-header {
@@ -180,6 +194,7 @@
             margin-bottom: 20px;
             padding-bottom: 20px;
             border-bottom: 2px solid #d97706;
+            flex-shrink: 0;  /* Don't shrink header */
         }
 
         .chart-title {
@@ -227,8 +242,9 @@
 
         #chart-area {
             width: 100%;
-            height: 500px;
+            flex: 1;  /* Take remaining height */
             position: relative;
+            min-height: 400px;  /* Minimum height for chart */
         }
 
         .loading-message {
@@ -260,6 +276,7 @@
             margin-bottom: 30px;
             border-left: 4px solid #d97706;
             border: 1px solid #d97706;
+            flex-shrink: 0;  /* Don't shrink info panel */
         }
 
         .info-panel h3 {
@@ -273,7 +290,36 @@
             line-height: 1.6;
         }
 
+        @media (max-width: 1400px) {
+            body {
+                min-width: 1000px;
+            }
+            
+            .container {
+                max-width: 1200px;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            body {
+                min-width: 900px;
+            }
+            
+            .container {
+                max-width: 1000px;
+                padding: 20px 15px;
+            }
+            
+            .chart-container {
+                min-height: 500px;
+            }
+        }
+
         @media (max-width: 768px) {
+            body {
+                min-width: auto;
+            }
+            
             .header-content {
                 flex-direction: column;
                 gap: 15px;
@@ -285,6 +331,15 @@
             
             .button-group {
                 flex-direction: column;
+            }
+            
+            .container {
+                padding: 15px 10px;
+            }
+            
+            .chart-container {
+                min-height: 400px;
+                padding: 20px;
             }
         }
     </style>
