@@ -149,9 +149,9 @@
                   <div class="game-progress-section">
                     <label class="section-label">Game Progress: {{ currentGame }} / {{ maxGames }}</label>
                     <div class="progress-container">
-                      <span class="progress-value">{{ currentGame }}</span>
+                      <span class="progress-value">0</span>
                       <input type="range" 
-                             :min="1" 
+                             :min="0" 
                              :max="maxGames" 
                              v-model.number="currentGame"
                              @input="updateGameFromSlider"
@@ -191,6 +191,14 @@
                     <div class="control-section">
                       <label class="section-label">🎮 Game {{ currentGame }} / {{ maxGames }}</label>
                       <div class="game-filter-buttons">
+                        <button @click="jumpToInitialState"
+                                class="game-filter-btn"
+                                :class="{ 
+                                  current: currentGame === 0 
+                                }"
+                                style="background: linear-gradient(135deg, #374151 0%, #1f2937 100%); border: 2px solid #4b5563; color: #f1f5f9;">
+                          0
+                        </button>
                         <button v-for="game in maxGames" 
                                 :key="game"
                                 @click="toggleGameFilter(game)"
@@ -230,6 +238,7 @@
 
 <script>
 import { GSAPDraggableManager } from '../utils/GSAPDraggableManager.js'
+// Removed modular ChartEngine import to prevent conflicts with global js/chartEngine.js
 
 export default {
   name: 'ChampionshipApp',
@@ -350,7 +359,7 @@ export default {
       errorMessage: '',
       
       // Game state for enhanced panel
-      currentGame: 1,
+      currentGame: 0,  // Start at 0 to show initial state
       maxGames: 6,
       currentMap: '',
       manualSliderControl: false,
@@ -410,7 +419,7 @@ export default {
     // Set up periodic updates for game state
     this.gameStateInterval = setInterval(() => {
       if (this.chartEngine) {
-        const engineGameIndex = this.chartEngine.currentGameIndex || 1;
+        const engineGameIndex = this.chartEngine.currentGameIndex !== undefined ? this.chartEngine.currentGameIndex : 1;
         
         if (Math.abs(this.currentGame - engineGameIndex) > 0 && !this.manualSliderControl) {
           this.currentGame = engineGameIndex;
@@ -421,6 +430,17 @@ export default {
         this.updateGameState();
       }
     }, 300);
+    
+    // Add event listener for play prompt clicks
+    this.$nextTick(() => {
+      const container = document.getElementById('vue-chart-container');
+      if (container) {
+        container.addEventListener('play-prompt-clicked', () => {
+          console.log('🎬 Play prompt clicked, starting animation');
+          this.playAnimation();
+        });
+      }
+    });
   },
   
   methods: {
@@ -510,17 +530,30 @@ export default {
       try {
         console.log('📊 Loading matchup:', this.selectedMatchup);
         
-        // Initialize chart engine
-        this.chartEngine = await window.chartManager.ensureChartEngine('vue-chart-container');
+        // Cleanup existing chart engine
+        if (this.chartEngine) {
+          this.chartEngine.cleanup();
+        }
         
-        // Render chart with selected matchup
-        await this.chartEngine.renderChart({
-          matchup: this.selectedMatchup
+        // Wait for DOM to be ready
+        await this.$nextTick();
+        
+        // Additional safety check - ensure container exists
+        await this.waitForContainer();
+        
+        // Initialize chart engine using global ChartEngine from js/chartEngine.js
+        this.chartEngine = new window.ChartEngine('vue-chart-container', {
+          debugMode: true,
+          transitionDuration: 2500,  // Slower, more elegant animations
+          enableAnimation: true
         });
+        
+        // Initialize chart engine with matchup data
+        await this.chartEngine.renderChart({ matchup: this.selectedMatchup });
         
         // Update game state
         this.maxGames = this.chartEngine.maxGames || 6;
-        this.currentGame = this.chartEngine.currentGameIndex || 1;
+        this.currentGame = this.chartEngine.currentGameIndex; // Should be 0 for initial state
         this.updateCurrentMap();
         
         // Mark as loaded
@@ -539,6 +572,35 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },
+    
+    async waitForContainer() {
+      // Wait for the container to be available in the DOM
+      return new Promise((resolve, reject) => {
+        const maxWait = 5000; // 5 seconds max wait
+        const checkInterval = 50; // Check every 50ms
+        let elapsed = 0;
+        
+        const checkContainer = () => {
+          const container = document.getElementById('vue-chart-container');
+          
+          if (container) {
+            console.log('✅ Container ready for ChartEngine');
+            resolve();
+            return;
+          }
+          
+          elapsed += checkInterval;
+          if (elapsed >= maxWait) {
+            reject(new Error('Container not found after 5 seconds'));
+            return;
+          }
+          
+          setTimeout(checkContainer, checkInterval);
+        };
+        
+        checkContainer();
+      });
     },
     
     async verifyChartRender() {
@@ -622,10 +684,11 @@ export default {
       });
     },
     
-    updateGameFromSlider() {
+    async updateGameFromSlider() {
       if (this.chartEngine) {
-        this.chartEngine.currentGameIndex = this.currentGame;
-        this.chartEngine.updateChart();
+        await this.chartEngine.jumpToGame(this.currentGame);
+        // Sync the Vue component state with the chart engine state
+        this.currentGame = this.chartEngine.currentGameIndex;
         this.updateCurrentMap();
       }
     },
@@ -640,25 +703,48 @@ export default {
       }, 100);
     },
     
-    togglePlayback() {
+    async playAnimation() {
       if (this.chartEngine) {
-        this.chartEngine.togglePlayback();
-        this.isPlaying = this.chartEngine.isPlaying;
+        this.isPlaying = true;
+        // Always start from game 1 when playing animation
+        const startGame = 1;
+        await this.chartEngine.playAnimation(startGame, this.maxGames, 3000);  // Slower playback: 3 seconds between games
+        this.isPlaying = false;
+      }
+    },
+
+    async togglePlayback() {
+      if (this.chartEngine) {
+        if (this.isPlaying) {
+          this.chartEngine.stopAnimation();
+          this.isPlaying = false;
+        } else {
+          await this.playAnimation();
+        }
       }
     },
     
-    restart() {
+    async restart() {
       if (this.chartEngine) {
-        this.chartEngine.restart();
-        this.currentGame = 1;
+        this.chartEngine.stopAnimation();
+        await this.chartEngine.jumpToGame(0);  // Reset to initial state
+        this.currentGame = 0;
         this.isPlaying = false;
+        this.updateCurrentMap();
+      }
+    },
+
+    async jumpToInitialState() {
+      if (this.chartEngine) {
+        await this.chartEngine.jumpToGame(0);
+        this.currentGame = 0;
         this.updateCurrentMap();
       }
     },
     
     updateCurrentMap() {
       if (this.chartEngine) {
-        this.currentMap = this.chartEngine.getCurrentMap();
+        this.currentMap = this.chartEngine.getMapForGame(this.currentGame);
       }
     },
     
@@ -683,12 +769,12 @@ export default {
       this.applyGameFilter();
     },
     
-    applyGameFilter() {
+    async applyGameFilter() {
       if (this.chartEngine) {
         if (this.selectedGames.length > 0) {
-          this.chartEngine.filterByGames(this.selectedGames);
+          await this.chartEngine.filterByGames(this.selectedGames);
         } else {
-          this.chartEngine.clearGameFilter();
+          await this.chartEngine.clearGameFilter();
         }
       }
     },
@@ -768,7 +854,8 @@ export default {
         
         // Clean up existing chart
         if (this.chartEngine) {
-          window.chartManager.cleanup('vue-chart-container');
+          this.chartEngine.cleanup();
+          this.chartEngine = null;
         }
         
         // Reload
@@ -787,6 +874,11 @@ export default {
   },
   
   beforeUnmount() {
+    // Cleanup chart engine
+    if (this.chartEngine) {
+      this.chartEngine.cleanup();
+    }
+    
     if (this.gameStateInterval) {
       clearInterval(this.gameStateInterval);
     }

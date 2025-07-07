@@ -891,7 +891,7 @@ class ChartEngine {
             segmentsEnter.append('rect')
                 .attr('class', 'segment-bar')
                 .attr('height', this.yScale.bandwidth() * 1.5)
-                .attr('y', -this.yScale.bandwidth() * 0.25)  // Center the thicker bar
+                .attr('y', -this.yScale.bandwidth() * 0.75)  // Center the bar with text and labels
                 .attr('x', 0)
                 .attr('width', 0)
                 .attr('rx', 8)
@@ -900,7 +900,7 @@ class ChartEngine {
             // Add text labels for game points
             segmentsEnter.append('text')
                 .attr('class', 'segment-label')
-                .attr('y', this.yScale.bandwidth() / 2)
+                .attr('y', 0)  // Align with team labels at center of team group
                 .attr('dy', '0.35em')
                 .style('font-size', '14px') // Increased font size
                 .style('font-weight', '600')
@@ -950,7 +950,7 @@ class ChartEngine {
                     return 0;
                 })
                 .attr('height', this.yScale.bandwidth() * 1.5)
-                .attr('y', -this.yScale.bandwidth() * 0.25)  // Center the thicker bar
+                .attr('y', -this.yScale.bandwidth() * 0.75)  // Center the bar with text and labels
                 .attr('rx', 8) // Rounded corners
                 .attr('ry', 8)
                 .style('fill', d => d.color)
@@ -963,7 +963,7 @@ class ChartEngine {
                 .transition()
                 .duration(this.config.transitionDuration)
                 .attr('x', d => this.xScale(d.startX) + this.xScale(d.points) / 2)
-                .attr('y', this.yScale.bandwidth() / 2)
+                .attr('y', 0)  // Align with team labels at center of team group
                 .text(d => d.points > 0 ? d.points : '')
                 .style('opacity', d => {
                     // When filtering is active, only show labels for filtered games
@@ -991,7 +991,7 @@ class ChartEngine {
             const cumulativeLabelEnter = cumulativeLabel.enter()
                 .append('text')
                 .attr('class', 'cumulative-label')
-                .attr('y', this.yScale.bandwidth() / 2)
+                .attr('y', 0)  // Align with team labels at center of team group
                 .attr('dy', '0.35em')
                 .style('font-size', '14px')
                 .style('font-weight', '700')
@@ -1003,7 +1003,7 @@ class ChartEngine {
                 .transition()
                 .duration(this.config.transitionDuration)
                 .attr('x', d => this.xScale(d.cumulativeScore) + 8)
-                .attr('y', this.yScale.bandwidth() / 2)
+                .attr('y', 0)  // Align with team labels at center of team group
                 .text(d => d.cumulativeScore);
         });
     }
@@ -1020,8 +1020,15 @@ class ChartEngine {
         }
     }
 
-    playAnimation() {
-        if (!this.isPlaying || this.currentGameIndex >= this.maxGames) {
+    playAnimation(startGame = null, maxGames = null, intervalMs = null) {
+        // If parameters provided, set up new animation sequence
+        if (startGame !== null) {
+            this.currentGameIndex = startGame;
+            this.isPlaying = true;
+            this.animationIntervalMs = intervalMs || (this.config.transitionDuration + this.config.holdDuration);
+        }
+        
+        if (!this.isPlaying || this.currentGameIndex >= (maxGames || this.maxGames)) {
             this.isPlaying = false;
             return;
         }
@@ -1031,7 +1038,7 @@ class ChartEngine {
         
         this.animationTimer = setTimeout(() => {
             this.playAnimation();
-        }, this.config.transitionDuration + this.config.holdDuration);
+        }, this.animationIntervalMs || (this.config.transitionDuration + this.config.holdDuration));
     }
 
     restart() {
@@ -1041,6 +1048,93 @@ class ChartEngine {
             clearTimeout(this.animationTimer);
         }
         this.updateChart();
+    }
+
+    jumpToGame(gameIndex) {
+        // Support game 0 as initial state
+        if (gameIndex === 0) {
+            this.currentGameIndex = 0;
+            // Show initial state with all teams but zero scores
+            this.renderInitialState();
+            return;
+        }
+        
+        // Ensure gameIndex is within valid bounds
+        this.currentGameIndex = Math.max(1, Math.min(gameIndex, this.maxGames || 6));
+        this.updateChart();
+    }
+
+    stopAnimation() {
+        this.isPlaying = false;
+        if (this.animationTimer) {
+            clearTimeout(this.animationTimer);
+            this.animationTimer = null;
+        }
+    }
+
+    renderInitialState() {
+        console.log('🔄 Rendering initial state (Game 0)');
+        if (!this.data || !this.gameColumns) {
+            console.warn('⚠️ ChartEngine not initialized');
+            return;
+        }
+
+        // Process data to show teams in final ranking order but with 0 cumulative scores
+        const processedData = this.data.map(d => {
+            const teamData = {
+                team: d.Team,
+                games: [],
+                cumulativeScore: 0 // Show 0 for initial state
+            };
+            return teamData;
+        });
+
+        // Sort by final total score to show proper ranking order
+        const finalScores = this.data.map(d => ({
+            team: d.Team,
+            total: +d.Total || 0
+        })).sort((a, b) => b.total - a.total);
+
+        // Reorder processedData to match final ranking
+        const sortedData = finalScores.map(finalScore => 
+            processedData.find(pd => pd.team === finalScore.team)
+        );
+
+        // Update scales
+        this.xScale.domain([0, Math.max(...finalScores.map(d => d.total))]);
+        this.yScale.domain(sortedData.map(d => d.team));
+
+        // Update axes
+        const xAxis = d3.axisBottom(this.xScale).tickFormat(d3.format('.0f'));
+        this.xAxisGroup.call(xAxis);
+
+        // Force X-axis font size
+        this.xAxisGroup.selectAll('text')
+            .style('font-size', '24px', 'important')
+            .style('font-weight', '700', 'important')
+            .style('font-family', 'Inter, Roboto Mono, monospace', 'important')
+            .style('fill', '#f1f5f9', 'important');
+
+        this.updateCustomYAxis(sortedData);
+        this.renderStackedBars(sortedData);
+    }
+
+    cleanup() {
+        // Stop any running animations
+        this.stopAnimation();
+        
+        // Clear the container
+        if (this.container && !this.container.empty()) {
+            this.container.html('');
+        }
+        
+        // Remove resize listener
+        if (this.resizeHandler) {
+            window.removeEventListener('resize', this.resizeHandler);
+            this.resizeHandler = null;
+        }
+        
+        console.log('🧹 ChartEngine cleanup completed');
     }
 
     showError(message) {
