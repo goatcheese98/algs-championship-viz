@@ -4,16 +4,22 @@
  * with consistent styling and behavior across the application.
  */
 
-// Check for D3.js availability with better error handling
-const d3 = (() => {
+// D3.js availability check function (deferred until needed)
+function getD3() {
+    if (d3) return d3; // Return cached instance if available
+    
     if (typeof window !== 'undefined' && window.d3) {
         console.log('✅ D3.js found:', window.d3.version || 'version unknown');
-        return window.d3;
+        d3 = window.d3; // Cache the reference
+        return d3;
     } else {
         console.error('❌ D3.js not found! Please ensure D3.js is loaded before ChartEngine.');
         throw new Error('D3.js is required but not found. Please load D3.js before initializing ChartEngine.');
     }
-})();
+}
+
+// D3.js will be accessed via getD3() function when needed
+let d3 = null;
 
 // Centralized Chart Manager for consistent deployment
 class ChartManager {
@@ -169,7 +175,8 @@ const chartManager = new ChartManager();
 class ChartEngine {
     constructor(containerId, options = {}) {
         this.containerId = containerId;
-        this.container = containerId ? d3.select(`#${containerId}`) : null;
+        // Initialize D3.js and container - deferred until needed
+        this.container = null;
         this.data = null;
         this.currentGameIndex = 1;
         this.isPlaying = false;
@@ -217,6 +224,9 @@ class ChartEngine {
     getContainer() {
         // Try multiple selection strategies
         let container = null;
+        
+        // Initialize D3.js first
+        const d3 = getD3();
         
         // Strategy 1: Direct D3 selection
         try {
@@ -305,9 +315,9 @@ class ChartEngine {
         }
         
         // Setup scales with proper ranges
-        this.xScale = d3.scaleLinear()
+        this.xScale = getD3().scaleLinear()
             .range([0, this.width]);
-        this.yScale = d3.scaleBand()
+        this.yScale = getD3().scaleBand()
             .range([0, this.height])  // Correct range for bars to render properly
             .padding(0.625); // Increased padding for 25% more spacing between bars
         
@@ -368,7 +378,7 @@ class ChartEngine {
         }
         
         // Create CSV content
-        const csvContent = d3.csvFormat(this.data);
+        const csvContent = getD3().csvFormat(this.data);
         
         // Create and trigger download
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -664,7 +674,7 @@ class ChartEngine {
 
     async loadData(csvPath) {
         try {
-            this.data = await d3.csv(csvPath);
+            this.data = await getD3().csv(csvPath);
             
             // Correctly identify game columns: exclude first (Team) and last (Total) columns
             const allColumns = this.data.columns;
@@ -829,12 +839,12 @@ class ChartEngine {
         processedData.sort((a, b) => b.cumulativeScore - a.cumulativeScore);
         
         // Update scales
-        this.xScale.domain([0, d3.max(processedData, d => d.cumulativeScore)]);
+        this.xScale.domain([0, getD3().max(processedData, d => d.cumulativeScore)]);
         this.yScale.domain(processedData.map(d => d.team));
         
         // Update X axis without grid lines
-        const xAxis = d3.axisBottom(this.xScale)
-            .tickFormat(d3.format('.0f'));
+        const xAxis = getD3().axisBottom(this.xScale)
+            .tickFormat(getD3().format('.0f'));
         
         this.xAxisGroup.call(xAxis);
         
@@ -886,7 +896,7 @@ class ChartEngine {
         // Render game segments for each team
         const self = this; // Store reference for inner functions
         allTeamGroups.each((teamData, i, nodes) => {
-            const teamGroup = d3.select(nodes[i]);
+            const teamGroup = getD3().select(nodes[i]);
             
             // Game segments
             const gameSegments = teamGroup.selectAll('.game-segment')
@@ -1116,7 +1126,7 @@ class ChartEngine {
         this.yScale.domain(sortedData.map(d => d.team));
 
         // Update axes
-        const xAxis = d3.axisBottom(this.xScale).tickFormat(d3.format('.0f'));
+        const xAxis = getD3().axisBottom(this.xScale).tickFormat(getD3().format('.0f'));
         this.xAxisGroup.call(xAxis);
 
         // Force X-axis font size
@@ -1228,14 +1238,14 @@ class ChartEngine {
             .style('opacity', 0) // Start hidden until loaded
             .style('clip-path', 'circle(14px at center)')
             .on('load', function() {
-                d3.select(this).style('opacity', 1);
+                getD3().select(this).style('opacity', 1);
                 // Hide fallback when image loads
-                d3.select(this.parentNode).select('.logo-fallback').style('opacity', 0);
+                getD3().select(this.parentNode).select('.logo-fallback').style('opacity', 0);
             })
             .on('error', function() {
                 // Show fallback on error
-                d3.select(this).style('opacity', 0);
-                d3.select(this.parentNode).select('.logo-fallback').style('opacity', 1);
+                getD3().select(this).style('opacity', 0);
+                getD3().select(this.parentNode).select('.logo-fallback').style('opacity', 1);
             });
         
         // Add fallback for teams without logos or failed loads
@@ -1288,7 +1298,7 @@ class ChartEngine {
         
         // Update team logos with actual images and fallbacks
         allTeamEntries.each((teamData, i, nodes) => {
-            const teamGroup = d3.select(nodes[i]);
+            const teamGroup = getD3().select(nodes[i]);
             const teamName = teamData.team;
             
             // Get logo URL from TeamConfig
