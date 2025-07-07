@@ -238,10 +238,7 @@
 
 <script>
 import { GSAPDraggableManager } from '../utils/GSAPDraggableManager.js'
-// ChartEngine is loaded globally via script tags in HTML - no import needed
-// Import championship CSS so Vite can process it
-import '../../styles/championship.css'
-// Using global window.ChartEngine to prevent conflicts with script tag loading
+// Removed modular ChartEngine import to prevent conflicts with global js/chartEngine.js
 
 export default {
   name: 'ChampionshipApp',
@@ -525,22 +522,18 @@ export default {
     },
     
     async loadMatchup() {
-      if (!this.selectedMatchup) {
-        console.log('⚠️ No matchup selected');
-        return;
-      }
+      if (!this.selectedMatchup) return;
       
-      if (this.loadingMatchups.has(this.selectedMatchup)) {
-        console.log('⏳ Matchup already loading...');
-        return;
-      }
-      
-      this.loadingMatchups.add(this.selectedMatchup);
       this.isLoading = true;
-      this.errorMessage = '';
+      this.loadingMatchups.add(this.selectedMatchup);
       
       try {
-        console.log('🔄 Loading matchup:', this.selectedMatchup);
+        console.log('📊 Loading matchup:', this.selectedMatchup);
+        
+        // Cleanup existing chart engine
+        if (this.chartEngine) {
+          this.chartEngine.cleanup();
+        }
         
         // Wait for DOM to be ready
         await this.$nextTick();
@@ -548,34 +541,36 @@ export default {
         // Additional safety check - ensure container exists
         await this.waitForContainer();
         
-        // Create ChartEngine instance (constructor only sets up basic properties)
+        // Initialize chart engine using global ChartEngine from js/chartEngine.js
         this.chartEngine = new window.ChartEngine('vue-chart-container', {
           debugMode: true,
           transitionDuration: 2500,  // Slower, more elegant animations
           enableAnimation: true
         });
-
-        // Initialize ChartEngine asynchronously (this will wait for D3.js)
-        await this.chartEngine.init();
         
-        // Configure and render the chart
-        await this.chartEngine.renderChart({
-          matchup: this.selectedMatchup,
-          transitionDuration: 2500,
-          enableAnimation: true
-        });
+        // Initialize chart engine with matchup data
+        await this.chartEngine.renderChart({ matchup: this.selectedMatchup });
         
+        // Update game state
         this.maxGames = this.chartEngine.maxGames || 6;
-        this.updateGameState();
+        this.currentGame = this.chartEngine.currentGameIndex; // Should be 0 for initial state
+        this.updateCurrentMap();
         
-        console.log('✅ Matchup loaded successfully:', this.selectedMatchup);
+        // Mark as loaded
+        this.loadedMatchups.add(this.selectedMatchup);
+        this.loadingMatchups.delete(this.selectedMatchup);
+        
+        console.log('✅ Matchup loaded successfully');
+        
+        // Verify chart rendered
+        await this.verifyChartRender();
         
       } catch (error) {
         console.error('❌ Error loading matchup:', error);
-        this.errorMessage = `Failed to load ${this.selectedMatchup}: ${error.message}`;
+        this.showChartError(error);
+        this.loadingMatchups.delete(this.selectedMatchup);
       } finally {
         this.isLoading = false;
-        this.loadingMatchups.delete(this.selectedMatchup);
       }
     },
     
@@ -605,6 +600,23 @@ export default {
         };
         
         checkContainer();
+      });
+    },
+    
+    async verifyChartRender() {
+      // Add a small delay to ensure chart is fully rendered
+      return new Promise(resolve => {
+        const checkRender = () => {
+          const container = document.getElementById('vue-chart-container');
+          if (container && container.children.length > 0) {
+            console.log('✅ Chart render verified');
+            resolve();
+          } else {
+            console.log('⏳ Waiting for chart render...');
+            setTimeout(checkRender, 100);
+          }
+        };
+        checkRender();
       });
     },
     

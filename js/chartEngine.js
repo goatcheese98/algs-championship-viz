@@ -4,23 +4,6 @@
  * with consistent styling and behavior across the application.
  */
 
-// D3.js availability check function (deferred until needed)
-function getD3() {
-    if (d3) return d3; // Return cached instance if available
-    
-    if (typeof window !== 'undefined' && window.d3) {
-        console.log('✅ D3.js found:', window.d3.version || 'version unknown');
-        d3 = window.d3; // Cache the reference
-        return d3;
-    } else {
-        console.error('❌ D3.js not found! Please ensure D3.js is loaded before ChartEngine.');
-        throw new Error('D3.js is required but not found. Please load D3.js before initializing ChartEngine.');
-    }
-}
-
-// D3.js will be accessed via getD3() function when needed
-let d3 = null;
-
 // Centralized Chart Manager for consistent deployment
 class ChartManager {
     constructor() {
@@ -175,14 +158,12 @@ const chartManager = new ChartManager();
 class ChartEngine {
     constructor(containerId, options = {}) {
         this.containerId = containerId;
-        // Initialize D3.js and container - deferred until needed
-        this.container = null;
+        this.container = containerId ? d3.select(`#${containerId}`) : null;
         this.data = null;
         this.currentGameIndex = 1;
         this.isPlaying = false;
         this.animationTimer = null;
         this.initializationError = null;
-        this.initialized = false;
         
         // Check for external controls early (before any setup)
         this.hasExternalControls = document.getElementById('matchup-select') !== null;
@@ -196,56 +177,14 @@ class ChartEngine {
             ...options
         };
         
-        // Don't initialize immediately - wait for async init() call
-        console.log('ChartEngine constructor completed, waiting for init() call');
-    }
-
-    async init() {
-        if (this.initialized) {
-            console.log('ChartEngine already initialized');
-            return;
-        }
-
+        // Initialize with better error handling
         try {
-            // Ensure D3.js is available before proceeding
-            await this.waitForD3();
-            
-            // Initialize with better error handling
             this.initializeChart();
-            this.initialized = true;
-            console.log('✅ ChartEngine initialization complete');
         } catch (error) {
             this.initializationError = error;
             console.error('ChartEngine initialization failed:', error);
             throw error;
         }
-    }
-
-    async waitForD3() {
-        return new Promise((resolve, reject) => {
-            const maxWait = 10000; // 10 seconds max wait
-            const checkInterval = 100; // Check every 100ms
-            let elapsed = 0;
-            
-            const checkD3 = () => {
-                if (typeof window !== 'undefined' && window.d3) {
-                    console.log('✅ D3.js is available for ChartEngine:', window.d3.version || 'version unknown');
-                    resolve();
-                    return;
-                }
-                
-                elapsed += checkInterval;
-                if (elapsed >= maxWait) {
-                    reject(new Error('D3.js not loaded after 10 seconds in ChartEngine. Please check your internet connection and try refreshing the page.'));
-                    return;
-                }
-                
-                console.log('⏳ ChartEngine waiting for D3.js to load...');
-                setTimeout(checkD3, checkInterval);
-            };
-            
-            checkD3();
-        });
     }
 
     initializeChart() {
@@ -267,9 +206,6 @@ class ChartEngine {
     getContainer() {
         // Try multiple selection strategies
         let container = null;
-        
-        // Initialize D3.js first
-        const d3 = getD3();
         
         // Strategy 1: Direct D3 selection
         try {
@@ -358,9 +294,9 @@ class ChartEngine {
         }
         
         // Setup scales with proper ranges
-        this.xScale = getD3().scaleLinear()
+        this.xScale = d3.scaleLinear()
             .range([0, this.width]);
-        this.yScale = getD3().scaleBand()
+        this.yScale = d3.scaleBand()
             .range([0, this.height])  // Correct range for bars to render properly
             .padding(0.625); // Increased padding for 25% more spacing between bars
         
@@ -421,7 +357,7 @@ class ChartEngine {
         }
         
         // Create CSV content
-        const csvContent = getD3().csvFormat(this.data);
+        const csvContent = d3.csvFormat(this.data);
         
         // Create and trigger download
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -717,7 +653,7 @@ class ChartEngine {
 
     async loadData(csvPath) {
         try {
-            this.data = await getD3().csv(csvPath);
+            this.data = await d3.csv(csvPath);
             
             // Correctly identify game columns: exclude first (Team) and last (Total) columns
             const allColumns = this.data.columns;
@@ -882,12 +818,12 @@ class ChartEngine {
         processedData.sort((a, b) => b.cumulativeScore - a.cumulativeScore);
         
         // Update scales
-        this.xScale.domain([0, getD3().max(processedData, d => d.cumulativeScore)]);
+        this.xScale.domain([0, d3.max(processedData, d => d.cumulativeScore)]);
         this.yScale.domain(processedData.map(d => d.team));
         
         // Update X axis without grid lines
-        const xAxis = getD3().axisBottom(this.xScale)
-            .tickFormat(getD3().format('.0f'));
+        const xAxis = d3.axisBottom(this.xScale)
+            .tickFormat(d3.format('.0f'));
         
         this.xAxisGroup.call(xAxis);
         
@@ -939,7 +875,7 @@ class ChartEngine {
         // Render game segments for each team
         const self = this; // Store reference for inner functions
         allTeamGroups.each((teamData, i, nodes) => {
-            const teamGroup = getD3().select(nodes[i]);
+            const teamGroup = d3.select(nodes[i]);
             
             // Game segments
             const gameSegments = teamGroup.selectAll('.game-segment')
@@ -1169,7 +1105,7 @@ class ChartEngine {
         this.yScale.domain(sortedData.map(d => d.team));
 
         // Update axes
-        const xAxis = getD3().axisBottom(this.xScale).tickFormat(getD3().format('.0f'));
+        const xAxis = d3.axisBottom(this.xScale).tickFormat(d3.format('.0f'));
         this.xAxisGroup.call(xAxis);
 
         // Force X-axis font size
@@ -1281,14 +1217,14 @@ class ChartEngine {
             .style('opacity', 0) // Start hidden until loaded
             .style('clip-path', 'circle(14px at center)')
             .on('load', function() {
-                getD3().select(this).style('opacity', 1);
+                d3.select(this).style('opacity', 1);
                 // Hide fallback when image loads
-                getD3().select(this.parentNode).select('.logo-fallback').style('opacity', 0);
+                d3.select(this.parentNode).select('.logo-fallback').style('opacity', 0);
             })
             .on('error', function() {
                 // Show fallback on error
-                getD3().select(this).style('opacity', 0);
-                getD3().select(this.parentNode).select('.logo-fallback').style('opacity', 1);
+                d3.select(this).style('opacity', 0);
+                d3.select(this.parentNode).select('.logo-fallback').style('opacity', 1);
             });
         
         // Add fallback for teams without logos or failed loads
@@ -1341,7 +1277,7 @@ class ChartEngine {
         
         // Update team logos with actual images and fallbacks
         allTeamEntries.each((teamData, i, nodes) => {
-            const teamGroup = getD3().select(nodes[i]);
+            const teamGroup = d3.select(nodes[i]);
             const teamName = teamData.team;
             
             // Get logo URL from TeamConfig
@@ -1426,10 +1362,6 @@ class ChartEngine {
 // Export for use in other modules
 window.ChartEngine = ChartEngine;
 window.chartManager = chartManager;
-
-// ES Module exports for Vite build compatibility
-export { ChartEngine, chartManager };
-export default ChartEngine;
 
 // Debug helper for troubleshooting
 window.debugChartManager = () => {

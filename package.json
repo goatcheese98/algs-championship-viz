@@ -1,7 +1,6 @@
 {
   "name": "algs-tournament-dashboard",
   "version": "2.0.0",
-  "type": "module",
   "description": "ALGS Tournament Dashboard - Professional tournament visualization platform for Year 4 Championship with Vue.js, D3.js, and GSAP",
   "main": "index.html",
   "scripts": {
@@ -48,7 +47,7 @@
   },
   "homepage": "https://gareth-seaward.github.io/algs-y4-viz",
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
   }
 }
