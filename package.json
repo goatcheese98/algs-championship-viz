@@ -2,15 +2,17 @@
   "name": "algs-tournament-dashboard",
   "version": "2.0.0",
   "description": "ALGS Tournament Dashboard - Professional tournament visualization platform for Year 4 Championship with Vue.js, D3.js, and GSAP",
-  "main": "index.js",
+  "main": "index.html",
   "scripts": {
     "dev": "live-server --port=3000 --open=/index.html --watch=. --ignore=node_modules",
     "start": "live-server --port=3000 --open=/index.html",
-    "build": "echo 'Static site - no build needed'",
+    "build": "mkdir -p dist && cp index.html dist/ && cp year_4_championship.html dist/ && cp *.csv dist/ && cp -r js dist/ && cp -r Text dist/ 2>/dev/null || echo 'Text directory not found' && touch dist/.nojekyll",
     "serve": "live-server --port=8080 --no-browser",
     "championship": "live-server --port=3000 --open=/year_4_championship.html --watch=. --ignore=node_modules",
     "test": "echo 'No tests specified'",
-    "lint": "echo 'No linting configured'"
+    "lint": "echo 'No linting configured'",
+    "pages": "npm run build && echo 'Build complete for GitHub Pages'",
+    "deploy-test": "node deploy-test.js"
   },
   "keywords": [
     "algs",
@@ -24,7 +26,8 @@
     "vuejs",
     "gsap",
     "race-chart",
-    "esports"
+    "esports",
+    "github-pages"
   ],
   "author": "ALGS Viz Team",
   "license": "MIT",
@@ -39,6 +42,7 @@
     "type": "git",
     "url": "https://github.com/Gareth-Seaward/algs-y4-viz.git"
   },
+  "homepage": "https://gareth-seaward.github.io/algs-y4-viz",
   "engines": {
     "node": ">=14.0.0",
     "npm": ">=6.0.0"

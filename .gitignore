@@ -58,4 +58,8 @@ build/
 
 # Temporary files
 tmp/
-temp/ 
+temp/
+dist-test/
+
+# Deployment utilities
+deploy-test.js 

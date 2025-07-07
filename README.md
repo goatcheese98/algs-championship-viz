@@ -121,12 +121,56 @@ FNATIC,12,20,16,18,15,17,98
 
 ## 🚀 Production Deployment
 
+### **Local Development**
 1. **ALGS Dashboard**: Open `index.html` for the main tournament dashboard
 2. **Championship Access**: Click "Enter Championship" to access Year 4 tournament
 3. **Navigate Days**: Use day selector to switch between tournament days  
 4. **Select Matchups**: Choose specific matchups within each day
 5. **Control Playback**: Use draggable controls for game progression
 6. **Filter Games**: Select specific games for detailed analysis
+
+### **GitHub Pages Deployment** 🌐
+
+This project is automatically deployed to GitHub Pages using GitHub Actions. The deployment process:
+
+#### **Automatic Deployment**
+- **Triggers**: Pushes to `main` or `master` branch
+- **Workflow**: `.github/workflows/deploy.yml` handles the entire process
+- **Live URL**: `https://gareth-seaward.github.io/algs-y4-viz`
+
+#### **What Gets Deployed**
+- ✅ All HTML files (`index.html`, `year_4_championship.html`)
+- ✅ JavaScript modules (`js/chartEngine.js`, `js/teamConfig.js`, `js/mapSequences.js`)
+- ✅ Tournament data (all `*.csv` files)
+- ✅ Documentation and assets
+- ✅ `.nojekyll` file for proper GitHub Pages support
+
+#### **Manual Deployment Setup**
+If you're forking this repository:
+
+1. **Enable GitHub Pages**:
+   - Go to your repository Settings
+   - Navigate to "Pages" section
+   - Select "GitHub Actions" as the source
+
+2. **Verify Workflow**:
+   - Check that `.github/workflows/deploy.yml` exists
+   - Ensure your repository has the necessary permissions
+
+3. **Build Locally** (optional):
+   ```bash
+   npm run build
+   # Creates ./dist folder with deployment files
+   ```
+
+4. **Custom Domain** (optional):
+   - Add `CNAME` file to root directory
+   - Configure custom domain in repository settings
+
+#### **Deployment Status**
+- **Build Status**: Visible in Actions tab
+- **Deployment URL**: Available after successful build
+- **Automatic Updates**: Every push triggers new deployment
 
 ## 🎯 Key Improvements Over Legacy System
 
