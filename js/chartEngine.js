@@ -182,6 +182,7 @@ class ChartEngine {
         this.isPlaying = false;
         this.animationTimer = null;
         this.initializationError = null;
+        this.initialized = false;
         
         // Check for external controls early (before any setup)
         this.hasExternalControls = document.getElementById('matchup-select') !== null;
@@ -195,14 +196,56 @@ class ChartEngine {
             ...options
         };
         
-        // Initialize with better error handling
+        // Don't initialize immediately - wait for async init() call
+        console.log('ChartEngine constructor completed, waiting for init() call');
+    }
+
+    async init() {
+        if (this.initialized) {
+            console.log('ChartEngine already initialized');
+            return;
+        }
+
         try {
+            // Ensure D3.js is available before proceeding
+            await this.waitForD3();
+            
+            // Initialize with better error handling
             this.initializeChart();
+            this.initialized = true;
+            console.log('✅ ChartEngine initialization complete');
         } catch (error) {
             this.initializationError = error;
             console.error('ChartEngine initialization failed:', error);
             throw error;
         }
+    }
+
+    async waitForD3() {
+        return new Promise((resolve, reject) => {
+            const maxWait = 10000; // 10 seconds max wait
+            const checkInterval = 100; // Check every 100ms
+            let elapsed = 0;
+            
+            const checkD3 = () => {
+                if (typeof window !== 'undefined' && window.d3) {
+                    console.log('✅ D3.js is available for ChartEngine:', window.d3.version || 'version unknown');
+                    resolve();
+                    return;
+                }
+                
+                elapsed += checkInterval;
+                if (elapsed >= maxWait) {
+                    reject(new Error('D3.js not loaded after 10 seconds in ChartEngine. Please check your internet connection and try refreshing the page.'));
+                    return;
+                }
+                
+                console.log('⏳ ChartEngine waiting for D3.js to load...');
+                setTimeout(checkD3, checkInterval);
+            };
+            
+            checkD3();
+        });
     }
 
     initializeChart() {

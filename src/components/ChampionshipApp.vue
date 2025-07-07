@@ -542,84 +542,41 @@ export default {
       try {
         console.log('🔄 Loading matchup:', this.selectedMatchup);
         
-        // Wait for D3.js and ChartEngine to be available
-        await this.waitForD3();
-        
         // Wait for DOM to be ready
         await this.$nextTick();
         
         // Additional safety check - ensure container exists
         await this.waitForContainer();
         
-        // Initialize chart engine using global ChartEngine from js/chartEngine.js
+        // Create ChartEngine instance (constructor only sets up basic properties)
         this.chartEngine = new window.ChartEngine('vue-chart-container', {
           debugMode: true,
           transitionDuration: 2500,  // Slower, more elegant animations
           enableAnimation: true
         });
+
+        // Initialize ChartEngine asynchronously (this will wait for D3.js)
+        await this.chartEngine.init();
         
-        // Initialize chart engine with matchup data
-        await this.chartEngine.renderChart({ matchup: this.selectedMatchup });
+        // Configure and render the chart
+        await this.chartEngine.renderChart({
+          matchup: this.selectedMatchup,
+          transitionDuration: 2500,
+          enableAnimation: true
+        });
         
-        // Update game state
         this.maxGames = this.chartEngine.maxGames || 6;
-        this.currentGame = this.chartEngine.currentGameIndex; // Should be 0 for initial state
-        this.updateCurrentMap();
+        this.updateGameState();
         
-        // Mark as loaded
-        this.loadedMatchups.add(this.selectedMatchup);
-        this.loadingMatchups.delete(this.selectedMatchup);
-        
-        console.log('✅ Matchup loaded successfully');
-        
-        // Verify chart rendered
-        await this.verifyChartRender();
+        console.log('✅ Matchup loaded successfully:', this.selectedMatchup);
         
       } catch (error) {
         console.error('❌ Error loading matchup:', error);
-        this.showChartError(error);
-        this.loadingMatchups.delete(this.selectedMatchup);
+        this.errorMessage = `Failed to load ${this.selectedMatchup}: ${error.message}`;
       } finally {
         this.isLoading = false;
+        this.loadingMatchups.delete(this.selectedMatchup);
       }
-    },
-    
-    async waitForD3() {
-      // Wait for D3.js and ChartEngine to be available
-      return new Promise((resolve, reject) => {
-        const maxWait = 10000; // 10 seconds max wait
-        const checkInterval = 100; // Check every 100ms
-        let elapsed = 0;
-        
-        const checkDependencies = () => {
-          const d3Available = typeof window !== 'undefined' && window.d3;
-          const chartEngineAvailable = typeof window !== 'undefined' && window.ChartEngine;
-          
-          if (d3Available && chartEngineAvailable) {
-            console.log('✅ D3.js is available:', window.d3.version || 'version unknown');
-            console.log('✅ ChartEngine is available globally');
-            resolve();
-            return;
-          }
-          
-          elapsed += checkInterval;
-          if (elapsed >= maxWait) {
-            const missing = [];
-            if (!d3Available) missing.push('D3.js');
-            if (!chartEngineAvailable) missing.push('ChartEngine');
-            reject(new Error(`${missing.join(' and ')} not loaded after 10 seconds. Please check your internet connection and try refreshing the page.`));
-            return;
-          }
-          
-          const missingText = [];
-          if (!d3Available) missingText.push('D3.js');
-          if (!chartEngineAvailable) missingText.push('ChartEngine');
-          console.log(`⏳ Waiting for ${missingText.join(' and ')} to load...`);
-          setTimeout(checkDependencies, checkInterval);
-        };
-        
-        checkDependencies();
-      });
     },
     
     async waitForContainer() {
@@ -648,23 +605,6 @@ export default {
         };
         
         checkContainer();
-      });
-    },
-    
-    async verifyChartRender() {
-      // Add a small delay to ensure chart is fully rendered
-      return new Promise(resolve => {
-        const checkRender = () => {
-          const container = document.getElementById('vue-chart-container');
-          if (container && container.children.length > 0) {
-            console.log('✅ Chart render verified');
-            resolve();
-          } else {
-            console.log('⏳ Waiting for chart render...');
-            setTimeout(checkRender, 100);
-          }
-        };
-        checkRender();
       });
     },
     
