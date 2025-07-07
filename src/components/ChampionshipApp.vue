@@ -238,10 +238,10 @@
 
 <script>
 import { GSAPDraggableManager } from '../utils/GSAPDraggableManager.js'
-import { ChartEngine } from '../../js/chartEngine.js'
+// ChartEngine is loaded globally via script tags in HTML - no import needed
 // Import championship CSS so Vite can process it
 import '../../styles/championship.css'
-// Removed modular ChartEngine import to prevent conflicts with global js/chartEngine.js
+// Using global window.ChartEngine to prevent conflicts with script tag loading
 
 export default {
   name: 'ChampionshipApp',
@@ -525,18 +525,25 @@ export default {
     },
     
     async loadMatchup() {
-      if (!this.selectedMatchup) return;
+      if (!this.selectedMatchup) {
+        console.log('⚠️ No matchup selected');
+        return;
+      }
       
-      this.isLoading = true;
+      if (this.loadingMatchups.has(this.selectedMatchup)) {
+        console.log('⏳ Matchup already loading...');
+        return;
+      }
+      
       this.loadingMatchups.add(this.selectedMatchup);
+      this.isLoading = true;
+      this.errorMessage = '';
       
       try {
-        console.log('📊 Loading matchup:', this.selectedMatchup);
+        console.log('🔄 Loading matchup:', this.selectedMatchup);
         
-        // Cleanup existing chart engine
-        if (this.chartEngine) {
-          this.chartEngine.cleanup();
-        }
+        // Wait for D3.js and ChartEngine to be available
+        await this.waitForD3();
         
         // Wait for DOM to be ready
         await this.$nextTick();
@@ -545,7 +552,7 @@ export default {
         await this.waitForContainer();
         
         // Initialize chart engine using global ChartEngine from js/chartEngine.js
-        this.chartEngine = new ChartEngine('vue-chart-container', {
+        this.chartEngine = new window.ChartEngine('vue-chart-container', {
           debugMode: true,
           transitionDuration: 2500,  // Slower, more elegant animations
           enableAnimation: true
@@ -575,6 +582,44 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },
+    
+    async waitForD3() {
+      // Wait for D3.js and ChartEngine to be available
+      return new Promise((resolve, reject) => {
+        const maxWait = 10000; // 10 seconds max wait
+        const checkInterval = 100; // Check every 100ms
+        let elapsed = 0;
+        
+        const checkDependencies = () => {
+          const d3Available = typeof window !== 'undefined' && window.d3;
+          const chartEngineAvailable = typeof window !== 'undefined' && window.ChartEngine;
+          
+          if (d3Available && chartEngineAvailable) {
+            console.log('✅ D3.js is available:', window.d3.version || 'version unknown');
+            console.log('✅ ChartEngine is available globally');
+            resolve();
+            return;
+          }
+          
+          elapsed += checkInterval;
+          if (elapsed >= maxWait) {
+            const missing = [];
+            if (!d3Available) missing.push('D3.js');
+            if (!chartEngineAvailable) missing.push('ChartEngine');
+            reject(new Error(`${missing.join(' and ')} not loaded after 10 seconds. Please check your internet connection and try refreshing the page.`));
+            return;
+          }
+          
+          const missingText = [];
+          if (!d3Available) missingText.push('D3.js');
+          if (!chartEngineAvailable) missingText.push('ChartEngine');
+          console.log(`⏳ Waiting for ${missingText.join(' and ')} to load...`);
+          setTimeout(checkDependencies, checkInterval);
+        };
+        
+        checkDependencies();
+      });
     },
     
     async waitForContainer() {
