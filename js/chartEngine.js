@@ -1099,25 +1099,61 @@ class ChartEngine {
             .style('font-weight', '700')
             .style('fill', '#dc2626');
         
-        // Add team logo placeholder (circle with icon)
-        teamEntriesEnter.append('circle')
-            .attr('class', 'team-logo')
-            .attr('r', 14)
-            .attr('cx', -220)
-            .style('fill', 'rgba(220, 38, 38, 0.1)')
-            .style('stroke', '#dc2626')
-            .style('stroke-width', '2px');
+        // Add team logo container group
+        const logoGroup = teamEntriesEnter.append('g')
+            .attr('class', 'logo-container')
+            .attr('transform', 'translate(-220, 0)');
         
-        // Add trophy icon inside the circle
-        teamEntriesEnter.append('text')
-            .attr('class', 'team-icon')
-            .attr('x', -220)
-            .attr('y', 0)
+        // Add background circle for logo
+        logoGroup.append('circle')
+            .attr('class', 'logo-background')
+            .attr('r', 16)
+            .style('fill', 'rgba(0, 0, 0, 0.8)')
+            .style('stroke', 'rgba(0, 0, 0, 0.3)')
+            .style('stroke-width', '1px')
+            .style('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))');
+        
+        // Add team logo image (will be populated with actual logos)
+        logoGroup.append('image')
+            .attr('class', 'team-logo-image')
+            .attr('x', -14)
+            .attr('y', -14)
+            .attr('width', 28)
+            .attr('height', 28)
+            .style('opacity', 0) // Start hidden until loaded
+            .style('clip-path', 'circle(14px at center)')
+            .on('load', function() {
+                d3.select(this).style('opacity', 1);
+                // Hide fallback when image loads
+                d3.select(this.parentNode).select('.logo-fallback').style('opacity', 0);
+            })
+            .on('error', function() {
+                // Show fallback on error
+                d3.select(this).style('opacity', 0);
+                d3.select(this.parentNode).select('.logo-fallback').style('opacity', 1);
+            });
+        
+        // Add fallback for teams without logos or failed loads
+        const fallbackGroup = logoGroup.append('g')
+            .attr('class', 'logo-fallback')
+            .style('opacity', 1); // Start visible, hide when image loads
+        
+        // Fallback background circle (colored based on team name)
+        fallbackGroup.append('circle')
+            .attr('class', 'fallback-bg')
+            .attr('r', 14)
+            .style('stroke', 'rgba(0, 0, 0, 0.5)')
+            .style('stroke-width', '1px');
+        
+        // Fallback text (team initials or icon)
+        fallbackGroup.append('text')
+            .attr('class', 'fallback-text')
             .attr('dy', '0.35em')
             .style('text-anchor', 'middle')
-            .style('font-size', '16px')
-            .style('fill', '#dc2626')
-            .text('🏆');
+            .style('font-size', '12px')
+            .style('font-weight', '700')
+            .style('fill', '#ffffff')
+            .style('text-shadow', '0 1px 2px rgba(0,0,0,0.5)');
         
         // Add team name label
         teamEntriesEnter.append('text')
@@ -1125,7 +1161,7 @@ class ChartEngine {
             .attr('x', -190)
             .attr('dy', '0.35em')
             .style('text-anchor', 'start')
-            .style('font-size', '18px') // Increased font size
+            .style('font-size', '18px')
             .style('font-weight', '600')
             .style('fill', '#f1f5f9');
         
@@ -1141,8 +1177,48 @@ class ChartEngine {
         allTeamEntries.select('.ranking-number')
             .text((d, i) => i + 1);
         
+        // Update team labels
         allTeamEntries.select('.team-label')
             .text(d => d.team);
+        
+        // Update team logos with actual images and fallbacks
+        allTeamEntries.each((teamData, i, nodes) => {
+            const teamGroup = d3.select(nodes[i]);
+            const teamName = teamData.team;
+            
+            // Get logo URL from TeamConfig
+            const logoUrl = window.TeamConfig ? window.TeamConfig.getTeamLogo(teamName) : null;
+            const logoImage = teamGroup.select('.team-logo-image');
+            const fallbackGroup = teamGroup.select('.logo-fallback');
+            
+            if (logoUrl) {
+                // Set image source
+                logoImage.attr('href', logoUrl);
+                // Start with fallback visible, hide when image loads
+                fallbackGroup.style('opacity', 1);
+                logoImage.style('opacity', 0);
+            } else {
+                // No logo available, show fallback immediately
+                logoImage.style('opacity', 0);
+                fallbackGroup.style('opacity', 1);
+            }
+            
+            // Setup fallback styling
+            const fallbackConfig = window.TeamConfig ? 
+                window.TeamConfig.getFallbackConfig(teamName) : 
+                { backgroundColor: '#dc2626', initials: teamName.substring(0, 2), icon: '🏆' };
+            
+            fallbackGroup.select('.fallback-bg')
+                .style('fill', fallbackConfig.backgroundColor);
+            
+            // Use initials for most teams, but show special icons for some
+            const displayText = fallbackConfig.initials.length <= 3 ? 
+                fallbackConfig.initials : fallbackConfig.icon;
+            
+            fallbackGroup.select('.fallback-text')
+                .text(displayText)
+                .style('font-size', displayText.length > 2 ? '10px' : '12px');
+        });
     }
 
     // Method to handle external controls (for experiment page)

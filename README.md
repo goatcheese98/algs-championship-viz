@@ -1,6 +1,13 @@
-# ALGS Championship Visualization
+# ALGS Year 4 Championship - Sapporo, Japan
+## Interactive Tournament Visualization System
 
-Interactive race chart visualization for the ALGS Championship tournament featuring 40+ teams across 5 days of competition.
+Professional-grade visualization for the ALGS Year 4 Championship featuring 40+ teams across multiple tournament days with real-time animated charts, GSAP-powered draggable controls, and comprehensive tournament coverage.
+
+**📅 Tournament Details:**
+- **Location**: Sapporo, Japan  
+- **Dates**: January 29 - February 2, 2025
+- **Teams**: 40+ Professional Apex Legends teams
+- **Format**: Group stages, elimination rounds, and finals
 
 ## 🚀 Quick Start
 
@@ -12,76 +19,138 @@ npm install
 npm run dev
 ```
 
-This will open the application at `http://localhost:3000` with automatic browser refresh when you make changes.
+This will open the application at `http://localhost:3000`. Navigate to the **"ALGS Year 4 Championship"** button to access the full tournament interface.
 
 ## 📋 Available Scripts
 
-- `npm run dev` - Start development server with home page (recommended)
-- `npm run experiment` - Start development server with experimental lab
-- `npm run tournament` - Start development server with tournament overview
+- `npm run dev` - Start development server (recommended)
 - `npm start` - Start production server
 - `npm run serve` - Start server without opening browser
 
-## ✨ Features
+## ✨ Key Features
 
-- **Interactive animated race charts** with smooth transitions
-- **Real-time team position tracking** with cumulative scoring
-- **Custom team colors and styling** for all 40+ teams
-- **Tournament progression visualization** across 5 days
-- **Centralized chart engine** for consistent rendering
-- **Map-based color coding** (E-District, Storm Point, World's Edge)
-- **Responsive two-panel layout** with dedicated controls
+### 🏆 **Complete Tournament Coverage**
+- **4+ Days of Championship Action** - Group stages through finals
+- **All Matchups Included** - AvsB, CvsD, ER1, ER2, WR1, and more
+- **Real-time Position Tracking** - Live team rankings with cumulative scoring
+- **Professional Tournament Interface** - Single unified system
 
-## 🏗️ Project Structure
+### ⚡ **GSAP-Powered Interface**
+- **Draggable Control Panel** - Smooth, high-performance dragging with momentum
+- **Hardware Acceleration** - 60fps animations with transform3d optimization
+- **Game Filtering System** - Select specific games (3,4,5) with instant visual updates
+- **Progress Tracking** - Always-visible game progress slider
 
-### Pages
-- `index.html` - Modern home page with navigation
-- `group_stages.html` - Tournament overview and production charts
-- `experiment_page.html` - Experimental chart lab for testing
+### 🗺️ **Advanced Map Visualization**
+- **HSL Color Coding** - Storm Point (orange), World's Edge (red), E-District (purple)
+- **Occurrence-Based Colors** - Dynamic color progression (1st, 2nd, 3rd occurrence)
+- **Map-Aware Rendering** - Colors automatically adjust based on game sequence
 
-### Core Components
-- `js/chartEngine.js` - Centralized chart rendering engine
-- `js/mapSequences.js` - Map rotation and game configuration
-- `teamConfig.js` - Team colors and styling configuration
+### 📊 **Interactive Chart System**
+- **900px Height Charts** - Optimal team spacing and readability  
+- **Animated Race Progression** - Smooth transitions between game states
+- **50% Thicker Bars** - Enhanced visual clarity and impact
+- **Custom Team Styling** - Individual team colors and rankings
 
-### Data Files
-- `*_points.csv` - Tournament matchup data (AvsB, BvsD, ER1, etc.)
-- Various HTML files for individual race charts
+## 🏗️ Production Architecture
+
+### **Single Unified Interface**
+- `year_4_championship.html` - **Production tournament interface**
+- `index.html` - ALGS tournament dashboard homepage
+- Clean, professional two-page architecture
+
+### **Core Engine**
+- `js/chartEngine.js` - Centralized chart rendering with GSAP integration
+- `js/mapSequences.js` - Tournament configuration and map sequences
+
+### **Tournament Data**
+- `*_points.csv` - All tournament matchup data files
+- Structured data for consistent visualization across all days
 
 ## 🎮 Tournament Structure
 
-- **Group Stages**: 6 games per matchup (AvsB, AvsC, BvsD, etc.)
-- **Bracket Stages**: 8 games per round (ER1, ER2, etc.)
-- **Finals**: 12+ games with extended competition (WR1, etc.)
+### **Day 1-2: Group Stages**
+- **6 games per matchup** (AvsB, AvsC, AvsD, BvsC, BvsD, CvsD)
+- Round-robin format with all group combinations
 
-## 🗺️ Map Rotation System
+### **Day 3: Elimination Round 1**  
+- **8 games** (ER1) - First elimination bracket
+- Higher stakes, extended game count
 
-Each matchup follows a specific map sequence:
-- **E-District** (Blue) - Technical urban combat
-- **Storm Point** (Purple) - Challenging terrain
-- **World's Edge** (Orange) - Classic competitive map
+### **Day 4: Finals**
+- **ER2** (8 games) - Elimination Round 2
+- **WR1** (8 games) - Winners Round 1
+- Championship culmination
 
-## 🔧 Development
+## 🎨 Professional Design System
 
-The application uses:
-- **D3.js v7** for data visualization and animations
-- **Live Server** for fast development with hot reload
-- **Vanilla JavaScript** for lightweight, fast performance
-- **CSS Grid/Flexbox** for responsive layouts
+### **Championship Branding**
+- **Header**: Animated ALGS Year 4 Championship title
+- **Location Badge**: Highlighted "Sapporo, Japan" with pulsing effects
+- **Date Display**: Dynamic "Jan 29 - Feb 2, 2025" with gradient highlighting
+- **Gaming Aesthetic**: Professional esports color scheme and effects
 
-## 📊 Data Format
+### **Advanced Controls**
+- **Translucent Panel**: Background transparency with opaque controls
+- **Premium Buttons**: 3D gradients, shine effects, and hover animations
+- **GSAP Animations**: Smooth entrance effects and professional transitions
 
-CSV files contain team scores per game:
+## 🔧 Technical Implementation
+
+### **Technology Stack**
+- **Vue.js 3** - Reactive interface and state management
+- **D3.js v7** - Data visualization and chart rendering  
+- **GSAP 3.12** - High-performance animations and dragging
+- **Modern CSS** - Hardware-accelerated styling and effects
+
+### **Performance Optimizations**
+- **Centralized Chart Manager** - Prevents memory leaks and duplicate instances
+- **Hardware Acceleration** - GPU-powered transforms and animations
+- **Efficient Filtering** - Smart game filtering without full re-renders
+- **Responsive Design** - Scales perfectly from desktop to mobile
+
+## 📊 Data Structure
+
 ```csv
 Team,Game 1,Game 2,Game 3,Game 4,Game 5,Game 6,Total
-Team Alpha,15,12,18,20,14,16,95
-Team Beta,18,16,15,17,19,13,98
+TSM,15,12,18,20,14,16,95
+100 Thieves,18,16,15,17,19,13,98
+FNATIC,12,20,16,18,15,17,98
 ...
 ```
 
-## 🎯 Usage
+## 🚀 Production Deployment
 
-1. **Home Page**: Navigate between different sections
-2. **Tournament Overview**: View all matchups and standings
-3. **Experimental Lab**: Test new features and chart configurations
-4. **Individual Charts**: Deep dive into specific matchup details
+1. **ALGS Dashboard**: Open `index.html` for the main tournament dashboard
+2. **Championship Access**: Click "Enter Championship" to access Year 4 tournament
+3. **Navigate Days**: Use day selector to switch between tournament days  
+4. **Select Matchups**: Choose specific matchups within each day
+5. **Control Playback**: Use draggable controls for game progression
+6. **Filter Games**: Select specific games for detailed analysis
+
+## 🎯 Key Improvements Over Legacy System
+
+- ✅ **Unified Interface** - Single application instead of 20+ separate files
+- ✅ **GSAP Performance** - Smooth 60fps animations vs. laggy CSS transitions  
+- ✅ **Vue.js Reactivity** - Real-time state management vs. manual DOM updates
+- ✅ **Professional Design** - Championship branding vs. basic styling
+- ✅ **Better UX** - Draggable controls vs. fixed control panels
+- ✅ **Comprehensive Coverage** - All tournament days in one interface
+
+## 💡 Usage Guide
+
+### **Quick Navigation**
+1. Start at the **ALGS tournament dashboard** for tournament overview
+2. Click **"Enter Championship"** to access the Year 4 Championship interface  
+3. Use **day tabs** to navigate between tournament days
+4. Select **matchups** within each day for detailed visualization
+
+### **Advanced Controls**
+- **Drag the control panel** anywhere on screen for optimal viewing
+- **Use game filtering** to analyze specific game subsets
+- **Progress slider** shows current game progression
+- **Play/Reset buttons** control automated playback
+
+---
+
+**🏆 Built for the ALGS Year 4 Championship - Sapporo, Japan 2025**

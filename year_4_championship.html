@@ -11,7 +11,7 @@
     <!-- GSAP for optimized animations and dragging -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
-    <script src="teamConfig.js"></script>
+    <script src="js/teamConfig.js"></script>
     <script src="js/mapSequences.js?v=7"></script>
     <script src="js/chartEngine.js?v=7"></script>
     <script src="js/vueChartComponents.js?v=2"></script>
@@ -38,12 +38,12 @@
                 radial-gradient(circle at 25% 25%, rgba(217, 119, 6, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 75% 75%, rgba(220, 38, 38, 0.08) 0%, transparent 50%);
             color: #f1f5f9;
-            padding: 30px 0;
+            padding: 20px 0;
             box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.6),
-                0 0 100px rgba(217, 119, 6, 0.15),
+                0 4px 20px rgba(0, 0, 0, 0.6),
+                0 0 60px rgba(217, 119, 6, 0.15),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            border-bottom: 3px solid transparent;
+            border-bottom: 2px solid transparent;
             border-image: linear-gradient(90deg, transparent, #d97706, #dc2626, #d97706, transparent) 1;
             position: sticky;
             top: 0;
@@ -111,12 +111,7 @@
             align-items: center;
             position: relative;
             z-index: 2;
-        }
-
-        .championship-branding {
-            display: flex;
-            align-items: center;
-            gap: 25px;
+            gap: 30px;
         }
 
         .championship-logo {
@@ -124,11 +119,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         .logo-icon {
-            font-size: 3.5rem;
-            filter: drop-shadow(0 0 20px rgba(217, 119, 6, 0.8));
+            font-size: 2.5rem;
+            filter: drop-shadow(0 0 15px rgba(217, 119, 6, 0.8));
             animation: trophyGlow 3s ease-in-out infinite alternate;
         }
 
@@ -183,150 +179,71 @@
             100% { opacity: 0; transform: scale(1) translateY(-30px); }
         }
 
-        .championship-info {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
         .championship-title {
-            margin: 0;
             display: flex;
-            flex-direction: column;
-            gap: 2px;
+            align-items: center;
+            flex-grow: 1;
         }
 
         .title-main {
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             font-weight: 900;
             background: linear-gradient(135deg, #f1f5f9 0%, #d97706 50%, #dc2626 100%);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(217, 119, 6, 0.5);
+            text-shadow: 0 0 20px rgba(217, 119, 6, 0.5);
             animation: titleShimmer 4s ease-in-out infinite;
-        }
-
-        .title-sub {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #cbd5e1;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-            margin-top: -8px;
+            margin: 0;
+            white-space: nowrap;
         }
 
         @keyframes titleShimmer {
-            0%, 100% { text-shadow: 0 0 30px rgba(217, 119, 6, 0.5); }
-            50% { text-shadow: 0 0 40px rgba(217, 119, 6, 0.8), 0 0 60px rgba(220, 38, 38, 0.3); }
+            0%, 100% { text-shadow: 0 0 20px rgba(217, 119, 6, 0.5); }
+            50% { text-shadow: 0 0 30px rgba(217, 119, 6, 0.8), 0 0 40px rgba(220, 38, 38, 0.3); }
         }
 
-        .event-details {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .location-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .location-icon {
-            font-size: 1.2rem;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .location-highlight {
-            background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
-            color: #000;
-            padding: 6px 14px;
-            border-radius: 25px;
-            font-weight: 700;
-            font-size: 1rem;
-            text-shadow: none;
-            box-shadow: 
-                0 4px 15px rgba(217, 119, 6, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            animation: locationGlow 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes locationGlow {
-            0% { 
-                box-shadow: 
-                    0 4px 15px rgba(217, 119, 6, 0.4),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            }
-            100% { 
-                box-shadow: 
-                    0 6px 25px rgba(217, 119, 6, 0.6),
-                    0 0 20px rgba(217, 119, 6, 0.3),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-            }
-        }
-
-        .date-info {
-            display: flex;
-            align-items: center;
-        }
-
-        .date-range {
+        /* Tournament Info Horizontal Layout */
+        .tournament-info-horizontal {
             display: flex;
             align-items: center;
             gap: 15px;
             padding: 8px 16px;
             background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
+            border-radius: 20px;
             border: 1px solid rgba(217, 119, 6, 0.3);
+            flex-shrink: 0;
         }
 
-        .date-item {
+        .info-item {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 2px;
+            gap: 6px;
+            white-space: nowrap;
         }
 
-        .date-label {
-            font-size: 0.7rem;
-            color: #94a3b8;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .info-icon {
+            font-size: 1rem;
+            filter: drop-shadow(0 0 5px rgba(217, 119, 6, 0.5));
         }
 
-        .date-value {
+        .info-text {
             font-size: 0.9rem;
-            font-weight: 700;
+            font-weight: 600;
             color: #f1f5f9;
-            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: dateFlash 2s ease-in-out infinite alternate;
         }
 
-        @keyframes dateFlash {
-            0% { 
-                filter: brightness(1);
-                text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
-            }
-            100% { 
-                filter: brightness(1.2);
-                text-shadow: 0 0 15px rgba(220, 38, 38, 0.8);
-            }
+        .info-separator {
+            color: #64748b;
+            font-weight: 400;
+            font-size: 0.8rem;
         }
 
-        .date-separator {
-            color: #d97706;
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
+
 
         .nav-links {
             display: flex;
@@ -740,6 +657,39 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .championship-title {
+                justify-content: center;
+            }
+            
+            .title-main {
+                font-size: 1.8rem;
+                text-align: center;
+            }
+            
+            .tournament-info-horizontal {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+                padding: 6px 12px;
+            }
+            
+            .info-item {
+                gap: 4px;
+            }
+            
+            .info-text {
+                font-size: 0.8rem;
+            }
+            
+            .nav-links {
+                text-align: center;
+            }
             .matchups-grid {
                 grid-template-columns: 1fr;
             }
@@ -1650,49 +1600,38 @@
             </div>
             
             <div class="header-content">
-                <!-- Main Championship Branding -->
-                <div class="championship-branding">
-                    <div class="championship-logo">
-                        <span class="logo-icon">🏆</span>
-                        <div class="logo-particles"></div>
+                <!-- Championship Icon -->
+                <div class="championship-logo">
+                    <span class="logo-icon">🏆</span>
+                    <div class="logo-particles"></div>
+                </div>
+                
+                <!-- Main Title -->
+                <div class="championship-title">
+                    <h1 class="title-main">ALGS Year 4 Championship</h1>
+                </div>
+                
+                <!-- Tournament Details (Horizontal) -->
+                <div class="tournament-info-horizontal">
+                    <div class="info-item">
+                        <span class="info-icon">📍</span>
+                        <span class="info-text">Sapporo, Japan</span>
                     </div>
-                    
-                    <div class="championship-info">
-                        <h1 class="championship-title">
-                            <span class="title-main">ALGS Year 4</span>
-                            <span class="title-sub">Championship</span>
-                        </h1>
-                        
-                        <div class="event-details">
-                            <div class="location-info">
-                                <span class="location-icon">📍</span>
-                                <span class="location-text">
-                                    <span class="location-highlight">Sapporo, Japan</span>
-                                </span>
-                            </div>
-                            
-                            <div class="date-info">
-                                <div class="date-range">
-                                    <div class="date-item date-start">
-                                        <span class="date-label">Start</span>
-                                        <span class="date-value">Jan 29, 2025</span>
-                                    </div>
-                                    <div class="date-separator">—</div>
-                                    <div class="date-item date-end">
-                                        <span class="date-label">End</span>
-                                        <span class="date-value">Feb 2, 2025</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="info-separator">•</div>
+                    <div class="info-item">
+                        <span class="info-icon">📅</span>
+                        <span class="info-text">Jan 29 - Feb 2, 2025</span>
+                    </div>
+                    <div class="info-separator">•</div>
+                    <div class="info-item">
+                        <span class="info-icon">⚔️</span>
+                        <span class="info-text">40 Teams</span>
                     </div>
                 </div>
                 
                 <!-- Navigation Links -->
                 <div class="nav-links">
-                    <a href="index.html" class="nav-link">🏠 Home</a>
-                    <a href="experiment_page.html" class="nav-link">📊 Original Charts</a>
-                    <a href="vue_experiment_page.html" class="nav-link">⚡ Vue Experiment</a>
+                    <a href="index.html" class="nav-link">🏠 ALGS Dashboard</a>
                 </div>
             </div>
         </div>
@@ -2486,7 +2425,7 @@
                         this.loadingMatchups.delete(this.selectedMatchup);
                     }
                 },
-
+                
                 async verifyChartRender() {
                     return new Promise((resolve, reject) => {
                         let attempts = 0;
