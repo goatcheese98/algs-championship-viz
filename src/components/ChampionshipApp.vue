@@ -238,6 +238,7 @@
 
 <script>
 import { GSAPDraggableManager } from '../utils/GSAPDraggableManager.js'
+import { ChartEngine } from '../../js/chartEngine.js'
 // Import championship CSS so Vite can process it
 import '../../styles/championship.css'
 // Removed modular ChartEngine import to prevent conflicts with global js/chartEngine.js
@@ -544,7 +545,7 @@ export default {
         await this.waitForContainer();
         
         // Initialize chart engine using global ChartEngine from js/chartEngine.js
-        this.chartEngine = new window.ChartEngine('vue-chart-container', {
+        this.chartEngine = new ChartEngine('vue-chart-container', {
           debugMode: true,
           transitionDuration: 2500,  // Slower, more elegant animations
           enableAnimation: true

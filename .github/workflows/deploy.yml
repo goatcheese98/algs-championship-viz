@@ -49,11 +49,29 @@ jobs:
         # Create a proper .nojekyll file to ensure GitHub Pages serves all files
         touch ./dist/.nojekyll
         
+        # Ensure proper routing - GitHub Pages should serve index.html by default
+        echo "Ensuring proper routing setup..."
+        
+        # Verify index.html exists and is the main entry point
+        if [ -f "./dist/index.html" ]; then
+          echo "✅ index.html found in dist directory"
+        else
+          echo "❌ index.html NOT found in dist directory"
+          exit 1
+        fi
+        
+        # Create a simple redirect file for the root path (optional backup)
+        echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=./index.html"></head><body>Redirecting...</body></html>' > ./dist/redirect.html
+        
         # List contents for debugging
         echo "Build complete! Deployment directory contents:"
         find ./dist -type f | head -20
         echo "Total files in dist:"
         find ./dist -type f | wc -l
+        
+        # Check if chart-related files are present
+        echo "Checking for chart-related files:"
+        find ./dist -name "*chart*" -o -name "*Chart*" | head -10
         
     - name: Setup Pages
       uses: actions/configure-pages@v4

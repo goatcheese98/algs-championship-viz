@@ -4,6 +4,17 @@
  * with consistent styling and behavior across the application.
  */
 
+// Check for D3.js availability with better error handling
+const d3 = (() => {
+    if (typeof window !== 'undefined' && window.d3) {
+        console.log('✅ D3.js found:', window.d3.version || 'version unknown');
+        return window.d3;
+    } else {
+        console.error('❌ D3.js not found! Please ensure D3.js is loaded before ChartEngine.');
+        throw new Error('D3.js is required but not found. Please load D3.js before initializing ChartEngine.');
+    }
+})();
+
 // Centralized Chart Manager for consistent deployment
 class ChartManager {
     constructor() {
@@ -1362,6 +1373,10 @@ class ChartEngine {
 // Export for use in other modules
 window.ChartEngine = ChartEngine;
 window.chartManager = chartManager;
+
+// ES Module exports for Vite build compatibility
+export { ChartEngine, chartManager };
+export default ChartEngine;
 
 // Debug helper for troubleshooting
 window.debugChartManager = () => {

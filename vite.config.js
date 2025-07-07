@@ -24,9 +24,8 @@ export default defineConfig({
       output: {
         manualChunks: {
           // Split vendor libraries into separate chunks
-          vue: ['vue'],
-          charts: ['src/chart/ChartEngine.js', 'src/chart/ChartRenderer.js', 'src/chart/DataManager.js'],
-          utils: ['src/utils/GSAPDraggableManager.js', 'src/chart/AnimationController.js']
+          vue: ['vue']
+          // Let Vite automatically handle other chunks for better compatibility
         },
         // Optimize chunk loading
         chunkFileNames: 'js/[name]-[hash].js',
@@ -36,7 +35,7 @@ export default defineConfig({
     }
   },
   publicDir: 'public',
-  base: './', // For GitHub Pages compatibility
+  base: '/algs-championship-viz/', // Fix GitHub Pages base path
   optimizeDeps: {
     include: ['vue', 'd3'],
     exclude: ['vue-demi']
