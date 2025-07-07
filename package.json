@@ -4,11 +4,12 @@
   "description": "ALGS Tournament Dashboard - Professional tournament visualization platform for Year 4 Championship with Vue.js, D3.js, and GSAP",
   "main": "index.html",
   "scripts": {
-    "dev": "live-server --port=3000 --open=/index.html --watch=. --ignore=node_modules",
-    "start": "live-server --port=3000 --open=/index.html",
-    "build": "mkdir -p dist && cp index.html dist/ && cp year_4_championship.html dist/ && cp *.csv dist/ && cp -r js dist/ && cp -r Text dist/ 2>/dev/null || echo 'Text directory not found' && touch dist/.nojekyll",
-    "serve": "live-server --port=8080 --no-browser",
-    "championship": "live-server --port=3000 --open=/year_4_championship.html --watch=. --ignore=node_modules",
+    "dev": "vite",
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "vite preview --port=8080",
+    "championship": "vite --open=/year_4_championship.html",
     "test": "echo 'No tests specified'",
     "lint": "echo 'No linting configured'",
     "pages": "npm run build && echo 'Build complete for GitHub Pages'",
@@ -32,11 +33,13 @@
   "author": "ALGS Viz Team",
   "license": "MIT",
   "devDependencies": {
-    "live-server": "^1.2.2"
+    "@vitejs/plugin-vue": "^6.0.0",
+    "live-server": "^1.2.2",
+    "vite": "^7.0.2"
   },
   "dependencies": {
     "gsap": "^3.13.0",
-    "vue": "^3.0.0"
+    "vue": "^3.5.17"
   },
   "repository": {
     "type": "git",

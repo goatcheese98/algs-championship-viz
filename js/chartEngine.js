@@ -335,8 +335,8 @@ class ChartEngine {
             // Update configuration
             this.config = { ...this.config, ...config };
             
-            // Load the appropriate CSV file
-            const csvPath = `${config.matchup}_points.csv`;
+            // Load the appropriate CSV file from data directory (public/ is served from root in Vite)
+            const csvPath = `data/${config.matchup}_points.csv`;
             
             // Load and render the data
             await this.loadData(csvPath);

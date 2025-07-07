@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Vue.js will be loaded via ES6 modules -->
     
     <style>
         * {
@@ -486,16 +486,6 @@
         </footer>
     </div>
 
-    <script>
-        const { createApp } = Vue;
-
-        createApp({
-            methods: {
-                goToTournament(url) {
-                    window.location.href = url;
-                }
-            }
-        }).mount('#app');
-    </script>
+    <script type="module" src="src/main.js"></script>
 </body>
 </html> 
