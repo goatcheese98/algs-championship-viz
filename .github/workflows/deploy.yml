@@ -35,32 +35,25 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
-    - name: Prepare deployment directory
+    - name: Build with Vite
       run: |
-        mkdir -p ./dist
+        # Run the Vite build process
+        npm run build
         
-        # Copy all necessary files for the application
-        cp index.html ./dist/
-        cp year_4_championship.html ./dist/
-        cp README.md ./dist/
+        # Copy additional assets to dist that Vite might not handle
+        cp *.csv ./dist/ 2>/dev/null || echo "No CSV files in root, checking data directory"
         
-        # Copy all CSV data files
-        cp *.csv ./dist/
-        
-        # Copy JavaScript files
-        cp -r js ./dist/
-        
-        # Copy any other assets that might be needed
-        cp -r Text ./dist/ 2>/dev/null || echo "Text directory not found, skipping"
+        # Copy the public directory contents (data files, etc.)
+        cp -r public/* ./dist/ 2>/dev/null || echo "No public directory to copy"
         
         # Create a proper .nojekyll file to ensure GitHub Pages serves all files
         touch ./dist/.nojekyll
         
         # List contents for debugging
-        echo "Deployment directory contents:"
-        ls -la ./dist/
-        echo "JS directory contents:"
-        ls -la ./dist/js/
+        echo "Build complete! Deployment directory contents:"
+        find ./dist -type f | head -20
+        echo "Total files in dist:"
+        find ./dist -type f | wc -l
         
     - name: Setup Pages
       uses: actions/configure-pages@v4

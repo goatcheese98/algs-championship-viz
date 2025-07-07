@@ -238,6 +238,8 @@
 
 <script>
 import { GSAPDraggableManager } from '../utils/GSAPDraggableManager.js'
+// Import championship CSS so Vite can process it
+import '../../styles/championship.css'
 // Removed modular ChartEngine import to prevent conflicts with global js/chartEngine.js
 
 export default {
