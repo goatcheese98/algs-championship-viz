@@ -1,159 +1,272 @@
-// Enhanced GSAP Draggable System for Consistent Performance
+/**
+ * Ultra-Performant GSAP Draggable System
+ * Enhanced version with better error handling and debugging
+ */
+
 export const GSAPDraggableManager = {
     instances: new Map(),
     
-    // Initialize GSAP dragging for a panel
+    // Initialize high-performance dragging for a panel
     initializeDraggable(panelElement, options = {}) {
-        const panelId = panelElement.id || 'enhanced-panel-' + Date.now();
+        if (!panelElement) {
+            console.warn('⚠️ No panel element provided for draggable initialization');
+            return null;
+        }
         
-        // Clean up existing instance
-        this.destroyDraggable(panelId);
+        // Check if element is already draggable
+        const panelId = panelElement.id || `draggable-${Date.now()}`;
+        if (this.instances.has(panelId)) {
+            console.log(`🔄 Cleaning up existing draggable: ${panelId}`);
+            this.destroyDraggable(panelId);
+        }
         
-        console.log(`🎯 Initializing GSAP draggable for: ${panelId}`);
+        // Add ID if not present
+        if (!panelElement.id) {
+            panelElement.id = panelId;
+        }
+        
+        // Check GSAP availability
+        if (typeof window !== 'undefined' && window.gsap && window.Draggable) {
+            console.log(`⚡ Initializing GSAP draggable: ${panelId}`);
+            return this.initializeGSAPDraggable(panelElement, options);
+        } else {
+            console.warn('⚠️ GSAP or Draggable not available - using fallback dragging');
+            return this.initializeFallbackDraggable(panelElement, options);
+        }
+    },
+    
+    // GSAP-powered dragging
+    initializeGSAPDraggable(panelElement, options = {}) {
+        const panelId = panelElement.id;
         
         try {
-            // Check if GSAP and Draggable are available globally
-            if (typeof gsap === 'undefined' || typeof Draggable === 'undefined') {
-                throw new Error('GSAP or Draggable plugin not available globally');
-            }
-            
-            // Register GSAP plugins
+            // Register GSAP plugin
             gsap.registerPlugin(Draggable);
             
-            // Enhanced trigger selection with fallback hierarchy
-            let dragHandle = panelElement.querySelector('.panel-header, .enhanced-action-panel > div:first-child, .drag-handle');
+            // Find drag handle - look for .panel-header or use whole element
+            const dragHandle = panelElement.querySelector('.panel-header') || panelElement;
             
-            // If no specific handle found, use the panel itself but avoid interactive elements
-            if (!dragHandle) {
-                dragHandle = panelElement;
-                console.log('⚠️ Using entire panel as drag handle - this might cause interaction issues');
-            }
-            
-            console.log('🎯 Using drag handle:', dragHandle?.className || 'entire panel');
-            
-            // Create ultra-smooth GSAP draggable instance with enhanced configuration
-            const draggableInstance = Draggable.create(panelElement, {
-                type: "x,y",
-                trigger: dragHandle,
-                
-                // Momentum and physics
-                inertia: true,
-                edgeResistance: 0.65,
-                dragResistance: 0,
-                
-                // Advanced performance settings
-                force3D: true,
-                allowEventDefault: false,
-                allowContextMenu: true,
-                autoScroll: false,
-                
-                // Interaction filtering to avoid conflicts with buttons/inputs
-                clickableTest: (element) => {
-                    // Prevent dragging when clicking on interactive elements
-                    return !element.closest('.control-btn, .progress-slider, .expand-btn, button, input, select, textarea, [data-no-drag]');
-                },
-                
-                onPress: () => {
-                    console.log('🎯 GSAP drag press detected');
-                    // Immediate visual feedback on press
-                    gsap.set(panelElement, { 
-                        cursor: 'grabbing',
-                        userSelect: 'none',
-                        scale: 1.02,
-                        zIndex: 9999
-                    });
-                },
-                
-                onDragStart: () => {
-                    console.log('🎯 GSAP drag started');
-                    // Enhanced visual feedback during drag
-                    gsap.set(panelElement, { 
-                        boxShadow: "0 25px 50px rgba(0,0,0,0.5), 0 0 30px rgba(217, 119, 6, 0.3)",
-                        filter: "brightness(1.15) drop-shadow(0 0 10px rgba(217, 119, 6, 0.4))",
-                        scale: 1.05
-                    });
-                },
-                
-                onDrag: () => {
-                    // Minimal drag processing for maximum performance
-                    // Just maintain the enhanced visual state
-                },
-                
-                onDragEnd: () => {
-                    console.log('📍 GSAP drag completed');
-                    // Smooth transition back to normal state
-                    gsap.to(panelElement, {
-                        duration: 0.3,
-                        ease: "power2.out",
-                        boxShadow: "0 12px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(217, 119, 6, 0.1)",
-                        filter: "brightness(1)",
-                        scale: 1,
-                        cursor: 'grab',
-                        userSelect: '',
-                        zIndex: 1000
-                    });
-                },
-                
-                onRelease: () => {
-                    console.log('📍 GSAP drag released');
-                    // Ensure cursor returns to normal even on release without drag
-                    gsap.set(panelElement, { 
-                        cursor: 'grab',
-                        userSelect: ''
-                    });
-                }
-            })[0]; // Get first (and only) instance
-            
-            // Validate draggable instance creation
-            if (!draggableInstance) {
-                throw new Error('Failed to create GSAP Draggable instance');
-            }
-            
-            // Set initial optimizations and accessibility
+            // Set up hardware acceleration immediately
             gsap.set(panelElement, {
-                cursor: 'grab',
-                userSelect: 'none',
                 willChange: 'transform',
-                force3D: true, // Hardware acceleration
-                transformOrigin: 'center center'
+                force3D: true,
+                cursor: 'grab'
             });
             
-            // Add data attributes for better interaction filtering
-            panelElement.setAttribute('data-draggable', 'true');
+            // Create ultra-simple draggable instance
+            const draggableInstance = Draggable.create(panelElement, {
+                type: 'x,y',
+                trigger: dragHandle,
+                bounds: window, // Keep within window bounds
+                
+                // Performance settings
+                force3D: true,
+                allowEventDefault: false,
+                inertia: false, // Disable inertia for more control
+                
+                // Visual feedback handlers
+                onPress: function() {
+                    console.log('🎯 Drag started on:', panelId);
+                    gsap.set(panelElement, { cursor: 'grabbing' });
+                },
+                
+                onDragStart: function() {
+                    console.log('🚀 Dragging:', panelId);
+                    gsap.set(panelElement, { 
+                        zIndex: 9999,
+                        scale: 1.02,
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
+                    });
+                },
+                
+                onDrag: function() {
+                    // Optional: Add any during-drag logic here
+                    // console.log('Dragging position:', this.x, this.y);
+                },
+                
+                onDragEnd: function() {
+                    console.log('✅ Drag ended:', panelId);
+                    gsap.to(panelElement, {
+                        duration: 0.3,
+                        ease: 'power2.out',
+                        cursor: 'grab',
+                        zIndex: 1000,
+                        scale: 1,
+                        boxShadow: '0 12px 24px rgba(0,0,0,0.3)'
+                    });
+                }
+            })[0];
             
-            // Mark interactive elements to prevent drag conflicts
-            const interactiveElements = panelElement.querySelectorAll('.control-btn, .progress-slider, .expand-btn, button, input, select, textarea');
-            interactiveElements.forEach(el => el.setAttribute('data-no-drag', 'true'));
-            
-            // Store instance for cleanup
+            // Store instance data
             const instance = {
                 element: panelElement,
                 gsapInstance: draggableInstance,
+                type: 'gsap',
                 cleanup: () => {
+                    console.log(`🧹 Cleaning up GSAP draggable: ${panelId}`);
                     if (draggableInstance) {
                         draggableInstance.kill();
                     }
-                    // Reset styles
-                    gsap.set(panelElement, {
-                        cursor: '',
-                        userSelect: '',
-                        willChange: '',
-                        transform: '',
-                        zIndex: '',
-                        clearProps: 'all'
-                    });
+                    gsap.set(panelElement, { clearProps: 'all' });
                 }
             };
             
             this.instances.set(panelId, instance);
-            console.log(`⚡ GSAP draggable initialized successfully for: ${panelId}`);
+            console.log(`✅ GSAP draggable ready: ${panelId}`);
             
             return instance;
             
         } catch (error) {
-            console.error('❌ Error initializing GSAP draggable:', error);
-            return null;
+            console.error('❌ GSAP draggable failed, using fallback:', error);
+            return this.initializeFallbackDraggable(panelElement, options);
         }
+    },
+    
+    // Fallback draggable system (vanilla JS) - extremely lightweight
+    initializeFallbackDraggable(panelElement, options = {}) {
+        const panelId = panelElement.id;
+        
+        console.log(`🔄 Initializing fallback draggable: ${panelId}`);
+        
+        // Find drag handle
+        const dragHandle = panelElement.querySelector('.panel-header') || panelElement;
+        
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let initialX = 0;
+        let initialY = 0;
+        
+        // Mouse/touch event handlers
+        const handleStart = (e) => {
+            // Prevent dragging on interactive elements
+            if (e.target.closest('button, input, select, textarea, .expand-btn')) {
+                return;
+            }
+            
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            if (!clientX || !clientY) return;
+            
+            isDragging = true;
+            startX = clientX;
+            startY = clientY;
+            
+            // Get current transform
+            const style = window.getComputedStyle(panelElement);
+            const transform = style.transform;
+            
+            if (transform && transform !== 'none') {
+                const matrix = new DOMMatrix(transform);
+                initialX = matrix.m41;
+                initialY = matrix.m42;
+            } else {
+                initialX = 0;
+                initialY = 0;
+            }
+            
+            // Visual feedback
+            panelElement.style.cursor = 'grabbing';
+            panelElement.style.zIndex = '9999';
+            panelElement.style.transform = `translate3d(${initialX}px, ${initialY}px, 0) scale(1.02)`;
+            panelElement.style.boxShadow = '0 20px 40px rgba(0,0,0,0.5)';
+            
+            // Add event listeners
+            document.addEventListener('mousemove', handleMove, { passive: false });
+            document.addEventListener('mouseup', handleEnd, { passive: true });
+            document.addEventListener('touchmove', handleMove, { passive: false });
+            document.addEventListener('touchend', handleEnd, { passive: true });
+            
+            // Prevent default to avoid scrolling on touch devices
+            e.preventDefault();
+            
+            console.log('🎯 Fallback drag started on:', panelId);
+        };
+        
+        // Mouse/touch move handler - ultra-performant
+        const handleMove = (e) => {
+            if (!isDragging) return;
+            
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            if (!clientX || !clientY) return;
+            
+            const deltaX = clientX - startX;
+            const deltaY = clientY - startY;
+            
+            // Use transform for hardware acceleration
+            panelElement.style.transform = `translate3d(${initialX + deltaX}px, ${initialY + deltaY}px, 0) scale(1.02)`;
+            
+            // Prevent default to avoid scrolling
+            e.preventDefault();
+        };
+        
+        // Mouse/touch end handler
+        const handleEnd = (e) => {
+            if (!isDragging) return;
+            
+            isDragging = false;
+            
+            // Remove scale and restore normal state
+            const style = window.getComputedStyle(panelElement);
+            const transform = style.transform;
+            
+            if (transform && transform !== 'none') {
+                const matrix = new DOMMatrix(transform);
+                panelElement.style.transform = `translate3d(${matrix.m41}px, ${matrix.m42}px, 0)`;
+            }
+            
+            panelElement.style.cursor = 'grab';
+            panelElement.style.zIndex = '1000';
+            panelElement.style.boxShadow = '0 12px 24px rgba(0,0,0,0.3)';
+            
+            // Remove event listeners
+            document.removeEventListener('mousemove', handleMove);
+            document.removeEventListener('mouseup', handleEnd);
+            document.removeEventListener('touchmove', handleMove);
+            document.removeEventListener('touchend', handleEnd);
+            
+            console.log('✅ Fallback drag ended:', panelId);
+        };
+        
+        // Set up draggable styles
+        panelElement.style.cursor = 'grab';
+        panelElement.style.willChange = 'transform';
+        panelElement.style.userSelect = 'none';
+        
+        // Add event listeners to drag handle
+        dragHandle.addEventListener('mousedown', handleStart, { passive: false });
+        dragHandle.addEventListener('touchstart', handleStart, { passive: false });
+        
+        // Store instance
+        const instance = {
+            element: panelElement,
+            type: 'fallback',
+            cleanup: () => {
+                console.log(`🧹 Cleaning up fallback draggable: ${panelId}`);
+                dragHandle.removeEventListener('mousedown', handleStart);
+                dragHandle.removeEventListener('touchstart', handleStart);
+                document.removeEventListener('mousemove', handleMove);
+                document.removeEventListener('mouseup', handleEnd);
+                document.removeEventListener('touchmove', handleMove);
+                document.removeEventListener('touchend', handleEnd);
+                
+                // Reset styles
+                panelElement.style.cursor = '';
+                panelElement.style.willChange = '';
+                panelElement.style.userSelect = '';
+                panelElement.style.transform = '';
+                panelElement.style.zIndex = '';
+                panelElement.style.boxShadow = '';
+            }
+        };
+        
+        this.instances.set(panelId, instance);
+        console.log(`✅ Fallback draggable ready: ${panelId}`);
+        
+        return instance;
     },
     
     // Clean up draggable instance
@@ -164,63 +277,65 @@ export const GSAPDraggableManager = {
                 instance.cleanup();
             }
             this.instances.delete(panelId);
-            console.log(`🗑️ Cleaned up GSAP draggable: ${panelId}`);
+            console.log(`🗑️ Cleaned up draggable: ${panelId}`);
         }
     },
     
     // Cleanup all instances
     destroyAll() {
+        console.log('🧹 Cleaning up all draggable instances...');
         this.instances.forEach((instance, panelId) => {
             this.destroyDraggable(panelId);
         });
-        console.log('🧹 All GSAP draggable instances cleaned up');
+        console.log('✅ All draggable instances cleaned up');
     },
     
-    // Get status of all instances
+    // Get status of all draggable instances
     getStatus() {
         const status = {};
         this.instances.forEach((instance, panelId) => {
             status[panelId] = {
                 active: !!instance,
-                element: instance ? instance.element : null,
-                gsapInstance: instance ? instance.gsapInstance : null
+                type: instance.type || 'unknown',
+                element: instance.element || null,
+                hasGsap: instance.gsapInstance ? true : false
             };
         });
         return status;
+    },
+    
+    // Debug function to log all instances
+    debugInstances() {
+        console.log('🔍 Debug: Active draggable instances:');
+        console.table(this.getStatus());
     }
 };
 
-// Enhanced GSAP Draggable Initialization Function for Vue Components
+// Simple initialization function for Vue components
 export function initializeEnhancedDraggable(panelRef) {
     if (!panelRef) {
-        console.warn('Panel ref not available for GSAP draggable initialization');
+        console.warn('⚠️ Panel ref not available for draggable initialization');
         return null;
     }
     
     // Add unique ID if not present
     if (!panelRef.id) {
-        panelRef.id = 'enhanced-panel-' + Math.random().toString(36).substr(2, 9);
+        panelRef.id = `enhanced-panel-${Date.now()}`;
     }
     
-    const instance = GSAPDraggableManager.initializeDraggable(panelRef);
-    
-    if (instance) {
-        console.log('⚡ Enhanced GSAP draggable initialized successfully');
-    } else {
-        console.error('❌ Failed to initialize GSAP draggable');
-    }
-    
-    return instance;
+    console.log('🎯 Initializing enhanced draggable for:', panelRef.id);
+    return GSAPDraggableManager.initializeDraggable(panelRef);
 }
 
-// Global cleanup function
+// Cleanup function
 export function cleanupAllDraggables() {
     GSAPDraggableManager.destroyAll();
 }
 
-// Make available globally for compatibility
+// Make available globally for debugging
 if (typeof window !== 'undefined') {
     window.GSAPDraggableManager = GSAPDraggableManager;
-    window.initializeEnhancedDraggable = initializeEnhancedDraggable;
-    window.cleanupAllDraggables = cleanupAllDraggables;
-} 
+}
+
+// Export default for easier importing
+export default GSAPDraggableManager; 

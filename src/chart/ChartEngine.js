@@ -12,7 +12,6 @@
 
 import { ChartRenderer } from './ChartRenderer.js'
 import { DataManager } from './DataManager.js'
-import { AnimationController } from './AnimationController.js'
 
 // Ensure D3 is available globally
 const d3 = window.d3
@@ -36,10 +35,12 @@ export class ChartEngine {
             ...options
         }
         
+        // Extract teamConfig from options
+        this.teamConfig = options.teamConfig || null
+        
         // Core modules
         this.dataManager = new DataManager()
         this.renderer = null
-        this.animationController = null
         
         // Chart state
         this.dimensions = { width: 0, height: 0 }
@@ -92,13 +93,7 @@ export class ChartEngine {
             this.scales.y.domain(['Team1', 'Team2']) // Temporary until real data loads
             
             // Initialize renderer
-            this.renderer = new ChartRenderer(this.container, this.config.margin, this.scales)
-            
-            // Initialize animation controller
-            this.animationController = new AnimationController({
-                duration: this.config.transitionDuration,
-                enabled: this.config.enableAnimation
-            })
+            this.renderer = new ChartRenderer(this.container, this.config.margin, this.scales, this.teamConfig)
             
             // Setup event listeners
             this.setupEventListeners()
@@ -122,11 +117,6 @@ export class ChartEngine {
      * @returns {Promise<void>}
      */
     async renderInitialState() {
-        if (!this.initialized) {
-            console.warn('⚠️ ChartEngine not initialized')
-            return
-        }
-        
         console.log('🎬 Rendering initial state...')
         
         try {
@@ -505,10 +495,7 @@ export class ChartEngine {
             this.renderer.cleanup()
         }
         
-        // Cleanup animation controller
-        if (this.animationController) {
-            this.animationController.cleanup()
-        }
+
         
         // Reset data manager
         this.dataManager.reset()

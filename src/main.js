@@ -4,7 +4,7 @@ import { createApp } from 'vue'
 import './utils/GSAPDraggableManager.js'
 
 // Import TeamConfig and make it globally available
-import '../js/teamConfig.js'
+
 
 // Determine which app to mount based on current page
 const currentPath = window.location.pathname

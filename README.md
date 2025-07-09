@@ -60,8 +60,9 @@ This will open the application at `http://localhost:3000`. Navigate to the **"AL
 - Clean, professional two-page architecture
 
 ### **Core Engine**
-- `js/chartEngine.js` - Centralized chart rendering with GSAP integration
-- `js/mapSequences.js` - Tournament configuration and map sequences
+- `src/chart/ChartEngine.js` - Modular chart rendering with GSAP integration
+- `src/chart/DataManager.js` - Integrated tournament configuration and map sequences
+- `src/chart/ChartRenderer.js` - Optimized chart rendering and visual effects
 
 ### **Tournament Data**
 - `*_points.csv` - All tournament matchup data files
@@ -140,7 +141,7 @@ This project is automatically deployed to GitHub Pages using GitHub Actions. The
 
 #### **What Gets Deployed**
 - ✅ All HTML files (`index.html`, `year_4_championship.html`)
-- ✅ JavaScript modules (`js/chartEngine.js`, `js/teamConfig.js`, `js/mapSequences.js`)
+- ✅ JavaScript modules (`src/chart/` modular system, `src/composables/useTeamConfig.js`)
 - ✅ Tournament data (all `*.csv` files)
 - ✅ Documentation and assets
 - ✅ `.nojekyll` file for proper GitHub Pages support

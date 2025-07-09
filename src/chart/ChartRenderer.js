@@ -10,11 +10,12 @@ if (!d3) {
 }
 
 export class ChartRenderer {
-    constructor(container, margin, scales) {
+    constructor(container, margin, scales, teamConfig = null) {
         this.container = container
         this.margin = margin
         this.xScale = scales.x
         this.yScale = scales.y
+        this.teamConfig = teamConfig
         this.svg = null
         this.mainGroup = null
         this.xAxisGroup = null
@@ -151,12 +152,12 @@ export class ChartRenderer {
         // Add text labels for game points
         segmentsEnter.append('text')
             .attr('class', 'segment-label')
-            .attr('y', -bandwidth * 0.6)    // Position text above the bars (bars are at -0.4)
+            .attr('y', 0)    // Position text inside the bars (bars are centered at 0)
             .attr('dy', '0.35em')
             .style('font-size', '14px')
             .style('font-weight', '600')
             .style('text-anchor', 'middle')
-            .style('fill', '#f1f5f9')      // Change to light color for visibility
+            .style('fill', '#ffffff')      // White color for visibility inside bars
             .style('text-shadow', '1px 1px 2px rgba(0,0,0,0.8)')
         
         const allSegments = gameSegments.merge(segmentsEnter)
@@ -224,7 +225,7 @@ export class ChartRenderer {
                 
                 return segmentStart + segmentWidth / 2
             })
-            .attr('y', -bandwidth * 0.6)   // Position above bars (bars are at -0.4)
+            .attr('y', 0)   // Position inside bars (bars are centered at 0)
             .text(d => {
                 const isVisible = isFiltered && filteredGameIndices.length > 0 
                     ? filteredGameIndices.includes(d.gameNumber)
@@ -266,7 +267,7 @@ export class ChartRenderer {
         const cumulativeLabelEnter = cumulativeLabel.enter()
             .append('text')
             .attr('class', 'cumulative-label')
-            .attr('y', bandwidth / 2)
+            .attr('y', 0)    // Position on same axis as bars
             .attr('dy', '0.35em')
             .style('font-size', '14px')
             .style('font-weight', '700')
@@ -278,7 +279,7 @@ export class ChartRenderer {
             .transition()
             .duration(transitionDuration)
             .attr('x', d => this.xScale(d.cumulativeScore) + 8)
-            .attr('y', bandwidth / 2)
+            .attr('y', 0)    // Position on same axis as bars
             .text(d => d.cumulativeScore)
     }
     
@@ -305,6 +306,23 @@ export class ChartRenderer {
         // Clear existing Y-axis
         this.yAxisGroup.selectAll('*').remove()
         
+        // Calculate optimal spacing for y-axis with 4-10 point spacing
+        const availableHeight = this.yScale.range()[1] - this.yScale.range()[0]
+        const numTeams = data.length
+        const minSpacing = 4
+        const maxSpacing = 10
+        
+        // Calculate current bandwidth per team
+        const currentBandwidth = this.yScale.bandwidth()
+        
+        // Optimize spacing: if teams are too close, use intelligent spacing
+        let optimizedSpacing = Math.max(minSpacing, Math.min(maxSpacing, availableHeight / numTeams))
+        
+        // If we have more than 20 teams, use condensed spacing
+        if (numTeams > 20) {
+            optimizedSpacing = Math.max(minSpacing, availableHeight / numTeams * 0.8)
+        }
+        
         // Create team entries
         const teamEntries = this.customYAxisGroup.selectAll('.team-entry')
             .data(data, d => d.team)
@@ -319,7 +337,7 @@ export class ChartRenderer {
         
         const allTeamEntries = teamEntries.merge(teamEntriesEnter)
         
-        // Update positions and content
+        // Update positions and content with optimized spacing
         allTeamEntries
             .transition()
             .duration(1500)
@@ -407,12 +425,14 @@ export class ChartRenderer {
             const teamGroup = d3.select(nodes[i])
             const teamName = teamData.team
             
-            const logoUrl = window.TeamConfig?.getTeamLogo(teamName)
+            // Use injected teamConfig or fallback to global window.TeamConfig
+            const config = this.teamConfig || window.TeamConfig
+            const logoUrl = config?.getTeamLogo(teamName)
             const logoImage = teamGroup.select('.team-logo-image')
             const fallbackGroup = teamGroup.select('.logo-fallback')
             
             // Setup fallback styling first
-            const fallbackConfig = window.TeamConfig?.getFallbackConfig(teamName) || 
+            const fallbackConfig = config?.getFallbackConfig(teamName) || 
                 { backgroundColor: '#dc2626', initials: teamName.substring(0, 2), icon: '🏆' }
             
             fallbackGroup.select('.fallback-bg')

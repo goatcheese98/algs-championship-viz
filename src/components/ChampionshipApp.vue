@@ -135,8 +135,8 @@
                 
                 <div class="panel-header">
                   <div class="panel-title">
-                    <span class="drag-handle">⋮⋮ Drag Anywhere ⋮⋮</span>
-                    Enhanced Controls
+                    <span class="drag-handle">⋮⋮</span>
+                    Controls
                   </div>
                   <button class="expand-btn" @click="togglePanel" @mousedown.stop>
                     {{ panelExpanded ? '−' : '+' }}
@@ -189,7 +189,8 @@
                   <div v-if="panelExpanded" class="expanded-controls" @mousedown.stop>
                     <!-- Game Filtering -->
                     <div class="control-section">
-                      <label class="section-label">🎮 Game {{ currentGame }} / {{ maxGames }}</label>
+                      <label class="section-label">🎮 Filter Games ({{ currentGame }} / {{ maxGames }})</label>
+                      <p class="filter-description">Click games to filter view</p>
                       <div class="game-filter-buttons">
                         <button @click="jumpToInitialState"
                                 class="game-filter-btn"
@@ -238,10 +239,21 @@
 
 <script>
 import { GSAPDraggableManager } from '../utils/GSAPDraggableManager.js'
-// Removed modular ChartEngine import to prevent conflicts with global js/chartEngine.js
+import { ChartEngine } from '../chart/ChartEngine.js'
+import { useTeamConfig } from '../composables/useTeamConfig.js'
 
 export default {
   name: 'ChampionshipApp',
+  
+  setup() {
+    // Initialize team configuration composable
+    const teamConfig = useTeamConfig();
+    
+    // Return for template usage
+    return {
+      teamConfig
+    };
+  },
   
   data() {
     console.log('📋 ChampionshipApp data() called - Vue is initializing');
@@ -366,7 +378,6 @@ export default {
       
       // Enhanced Action Panel (GSAP-optimized)
       panelExpanded: false,
-      isDragging: false,
       selectedGames: [],
       
       // GSAP instances
@@ -430,17 +441,6 @@ export default {
         this.updateGameState();
       }
     }, 300);
-    
-    // Add event listener for play prompt clicks
-    this.$nextTick(() => {
-      const container = document.getElementById('vue-chart-container');
-      if (container) {
-        container.addEventListener('play-prompt-clicked', () => {
-          console.log('🎬 Play prompt clicked, starting animation');
-          this.playAnimation();
-        });
-      }
-    });
   },
   
   methods: {
@@ -541,15 +541,17 @@ export default {
         // Additional safety check - ensure container exists
         await this.waitForContainer();
         
-        // Initialize chart engine using global ChartEngine from js/chartEngine.js
-        this.chartEngine = new window.ChartEngine('vue-chart-container', {
-          debugMode: true,
+        // Initialize chart engine using new modular ChartEngine
+        this.chartEngine = new ChartEngine('vue-chart-container', {
+          debugMode: false,  // Optimized for production
           transitionDuration: 2500,  // Slower, more elegant animations
-          enableAnimation: true
+          enableAnimation: true,
+          teamConfig: this.teamConfig  // Pass Vue composable to chart engine
         });
         
         // Initialize chart engine with matchup data
-        await this.chartEngine.renderChart({ matchup: this.selectedMatchup });
+        const csvPath = `data/${this.selectedMatchup}_points.csv`;
+        await this.chartEngine.initialize(csvPath);
         
         // Update game state
         this.maxGames = this.chartEngine.maxGames || 6;
@@ -564,6 +566,13 @@ export default {
         
         // Verify chart rendered
         await this.verifyChartRender();
+        
+        // Initialize draggable after chart is loaded and ready
+        this.$nextTick(() => {
+          setTimeout(() => {
+            this.initGSAPDraggable();
+          }, 200);
+        });
         
       } catch (error) {
         console.error('❌ Error loading matchup:', error);
@@ -669,26 +678,48 @@ export default {
     },
     
     initGSAPDraggable() {
-      if (!this.$refs.actionPanel || !GSAPDraggableManager) return;
+      console.log('🎯 Attempting to initialize GSAP draggable...');
+      
+      if (!this.$refs.actionPanel) {
+        console.warn('⚠️ Action panel ref not available');
+        return;
+      }
+      
+      if (!GSAPDraggableManager) {
+        console.warn('⚠️ GSAPDraggableManager not available');
+        return;
+      }
       
       const panelElement = this.$refs.actionPanel;
       const panelId = panelElement.id || `action-panel-${Date.now()}`;
-      panelElement.id = panelId;
       
-      // Initialize draggable with GSAP manager
-      this.draggableInstance = GSAPDraggableManager.initializeDraggable(panelElement, {
-        onDrag: () => this.isDragging = true,
-        onDragEnd: () => {
-          setTimeout(() => this.isDragging = false, 100);
-        }
-      });
+      // Ensure panel has ID
+      if (!panelElement.id) {
+        panelElement.id = panelId;
+      }
+      
+      console.log('🚀 Initializing draggable for panel:', panelId);
+      console.log('📦 Panel element:', panelElement);
+      console.log('🔧 GSAP available:', typeof window !== 'undefined' && !!window.gsap);
+      console.log('🎯 Draggable available:', typeof window !== 'undefined' && !!window.Draggable);
+      
+      // Initialize ultra-performant draggable with new system
+      this.draggableInstance = GSAPDraggableManager.initializeDraggable(panelElement);
+      
+      if (this.draggableInstance) {
+        console.log('✅ Controls draggable initialized successfully');
+        console.log('📊 Draggable instance:', this.draggableInstance);
+      } else {
+        console.warn('⚠️ Controls draggable initialization failed');
+      }
+      
+      // Debug: Show all instances
+      GSAPDraggableManager.debugInstances();
     },
     
     async updateGameFromSlider() {
       if (this.chartEngine) {
         await this.chartEngine.jumpToGame(this.currentGame);
-        // Sync the Vue component state with the chart engine state
-        this.currentGame = this.chartEngine.currentGameIndex;
         this.updateCurrentMap();
       }
     },
@@ -743,8 +774,10 @@ export default {
     },
     
     updateCurrentMap() {
-      if (this.chartEngine) {
-        this.currentMap = this.chartEngine.getMapForGame(this.currentGame);
+      if (this.chartEngine && this.chartEngine.dataManager) {
+        // Get current map from data manager
+        const currentGameIndex = this.chartEngine.currentGameIndex;
+        this.currentMap = this.chartEngine.dataManager.getMapForGame(currentGameIndex);
       }
     },
     
@@ -774,16 +807,16 @@ export default {
         if (this.selectedGames.length > 0) {
           await this.chartEngine.filterByGames(this.selectedGames);
         } else {
-          await this.chartEngine.clearGameFilter();
+          await this.chartEngine.clearFilter();
         }
       }
     },
     
     getGameButtonStyle(gameNum) {
-      if (!this.chartEngine) return {};
+      if (!this.chartEngine || !this.chartEngine.dataManager) return {};
       
-      const mapName = this.chartEngine.getMapForGame(gameNum);
-      const mapColor = this.chartEngine.getMapColor(mapName, gameNum);
+      const mapName = this.chartEngine.dataManager.getMapForGame(gameNum);
+      const mapColor = this.chartEngine.dataManager.getMapColor(mapName, gameNum);
       
       const isActive = this.selectedGames.includes(gameNum);
       const isCurrent = gameNum === this.currentGame;
@@ -798,42 +831,38 @@ export default {
         };
       } else if (isCurrent) {
         return {
-          background: `linear-gradient(135deg, ${mapColor}40 0%, ${this.adjustColor(mapColor, -20)}40 100%)`,
+          background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, -10)} 100%)`,
           border: `2px solid ${mapColor}`,
-          color: '#f1f5f9',
+          color: '#ffffff',
           boxShadow: `0 0 10px ${mapColor}60, 0 2px 4px rgba(0,0,0,0.2)`
         };
       } else {
         return {
-          background: `linear-gradient(135deg, ${mapColor}20 0%, ${this.adjustColor(mapColor, -30)}20 100%)`,
+          background: `linear-gradient(135deg, ${mapColor}40 0%, ${this.adjustColor(mapColor, -20)}40 100%)`,
           border: `1px solid ${mapColor}60`,
-          color: '#cbd5e1',
-          boxShadow: `0 0 5px ${mapColor}40`
+          color: '#cbd5e1'
         };
       }
     },
     
-    adjustColor(color, percent) {
-      // Simple color adjustment - convert HSL values
-      const hslMatch = color.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
-      if (hslMatch) {
-        const [, h, s, l] = hslMatch;
-        const newL = Math.max(0, Math.min(100, parseInt(l) + percent));
-        return `hsl(${h}, ${s}%, ${newL}%)`;
-      }
-      return color;
+    adjustColor(hexColor, percent) {
+      // Simple color adjustment utility
+      const num = parseInt(hexColor.slice(1), 16);
+      const amt = Math.round(2.55 * percent);
+      const R = (num >> 16) + amt;
+      const G = (num >> 8 & 0x00FF) + amt;
+      const B = (num & 0x0000FF) + amt;
+      
+      return `#${(0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+        (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1)}`;
     },
     
     getCurrentMapStyle() {
-      if (!this.currentMap || !this.chartEngine) {
-        return {
-          background: 'linear-gradient(135deg, #374151 0%, #1f2937 100%)',
-          border: '2px solid #4b5563',
-          color: '#d1d5db'
-        };
-      }
+      if (!this.chartEngine || !this.chartEngine.dataManager) return {};
       
-      const mapColor = this.chartEngine.getMapColor(this.currentMap);
+      const mapColor = this.chartEngine.dataManager.getMapColor(this.currentMap, this.currentGame);
+      
       return {
         background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, -20)} 100%)`,
         border: `2px solid ${mapColor}`,
@@ -844,32 +873,17 @@ export default {
     
     exportData() {
       if (this.chartEngine) {
-        this.chartEngine.exportData(this.selectedMatchup);
-      }
-    },
-    
-    async forceReloadChart() {
-      if (this.selectedMatchup) {
-        console.log('🔄 Force reloading chart...');
+        const csvContent = this.chartEngine.exportData(this.selectedMatchup);
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
         
-        // Clean up existing chart
-        if (this.chartEngine) {
-          this.chartEngine.cleanup();
-          this.chartEngine = null;
-        }
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${this.selectedMatchup}_export.csv`;
+        a.click();
         
-        // Reload
-        await this.loadMatchup();
+        URL.revokeObjectURL(url);
       }
-    }
-  },
-  
-  updated() {
-    // Ensure GSAP draggable is initialized after updates
-    if (this.chartEngine && this.$refs.actionPanel && !this.draggableInstance) {
-      this.$nextTick(() => {
-        this.initGSAPDraggable();
-      });
     }
   },
   
@@ -879,16 +893,14 @@ export default {
       this.chartEngine.cleanup();
     }
     
+    // Cleanup game state interval
     if (this.gameStateInterval) {
       clearInterval(this.gameStateInterval);
     }
     
-    if (this.$refs.actionPanel && this.$refs.actionPanel.id && GSAPDraggableManager) {
-      GSAPDraggableManager.destroyDraggable(this.$refs.actionPanel.id);
-    }
-    
-    if (this.draggableInstance && this.draggableInstance.cleanup) {
-      this.draggableInstance.cleanup();
+    // Cleanup GSAP draggable
+    if (this.draggableInstance && GSAPDraggableManager) {
+      GSAPDraggableManager.destroyAll();
     }
   }
 }
