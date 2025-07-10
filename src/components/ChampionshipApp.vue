@@ -103,143 +103,75 @@
       <!-- Chart Section -->
       <div class="chart-section">
         <div v-if="!selectedMatchup" class="no-selection">
-          <!-- Optimized Interactive SVG Animation -->
-          <div class="matchup-instructions-container">
-            <svg viewBox="0 0 600 400" class="matchup-instructions-svg">
-              <defs>
-                <!-- Gradients matching the dashboard theme -->
-                <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
-                  <stop offset="50%" style="stop-color:#2a2a2a;stop-opacity:1" />
-                  <stop offset="100%" style="stop-color:#1a1a1a;stop-opacity:1" />
-                </linearGradient>
-                
-                <linearGradient id="orangeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style="stop-color:#ff8c42;stop-opacity:1" />
-                  <stop offset="100%" style="stop-color:#ffb366;stop-opacity:1" />
-                </linearGradient>
-                
-                <linearGradient id="subtleOrange" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style="stop-color:#ff8c42;stop-opacity:0.6" />
-                  <stop offset="100%" style="stop-color:#ffb366;stop-opacity:0.3" />
-                </linearGradient>
-                
-                <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" style="stop-color:#ff8c42;stop-opacity:0.3" />
-                  <stop offset="70%" style="stop-color:#ff8c42;stop-opacity:0.1" />
-                  <stop offset="100%" style="stop-color:#ff8c42;stop-opacity:0" />
-                </radialGradient>
-                
-                <!-- Filters -->
-                <filter id="softGlow">
-                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                  <feMerge> 
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
-                
-                <filter id="textGlow">
-                  <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
-                  <feMerge> 
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
-              </defs>
+          <!-- Optimized Vue.js + GSAP Chart Loading Animation -->
+          <div ref="chartLoadingContainer" class="chart-loading-container">
+            
+            <!-- Central Glow Effect -->
+            <div ref="centralGlow" class="central-glow"></div>
+            
+            <!-- Animated Chart Bars -->
+            <div class="chart-bars-container">
+              <div ref="chartBar1" class="chart-bar chart-bar-1"></div>
+              <div ref="chartBar2" class="chart-bar chart-bar-2"></div>
+              <div ref="chartBar3" class="chart-bar chart-bar-3"></div>
+              <div ref="chartBar4" class="chart-bar chart-bar-4"></div>
+              <div ref="chartBar5" class="chart-bar chart-bar-5"></div>
               
-              <!-- Background with subtle texture -->
-              <rect width="600" height="400" fill="url(#bgGradient)" rx="8"/>
-              
-              <!-- Central focus area -->
-              <circle cx="300" cy="180" r="80" fill="url(#centerGlow)">
-                <animate attributeName="r" values="80;90;80" dur="6s" repeatCount="indefinite"/>
-              </circle>
-              
-              <!-- Main chart icon area -->
-              <g transform="translate(300,150)">
-                <!-- Stylized chart bars -->
-                <rect x="-25" y="5" width="6" height="15" fill="url(#orangeGradient)" rx="2" opacity="0.8">
-                  <animate attributeName="height" values="15;25;15" dur="3s" repeatCount="indefinite"/>
-                  <animate attributeName="y" values="5;-5;5" dur="3s" repeatCount="indefinite"/>
-                </rect>
-                <rect x="-12" y="3" width="6" height="17" fill="url(#orangeGradient)" rx="2" opacity="0.9">
-                  <animate attributeName="height" values="17;27;17" dur="3.5s" repeatCount="indefinite"/>
-                  <animate attributeName="y" values="3;-7;3" dur="3.5s" repeatCount="indefinite"/>
-                </rect>
-                <rect x="0" y="0" width="6" height="20" fill="url(#orangeGradient)" rx="2">
-                  <animate attributeName="height" values="20;30;20" dur="4s" repeatCount="indefinite"/>
-                  <animate attributeName="y" values="0;-10;0" dur="4s" repeatCount="indefinite"/>
-                </rect>
-                <rect x="12" y="4" width="6" height="16" fill="url(#orangeGradient)" rx="2" opacity="0.9">
-                  <animate attributeName="height" values="16;26;16" dur="3.2s" repeatCount="indefinite"/>
-                  <animate attributeName="y" values="4;-6;4" dur="3.2s" repeatCount="indefinite"/>
-                </rect>
-                <rect x="24" y="8" width="6" height="12" fill="url(#orangeGradient)" rx="2" opacity="0.8">
-                  <animate attributeName="height" values="12;22;12" dur="2.8s" repeatCount="indefinite"/>
-                  <animate attributeName="y" values="8;-2;8" dur="2.8s" repeatCount="indefinite"/>
-                </rect>
-                
-                <!-- Connecting line -->
-                <path d="M -20,12 Q -8,9 0,8 Q 8,7 16,11 Q 24,15 28,13" 
-                      fill="none" stroke="url(#subtleOrange)" stroke-width="2" opacity="0.6">
-                  <animate attributeName="opacity" values="0.4;0.8;0.4" dur="4s" repeatCount="indefinite"/>
-                </path>
-              </g>
-              
-              <!-- Rotating outer ring -->
-              <g transform-origin="300 180">
-                <animateTransform attributeName="transform" type="rotate" values="0 300 180;360 300 180" dur="20s" repeatCount="indefinite"/>
-                <circle cx="300" cy="180" r="60" fill="none" stroke="#ff8c42" stroke-width="1" opacity="0.4"/>
-                <circle cx="300" cy="120" r="2" fill="#ff8c42" opacity="0.6"/>
-                <circle cx="360" cy="180" r="2" fill="#ff8c42" opacity="0.6"/>
-              </g>
-              
-              <!-- Main heading -->
-              <text x="300" y="260" text-anchor="middle" fill="url(#orangeGradient)" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="600" filter="url(#textGlow)">
+              <!-- Connecting Line -->
+              <div ref="connectingLine" class="connecting-line"></div>
+            </div>
+            
+            <!-- Rotating Outer Ring -->
+            <div ref="outerRing" class="outer-ring">
+              <div class="ring-circle"></div>
+              <div class="ring-dot ring-dot-1"></div>
+              <div class="ring-dot ring-dot-2"></div>
+            </div>
+            
+            <!-- Inner Rotating Ring -->
+            <div ref="innerRing" class="inner-ring">
+              <div class="inner-ring-circle"></div>
+              <div class="inner-ring-dot"></div>
+            </div>
+            
+            <!-- Roaming Circles -->
+            <div ref="roamingCircle1" class="roaming-circle roaming-circle-1"></div>
+            <div ref="roamingCircle2" class="roaming-circle roaming-circle-2"></div>
+            <div ref="roamingCircle3" class="roaming-circle roaming-circle-3"></div>
+            <div ref="roamingCircle4" class="roaming-circle roaming-circle-4"></div>
+            
+
+            
+            <!-- Scanning Effect -->
+            <div ref="scanningLine" class="scanning-line"></div>
+            
+            <!-- Main Content -->
+            <div class="loading-content">
+              <h3 ref="mainHeading" class="loading-heading">
                 Select a matchup to view the interactive chart
-              </text>
-              
-              <!-- Secondary text -->
-              <text x="300" y="285" text-anchor="middle" fill="#888" font-family="Inter, Arial, sans-serif" font-size="13" opacity="0.8">
-                Choose from the tournament matchups above to see detailed race charts
-              </text>
-              <text x="300" y="305" text-anchor="middle" fill="#888" font-family="Inter, Arial, sans-serif" font-size="13" opacity="0.8">
-                with game-by-game progression.
-              </text>
-              
-              <!-- Accent line -->
-              <rect x="200" y="330" width="200" height="1" fill="url(#subtleOrange)">
-                <animate attributeName="opacity" values="0.3;0.7;0.3" dur="4s" repeatCount="indefinite"/>
-              </rect>
-              
-              <!-- Corner accents -->
-              <g transform="translate(50,50)" opacity="0.3">
-                <rect x="0" y="0" width="15" height="2" fill="#ff8c42"/>
-                <rect x="0" y="0" width="2" height="15" fill="#ff8c42"/>
-              </g>
-              
-              <g transform="translate(535,50)" opacity="0.3">
-                <rect x="0" y="0" width="15" height="2" fill="#ff8c42"/>
-                <rect x="13" y="0" width="2" height="15" fill="#ff8c42"/>
-              </g>
-              
-              <!-- Floating data points -->
-              <g opacity="0.4">
-                <circle cx="150" cy="100" r="1" fill="#ff8c42">
-                  <animate attributeName="opacity" values="0.3;0.7;0.3" dur="3s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="450" cy="300" r="1" fill="#ffb366">
-                  <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2.5s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="100" cy="250" r="1" fill="#ff8c42">
-                  <animate attributeName="opacity" values="0.2;0.6;0.2" dur="4s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="500" cy="130" r="1" fill="#ffb366">
-                  <animate attributeName="opacity" values="0.3;0.7;0.3" dur="3.5s" repeatCount="indefinite"/>
-                </circle>
-              </g>
-            </svg>
+              </h3>
+              <div class="loading-text-container">
+                <p ref="subText1" class="loading-text">
+                  Choose from the tournament matchups above to see detailed race charts with game-by-game progression.
+                </p>
+              </div>
+            </div>
+            
+            <!-- Accent Line -->
+            <div ref="accentLine" class="accent-line"></div>
+            
+            <!-- Corner Accents -->
+            <div class="corner-accent corner-accent-tl"></div>
+            <div class="corner-accent corner-accent-tr"></div>
+            <div class="corner-accent corner-accent-bl"></div>
+            <div class="corner-accent corner-accent-br"></div>
+            
+            <!-- Floating Data Points -->
+            <div ref="floatingDot1" class="floating-dot floating-dot-1"></div>
+            <div ref="floatingDot2" class="floating-dot floating-dot-2"></div>
+            <div ref="floatingDot3" class="floating-dot floating-dot-3"></div>
+            <div ref="floatingDot4" class="floating-dot floating-dot-4"></div>
+            
           </div>
         </div>
 
@@ -310,19 +242,19 @@
                                 class="game-filter-btn"
                                 :class="{ 
                                   active: selectedGames.includes(game),
-                                  current: game === currentGame
+                                  current: game === currentGame 
                                 }"
                                 :style="getGameButtonStyle(game)"
                                 :title="getGameTooltip(game)">
                           {{ game }}
                         </button>
                       </div>
-                      <button @click="resetGameFilter" class="reset-filter-btn">
+                        <button @click="resetGameFilter" class="reset-filter-btn">
                         ✕
-                      </button>
-                    </div>
+                        </button>
+                      </div>
                     <div class="filter-action-label">Apply Filter</div>
-                  </div>
+                    </div>
 
                   <!-- Current Map Info -->
                   <div class="current-map-display">
@@ -550,6 +482,9 @@ export default {
     // Initialize professional header animations with GSAP
     this.initializeHeaderAnimations();
     
+    // Initialize chart loading animation
+    this.initializeChartLoadingAnimation();
+    
     // Initialize GSAP dragging when DOM is ready
     this.$nextTick(() => {
       this.initGSAPDraggable();
@@ -617,8 +552,8 @@ export default {
       // 1. Championship Logo with bounce and particles
       masterTimeline
         .to(this.$refs.championshipLogo, {
-          opacity: 1,
-          y: 0,
+        opacity: 1,
+        y: 0,
           scale: 1,
           filter: 'blur(0px)',
           duration: 1.2,
@@ -639,8 +574,8 @@ export default {
       // 2. Championship Title with typewriter effect
       masterTimeline
         .to(this.$refs.championshipTitle, {
-          opacity: 1,
-          y: 0,
+        opacity: 1,
+        y: 0,
           scale: 1,
           filter: 'blur(0px)',
           duration: 0.8,
@@ -659,14 +594,14 @@ export default {
           y: 0,
           scale: 1,
           filter: 'blur(0px)',
-          duration: 0.6,
-          ease: 'power2.out'
+        duration: 0.6,
+        ease: 'power2.out'
         }, '-=0.3');
       
       // 4. Individual info items with 3D flip effects
       masterTimeline
         .to([this.$refs.infoItem1, this.$refs.infoItem2, this.$refs.infoItem3], {
-          opacity: 1,
+        opacity: 1,
           x: 0,
           scale: 1,
           rotationY: 0,
@@ -690,20 +625,20 @@ export default {
           opacity: 1,
           scale: 1,
           rotation: 0,
-          duration: 0.5,
+        duration: 0.5,
           ease: 'back.out(2)',
           stagger: 0.1
         }, '-=0.8');
       
       // 6. Navigation links
       masterTimeline
-        .to('.nav-links', {
-          opacity: 1,
-          y: 0,
+      .to('.nav-links', {
+        opacity: 1,
+        y: 0,
           scale: 1,
           filter: 'blur(0px)',
           duration: 0.5,
-          ease: 'power2.out'
+        ease: 'power2.out'
         }, '-=0.3');
       
       // 7. Continuous subtle animations
@@ -748,6 +683,197 @@ export default {
         ease: 'power2.inOut',
         yoyo: true,
         repeat: -1
+      });
+    },
+
+    // Vue.js + GSAP Chart Loading Animation
+    initializeChartLoadingAnimation() {
+      console.log('📊 Initializing chart loading animations...');
+      
+      // Check if GSAP is available
+      if (typeof gsap === 'undefined') {
+        console.warn('⚠️ GSAP not available - chart loading animations disabled');
+        return;
+      }
+      
+      // Wait for refs to be available
+      this.$nextTick(() => {
+        // Central glow pulsing animation - optimized for performance
+        if (this.$refs.centralGlow) {
+          gsap.to(this.$refs.centralGlow, {
+            scale: 1.125,
+            duration: 3,
+            ease: "power1.inOut",
+            repeat: -1,
+            yoyo: true,
+            force3D: true
+          });
+        }
+        
+        // Chart bars animation - optimized with transform3d
+        const chartBars = [
+          this.$refs.chartBar1,
+          this.$refs.chartBar2,
+          this.$refs.chartBar3,
+          this.$refs.chartBar4,
+          this.$refs.chartBar5
+        ].filter(Boolean);
+        
+        if (chartBars.length > 0) {
+          chartBars.forEach((bar, index) => {
+            const originalHeight = parseInt(getComputedStyle(bar).height);
+            const animationHeight = originalHeight * 1.8; // Increased amplitude
+            
+            gsap.to(bar, {
+              scaleY: 1.8,
+              duration: 1.0 + (index * 0.15), // Faster, more varied timing
+              ease: "power2.inOut",
+              repeat: -1,
+              yoyo: true,
+              delay: index * 0.08,
+              force3D: true,
+              transformOrigin: "bottom"
+            });
+          });
+        }
+        
+        // Connecting line opacity animation
+        if (this.$refs.connectingLine) {
+          gsap.to(this.$refs.connectingLine, {
+            opacity: 0.9,
+            duration: 2.5,
+            ease: "power1.inOut",
+            repeat: -1,
+            yoyo: true
+          });
+        }
+        
+        // Outer ring rotation - optimized
+        if (this.$refs.outerRing) {
+          gsap.to(this.$refs.outerRing, {
+            rotation: 360,
+            duration: 20,
+            ease: "none",
+            repeat: -1,
+            force3D: true,
+            transformOrigin: "center"
+          });
+        }
+        
+        // Inner ring rotation - counter-clockwise
+        if (this.$refs.innerRing) {
+          gsap.to(this.$refs.innerRing, {
+            rotation: -360,
+            duration: 15,
+            ease: "none",
+            repeat: -1,
+            force3D: true,
+            transformOrigin: "center"
+          });
+        }
+        
+        // Roaming circles animation - smooth orbital movement
+        const roamingCircles = [
+          this.$refs.roamingCircle1,
+          this.$refs.roamingCircle2,
+          this.$refs.roamingCircle3,
+          this.$refs.roamingCircle4
+        ].filter(Boolean);
+        
+        if (roamingCircles.length > 0) {
+          roamingCircles.forEach((circle, index) => {
+            // Create orbital movement patterns
+            const radius = 80 + (index * 15);
+            const duration = 8 + (index * 2);
+            const offset = (index * 90); // Distribute around circle
+            
+            gsap.to(circle, {
+              rotation: 360,
+              duration: duration,
+              ease: "none",
+              repeat: -1,
+              force3D: true,
+              transformOrigin: `${radius}px center`,
+              delay: offset / 360 * duration
+            });
+          });
+        }
+        
+
+        
+        // Scanning line animation - vertical movement
+        if (this.$refs.scanningLine) {
+          gsap.to(this.$refs.scanningLine, {
+            y: "100vh",
+            duration: 8,
+            ease: "power1.inOut",
+            repeat: -1,
+            yoyo: true,
+            force3D: true
+          });
+        }
+        
+        // Text content fade in animation - staggered for better alignment
+        const textElements = [
+          this.$refs.mainHeading,
+          this.$refs.subText1
+        ].filter(Boolean);
+        
+        if (textElements.length > 0) {
+          gsap.set(textElements, {
+            opacity: 0,
+            y: 30,
+            force3D: true
+          });
+          
+          gsap.to(textElements, {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: "power2.out",
+            stagger: 0.15,
+            delay: 0.5,
+            force3D: true
+          });
+        }
+        
+        // Accent line pulsing - enhanced
+        if (this.$refs.accentLine) {
+          gsap.to(this.$refs.accentLine, {
+            opacity: 0.8,
+            scaleX: 1.2,
+            duration: 3,
+            ease: "power1.inOut",
+            repeat: -1,
+            yoyo: true,
+            force3D: true
+          });
+        }
+        
+        // Floating dots pulsing animation - improved performance
+        const floatingDots = [
+          this.$refs.floatingDot1,
+          this.$refs.floatingDot2,
+          this.$refs.floatingDot3,
+          this.$refs.floatingDot4
+        ].filter(Boolean);
+        
+        if (floatingDots.length > 0) {
+          floatingDots.forEach((dot, index) => {
+            gsap.to(dot, {
+              opacity: 0.9,
+              scale: 1.8,
+              duration: 1.2 + (index * 0.25),
+              ease: "power2.inOut",
+              repeat: -1,
+              yoyo: true,
+              delay: index * 0.4,
+              force3D: true
+            });
+          });
+        }
+        
+        console.log('✨ Chart loading animations initialized successfully!');
       });
     },
     
@@ -957,7 +1083,7 @@ export default {
       
       // Ensure panel has ID
       if (!panelElement.id) {
-        panelElement.id = panelId;
+      panelElement.id = panelId;
       }
       
       console.log('🚀 Initializing draggable for panel:', panelId);
@@ -1165,9 +1291,9 @@ export default {
       // Base style: all buttons are colored with map colors by default
       const baseStyle = {
         background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, -10)} 100%)`,
-        border: `2px solid ${mapColor}`,
+          border: `2px solid ${mapColor}`,
         color: '#ffffff'
-      };
+        };
       
       // Add subtle glow effect only for current game during progress
       if (isCurrent) {

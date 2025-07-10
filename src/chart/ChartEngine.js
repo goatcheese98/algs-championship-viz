@@ -385,18 +385,68 @@ export class ChartEngine {
     }
     
     /**
-     * Calculate chart dimensions
+     * Calculate chart dimensions with responsive behavior
      */
     calculateDimensions() {
         const containerRect = this.container.node().getBoundingClientRect()
+        const windowWidth = window.innerWidth
+        const windowHeight = window.innerHeight
+        
+        // Responsive margin adjustments
+        let adjustedMargins = { ...this.config.margin }
+        
+        // Adjust margins for smaller screens
+        if (windowWidth < 1200) {
+            adjustedMargins.left = Math.max(200, this.config.margin.left * 0.7)
+            adjustedMargins.right = Math.max(50, this.config.margin.right * 0.7)
+        }
+        
+        if (windowWidth < 900) {
+            adjustedMargins.left = Math.max(180, this.config.margin.left * 0.6)
+            adjustedMargins.right = Math.max(40, this.config.margin.right * 0.6)
+            adjustedMargins.top = Math.max(30, this.config.margin.top * 0.8)
+            adjustedMargins.bottom = Math.max(50, this.config.margin.bottom * 0.8)
+        }
+        
+        if (windowWidth < 700) {
+            adjustedMargins.left = Math.max(150, this.config.margin.left * 0.5)
+            adjustedMargins.right = Math.max(30, this.config.margin.right * 0.5)
+            adjustedMargins.top = Math.max(25, this.config.margin.top * 0.7)
+            adjustedMargins.bottom = Math.max(45, this.config.margin.bottom * 0.9)
+        }
+        
+        // Update the config margins for renderer
+        this.config.margin = adjustedMargins
+        
+        // Calculate responsive dimensions
+        const availableWidth = containerRect.width - adjustedMargins.left - adjustedMargins.right
+        const availableHeight = containerRect.height - adjustedMargins.top - adjustedMargins.bottom
+        
+        // Set responsive minimums that scale with screen size
+        const minWidth = Math.min(600, windowWidth * 0.6)
+        const minHeight = Math.min(400, windowHeight * 0.4)
         
         this.dimensions = {
-            width: Math.max(800, containerRect.width - this.config.margin.left - this.config.margin.right),
-            height: Math.max(600, containerRect.height - this.config.margin.top - this.config.margin.bottom)
+            width: Math.max(minWidth, availableWidth),
+            height: Math.max(minHeight, availableHeight)
+        }
+        
+        // Ensure dimensions don't exceed container bounds
+        this.dimensions.width = Math.min(this.dimensions.width, containerRect.width - adjustedMargins.left - adjustedMargins.right)
+        this.dimensions.height = Math.min(this.dimensions.height, containerRect.height - adjustedMargins.top - adjustedMargins.bottom)
+        
+        // Update renderer margins if it exists
+        if (this.renderer) {
+            this.renderer.margin = adjustedMargins
         }
         
         if (this.config.debugMode) {
-            console.log('📐 Calculated dimensions:', this.dimensions)
+            console.log('📐 Responsive dimensions:', {
+                window: { width: windowWidth, height: windowHeight },
+                container: { width: containerRect.width, height: containerRect.height },
+                margins: adjustedMargins,
+                chart: this.dimensions
+            })
         }
     }
     
@@ -435,10 +485,26 @@ export class ChartEngine {
     setupEventListeners() {
         if (this.config.autoResize) {
             this.resizeHandler = this.debounce(() => {
+                console.log('🔄 Window resize detected, updating chart dimensions')
+                
+                // Recalculate responsive dimensions
                 this.calculateDimensions()
+                
+                // Update renderer dimensions with new margins
+                if (this.renderer) {
+                    this.renderer.updateDimensions(this.dimensions.width, this.dimensions.height)
+                }
+                
+                // Update scales with new dimensions
                 this.setupScales()
-                this.render()
-            }, 300)
+                
+                // Re-render current state properly
+                if (this.showInitialState) {
+                    this.renderInitialState()
+                } else {
+                    this.render()
+                }
+            }, 200)
             
             window.addEventListener('resize', this.resizeHandler)
         }

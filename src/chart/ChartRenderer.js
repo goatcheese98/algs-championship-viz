@@ -55,17 +55,34 @@ export class ChartRenderer {
         const totalWidth = width + this.margin.left + this.margin.right
         const totalHeight = height + this.margin.top + this.margin.bottom
         
+        // Ensure SVG doesn't exceed container bounds
+        const maxWidth = Math.min(totalWidth, window.innerWidth * 0.98)
+        const maxHeight = Math.min(totalHeight, window.innerHeight * 0.9)
+        
         this.svg
-            .attr('width', totalWidth)
-            .attr('height', totalHeight)
+            .attr('width', maxWidth)
+            .attr('height', maxHeight)
             .style('max-width', '100%')
             .style('max-height', '100%')
+            .style('overflow', 'visible')
         
+        // Update main group transform with responsive margins
+        this.mainGroup.attr('transform', `translate(${this.margin.left},${this.margin.top})`)
+        
+        // Position x-axis at the bottom of the chart area (always visible)
         this.xAxisGroup.attr('transform', `translate(0,${height})`)
         
-        // Update scales
+        // Update scales with responsive ranges
         this.xScale.range([0, width])
         this.yScale.range([0, height])
+        
+        // Add responsive scaling for better mobile experience
+        if (window.innerWidth < 700) {
+            this.svg.style('transform', 'scale(0.95)')
+            this.svg.style('transform-origin', 'top left')
+        } else {
+            this.svg.style('transform', 'scale(1)')
+        }
     }
     
     renderStackedBars(data, config = {}) {
@@ -225,7 +242,7 @@ export class ChartRenderer {
             .style('stroke-width', '1px')
             .style('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))')
         
-        // Update segment labels
+        // Update segment labels with improved logic for small values
         segments.select('.segment-label')
             .transition()
             .duration(transitionDuration)
@@ -250,8 +267,9 @@ export class ChartRenderer {
                     ? (filteredGameIndices.includes(d.gameNumber) ? this.xScale(d.points) : 0)
                     : (d.gameNumber <= currentGameIndex ? this.xScale(d.points) : 0)
                 
-                // Show points if segment is visible and wide enough
-                return (isVisible && segmentWidth > 30 && d.points > 0) ? d.points : ''
+                // Show points if segment is visible and points > 0
+                // Lowered threshold from 30 to 15 to show "1" in narrow segments
+                return (isVisible && segmentWidth > 15 && d.points > 0) ? d.points : ''
             })
             .style('opacity', d => {
                 const isVisible = isFiltered && filteredGameIndices.length > 0 
@@ -262,7 +280,15 @@ export class ChartRenderer {
                     ? (filteredGameIndices.includes(d.gameNumber) ? this.xScale(d.points) : 0)
                     : (d.gameNumber <= currentGameIndex ? this.xScale(d.points) : 0)
                 
-                return (isVisible && segmentWidth > 30 && d.points > 0) ? 1 : 0
+                return (isVisible && segmentWidth > 15 && d.points > 0) ? 1 : 0
+            })
+            .style('font-size', d => {
+                const segmentWidth = isFiltered && filteredGameIndices.length > 0 
+                    ? (filteredGameIndices.includes(d.gameNumber) ? this.xScale(d.points) : 0)
+                    : (d.gameNumber <= currentGameIndex ? this.xScale(d.points) : 0)
+                
+                // Use smaller font for narrow segments to ensure "1" fits
+                return segmentWidth < 25 ? '12px' : '14px'
             })
     }
     
@@ -379,20 +405,45 @@ export class ChartRenderer {
     }
     
     setupTeamEntries(teamEntriesEnter) {
-        // Add ranking number
+        // Calculate responsive positioning based on available margin
+        const windowWidth = window.innerWidth
+        let rankingX = -260
+        let logoX = -220
+        let labelX = -180
+        
+        // Adjust positioning for smaller screens
+        if (windowWidth < 1200) {
+            rankingX = Math.max(-240, -this.margin.left + 20)
+            logoX = Math.max(-200, -this.margin.left + 40)
+            labelX = Math.max(-160, -this.margin.left + 60)
+        }
+        
+        if (windowWidth < 900) {
+            rankingX = Math.max(-220, -this.margin.left + 15)
+            logoX = Math.max(-180, -this.margin.left + 35)
+            labelX = Math.max(-140, -this.margin.left + 55)
+        }
+        
+        if (windowWidth < 700) {
+            rankingX = Math.max(-140, -this.margin.left + 10)
+            logoX = Math.max(-115, -this.margin.left + 25)
+            labelX = Math.max(-85, -this.margin.left + 45)
+        }
+        
+        // Add ranking number with responsive positioning
         teamEntriesEnter.append('text')
             .attr('class', 'ranking-number')
-            .attr('x', -260)
+            .attr('x', rankingX)
             .attr('dy', '0.35em')
             .style('text-anchor', 'middle')
-            .style('font-size', '18px')
+            .style('font-size', windowWidth < 700 ? '14px' : '18px')
             .style('font-weight', '700')
             .style('fill', '#dc2626')
         
-        // Add team logo container
+        // Add team logo container with responsive positioning
         const logoGroup = teamEntriesEnter.append('g')
             .attr('class', 'logo-container')
-            .attr('transform', 'translate(-220, 0)')
+            .attr('transform', `translate(${logoX}, 0)`)
         
         // Logo background
         logoGroup.append('circle')
@@ -433,13 +484,13 @@ export class ChartRenderer {
             .style('fill', '#ffffff')
             .style('text-shadow', '0 1px 2px rgba(0,0,0,0.5)')
         
-        // Add team name label
+        // Add team name label with responsive positioning
         teamEntriesEnter.append('text')
             .attr('class', 'team-label')
-            .attr('x', -190)
+            .attr('x', labelX)
             .attr('dy', '0.35em')
             .style('text-anchor', 'start')
-            .style('font-size', '18px')
+            .style('font-size', windowWidth < 700 ? '14px' : '18px')
             .style('font-weight', '600')
             .style('fill', '#f1f5f9')
     }
@@ -539,21 +590,46 @@ export class ChartRenderer {
         })
         
         // Add ONLY ranking numbers, logos, and team labels - NO BARS OR SCORES
-        // Ranking numbers
+        // Calculate responsive positioning (same as setupTeamEntries)
+        const windowWidth = window.innerWidth
+        let rankingX = -260
+        let logoX = -220
+        let labelX = -180
+        
+        // Adjust positioning for smaller screens
+        if (windowWidth < 1200) {
+            rankingX = Math.max(-240, -this.margin.left + 20)
+            logoX = Math.max(-200, -this.margin.left + 40)
+            labelX = Math.max(-160, -this.margin.left + 60)
+        }
+        
+        if (windowWidth < 900) {
+            rankingX = Math.max(-220, -this.margin.left + 15)
+            logoX = Math.max(-180, -this.margin.left + 35)
+            labelX = Math.max(-140, -this.margin.left + 55)
+        }
+        
+        if (windowWidth < 700) {
+            rankingX = Math.max(-140, -this.margin.left + 10)
+            logoX = Math.max(-115, -this.margin.left + 25)
+            labelX = Math.max(-85, -this.margin.left + 45)
+        }
+        
+        // Ranking numbers with responsive positioning
         teamGroupsEnter.append('text')
             .attr('class', 'ranking-number')
-            .attr('x', -260)
+            .attr('x', rankingX)
             .attr('dy', '0.35em')
             .style('text-anchor', 'middle')
-            .style('font-size', '18px')
+            .style('font-size', windowWidth < 700 ? '14px' : '18px')
             .style('font-weight', '700')
             .style('fill', '#dc2626')
             .text((d, i) => i + 1)
         
-        // Team logo container
+        // Team logo container with responsive positioning
         const logoGroup = teamGroupsEnter.append('g')
             .attr('class', 'logo-container')
-            .attr('transform', 'translate(-220, 0)')
+            .attr('transform', `translate(${logoX}, 0)`)
         
         // Logo background circle
         logoGroup.append('circle')
@@ -594,13 +670,13 @@ export class ChartRenderer {
             .style('fill', '#ffffff')
             .style('text-shadow', '0 1px 2px rgba(0,0,0,0.5)')
         
-        // Team name labels
+        // Team name labels with responsive positioning
         teamGroupsEnter.append('text')
             .attr('class', 'team-label')
-            .attr('x', -190)
+            .attr('x', labelX)
             .attr('dy', '0.35em')
             .style('text-anchor', 'start')
-            .style('font-size', '18px')
+            .style('font-size', windowWidth < 700 ? '14px' : '18px')
             .style('font-weight', '600')
             .style('fill', '#f1f5f9')
             .text(d => d.team)
