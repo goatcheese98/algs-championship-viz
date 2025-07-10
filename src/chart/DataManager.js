@@ -147,6 +147,7 @@ export class DataManager {
         this.isFiltered = false
         this.filteredGameIndices = []
         this.preCalculatedScales = null  // Will store pre-calculated scaling values
+        this._missingMatchupWarningLogged = false // Flag to prevent spamming console
     }
 
     /**
@@ -322,8 +323,12 @@ export class DataManager {
      */
     getMapForGame(gameNumber) {
         if (!this.matchupInfo || !this.matchupInfo.maps) {
-            console.warn('No matchup info available for map lookup')
-            return 'Unknown'
+            // Only log warning once per session to avoid spam
+            if (!this._missingMatchupWarningLogged) {
+                console.warn('📊 DataManager: Matchup info not yet loaded, using fallback map data')
+                this._missingMatchupWarningLogged = true
+            }
+            return 'Loading...'
         }
 
         // Handle initial state (game 0)
@@ -463,6 +468,7 @@ export class DataManager {
         this.isFiltered = false
         this.filteredGameIndices = []
         this.preCalculatedScales = null  // Reset pre-calculated scales
+        this._missingMatchupWarningLogged = false // Reset warning flag
         // Keep cache for performance
 
         console.log('📊 DataManager reset')

@@ -405,49 +405,90 @@ export class ChartEngine {
         const containerRect = this.container.node().getBoundingClientRect()
         const windowWidth = window.innerWidth
         const windowHeight = window.innerHeight
+        const isMobile = windowWidth <= 768
         
         // Responsive margin adjustments
         let adjustedMargins = { ...this.config.margin }
         
-        // Adjust margins for smaller screens
-        if (windowWidth < 1200) {
-            adjustedMargins.left = Math.max(200, this.config.margin.left * 0.7)
-            adjustedMargins.right = Math.max(50, this.config.margin.right * 0.7)
-        }
-        
-        if (windowWidth < 900) {
-            adjustedMargins.left = Math.max(180, this.config.margin.left * 0.6)
-            adjustedMargins.right = Math.max(40, this.config.margin.right * 0.6)
-            adjustedMargins.top = Math.max(30, this.config.margin.top * 0.8)
-            adjustedMargins.bottom = Math.max(50, this.config.margin.bottom * 0.8)
-        }
-        
-        if (windowWidth < 700) {
-            adjustedMargins.left = Math.max(150, this.config.margin.left * 0.5)
-            adjustedMargins.right = Math.max(30, this.config.margin.right * 0.5)
-            adjustedMargins.top = Math.max(25, this.config.margin.top * 0.7)
-            adjustedMargins.bottom = Math.max(45, this.config.margin.bottom * 0.9)
+        // Mobile-specific dimensions and margins
+        if (isMobile) {
+            // Use actual container width instead of window width for accurate calculations
+            const containerWidth = containerRect.width || windowWidth
+            const containerHeight = containerRect.height || windowHeight
+            
+            // Calculate safe mobile dimensions to prevent overflow
+            // Leave adequate margins for mobile display
+            const safeWidth = containerWidth - 40  // Reduced margin for tighter fit
+            const safeHeight = Math.min(600, containerHeight * 0.55)
+            
+            // Ensure chart width never exceeds container bounds with proper safety margin
+            this.dimensions = {
+                width: Math.max(280, Math.min(safeWidth, containerWidth - 80)),  // Min 280px, max container-80px
+                height: Math.max(480, safeHeight)
+            }
+            
+            // Mobile margins - optimized for mobile without team names
+            adjustedMargins.left = 60   // Fixed smaller left margin
+            adjustedMargins.right = 30  // Fixed smaller right margin  
+            adjustedMargins.top = 25    // Fixed smaller top margin
+            adjustedMargins.bottom = 60 // Fixed bottom margin for axis labels
+            
+            // Additional safety check: ensure total width (chart + margins) doesn't exceed container
+            const totalWidth = this.dimensions.width + adjustedMargins.left + adjustedMargins.right
+            if (totalWidth > containerWidth) {
+                // Reduce chart width to fit within container
+                this.dimensions.width = Math.max(200, containerWidth - adjustedMargins.left - adjustedMargins.right - 20)
+                console.log('🔧 Adjusted chart width for container fit:', this.dimensions.width)
+            }
+            
+            console.log('📱 Mobile dimensions set:', {
+                container: { width: containerWidth, height: containerHeight },
+                chart: this.dimensions,
+                margins: adjustedMargins,
+                totalWidth: this.dimensions.width + adjustedMargins.left + adjustedMargins.right
+            })
+        } else {
+            // Desktop responsive margin adjustments
+            // Adjust margins for smaller screens
+            if (windowWidth < 1200) {
+                adjustedMargins.left = Math.max(200, this.config.margin.left * 0.7)
+                adjustedMargins.right = Math.max(50, this.config.margin.right * 0.7)
+            }
+            
+            if (windowWidth < 900) {
+                adjustedMargins.left = Math.max(180, this.config.margin.left * 0.6)
+                adjustedMargins.right = Math.max(40, this.config.margin.right * 0.6)
+                adjustedMargins.top = Math.max(30, this.config.margin.top * 0.8)
+                adjustedMargins.bottom = Math.max(50, this.config.margin.bottom * 0.8)
+            }
+            
+            if (windowWidth < 700) {
+                adjustedMargins.left = Math.max(150, this.config.margin.left * 0.5)
+                adjustedMargins.right = Math.max(30, this.config.margin.right * 0.5)
+                adjustedMargins.top = Math.max(25, this.config.margin.top * 0.7)
+                adjustedMargins.bottom = Math.max(45, this.config.margin.bottom * 0.9)
+            }
+            
+            // Calculate responsive dimensions for desktop
+            const availableWidth = containerRect.width - adjustedMargins.left - adjustedMargins.right
+            const availableHeight = containerRect.height - adjustedMargins.top - adjustedMargins.bottom
+            
+            // Set responsive minimums that scale with screen size
+            const minWidth = Math.min(600, windowWidth * 0.6)
+            const minHeight = Math.min(400, windowHeight * 0.4)
+            
+            this.dimensions = {
+                width: Math.max(minWidth, availableWidth),
+                height: Math.max(minHeight, availableHeight)
+            }
+            
+            // Ensure dimensions don't exceed container bounds
+            this.dimensions.width = Math.min(this.dimensions.width, containerRect.width - adjustedMargins.left - adjustedMargins.right)
+            this.dimensions.height = Math.min(this.dimensions.height, containerRect.height - adjustedMargins.top - adjustedMargins.bottom)
         }
         
         // Update the config margins for renderer
         this.config.margin = adjustedMargins
-        
-        // Calculate responsive dimensions
-        const availableWidth = containerRect.width - adjustedMargins.left - adjustedMargins.right
-        const availableHeight = containerRect.height - adjustedMargins.top - adjustedMargins.bottom
-        
-        // Set responsive minimums that scale with screen size
-        const minWidth = Math.min(600, windowWidth * 0.6)
-        const minHeight = Math.min(400, windowHeight * 0.4)
-        
-        this.dimensions = {
-            width: Math.max(minWidth, availableWidth),
-            height: Math.max(minHeight, availableHeight)
-        }
-        
-        // Ensure dimensions don't exceed container bounds
-        this.dimensions.width = Math.min(this.dimensions.width, containerRect.width - adjustedMargins.left - adjustedMargins.right)
-        this.dimensions.height = Math.min(this.dimensions.height, containerRect.height - adjustedMargins.top - adjustedMargins.bottom)
         
         // Update renderer margins if it exists
         if (this.renderer) {
@@ -459,7 +500,8 @@ export class ChartEngine {
                 window: { width: windowWidth, height: windowHeight },
                 container: { width: containerRect.width, height: containerRect.height },
                 margins: adjustedMargins,
-                chart: this.dimensions
+                chart: this.dimensions,
+                isMobile: isMobile
             })
         }
     }

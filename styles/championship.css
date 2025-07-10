@@ -19,6 +19,25 @@ body {
     overflow-x: hidden;
 }
 
+@media (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto !important;
+        min-height: 100vh;
+    }
+}
+
+/* Ensure proper scrolling on mobile */
+@media (max-width: 768px) {
+    html, body {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        height: auto;
+        min-height: 100vh;
+    }
+}
+
 /* Professional ALGS Championship Header */
 .championship-header {
     background: 
@@ -1625,5 +1644,261 @@ body {
     .overview-header {
         flex-direction: column;
         gap: 20px;
+    }
+    
+    /* Ensure containers can expand on mobile */
+    .mega-container {
+        min-height: auto !important;
+        height: auto !important;
+        max-height: none !important;
+        padding-bottom: 120px !important;
+        justify-content: flex-start !important;
+        align-items: stretch !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: visible !important;
+    }
+    
+    .chart-section {
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+        padding-bottom: 40px;
+        flex: none !important;
+        overflow: visible !important;
+    }
+    
+    .chart-display {
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+        padding-bottom: 20px;
+        overflow: visible !important;
+        position: relative;
+        flex: none !important;
+        display: block !important;
+    }
+    
+    /* Mobile Chart Optimizations - Expanded dimensions for better readability */
+    .chart-area {
+        height: 680px;
+        min-height: 680px;
+        max-height: none; /* Allow expansion */
+    }
+    
+    #vue-chart-container {
+        min-height: 680px;
+        height: 680px;
+        margin-bottom: 20px;
+        overflow: visible; /* Allow chart to be fully visible */
+        width: 100%;
+        padding: 0 20px; /* Add horizontal padding to prevent overflow */
+        box-sizing: border-box;
+    }
+    
+    /* Constrain SVG to prevent horizontal overflow on mobile */
+    #vue-chart-container svg {
+        max-width: 100%;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+    }
+    
+    /* Mobile Action Panel - Below Chart */
+    .enhanced-action-panel {
+        position: static !important;
+        top: auto !important;
+        right: auto !important;
+        left: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        width: calc(100% - 40px) !important;
+        min-width: auto !important;
+        max-width: none !important;
+        margin: 20px auto 100px auto !important;
+        padding: 20px;
+        border-radius: 12px;
+        cursor: default;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        display: block !important;
+        z-index: 10;
+        clear: both !important;
+    }
+    
+    .enhanced-action-panel:hover {
+        transform: none !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .enhanced-action-panel:active {
+        cursor: default;
+    }
+    
+    /* Mobile Panel Header */
+    .panel-header {
+        cursor: default;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+    }
+    
+    .panel-title {
+        font-size: 1rem;
+        gap: 8px;
+    }
+    
+    .drag-handle {
+        display: none; /* Hide drag handle on mobile */
+    }
+    
+    /* Mobile Touch Targets */
+    .expand-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+    
+    .control-btn {
+        min-width: 44px;
+        height: 44px;
+        font-size: 1rem;
+        padding: 0 16px;
+    }
+    
+    .game-filter-btn {
+        min-width: 44px;
+        height: 44px;
+        font-size: 0.9rem;
+        margin: 3px;
+    }
+    
+    .reset-filter-btn {
+        min-width: 44px;
+        height: 44px;
+        font-size: 0.9rem;
+    }
+    
+    /* Mobile Progress Controls */
+    .progress-slider {
+        height: 12px;
+    }
+    
+    .progress-slider::-webkit-slider-thumb {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .progress-slider::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .progress-value {
+        font-size: 1rem;
+        min-width: 24px;
+    }
+    
+    .section-label {
+        font-size: 0.9rem;
+    }
+    
+    /* Mobile Game Filter Buttons Layout */
+    .game-filter-buttons {
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    /* Mobile Export Button */
+    .export-btn {
+        padding: 16px;
+        font-size: 1rem;
+        margin-top: 12px;
+    }
+    
+    /* Mobile Map Badge */
+    .map-badge {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .map-icon {
+        font-size: 1.1rem;
+    }
+}
+
+/* Smaller Mobile Devices */
+@media (max-width: 480px) {
+    .chart-area {
+        height: 620px;
+        min-height: 620px;
+        max-height: none;
+    }
+    
+    #vue-chart-container {
+        min-height: 620px;
+        height: 620px;
+        overflow: visible;
+        padding: 0 15px;
+    }
+    
+    .enhanced-action-panel {
+        padding: 16px;
+        margin: 16px auto 100px auto !important;
+    }
+    
+    .game-filter-buttons {
+        gap: 6px;
+    }
+    
+    .game-filter-btn {
+        min-width: 40px;
+        height: 40px;
+        font-size: 0.8rem;
+        margin: 2px;
+    }
+    
+    .control-btn {
+        min-width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+        padding: 0 12px;
+    }
+    
+    .reset-filter-btn {
+        min-width: 40px;
+        height: 40px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Force mobile layout - additional media query for problematic devices */
+@media screen and (max-width: 768px) {
+    body {
+        overflow-y: auto !important;
+        height: auto !important;
+        min-height: 100vh !important;
+    }
+    
+    .mega-container {
+        min-height: auto !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        padding-bottom: 150px !important;
+    }
+    
+    .chart-section {
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+    
+    .enhanced-action-panel {
+        position: static !important;
+        margin: 30px auto 120px auto !important;
+        width: calc(100% - 40px) !important;
+        display: block !important;
+        clear: both !important;
     }
 } 

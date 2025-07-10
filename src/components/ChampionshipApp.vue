@@ -485,10 +485,13 @@ export default {
     // Initialize chart loading animation
     this.initializeChartLoadingAnimation();
     
-    // Initialize GSAP dragging when DOM is ready
+    // Initialize GSAP dragging when DOM is ready (desktop only)
     this.$nextTick(() => {
-      this.initGSAPDraggable();
+      this.initializeDraggableSystem();
     });
+    
+    // Add window resize handler for mobile optimization
+    window.addEventListener('resize', this.handleResize);
     
     // Verify centralized draggable manager is available
     if (GSAPDraggableManager) {
@@ -1279,7 +1282,14 @@ export default {
     },
     
     getGameButtonStyle(gameNum) {
-      if (!this.chartEngine || !this.chartEngine.dataManager) return {};
+      // Add proper guards to prevent calling DataManager before data is loaded
+      if (!this.chartEngine || !this.chartEngine.dataManager || !this.chartEngine.dataManager.data) {
+        return {
+          background: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
+          border: '2px solid #6b7280',
+          color: '#ffffff'
+        };
+      }
       
       const mapName = this.chartEngine.dataManager.getMapForGame(gameNum);
       const mapColor = this.chartEngine.dataManager.getMapColor(mapName, gameNum);
@@ -1314,7 +1324,10 @@ export default {
     },
     
     getGameTooltip(gameNum) {
-      if (!this.chartEngine || !this.chartEngine.dataManager) return `Game ${gameNum}`;
+      // Add proper guards to prevent calling DataManager before data is loaded
+      if (!this.chartEngine || !this.chartEngine.dataManager || !this.chartEngine.dataManager.data) {
+        return `Game ${gameNum}`;
+      }
       
       const mapName = this.chartEngine.dataManager.getMapForGame(gameNum);
       return `Game ${gameNum}: ${mapName}`;
@@ -1338,7 +1351,14 @@ export default {
     },
     
     getCurrentMapStyle() {
-      if (!this.chartEngine || !this.chartEngine.dataManager) return {};
+      // Add proper guards to prevent calling DataManager before data is loaded
+      if (!this.chartEngine || !this.chartEngine.dataManager || !this.chartEngine.dataManager.data) {
+        return {
+          background: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
+          border: '2px solid #6b7280',
+          color: '#ffffff'
+        };
+      }
       
       const mapColor = this.chartEngine.dataManager.getMapColor(this.currentMap, this.currentGame);
       
@@ -1363,7 +1383,52 @@ export default {
         
         URL.revokeObjectURL(url);
       }
-    }
+    },
+    
+    // Mobile detection utility
+    isMobileDevice() {
+      return window.innerWidth <= 768
+    },
+    
+    // Initialize enhanced draggable system
+    initializeDraggableSystem() {
+      const panel = this.$refs.actionPanel
+      if (!panel) return
+      
+      // Skip draggable initialization on mobile
+      if (this.isMobileDevice()) {
+        console.log('📱 Mobile device detected - skipping draggable initialization')
+        return
+      }
+      
+      // Only initialize draggable on desktop
+      this.draggableManager = new GSAPDraggableManager(panel, {
+        onDragStart: () => {
+          console.log('🎯 Drag started')
+        },
+        onDragEnd: () => {
+          console.log('🎯 Drag ended')
+        }
+      })
+      
+      console.log('✅ Enhanced draggable system initialized')
+    },
+    
+    // Handle window resize for mobile optimization
+    handleResize() {
+      // Re-initialize draggable system based on screen size
+      this.$nextTick(() => {
+        if (this.draggableManager && this.isMobileDevice()) {
+          // Destroy draggable on mobile
+          this.draggableManager.destroy()
+          this.draggableManager = null
+          console.log('📱 Destroyed draggable system for mobile')
+        } else if (!this.draggableManager && !this.isMobileDevice()) {
+          // Initialize draggable on desktop
+          this.initializeDraggableSystem()
+        }
+      })
+    },
   },
   
   beforeUnmount() {
@@ -1386,6 +1451,9 @@ export default {
     if (this.draggableInstance && GSAPDraggableManager) {
       GSAPDraggableManager.destroyAll();
     }
+
+    // Remove window resize listener
+    window.removeEventListener('resize', this.handleResize);
   }
 }
 </script>

@@ -9,6 +9,11 @@ if (!d3) {
     throw new Error('D3.js is not available. Please ensure d3.v7.min.js is loaded.')
 }
 
+// Mobile detection utility
+function isMobileDevice() {
+    return window.innerWidth <= 768
+}
+
 export class ChartRenderer {
     constructor(container, margin, scales, teamConfig = null) {
         this.container = container
@@ -55,9 +60,19 @@ export class ChartRenderer {
         const totalWidth = width + this.margin.left + this.margin.right
         const totalHeight = height + this.margin.top + this.margin.bottom
         
-        // Ensure SVG doesn't exceed container bounds
-        const maxWidth = Math.min(totalWidth, window.innerWidth * 0.98)
-        const maxHeight = Math.min(totalHeight, window.innerHeight * 0.9)
+        // Mobile-specific constraints to prevent overflow
+        const isMobile = window.innerWidth <= 768
+        let maxWidth, maxHeight
+        
+        if (isMobile) {
+            // For mobile, ensure we don't exceed container bounds
+            maxWidth = Math.min(totalWidth, window.innerWidth - 40)
+            maxHeight = Math.min(totalHeight, window.innerHeight * 0.8)
+        } else {
+            // Desktop constraints
+            maxWidth = Math.min(totalWidth, window.innerWidth * 0.98)
+            maxHeight = Math.min(totalHeight, window.innerHeight * 0.9)
+        }
         
         this.svg
             .attr('width', maxWidth)
@@ -76,13 +91,9 @@ export class ChartRenderer {
         this.xScale.range([0, width])
         this.yScale.range([0, height])
         
-        // Add responsive scaling for better mobile experience
-        if (window.innerWidth < 700) {
-            this.svg.style('transform', 'scale(0.95)')
-            this.svg.style('transform-origin', 'top left')
-        } else {
-            this.svg.style('transform', 'scale(1)')
-        }
+        // Remove mobile scaling that might cause overflow
+        this.svg.style('transform', 'scale(1)')
+        this.svg.style('transform-origin', 'top left')
     }
     
     renderStackedBars(data, config = {}) {
@@ -427,6 +438,7 @@ export class ChartRenderer {
         
         allTeamEntries.select('.team-label')
             .text(d => d.team)
+            .style('display', isMobileDevice() ? 'none' : 'block')
         
         // Update team logos
         this.updateTeamLogos(allTeamEntries)
@@ -444,23 +456,32 @@ export class ChartRenderer {
         let logoX = -220
         let labelX = -180
         
-        // Adjust positioning for smaller screens
-        if (windowWidth < 1200) {
-            rankingX = Math.max(-240, -this.margin.left + 20)
-            logoX = Math.max(-200, -this.margin.left + 40)
-            labelX = Math.max(-160, -this.margin.left + 60)
-        }
-        
-        if (windowWidth < 900) {
-            rankingX = Math.max(-220, -this.margin.left + 15)
-            logoX = Math.max(-180, -this.margin.left + 35)
-            labelX = Math.max(-140, -this.margin.left + 55)
-        }
-        
-        if (windowWidth < 700) {
-            rankingX = Math.max(-140, -this.margin.left + 10)
-            logoX = Math.max(-115, -this.margin.left + 25)
-            labelX = Math.max(-85, -this.margin.left + 45)
+        // Mobile-specific positioning - utilize more space since team names are hidden
+        if (isMobileDevice()) {
+            // On mobile, move elements closer to the chart area for better space utilization
+            rankingX = -60  // Much closer to the chart area
+            logoX = -30     // Position logo very close to the chart
+            labelX = -85    // Hidden anyway, but keep consistent
+        } else {
+            // Desktop responsive positioning
+            // Adjust positioning for smaller screens
+            if (windowWidth < 1200) {
+                rankingX = Math.max(-240, -this.margin.left + 20)
+                logoX = Math.max(-200, -this.margin.left + 40)
+                labelX = Math.max(-160, -this.margin.left + 60)
+            }
+            
+            if (windowWidth < 900) {
+                rankingX = Math.max(-220, -this.margin.left + 15)
+                logoX = Math.max(-180, -this.margin.left + 35)
+                labelX = Math.max(-140, -this.margin.left + 55)
+            }
+            
+            if (windowWidth < 700) {
+                rankingX = Math.max(-140, -this.margin.left + 10)
+                logoX = Math.max(-115, -this.margin.left + 25)
+                labelX = Math.max(-85, -this.margin.left + 45)
+            }
         }
         
         // Add ranking number with responsive positioning
@@ -517,7 +538,7 @@ export class ChartRenderer {
             .style('fill', '#ffffff')
             .style('text-shadow', '0 1px 2px rgba(0,0,0,0.5)')
         
-        // Add team name label with responsive positioning
+        // Add team name label with responsive positioning (hidden on mobile)
         teamEntriesEnter.append('text')
             .attr('class', 'team-label')
             .attr('x', labelX)
@@ -526,6 +547,7 @@ export class ChartRenderer {
             .style('font-size', windowWidth < 700 ? '14px' : '18px')
             .style('font-weight', '600')
             .style('fill', '#f1f5f9')
+            .style('display', isMobileDevice() ? 'none' : 'block')
     }
     
     updateTeamLogos(teamEntries) {
@@ -635,23 +657,32 @@ export class ChartRenderer {
         let logoX = -220
         let labelX = -180
         
-        // Adjust positioning for smaller screens
-        if (windowWidth < 1200) {
-            rankingX = Math.max(-240, -this.margin.left + 20)
-            logoX = Math.max(-200, -this.margin.left + 40)
-            labelX = Math.max(-160, -this.margin.left + 60)
-        }
-        
-        if (windowWidth < 900) {
-            rankingX = Math.max(-220, -this.margin.left + 15)
-            logoX = Math.max(-180, -this.margin.left + 35)
-            labelX = Math.max(-140, -this.margin.left + 55)
-        }
-        
-        if (windowWidth < 700) {
-            rankingX = Math.max(-140, -this.margin.left + 10)
-            logoX = Math.max(-115, -this.margin.left + 25)
-            labelX = Math.max(-85, -this.margin.left + 45)
+        // Mobile-specific positioning - utilize more space since team names are hidden
+        if (isMobileDevice()) {
+            // On mobile, move elements closer to the chart area for better space utilization
+            rankingX = -60  // Much closer to the chart area
+            logoX = -30     // Position logo very close to the chart
+            labelX = -85    // Hidden anyway, but keep consistent
+        } else {
+            // Desktop responsive positioning
+            // Adjust positioning for smaller screens
+            if (windowWidth < 1200) {
+                rankingX = Math.max(-240, -this.margin.left + 20)
+                logoX = Math.max(-200, -this.margin.left + 40)
+                labelX = Math.max(-160, -this.margin.left + 60)
+            }
+            
+            if (windowWidth < 900) {
+                rankingX = Math.max(-220, -this.margin.left + 15)
+                logoX = Math.max(-180, -this.margin.left + 35)
+                labelX = Math.max(-140, -this.margin.left + 55)
+            }
+            
+            if (windowWidth < 700) {
+                rankingX = Math.max(-140, -this.margin.left + 10)
+                logoX = Math.max(-115, -this.margin.left + 25)
+                labelX = Math.max(-85, -this.margin.left + 45)
+            }
         }
         
         // Ranking numbers with responsive positioning
@@ -709,7 +740,7 @@ export class ChartRenderer {
             .style('fill', '#ffffff')
             .style('text-shadow', '0 1px 2px rgba(0,0,0,0.5)')
         
-        // Team name labels with responsive positioning
+        // Team name labels with responsive positioning (hidden on mobile)
         teamGroupsEnter.append('text')
             .attr('class', 'team-label')
             .attr('x', labelX)
@@ -718,6 +749,7 @@ export class ChartRenderer {
             .style('font-size', windowWidth < 700 ? '14px' : '18px')
             .style('font-weight', '600')
             .style('fill', '#f1f5f9')
+            .style('display', isMobileDevice() ? 'none' : 'block')
             .text(d => d.team)
         
         // Update team logos
