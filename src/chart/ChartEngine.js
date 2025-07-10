@@ -190,8 +190,8 @@ export class ChartEngine {
                 filteredGameIndices: this.dataManager.filteredGameIndices
             })
             
-            // Update axes
-            this.renderer.updateAxes(processedData)
+            // Update axes with synchronized timing
+            this.renderer.updateAxes(processedData, this.config.transitionDuration)
             
             // Track performance
             this.trackRenderPerformance(startTime)
@@ -494,8 +494,6 @@ export class ChartEngine {
         if (this.renderer) {
             this.renderer.cleanup()
         }
-        
-
         
         // Reset data manager
         this.dataManager.reset()

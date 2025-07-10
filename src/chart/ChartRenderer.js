@@ -22,6 +22,9 @@ export class ChartRenderer {
         this.yAxisGroup = null
         this.customYAxisGroup = null
         
+        // Flag to prevent y-axis stutter during transitions
+        this.yAxisUpdateInProgress = false
+        
         this.setupSVG()
     }
     
@@ -80,7 +83,16 @@ export class ChartRenderer {
             return
         }
         
-        // Create team groups
+        // CRITICAL: Clear ALL initial state elements ONLY if they exist (to prevent repeated clearing)
+        if (this.mainGroup.selectAll('.team-group.initial-state').size() > 0) {
+            this.mainGroup.selectAll('.team-group.initial-state').remove()
+            this.mainGroup.selectAll('.ranking-number').remove()
+            this.mainGroup.selectAll('.team-label').remove()
+            this.mainGroup.selectAll('.logo-container').remove()
+            console.log('🧹 Cleared initial state elements (one-time transition)')
+        }
+        
+        // Create team groups for playing state
         const teamGroups = this.mainGroup.selectAll('.team-group')
             .data(data, d => d.team)
         
@@ -88,14 +100,15 @@ export class ChartRenderer {
         
         const teamGroupsEnter = teamGroups.enter()
             .append('g')
-            .attr('class', 'team-group')
+            .attr('class', 'team-group playing-state')
         
         const allTeamGroups = teamGroups.merge(teamGroupsEnter)
         
-        // Position team groups with NaN protection
+        // Position team groups with synchronized animation (same timing as y-axis)
         allTeamGroups
             .transition()
             .duration(transitionDuration)
+            .ease(d3.easeQuadOut)
             .attr('transform', d => {
                 const yPos = this.yScale(d.team)
                 const bandwidth = this.yScale.bandwidth()
@@ -145,9 +158,11 @@ export class ChartRenderer {
             .attr('height', bandwidth * 0.8)  // Reduced from 1.5 to 0.8 for normal thickness
             .attr('y', -bandwidth * 0.4)     // Position bars UP to align with team labels
             .attr('x', 0)
-            .attr('width', 0)
+            .attr('width', 0)               // Start with 0 width - will grow horizontally only
             .attr('rx', 6)  // Slightly smaller radius
             .attr('ry', 6)
+            .style('transform-origin', 'left center')  // Ensure bars grow from left edge
+            .style('opacity', 1)  // Full opacity, no fade-in effects
         
         // Add text labels for game points
         segmentsEnter.append('text')
@@ -283,7 +298,7 @@ export class ChartRenderer {
             .text(d => d.cumulativeScore)
     }
     
-    updateAxes(data) {
+    updateAxes(data, transitionDuration = 1500) {
         // Update X axis
         const xAxis = d3.axisBottom(this.xScale)
             .tickFormat(d3.format('.0f'))
@@ -298,52 +313,54 @@ export class ChartRenderer {
             .style('fill', '#f1f5f9', 'important')
             .style('filter', 'drop-shadow(0 0 3px rgba(220, 38, 38, 0.3)) drop-shadow(0 1px 2px rgba(0,0,0,0.8))', 'important')
         
-        // Update Y axis
-        this.updateCustomYAxis(data)
+        // Update Y axis with synchronized timing
+        this.updateCustomYAxis(data, transitionDuration)
     }
     
-    updateCustomYAxis(data) {
-        // Clear existing Y-axis
-        this.yAxisGroup.selectAll('*').remove()
+    updateCustomYAxis(data, transitionDuration = 1500) {
+        // Prevent double rendering during transitions
+        if (this.yAxisUpdateInProgress) {
+            return;
+        }
+        this.yAxisUpdateInProgress = true;
         
-        // Calculate optimal spacing for y-axis with 4-10 point spacing
-        const availableHeight = this.yScale.range()[1] - this.yScale.range()[0]
-        const numTeams = data.length
-        const minSpacing = 4
-        const maxSpacing = 10
+        console.log('🎯 Updating y-axis - synchronized with bar animation')
         
-        // Calculate current bandwidth per team
-        const currentBandwidth = this.yScale.bandwidth()
-        
-        // Optimize spacing: if teams are too close, use intelligent spacing
-        let optimizedSpacing = Math.max(minSpacing, Math.min(maxSpacing, availableHeight / numTeams))
-        
-        // If we have more than 20 teams, use condensed spacing
-        if (numTeams > 20) {
-            optimizedSpacing = Math.max(minSpacing, availableHeight / numTeams * 0.8)
+        // CRITICAL: Remove ALL initial state elements to prevent dual text effect (only once)
+        if (this.mainGroup.selectAll('.team-group.initial-state').size() > 0) {
+            this.mainGroup.selectAll('.team-group.initial-state').remove()
+            this.mainGroup.selectAll('.ranking-number').remove()
+            this.mainGroup.selectAll('.team-label').remove()
+            this.mainGroup.selectAll('.logo-container').remove()
+            console.log('🧹 Cleared initial state elements from y-axis (one-time)')
         }
         
-        // Create team entries
+        // Use data join approach to handle updates properly
         const teamEntries = this.customYAxisGroup.selectAll('.team-entry')
             .data(data, d => d.team)
         
+        // Remove exiting elements
         teamEntries.exit().remove()
         
+        // Enter new elements
         const teamEntriesEnter = teamEntries.enter()
             .append('g')
             .attr('class', 'team-entry')
+            .attr('transform', d => `translate(0, ${this.yScale(d.team) + this.yScale.bandwidth() / 2})`)
         
         this.setupTeamEntries(teamEntriesEnter)
         
+        // Merge enter and update selections
         const allTeamEntries = teamEntries.merge(teamEntriesEnter)
         
-        // Update positions and content with optimized spacing
+        // Synchronize with bar animation timing (use passed duration)
         allTeamEntries
             .transition()
-            .duration(1500)
+            .duration(transitionDuration)  // Match bar animation duration exactly
+            .ease(d3.easeQuadOut)
             .attr('transform', d => `translate(0, ${this.yScale(d.team) + this.yScale.bandwidth() / 2})`)
         
-        // Update rankings and labels
+        // Update text content with same timing
         allTeamEntries.select('.ranking-number')
             .text((d, i) => i + 1)
         
@@ -352,6 +369,11 @@ export class ChartRenderer {
         
         // Update team logos
         this.updateTeamLogos(allTeamEntries)
+        
+        // Reset flag after animation completes
+        setTimeout(() => {
+            this.yAxisUpdateInProgress = false;
+        }, transitionDuration + 100);  // Slightly longer than animation duration
     }
     
     setupTeamEntries(teamEntriesEnter) {
@@ -484,14 +506,16 @@ export class ChartRenderer {
     renderInitialTeamLayout(data, config = {}) {
         const { transitionDuration = 2500 } = config
         
-        // CRITICAL: Clear ALL existing bars and segments first
+        // CRITICAL: Clear ALL existing elements from both systems
         this.mainGroup.selectAll('.team-group').remove()
         this.mainGroup.selectAll('.game-segment').remove()
         this.mainGroup.selectAll('.segment-bar').remove()
         this.mainGroup.selectAll('.segment-label').remove()
         this.mainGroup.selectAll('.cumulative-label').remove()
+        this.customYAxisGroup.selectAll('*').remove()
+        this.yAxisGroup.selectAll('*').remove()
         
-        console.log('🧹 Cleared all existing bars for initial state')
+        console.log('🧹 Cleared all existing elements for initial state')
         
         // Update axes with initial state (zero domain)
         const tempXScale = this.xScale.copy().domain([0, 1]) // Minimal domain for initial state

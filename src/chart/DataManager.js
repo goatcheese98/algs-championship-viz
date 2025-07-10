@@ -349,11 +349,11 @@ export class DataManager {
             return this.getMapColorByOccurrence(mapName, gameNumber)
         }
         
-        // Default map colors (reverted to original)
+        // Default map colors (using new HSL scheme - first occurrence)
         const mapColors = {
-            'E-DISTRICT': '#dc2626',     // Red
-            'STORM POINT': '#f97316',    // Orange
-            'WORLD\'S EDGE': '#7c3aed'   // Purple
+            'E-DISTRICT': 'hsl(198, 40%, 50%)',     // Blue
+            'STORM POINT': 'hsl(28, 40%, 50%)',     // Orange
+            'WORLD\'S EDGE': 'hsl(350, 40%, 50%)'   // Red
         }
         
         return mapColors[mapName] || '#6b7280'
@@ -378,14 +378,26 @@ export class DataManager {
             }
         }
         
-        // Original hex color variations based on occurrence
-        const colorVariations = {
-            'E-DISTRICT': ['#dc2626', '#b91c1c', '#991b1b'],      // Red variations
-            'STORM POINT': ['#f97316', '#ea580c', '#c2410c'],     // Orange variations  
-            'WORLD\'S EDGE': ['#7c3aed', '#6d28d9', '#5b21b6']    // Purple variations
+        // New HSL color scheme based on occurrence
+        const hslColorVariations = {
+            'E-DISTRICT': [
+                'hsl(198, 40%, 50%)',   // 1st occurrence
+                'hsl(198, 50%, 50%)',   // 2nd occurrence  
+                'hsl(198, 60%, 50%)'    // 3rd+ occurrence
+            ],
+            'STORM POINT': [
+                'hsl(28, 40%, 50%)',    // 1st occurrence
+                'hsl(28, 50%, 50%)',    // 2nd occurrence
+                'hsl(28, 60%, 50%)'     // 3rd+ occurrence
+            ],
+            'WORLD\'S EDGE': [
+                'hsl(350, 40%, 50%)',   // 1st occurrence
+                'hsl(350, 50%, 50%)',   // 2nd occurrence
+                'hsl(350, 60%, 50%)'    // 3rd+ occurrence
+            ]
         }
         
-        const variations = colorVariations[mapName]
+        const variations = hslColorVariations[mapName]
         if (!variations) {
             return '#6b7280' // Gray fallback
         }

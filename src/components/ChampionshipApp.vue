@@ -165,6 +165,29 @@
                     </div>
                   </div>
 
+                  <!-- Game Filter Controls (always visible) -->
+                  <div class="filter-controls">
+                    <label class="section-label">🎮 Filter Games ({{ currentGame }} / {{ maxGames }})</label>
+                    <div class="filter-row">
+                      <div class="game-filter-buttons">
+                        <button v-for="game in maxGames" 
+                                :key="game"
+                                @click="toggleGameFilter(game)"
+                                class="game-filter-btn"
+                                :class="{ 
+                                  active: selectedGames.includes(game),
+                                  current: game === currentGame
+                                }"
+                                :style="getGameButtonStyle(game)">
+                          {{ game }}
+                        </button>
+                      </div>
+                      <button @click="resetGameFilter" class="reset-filter-btn">
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+
                   <!-- Quick Controls (Play/Reset) -->
                   <div class="quick-controls">
                     <button @click="togglePlayback" class="control-btn play-btn">
@@ -184,41 +207,9 @@
                   </div>
                 </div>
 
-                <!-- Expanded Controls (Game Filtering & Export) -->
+                <!-- Expanded Controls (Export Only) -->
                 <transition name="slide-down">
                   <div v-if="panelExpanded" class="expanded-controls" @mousedown.stop>
-                    <!-- Game Filtering -->
-                    <div class="control-section">
-                      <label class="section-label">🎮 Filter Games ({{ currentGame }} / {{ maxGames }})</label>
-                      <p class="filter-description">Click games to filter view</p>
-                      <div class="game-filter-buttons">
-                        <button @click="jumpToInitialState"
-                                class="game-filter-btn"
-                                :class="{ 
-                                  current: currentGame === 0 
-                                }"
-                                style="background: linear-gradient(135deg, #374151 0%, #1f2937 100%); border: 2px solid #4b5563; color: #f1f5f9;">
-                          0
-                        </button>
-                        <button v-for="game in maxGames" 
-                                :key="game"
-                                @click="toggleGameFilter(game)"
-                                class="game-filter-btn"
-                                :class="{ 
-                                  active: selectedGames.includes(game),
-                                  current: game === currentGame 
-                                }"
-                                :style="getGameButtonStyle(game)">
-                          {{ game }}
-                        </button>
-                      </div>
-                      <div class="filter-action-buttons">
-                        <button @click="resetGameFilter" class="reset-filter-btn">
-                          Clear
-                        </button>
-                      </div>
-                    </div>
-
                     <!-- Export Controls -->
                     <div class="control-section">
                       <label class="section-label">Export Data</label>
@@ -385,7 +376,10 @@ export default {
       
       // Status tracking
       loadedMatchups: new Set(),
-      loadingMatchups: new Set()
+      loadingMatchups: new Set(),
+      
+      // Sync interval for animation
+      syncInterval: null
     }
   },
   
@@ -721,6 +715,13 @@ export default {
       if (this.chartEngine) {
         await this.chartEngine.jumpToGame(this.currentGame);
         this.updateCurrentMap();
+        
+        // Reset filters when dragging back to initial state (game 0)
+        if (this.currentGame === 0 && this.selectedGames.length > 0) {
+          console.log('🔄 Progress bar dragged to 0, resetting filters');
+          this.selectedGames = [];
+          await this.chartEngine.clearFilter();
+        }
       }
     },
     
@@ -737,19 +738,44 @@ export default {
     async playAnimation() {
       if (this.chartEngine) {
         this.isPlaying = true;
-        // Always start from game 1 when playing animation
-        const startGame = 1;
+        // Resume from current position, not always from game 1
+        const startGame = Math.max(1, this.currentGame || 1);
+        console.log(`🎬 Starting animation from game ${startGame} (current: ${this.currentGame})`);
+        
+        // Set up sync interval to keep Vue component in sync with chart engine
+        this.syncInterval = setInterval(() => {
+          if (this.chartEngine && this.isPlaying) {
+            this.currentGame = this.chartEngine.getCurrentGameIndex();
+          }
+        }, 100); // Sync every 100ms
+        
         await this.chartEngine.playAnimation(startGame, this.maxGames, 3000);  // Slower playback: 3 seconds between games
         this.isPlaying = false;
+        
+        // Clear sync interval when animation ends
+        if (this.syncInterval) {
+          clearInterval(this.syncInterval);
+          this.syncInterval = null;
+        }
       }
     },
 
     async togglePlayback() {
       if (this.chartEngine) {
         if (this.isPlaying) {
+          // True pause - stop animation and remember current position
           this.chartEngine.stopAnimation();
           this.isPlaying = false;
+          this.currentGame = this.chartEngine.getCurrentGameIndex();
+          console.log(`⏸️ Paused at game ${this.currentGame}`);
+          
+          // Clear sync interval when paused
+          if (this.syncInterval) {
+            clearInterval(this.syncInterval);
+            this.syncInterval = null;
+          }
         } else {
+          // Resume from current position
           await this.playAnimation();
         }
       }
@@ -787,26 +813,76 @@ export default {
       }
     },
     
-    toggleGameFilter(gameNum) {
-      const index = this.selectedGames.indexOf(gameNum);
-      if (index > -1) {
-        this.selectedGames.splice(index, 1);
+    async toggleGameFilter(gameNum) {
+      const wasSelected = this.selectedGames.includes(gameNum);
+      
+      if (wasSelected) {
+        // If already selected, toggle it off
+        this.selectedGames.splice(this.selectedGames.indexOf(gameNum), 1);
+        console.log(`🎮 Removed game ${gameNum} from filter. Selected: [${this.selectedGames.join(', ')}]`);
       } else {
+        // If not selected, add it to the selection (allow multiple)
         this.selectedGames.push(gameNum);
+        console.log(`🎮 Added game ${gameNum} to filter. Selected: [${this.selectedGames.join(', ')}]`);
+        
+        // Auto-progress to max level when any filter is selected
+        if (this.currentGame < this.maxGames) {
+          console.log(`🎯 Auto-progressing to game ${this.maxGames} for filtering`);
+          this.currentGame = this.maxGames;
+          if (this.chartEngine) {
+            await this.chartEngine.jumpToGame(this.maxGames);
+          }
+        }
+        
+        // Ensure panel is expanded for filtering
+        if (!this.panelExpanded) {
+          this.panelExpanded = true;
+        }
       }
-      this.applyGameFilter();
+      
+      // Apply filter with visual feedback
+      await this.applyGameFilter();
+      
+      // If no filters are selected, allow going back to initial state
+      if (this.selectedGames.length === 0) {
+        console.log('🔄 No filters selected, allowing normal game progression');
+      }
     },
     
-    resetGameFilter() {
+    async resetGameFilter() {
+      console.log('🔄 Resetting game filter and returning to initial state');
       this.selectedGames = [];
-      this.applyGameFilter();
+      
+      // Reset to initial state when clearing filters
+      this.currentGame = 0;
+      if (this.chartEngine) {
+        await this.chartEngine.jumpToGame(0);
+      }
+      
+      await this.applyGameFilter();
+      this.updateCurrentMap();
     },
     
     async applyGameFilter() {
       if (this.chartEngine) {
         if (this.selectedGames.length > 0) {
+          console.log(`🎮 Applying filter for games: ${this.selectedGames.join(', ')}`);
+          
+          // Ensure we're at max game level for filtering
+          if (this.currentGame < this.maxGames) {
+            this.currentGame = this.maxGames;
+            await this.chartEngine.jumpToGame(this.maxGames);
+          }
+          
           await this.chartEngine.filterByGames(this.selectedGames);
+          
+          // Update UI feedback
+          this.updateCurrentMap();
+          
+          // Visual feedback for active filtering
+          console.log(`✅ Filter applied successfully for ${this.selectedGames.length} games`);
         } else {
+          console.log('🔄 Clearing game filter');
           await this.chartEngine.clearFilter();
         }
       }
@@ -821,15 +897,16 @@ export default {
       const isActive = this.selectedGames.includes(gameNum);
       const isCurrent = gameNum === this.currentGame;
       
-      if (isActive) {
+      // Priority: current game always gets highlighted during animation
+      if (isCurrent) {
         return {
-          background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, 20)} 100%)`,
+          background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, 10)} 100%)`,
           border: `2px solid ${mapColor}`,
           color: '#ffffff',
           transform: 'scale(1.05)',
           boxShadow: `0 0 15px ${mapColor}80, 0 4px 8px rgba(0,0,0,0.3)`
         };
-      } else if (isCurrent) {
+      } else if (isActive) {
         return {
           background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, -10)} 100%)`,
           border: `2px solid ${mapColor}`,
@@ -896,6 +973,11 @@ export default {
     // Cleanup game state interval
     if (this.gameStateInterval) {
       clearInterval(this.gameStateInterval);
+    }
+    
+    // Cleanup sync interval
+    if (this.syncInterval) {
+      clearInterval(this.syncInterval);
     }
     
     // Cleanup GSAP draggable
