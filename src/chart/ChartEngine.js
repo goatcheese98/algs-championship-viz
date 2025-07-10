@@ -240,6 +240,15 @@ export class ChartEngine {
                 // Check if animation should end
                 if (this.currentGameIndex > endGame) {
                     this.stopAnimation()
+                    
+                    // Ensure currentGameIndex stays at maxGames for proper map display
+                    this.currentGameIndex = endGame
+                    
+                    // Trigger celebratory animation if we reached the maximum games
+                    if (endGame === maxGames) {
+                        this.triggerCelebratoryAnimation()
+                    }
+                    
                     resolve()
                     return
                 }
@@ -358,6 +367,24 @@ export class ChartEngine {
     }
     
     /**
+     * Trigger celebratory animation for top 3 teams
+     */
+    triggerCelebratoryAnimation() {
+        if (!this.renderer || !this.dataManager) return
+        
+        // Get current data (sorted by cumulative score)
+        const currentData = this.dataManager.processData(this.currentGameIndex)
+        
+        if (!currentData || currentData.length < 3) return
+        
+        // Add delay to ensure final render is complete
+        setTimeout(() => {
+            console.log('🎉 Starting celebratory animation for tournament completion')
+            this.renderer.triggerCelebratoryAnimation(currentData)
+        }, 500) // 500ms delay after animation completes
+    }
+    
+    /**
      * Calculate chart dimensions
      */
     calculateDimensions() {
@@ -379,6 +406,7 @@ export class ChartEngine {
     setupScales() {
         this.scales.x = d3.scaleLinear()
             .range([0, this.dimensions.width])
+            .domain([0, 100])  // Initialize with reasonable domain to prevent 0-1 decimals
         
         this.scales.y = d3.scaleBand()
             .range([0, this.dimensions.height])
@@ -390,9 +418,12 @@ export class ChartEngine {
      * @param {Array} data - Processed data
      */
     updateScales(data) {
-        // Update X scale domain
+        // Update X scale domain with minimum reasonable range
         const maxScore = d3.max(data, d => d.cumulativeScore) || 100
-        this.scales.x.domain([0, maxScore * 1.1])
+        
+        // Ensure minimum scale range to prevent 0-1 decimal display
+        const minDomain = Math.max(10, maxScore * 1.1)
+        this.scales.x.domain([0, minDomain])
         
         // Update Y scale domain
         this.scales.y.domain(data.map(d => d.team))

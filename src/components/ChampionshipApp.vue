@@ -10,31 +10,31 @@
       
       <div class="header-content">
         <!-- Championship Icon -->
-        <div class="championship-logo">
-          <span class="logo-icon">🏆</span>
-          <div class="logo-particles"></div>
+        <div ref="championshipLogo" class="championship-logo">
+          <span ref="logoIcon" class="logo-icon">🏆</span>
+          <div ref="logoParticles" class="logo-particles"></div>
         </div>
         
         <!-- Main Title -->
-        <div class="championship-title">
-          <h1 class="title-main">ALGS Year 4 Championship</h1>
+        <div ref="championshipTitle" class="championship-title">
+          <h1 ref="titleMain" class="title-main">ALGS Year 4 Championship</h1>
         </div>
         
         <!-- Tournament Details (Horizontal) -->
-        <div class="tournament-info-horizontal">
-          <div class="info-item">
-            <span class="info-icon">📍</span>
-            <span class="info-text">Sapporo, Japan</span>
+        <div ref="tournamentInfo" class="tournament-info-horizontal">
+          <div ref="infoItem1" class="info-item">
+            <span ref="infoIcon1" class="info-icon">📍</span>
+            <span ref="infoText1" class="info-text">Sapporo, Japan</span>
           </div>
-          <div class="info-separator">•</div>
-          <div class="info-item">
-            <span class="info-icon">📅</span>
-            <span class="info-text">Jan 29 - Feb 2, 2025</span>
+          <div ref="infoSeparator1" class="info-separator">•</div>
+          <div ref="infoItem2" class="info-item">
+            <span ref="infoIcon2" class="info-icon">📅</span>
+            <span ref="infoText2" class="info-text">Jan 29 - Feb 2, 2025</span>
           </div>
-          <div class="info-separator">•</div>
-          <div class="info-item">
-            <span class="info-icon">⚔️</span>
-            <span class="info-text">40 Teams</span>
+          <div ref="infoSeparator2" class="info-separator">•</div>
+          <div ref="infoItem3" class="info-item">
+            <span ref="infoIcon3" class="info-icon">⚔️</span>
+            <span ref="infoText3" class="info-text">40 Teams</span>
           </div>
         </div>
         
@@ -103,9 +103,144 @@
       <!-- Chart Section -->
       <div class="chart-section">
         <div v-if="!selectedMatchup" class="no-selection">
-          <div class="no-selection-icon">📊</div>
-          <h3>Select a matchup to view the interactive chart</h3>
-          <p>Choose from the tournament matchups above to see detailed race charts with game-by-game progression.</p>
+          <!-- Optimized Interactive SVG Animation -->
+          <div class="matchup-instructions-container">
+            <svg viewBox="0 0 600 400" class="matchup-instructions-svg">
+              <defs>
+                <!-- Gradients matching the dashboard theme -->
+                <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
+                  <stop offset="50%" style="stop-color:#2a2a2a;stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:#1a1a1a;stop-opacity:1" />
+                </linearGradient>
+                
+                <linearGradient id="orangeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#ff8c42;stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:#ffb366;stop-opacity:1" />
+                </linearGradient>
+                
+                <linearGradient id="subtleOrange" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#ff8c42;stop-opacity:0.6" />
+                  <stop offset="100%" style="stop-color:#ffb366;stop-opacity:0.3" />
+                </linearGradient>
+                
+                <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" style="stop-color:#ff8c42;stop-opacity:0.3" />
+                  <stop offset="70%" style="stop-color:#ff8c42;stop-opacity:0.1" />
+                  <stop offset="100%" style="stop-color:#ff8c42;stop-opacity:0" />
+                </radialGradient>
+                
+                <!-- Filters -->
+                <filter id="softGlow">
+                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                  <feMerge> 
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+                
+                <filter id="textGlow">
+                  <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+                  <feMerge> 
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+              
+              <!-- Background with subtle texture -->
+              <rect width="600" height="400" fill="url(#bgGradient)" rx="8"/>
+              
+              <!-- Central focus area -->
+              <circle cx="300" cy="180" r="80" fill="url(#centerGlow)">
+                <animate attributeName="r" values="80;90;80" dur="6s" repeatCount="indefinite"/>
+              </circle>
+              
+              <!-- Main chart icon area -->
+              <g transform="translate(300,150)">
+                <!-- Stylized chart bars -->
+                <rect x="-25" y="5" width="6" height="15" fill="url(#orangeGradient)" rx="2" opacity="0.8">
+                  <animate attributeName="height" values="15;25;15" dur="3s" repeatCount="indefinite"/>
+                  <animate attributeName="y" values="5;-5;5" dur="3s" repeatCount="indefinite"/>
+                </rect>
+                <rect x="-12" y="3" width="6" height="17" fill="url(#orangeGradient)" rx="2" opacity="0.9">
+                  <animate attributeName="height" values="17;27;17" dur="3.5s" repeatCount="indefinite"/>
+                  <animate attributeName="y" values="3;-7;3" dur="3.5s" repeatCount="indefinite"/>
+                </rect>
+                <rect x="0" y="0" width="6" height="20" fill="url(#orangeGradient)" rx="2">
+                  <animate attributeName="height" values="20;30;20" dur="4s" repeatCount="indefinite"/>
+                  <animate attributeName="y" values="0;-10;0" dur="4s" repeatCount="indefinite"/>
+                </rect>
+                <rect x="12" y="4" width="6" height="16" fill="url(#orangeGradient)" rx="2" opacity="0.9">
+                  <animate attributeName="height" values="16;26;16" dur="3.2s" repeatCount="indefinite"/>
+                  <animate attributeName="y" values="4;-6;4" dur="3.2s" repeatCount="indefinite"/>
+                </rect>
+                <rect x="24" y="8" width="6" height="12" fill="url(#orangeGradient)" rx="2" opacity="0.8">
+                  <animate attributeName="height" values="12;22;12" dur="2.8s" repeatCount="indefinite"/>
+                  <animate attributeName="y" values="8;-2;8" dur="2.8s" repeatCount="indefinite"/>
+                </rect>
+                
+                <!-- Connecting line -->
+                <path d="M -20,12 Q -8,9 0,8 Q 8,7 16,11 Q 24,15 28,13" 
+                      fill="none" stroke="url(#subtleOrange)" stroke-width="2" opacity="0.6">
+                  <animate attributeName="opacity" values="0.4;0.8;0.4" dur="4s" repeatCount="indefinite"/>
+                </path>
+              </g>
+              
+              <!-- Rotating outer ring -->
+              <g transform-origin="300 180">
+                <animateTransform attributeName="transform" type="rotate" values="0 300 180;360 300 180" dur="20s" repeatCount="indefinite"/>
+                <circle cx="300" cy="180" r="60" fill="none" stroke="#ff8c42" stroke-width="1" opacity="0.4"/>
+                <circle cx="300" cy="120" r="2" fill="#ff8c42" opacity="0.6"/>
+                <circle cx="360" cy="180" r="2" fill="#ff8c42" opacity="0.6"/>
+              </g>
+              
+              <!-- Main heading -->
+              <text x="300" y="260" text-anchor="middle" fill="url(#orangeGradient)" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="600" filter="url(#textGlow)">
+                Select a matchup to view the interactive chart
+              </text>
+              
+              <!-- Secondary text -->
+              <text x="300" y="285" text-anchor="middle" fill="#888" font-family="Inter, Arial, sans-serif" font-size="13" opacity="0.8">
+                Choose from the tournament matchups above to see detailed race charts
+              </text>
+              <text x="300" y="305" text-anchor="middle" fill="#888" font-family="Inter, Arial, sans-serif" font-size="13" opacity="0.8">
+                with game-by-game progression.
+              </text>
+              
+              <!-- Accent line -->
+              <rect x="200" y="330" width="200" height="1" fill="url(#subtleOrange)">
+                <animate attributeName="opacity" values="0.3;0.7;0.3" dur="4s" repeatCount="indefinite"/>
+              </rect>
+              
+              <!-- Corner accents -->
+              <g transform="translate(50,50)" opacity="0.3">
+                <rect x="0" y="0" width="15" height="2" fill="#ff8c42"/>
+                <rect x="0" y="0" width="2" height="15" fill="#ff8c42"/>
+              </g>
+              
+              <g transform="translate(535,50)" opacity="0.3">
+                <rect x="0" y="0" width="15" height="2" fill="#ff8c42"/>
+                <rect x="13" y="0" width="2" height="15" fill="#ff8c42"/>
+              </g>
+              
+              <!-- Floating data points -->
+              <g opacity="0.4">
+                <circle cx="150" cy="100" r="1" fill="#ff8c42">
+                  <animate attributeName="opacity" values="0.3;0.7;0.3" dur="3s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="450" cy="300" r="1" fill="#ffb366">
+                  <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2.5s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="100" cy="250" r="1" fill="#ff8c42">
+                  <animate attributeName="opacity" values="0.2;0.6;0.2" dur="4s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="500" cy="130" r="1" fill="#ffb366">
+                  <animate attributeName="opacity" values="0.3;0.7;0.3" dur="3.5s" repeatCount="indefinite"/>
+                </circle>
+              </g>
+            </svg>
+          </div>
         </div>
 
         <template v-else>
@@ -147,7 +282,7 @@
                 <div class="compact-status">
                   <!-- Game Progress (always visible) -->
                   <div class="game-progress-section">
-                    <label class="section-label">Game Progress: {{ currentGame }} / {{ maxGames }}</label>
+                    <label class="section-label">Game Progress: {{ displayedProgress }} / {{ maxGames }}</label>
                     <div class="progress-container">
                       <span class="progress-value">0</span>
                       <input type="range" 
@@ -165,9 +300,8 @@
                     </div>
                   </div>
 
-                  <!-- Game Filter Controls (always visible) -->
+                  <!-- Game Filter Controls (merged with progress) -->
                   <div class="filter-controls">
-                    <label class="section-label">🎮 Filter Games ({{ currentGame }} / {{ maxGames }})</label>
                     <div class="filter-row">
                       <div class="game-filter-buttons">
                         <button v-for="game in maxGames" 
@@ -178,7 +312,8 @@
                                   active: selectedGames.includes(game),
                                   current: game === currentGame
                                 }"
-                                :style="getGameButtonStyle(game)">
+                                :style="getGameButtonStyle(game)"
+                                :title="getGameTooltip(game)">
                           {{ game }}
                         </button>
                       </div>
@@ -186,16 +321,7 @@
                         ✕
                       </button>
                     </div>
-                  </div>
-
-                  <!-- Quick Controls (Play/Reset) -->
-                  <div class="quick-controls">
-                    <button @click="togglePlayback" class="control-btn play-btn">
-                      {{ isPlaying ? 'Pause' : 'Play' }}
-                    </button>
-                    <button @click="restart" class="control-btn">
-                      Reset
-                    </button>
+                    <div class="filter-action-label">Apply Filter</div>
                   </div>
 
                   <!-- Current Map Info -->
@@ -204,6 +330,16 @@
                       <span class="map-icon">🗺️</span>
                       <span class="map-name">{{ currentMap || 'Loading...' }}</span>
                     </div>
+                  </div>
+
+                  <!-- Quick Controls (Play/Reset) - Moved below map badge -->
+                  <div class="quick-controls">
+                    <button @click="togglePlayback" class="control-btn play-btn">
+                      {{ isPlaying ? 'Pause' : 'Play' }}
+                    </button>
+                    <button @click="restart" class="control-btn">
+                      Reset
+                    </button>
                   </div>
                 </div>
 
@@ -400,6 +536,11 @@ export default {
     
     currentDayInfo() {
       return this.tournamentDays.find(day => day.id === this.selectedDay) || {};
+    },
+    
+    displayedProgress() {
+      // Ensure progress is always within valid range (0 to maxGames)
+      return Math.min(Math.max(0, this.currentGame), this.maxGames);
     }
   },
   
@@ -440,7 +581,7 @@ export default {
   methods: {
     // Professional Championship Header Animations
     initializeHeaderAnimations() {
-      console.log('🎭 Initializing professional header animations...');
+      console.log('🎭 Initializing sophisticated header animations...');
       
       // Check if GSAP is available
       if (typeof gsap === 'undefined') {
@@ -448,39 +589,166 @@ export default {
         return;
       }
       
-      // Set initial states
-      gsap.set(['.championship-logo', '.championship-title', '.tournament-info-horizontal', '.nav-links'], {
+      // Set initial states for all elements
+      gsap.set([this.$refs.championshipLogo, this.$refs.championshipTitle, this.$refs.tournamentInfo, '.nav-links'], {
         opacity: 0,
-        y: 30
+        y: 50,
+        scale: 0.8,
+        filter: 'blur(5px)'
       });
       
-      // Animate elements in sequence
-      const tl = gsap.timeline();
+      // Set specific states for individual info items
+      gsap.set([this.$refs.infoItem1, this.$refs.infoItem2, this.$refs.infoItem3], {
+        opacity: 0,
+        x: -30,
+        scale: 0.9,
+        rotationY: 15
+      });
       
-      tl.to('.championship-logo', {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: 'back.out(1.7)'
-      })
-      .to('.championship-title', {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        ease: 'power2.out'
-      }, '-=0.3')
-      .to('.tournament-info-horizontal', {
-        opacity: 1,
-        y: 0,
-        duration: 0.5,
-        ease: 'power2.out'
-      }, '-=0.2')
-      .to('.nav-links', {
-        opacity: 1,
-        y: 0,
-        duration: 0.4,
-        ease: 'power2.out'
-      }, '-=0.1');
+      gsap.set([this.$refs.infoSeparator1, this.$refs.infoSeparator2], {
+        opacity: 0,
+        scale: 0,
+        rotation: 180
+      });
+      
+      // Create sophisticated master timeline
+      const masterTimeline = gsap.timeline();
+      
+      // 1. Championship Logo with bounce and particles
+      masterTimeline
+        .to(this.$refs.championshipLogo, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          filter: 'blur(0px)',
+          duration: 1.2,
+          ease: 'elastic.out(1, 0.6)'
+        })
+        .to(this.$refs.logoIcon, {
+          rotation: 360,
+          duration: 0.8,
+          ease: 'power2.out'
+        }, '-=0.6')
+        .to(this.$refs.logoParticles, {
+          opacity: 1,
+          scale: 1.2,
+          duration: 0.4,
+          ease: 'power2.out'
+        }, '-=0.4');
+      
+      // 2. Championship Title with typewriter effect
+      masterTimeline
+        .to(this.$refs.championshipTitle, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          filter: 'blur(0px)',
+          duration: 0.8,
+          ease: 'power3.out'
+        }, '-=0.4')
+        .to(this.$refs.titleMain, {
+          backgroundPosition: '200% center',
+          duration: 2,
+          ease: 'power2.inOut'
+        }, '-=0.2');
+      
+      // 3. Tournament Info with staggered morphing animations
+      masterTimeline
+        .to(this.$refs.tournamentInfo, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          filter: 'blur(0px)',
+          duration: 0.6,
+          ease: 'power2.out'
+        }, '-=0.3');
+      
+      // 4. Individual info items with 3D flip effects
+      masterTimeline
+        .to([this.$refs.infoItem1, this.$refs.infoItem2, this.$refs.infoItem3], {
+          opacity: 1,
+          x: 0,
+          scale: 1,
+          rotationY: 0,
+          duration: 0.8,
+          ease: 'back.out(1.7)',
+          stagger: 0.15
+        }, '-=0.4')
+        .to([this.$refs.infoIcon1, this.$refs.infoIcon2, this.$refs.infoIcon3], {
+          scale: 1.3,
+          rotation: 10,
+          duration: 0.3,
+          ease: 'elastic.out(1, 0.3)',
+          stagger: 0.1,
+          yoyo: true,
+          repeat: 1
+        }, '-=0.6');
+      
+      // 5. Separators with spin animation
+      masterTimeline
+        .to([this.$refs.infoSeparator1, this.$refs.infoSeparator2], {
+          opacity: 1,
+          scale: 1,
+          rotation: 0,
+          duration: 0.5,
+          ease: 'back.out(2)',
+          stagger: 0.1
+        }, '-=0.8');
+      
+      // 6. Navigation links
+      masterTimeline
+        .to('.nav-links', {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          filter: 'blur(0px)',
+          duration: 0.5,
+          ease: 'power2.out'
+        }, '-=0.3');
+      
+      // 7. Continuous subtle animations
+      this.setupContinuousAnimations();
+    },
+    
+    setupContinuousAnimations() {
+      // Continuous logo glow effect
+      gsap.to(this.$refs.logoIcon, {
+        textShadow: '0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.6)',
+        duration: 2,
+        ease: 'power2.inOut',
+        yoyo: true,
+        repeat: -1
+      });
+      
+      // Subtle floating animation for info items
+      gsap.to([this.$refs.infoItem1, this.$refs.infoItem2, this.$refs.infoItem3], {
+        y: -3,
+        duration: 3,
+        ease: 'power2.inOut',
+        yoyo: true,
+        repeat: -1,
+        stagger: 0.5
+      });
+      
+      // Gentle rotation for separators
+      gsap.to([this.$refs.infoSeparator1, this.$refs.infoSeparator2], {
+        rotation: 10,
+        duration: 4,
+        ease: 'power2.inOut',
+        yoyo: true,
+        repeat: -1,
+        stagger: 0.2
+      });
+      
+      // Particle animation for logo
+      gsap.to(this.$refs.logoParticles, {
+        opacity: 0.7,
+        scale: 1.1,
+        duration: 1.5,
+        ease: 'power2.inOut',
+        yoyo: true,
+        repeat: -1
+      });
     },
     
     selectDay(dayId) {
@@ -834,10 +1102,7 @@ export default {
           }
         }
         
-        // Ensure panel is expanded for filtering
-        if (!this.panelExpanded) {
-          this.panelExpanded = true;
-        }
+        // Removed auto-expansion - filters work independently of panel state
       }
       
       // Apply filter with visual feedback
@@ -897,33 +1162,45 @@ export default {
       const isActive = this.selectedGames.includes(gameNum);
       const isCurrent = gameNum === this.currentGame;
       
-      // Priority: current game always gets highlighted during animation
+      // Base style: all buttons are colored with map colors by default
+      const baseStyle = {
+        background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, -10)} 100%)`,
+        border: `2px solid ${mapColor}`,
+        color: '#ffffff'
+      };
+      
+      // Add subtle glow effect only for current game during progress
       if (isCurrent) {
         return {
-          background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, 10)} 100%)`,
-          border: `2px solid ${mapColor}`,
-          color: '#ffffff',
-          transform: 'scale(1.05)',
-          boxShadow: `0 0 15px ${mapColor}80, 0 4px 8px rgba(0,0,0,0.3)`
+          ...baseStyle,
+          boxShadow: `0 0 8px ${mapColor}60, 0 2px 4px rgba(0,0,0,0.3)`
         };
       } else if (isActive) {
+        // Keep enhanced styling for selected filters
         return {
-          background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, -10)} 100%)`,
-          border: `2px solid ${mapColor}`,
-          color: '#ffffff',
-          boxShadow: `0 0 10px ${mapColor}60, 0 2px 4px rgba(0,0,0,0.2)`
+          ...baseStyle,
+          boxShadow: `0 0 12px ${mapColor}60, 0 0 20px ${mapColor}40`,
+          transform: 'scale(1.15)'
         };
       } else {
-        return {
-          background: `linear-gradient(135deg, ${mapColor}40 0%, ${this.adjustColor(mapColor, -20)}40 100%)`,
-          border: `1px solid ${mapColor}60`,
-          color: '#cbd5e1'
-        };
+        // Default colored buttons
+        return baseStyle;
       }
     },
     
+    getGameTooltip(gameNum) {
+      if (!this.chartEngine || !this.chartEngine.dataManager) return `Game ${gameNum}`;
+      
+      const mapName = this.chartEngine.dataManager.getMapForGame(gameNum);
+      return `Game ${gameNum}: ${mapName}`;
+    },
+    
     adjustColor(hexColor, percent) {
-      // Simple color adjustment utility
+      // Simple color adjustment utility with null check
+      if (!hexColor || typeof hexColor !== 'string' || !hexColor.startsWith('#')) {
+        return hexColor || '#dc2626'; // Return original or fallback color
+      }
+      
       const num = parseInt(hexColor.slice(1), 16);
       const amt = Math.round(2.55 * percent);
       const R = (num >> 16) + amt;

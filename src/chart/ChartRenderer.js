@@ -299,9 +299,11 @@ export class ChartRenderer {
     }
     
     updateAxes(data, transitionDuration = 1500) {
-        // Update X axis
+        // Update X axis with improved configuration
         const xAxis = d3.axisBottom(this.xScale)
-            .tickFormat(d3.format('.0f'))
+            .tickFormat(d3.format('.0f'))  // Force integer format
+            .ticks(8)  // Limit number of ticks
+            .tickValues(this.xScale.ticks(8).filter(tick => tick % 1 === 0))  // Only integer tick values
         
         this.xAxisGroup.call(xAxis)
         
@@ -610,6 +612,136 @@ export class ChartRenderer {
     }
     
 
+
+    /**
+     * Trigger celebratory animation for top 3 teams
+     * @param {Array} data - Final sorted data with teams
+     */
+    triggerCelebratoryAnimation(data) {
+        if (!data || data.length < 3) return
+        
+        // Get top 3 teams
+        const topThree = data.slice(0, 3)
+        
+        console.log('🎉 Triggering celebratory animation for top 3 teams')
+        
+        // Create celebratory effects for each position
+        topThree.forEach((teamData, index) => {
+            const position = index + 1 // 1st, 2nd, 3rd
+            this.createCelebratoryEffect(teamData, position)
+        })
+    }
+    
+    /**
+     * Create celebratory effect for a specific team
+     * @param {Object} teamData - Team data object
+     * @param {number} position - Position (1, 2, or 3)
+     */
+    createCelebratoryEffect(teamData, position) {
+        const yPos = this.yScale(teamData.team)
+        const bandwidth = this.yScale.bandwidth()
+        
+        if (isNaN(yPos) || isNaN(bandwidth)) return
+        
+        const centerY = yPos + bandwidth / 2
+        
+        // Different effects for different positions
+        const effects = {
+            1: { color: '#FFD700', particles: 12, size: 8 },  // Gold
+            2: { color: '#C0C0C0', particles: 10, size: 6 },  // Silver
+            3: { color: '#CD7F32', particles: 8, size: 5 }    // Bronze
+        }
+        
+        const effect = effects[position]
+        
+        // Create particle burst effect
+        for (let i = 0; i < effect.particles; i++) {
+            const angle = (i / effect.particles) * 2 * Math.PI
+            const distance = 30 + Math.random() * 20
+            
+            const particle = this.mainGroup.append('circle')
+                .attr('class', 'celebration-particle')
+                .attr('cx', -30) // Start from left edge
+                .attr('cy', centerY)
+                .attr('r', effect.size)
+                .style('fill', effect.color)
+                .style('opacity', 1)
+                .style('filter', 'drop-shadow(0 0 3px rgba(255,255,255,0.8))')
+            
+            // Animate particle outward
+            particle.transition()
+                .duration(1500)
+                .ease(d3.easeQuadOut)
+                .attr('cx', -30 + Math.cos(angle) * distance)
+                .attr('cy', centerY + Math.sin(angle) * distance)
+                .style('opacity', 0)
+                .remove()
+        }
+        
+        // Create pulsing glow effect on the team name specifically
+        const teamGroup = this.mainGroup.selectAll('.team-group')
+            .filter(d => d.team === teamData.team)
+        
+        if (!teamGroup.empty()) {
+            const teamLabel = teamGroup.select('.team-label')
+            
+            if (!teamLabel.empty()) {
+                // Define glow intensity based on position
+                const glowIntensity = {
+                    1: { radius: 15, opacity: 0.9, strokeWidth: 4 },  // Strong glow for 1st
+                    2: { radius: 12, opacity: 0.7, strokeWidth: 3 },  // Medium glow for 2nd
+                    3: { radius: 8, opacity: 0.5, strokeWidth: 2 }    // Gentle glow for 3rd
+                }
+                
+                const glow = glowIntensity[position]
+                
+                // Apply glow effect directly to team name text
+                teamLabel
+                    .style('filter', `drop-shadow(0 0 ${glow.radius}px ${effect.color})`)
+                    .style('text-shadow', `0 0 ${glow.radius}px ${effect.color}`)
+                    .transition()
+                    .duration(500)
+                    .ease(d3.easeQuadOut)
+                    .style('opacity', 1)
+                    .transition()
+                    .duration(2000)
+                    .ease(d3.easeQuadInOut)
+                    .style('opacity', glow.opacity)
+                    .transition()
+                    .duration(1500)
+                    .ease(d3.easeQuadOut)
+                    .style('opacity', 1)
+                    .style('filter', 'none')
+                    .style('text-shadow', 'none')
+            }
+        }
+        
+        // Add position trophy/medal emoji
+        const trophy = position === 1 ? '🏆' : position === 2 ? '🥈' : '🥉'
+        
+        const trophyText = this.mainGroup.append('text')
+            .attr('class', 'celebration-trophy')
+            .attr('x', -50)
+            .attr('y', centerY)
+            .attr('dy', '0.35em')
+            .style('font-size', '24px')
+            .style('text-anchor', 'middle')
+            .style('opacity', 0)
+            .text(trophy)
+        
+        // Animate trophy
+        trophyText.transition()
+            .duration(500)
+            .ease(d3.easeBackOut)
+            .style('opacity', 1)
+            .attr('x', -40)
+            .transition()
+            .delay(2000)
+            .duration(1000)
+            .ease(d3.easeQuadIn)
+            .style('opacity', 0)
+            .remove()
+    }
 
     cleanup() {
         if (this.svg) {
