@@ -524,12 +524,20 @@ export default {
         return;
       }
       
-      // Set initial states for all elements
-      gsap.set([this.$refs.championshipLogo, this.$refs.championshipTitle, this.$refs.tournamentInfo, '.nav-links'], {
+      // Set initial states for elements that will be animated (exclude nav-links)
+      gsap.set([this.$refs.championshipLogo, this.$refs.championshipTitle, this.$refs.tournamentInfo], {
         opacity: 0,
         y: 50,
         scale: 0.8,
         filter: 'blur(5px)'
+      });
+      
+      // Keep nav-links visible at all times - no animation
+      gsap.set('.nav-links', {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: 'blur(0px)'
       });
       
       // Set specific states for individual info items
@@ -587,7 +595,7 @@ export default {
           ease: 'power2.inOut'
         }, '-=0.2');
       
-      // 3. Tournament Info with staggered morphing animations
+      // 3. Tournament Info with faster staggered morphing animations (half the delay)
       masterTimeline
         .to(this.$refs.tournamentInfo, {
           opacity: 1,
@@ -596,9 +604,9 @@ export default {
           filter: 'blur(0px)',
         duration: 0.6,
         ease: 'power2.out'
-        }, '-=0.3');
+        }, '-=0.15'); // Reduced from -=0.3 to -=0.15 for faster animation
       
-      // 4. Individual info items with 3D flip effects
+      // 4. Individual info items with 3D flip effects (also faster)
       masterTimeline
         .to([this.$refs.infoItem1, this.$refs.infoItem2, this.$refs.infoItem3], {
         opacity: 1,
@@ -608,7 +616,7 @@ export default {
           duration: 0.8,
           ease: 'back.out(1.7)',
           stagger: 0.15
-        }, '-=0.4')
+        }, '-=0.2') // Reduced from -=0.4 to -=0.2 for faster animation
         .to([this.$refs.infoIcon1, this.$refs.infoIcon2, this.$refs.infoIcon3], {
           scale: 1.3,
           rotation: 10,
@@ -619,7 +627,7 @@ export default {
           repeat: 1
         }, '-=0.6');
       
-      // 5. Separators with spin animation
+      // 5. Separators with spin animation (faster)
       masterTimeline
         .to([this.$refs.infoSeparator1, this.$refs.infoSeparator2], {
           opacity: 1,
@@ -628,18 +636,9 @@ export default {
         duration: 0.5,
           ease: 'back.out(2)',
           stagger: 0.1
-        }, '-=0.8');
+        }, '-=0.4'); // Reduced from -=0.8 to -=0.4 for faster animation
       
-      // 6. Navigation links
-      masterTimeline
-      .to('.nav-links', {
-        opacity: 1,
-        y: 0,
-          scale: 1,
-          filter: 'blur(0px)',
-          duration: 0.5,
-        ease: 'power2.out'
-        }, '-=0.3');
+      // 6. Navigation links - removed from animation, stays visible
       
       // 7. Continuous subtle animations
       this.setupContinuousAnimations();
