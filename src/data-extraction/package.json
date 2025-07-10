@@ -1,0 +1,29 @@
+{
+  "name": "algs-batch-processor",
+  "version": "1.0.0",
+  "description": "Automated batch processing system for ALGS tournament data",
+  "main": "automation-server.js",
+  "scripts": {
+    "start": "node automation-server.js",
+    "dev": "nodemon automation-server.js",
+    "test": "node test-batch-processor.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.14.2",
+    "puppeteer": "^21.6.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": [
+    "algs",
+    "apex-legends",
+    "tournament",
+    "scraping",
+    "automation",
+    "batch-processing"
+  ],
+  "author": "ALGS Dashboard Team",
+  "license": "MIT"
+}

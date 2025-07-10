@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALGS Tournament Batch Processor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .url-input {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .queue-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .queue-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #6c757d;
+        }
+
+        .queue-item.processing {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+
+        .queue-item.completed {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+
+        .queue-item.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .queue-item-info {
+            flex: 1;
+        }
+
+        .queue-item-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .queue-item-url {
+            font-size: 12px;
+            color: #666;
+            word-break: break-all;
+        }
+
+        .queue-item-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #6c757d;
+            color: white;
+        }
+
+        .status-processing {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .status-completed {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-error {
+            background: #dc3545;
+            color: white;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.3s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .results-section {
+            margin-top: 30px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .result-timestamp {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .result-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .result-detail {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .result-detail-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .result-detail-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 1000;
+        }
+
+        .connection-status.connected {
+            background: #28a745;
+            color: white;
+        }
+
+        .connection-status.disconnected {
+            background: #dc3545;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .queue-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .queue-item-status {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status" id="connectionStatus">Connecting...</div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🏆 ALGS Tournament Batch Processor</h1>
+            <p>Automated scraping and processing of ALGS tournament data</p>
+        </div>
+
+        <div class="main-content">
+            <!-- URL Input Section -->
+            <div class="section">
+                <h2>📝 Add Tournament URLs</h2>
+                <div class="input-group">
+                    <label for="urlInput">Paste ALGS tournament URLs (one per line):</label>
+                    <textarea 
+                        id="urlInput" 
+                        class="url-input" 
+                        placeholder="https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1-1#tab_scores
+https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1-2#tab_scores
+https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1-3#tab_scores"></textarea>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="addUrls()">
+                        📋 Add to Queue
+                    </button>
+                    <button class="btn btn-danger" onclick="clearQueue()">
+                        🗑️ Clear Queue
+                    </button>
+                </div>
+            </div>
+
+            <!-- Concurrent Processing Settings -->
+            <div class="section">
+                <h2>⚙️ Concurrent Processing Settings</h2>
+                <div class="input-group">
+                    <label for="maxConcurrentInput">Maximum Concurrent Processes (1-10):</label>
+                    <input type="number" id="maxConcurrentInput" min="1" max="10" value="3" 
+                           style="width: 100px; padding: 8px; border: 2px solid #ddd; border-radius: 5px;">
+                    <button class="btn btn-primary" onclick="updateConcurrentSettings()" style="margin-left: 10px;">
+                        💾 Update Settings
+                    </button>
+                </div>
+                <p style="color: #666; font-size: 0.9rem; margin-top: 10px;">
+                    Higher values = faster processing but more resource usage. Recommended: 2-4 for most systems.
+                </p>
+            </div>
+
+            <!-- Queue Section -->
+            <div class="section">
+                <h2>📋 Processing Queue</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="queueCount">0</div>
+                        <div class="stat-label">In Queue</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="concurrentCount">0</div>
+                        <div class="stat-label">Processing Now</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="completedCount">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="errorCount">0</div>
+                        <div class="stat-label">Errors</div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-success" id="startBtn" onclick="startProcessing()">
+                        🚀 Start Processing
+                    </button>
+                    <button class="btn btn-danger" id="stopBtn" onclick="stopProcessing()" disabled>
+                        🛑 Stop Processing
+                    </button>
+                </div>
+
+                <div class="queue-container">
+                    <div id="queueList" class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p>No URLs in queue. Add some tournament URLs to get started!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="section results-section">
+                <h2>📊 Processing Results</h2>
+                <div id="resultsList" class="empty-state">
+                    <div class="empty-state-icon">📊</div>
+                    <p>No results yet. Start processing to see results here!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let reconnectInterval = null;
+        let state = {
+            queue: [],
+            current: [],
+            results: [],
+            concurrent: 0,
+            maxConcurrent: 3,
+            isProcessing: false
+        };
+
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}`;
+            
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = function() {
+                console.log('WebSocket connected');
+                updateConnectionStatus(true);
+                if (reconnectInterval) {
+                    clearInterval(reconnectInterval);
+                    reconnectInterval = null;
+                }
+            };
+            
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                handleWebSocketMessage(data);
+            };
+            
+            ws.onclose = function() {
+                console.log('WebSocket disconnected');
+                updateConnectionStatus(false);
+                
+                if (!reconnectInterval) {
+                    reconnectInterval = setInterval(() => {
+                        console.log('Attempting to reconnect...');
+                        connectWebSocket();
+                    }, 5000);
+                }
+            };
+            
+            ws.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                updateConnectionStatus(false);
+            };
+        }
+
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (connected) {
+                statusElement.textContent = 'Connected';
+                statusElement.className = 'connection-status connected';
+            } else {
+                statusElement.textContent = 'Disconnected';
+                statusElement.className = 'connection-status disconnected';
+            }
+        }
+
+        function handleWebSocketMessage(data) {
+            switch (data.type) {
+                case 'state':
+                    state = {
+                        queue: data.queue || [],
+                        current: data.current || [],
+                        results: data.results || [],
+                        concurrent: data.concurrent || 0,
+                        maxConcurrent: data.maxConcurrent || 3,
+                        isProcessing: data.isProcessing || false
+                    };
+                    updateUI();
+                    break;
+                    
+                case 'queue_update':
+                    state.queue = data.queue || [];
+                    state.current = data.current || [];
+                    state.concurrent = data.concurrent || 0;
+                    state.isProcessing = data.isProcessing || false;
+                    if (data.results) {
+                        state.results = data.results;
+                    }
+                    updateUI();
+                    break;
+                    
+                case 'processing':
+                    updateProcessingStatus(data.id, data.stage, data.message);
+                    break;
+                    
+                case 'completed':
+                    // Will be handled by queue_update
+                    break;
+                    
+                case 'error':
+                    // Will be handled by queue_update
+                    break;
+            }
+        }
+
+        function updateUI() {
+            updateStats();
+            updateQueueList();
+            updateResultsList();
+        }
+
+        function updateStats() {
+            document.getElementById('queueCount').textContent = state.queue.length;
+            document.getElementById('concurrentCount').textContent = state.concurrent;
+            document.getElementById('completedCount').textContent = 
+                state.results.filter(r => r.result && r.result.success).length;
+            document.getElementById('errorCount').textContent = 
+                state.results.filter(r => r.result && !r.result.success).length;
+            
+            // Update button states
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const maxConcurrentInput = document.getElementById('maxConcurrentInput');
+            
+            if (state.isProcessing) {
+                startBtn.disabled = true;
+                startBtn.textContent = '🔄 Processing...';
+                stopBtn.disabled = false;
+            } else {
+                startBtn.disabled = false;
+                startBtn.textContent = '🚀 Start Processing';
+                stopBtn.disabled = true;
+            }
+            
+            // Update max concurrent setting
+            if (maxConcurrentInput.value != state.maxConcurrent) {
+                maxConcurrentInput.value = state.maxConcurrent;
+            }
+        }
+
+        function updateQueueList() {
+            const queueList = document.getElementById('queueList');
+            
+            if (state.queue.length === 0 && state.current.length === 0) {
+                queueList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p>No URLs in queue. Add some tournament URLs to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            
+            // Show current processing items (multiple concurrent)
+            if (state.current && state.current.length > 0) {
+                state.current.forEach(item => {
+                    html += `
+                        <div class="queue-item processing">
+                            <div class="queue-item-info">
+                                <div class="queue-item-title">${item.tournament} - ${item.round}</div>
+                                <div class="queue-item-url">${item.url}</div>
+                            </div>
+                            <div class="queue-item-status status-processing">Processing</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Show queued items
+            state.queue.forEach(item => {
+                html += `
+                    <div class="queue-item">
+                        <div class="queue-item-info">
+                            <div class="queue-item-title">${item.tournament} - ${item.round}</div>
+                            <div class="queue-item-url">${item.url}</div>
+                        </div>
+                        <div class="queue-item-status status-pending">Pending</div>
+                    </div>
+                `;
+            });
+            
+            queueList.innerHTML = html;
+        }
+
+        function updateResultsList() {
+            const resultsList = document.getElementById('resultsList');
+            
+            if (state.results.length === 0) {
+                resultsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>No results yet. Start processing to see results here!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            
+            state.results.slice().reverse().forEach(result => {
+                const success = result.result && result.result.success;
+                const statusClass = success ? 'completed' : 'error';
+                
+                html += `
+                    <div class="result-item ${statusClass}">
+                        <div class="result-header">
+                            <div class="result-title">${result.tournament} - ${result.round}</div>
+                            <div class="result-timestamp">${new Date(result.timestamp).toLocaleString()}</div>
+                        </div>
+                        
+                        ${success ? `
+                            <div class="result-details">
+                                <div class="result-detail">
+                                    <div class="result-detail-value">${result.result.teamsExtracted}</div>
+                                    <div class="result-detail-label">Teams Extracted</div>
+                                </div>
+                                <div class="result-detail">
+                                    <div class="result-detail-value">✅</div>
+                                    <div class="result-detail-label">Simple Format</div>
+                                </div>
+                                <div class="result-detail">
+                                    <div class="result-detail-value">✅</div>
+                                    <div class="result-detail-label">Bifurcated Format</div>
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="result-details">
+                                <div class="result-detail">
+                                    <div class="result-detail-value">❌</div>
+                                    <div class="result-detail-label">Error: ${result.result.error}</div>
+                                </div>
+                            </div>
+                        `}
+                    </div>
+                `;
+            });
+            
+            resultsList.innerHTML = html;
+        }
+
+        function updateProcessingStatus(id, stage, message) {
+            // This could be enhanced to show more detailed progress
+            console.log(`Processing ${id}: ${stage} - ${message}`);
+        }
+
+        async function addUrls() {
+            const urlInput = document.getElementById('urlInput');
+            const urls = urlInput.value
+                .split('\n')
+                .map(url => url.trim())
+                .filter(url => url.length > 0);
+            
+            if (urls.length === 0) {
+                alert('Please enter at least one URL');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/add-urls', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ urls })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    urlInput.value = '';
+                    console.log(`Added ${result.added} URLs to queue`);
+                } else {
+                    alert('Failed to add URLs: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error adding URLs: ' + error.message);
+            }
+        }
+
+        async function startProcessing() {
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            
+            startBtn.disabled = true;
+            startBtn.textContent = '🔄 Processing...';
+            stopBtn.disabled = false;
+            
+            try {
+                const response = await fetch('/api/start-processing', {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (!result.success) {
+                    alert('Failed to start processing: ' + result.error);
+                    startBtn.disabled = false;
+                    startBtn.textContent = '🚀 Start Processing';
+                    stopBtn.disabled = true;
+                }
+            } catch (error) {
+                alert('Error starting processing: ' + error.message);
+                startBtn.disabled = false;
+                startBtn.textContent = '🚀 Start Processing';
+                stopBtn.disabled = true;
+            }
+        }
+
+        async function clearQueue() {
+            if (!confirm('Are you sure you want to clear the queue?')) return;
+            
+            try {
+                const response = await fetch('/api/clear-queue', {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log('Queue cleared');
+                } else {
+                    alert('Failed to clear queue: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error clearing queue: ' + error.message);
+            }
+        }
+
+        async function stopProcessing() {
+            if (!confirm('Are you sure you want to stop all processing?')) return;
+            
+            try {
+                const response = await fetch('/api/stop-processing', {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log('Processing stopped');
+                } else {
+                    alert('Failed to stop processing: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error stopping processing: ' + error.message);
+            }
+        }
+
+        async function updateConcurrentSettings() {
+            const maxConcurrentInput = document.getElementById('maxConcurrentInput');
+            const maxConcurrent = parseInt(maxConcurrentInput.value);
+            
+            if (maxConcurrent < 1 || maxConcurrent > 10) {
+                alert('Maximum concurrent processes must be between 1 and 10');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/set-concurrent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ maxConcurrent })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log(`Max concurrent processes set to ${result.maxConcurrent}`);
+                    state.maxConcurrent = result.maxConcurrent;
+                } else {
+                    alert('Failed to update concurrent settings: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error updating concurrent settings: ' + error.message);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            connectWebSocket();
+        });
+    </script>
+</body>
+</html> 

@@ -452,30 +452,38 @@
                     </a>
                 </div>
 
-                <!-- Future Tournament Placeholder -->
-                <div class="tournament-card coming-soon">
-                    <div class="tournament-icon">🌟</div>
-                    <h3>ALGS Future Tournaments</h3>
-                    <div class="tournament-status">Coming Soon</div>
+                <!-- ALGS Year 5 Open -->
+                <div class="tournament-card" @click="goToTournament('year_5_open.html')">
+                    <div class="tournament-icon">🌍</div>
+                    <h3>ALGS Year 5 Open</h3>
+                    <div class="tournament-status">Available Now</div>
                     
                     <p class="tournament-description">
-                        More ALGS tournaments and regional competitions will be added to the dashboard as they become available.
+                        Explore the global Year 5 Open tournament featuring 12 intense rounds across Winners Round 1, Winners Round 2, and Elimination Round 1.
                     </p>
 
                     <div class="tournament-details">
                         <div class="detail-item">
-                            <div class="detail-label">Status</div>
-                            <div class="detail-value">In Development</div>
+                            <div class="detail-label">Format</div>
+                            <div class="detail-value">Global Open</div>
                         </div>
                         <div class="detail-item">
-                            <div class="detail-label">Expected</div>
-                            <div class="detail-value">TBA</div>
+                            <div class="detail-label">Season</div>
+                            <div class="detail-value">Split 1 - 2025</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Rounds</div>
+                            <div class="detail-value">12 Total Matches</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Structure</div>
+                            <div class="detail-value">Winners → Elimination</div>
                         </div>
                     </div>
 
-                    <button class="enter-button" disabled>
-                        Coming Soon
-                    </button>
+                    <a href="year_5_open.html" class="enter-button">
+                        Enter Tournament
+                    </a>
                 </div>
             </div>
         </main>

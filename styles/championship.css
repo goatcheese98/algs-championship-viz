@@ -38,6 +38,35 @@ body {
     }
 }
 
+/* Fluid font scaling using clamp() for better readability */
+.title-main {
+    font-size: clamp(1.8rem, 4vw, 2.5rem) !important;
+}
+
+.chart-title {
+    font-size: clamp(1.4rem, 3vw, 1.8rem) !important;
+}
+
+.panel-title {
+    font-size: clamp(0.9rem, 2vw, 1.125rem) !important;
+}
+
+.info-text {
+    font-size: clamp(0.8rem, 1.5vw, 0.9rem) !important;
+}
+
+.section-label {
+    font-size: clamp(0.7rem, 1.2vw, 0.75rem) !important;
+}
+
+.game-filter-btn {
+    font-size: clamp(0.7rem, 1.2vw, 0.75rem) !important;
+}
+
+.control-btn {
+    font-size: clamp(0.8rem, 1.4vw, 0.9rem) !important;
+}
+
 /* Professional ALGS Championship Header */
 .championship-header {
     background: 

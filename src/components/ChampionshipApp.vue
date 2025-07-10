@@ -940,7 +940,7 @@ export default {
         });
         
         // Initialize chart engine with matchup data
-        const csvPath = `data/${this.selectedMatchup}_points.csv`;
+        const csvPath = `year4champions/${this.selectedMatchup}_points.csv`;
         await this.chartEngine.initialize(csvPath);
         
         // Update game state

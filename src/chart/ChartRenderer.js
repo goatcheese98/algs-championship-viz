@@ -14,6 +14,58 @@ function isMobileDevice() {
     return window.innerWidth <= 768
 }
 
+// Responsive font scaling utility
+function getResponsiveFontSize(baseSize, mobileScale = 0.8) {
+    const isMobile = isMobileDevice()
+    const containerWidth = window.innerWidth
+    
+    if (isMobile) {
+        // Scale down for mobile, with minimum size constraints
+        const scaledSize = Math.max(10, baseSize * mobileScale)
+        
+        // Further scale based on container width for very small screens
+        if (containerWidth < 400) {
+            return Math.max(9, scaledSize * 0.9)
+        } else if (containerWidth < 600) {
+            return Math.max(10, scaledSize * 0.95)
+        }
+        return scaledSize
+    }
+    
+    // Desktop - scale up slightly for larger screens
+    if (containerWidth > 1400) {
+        return Math.min(baseSize * 1.1, baseSize + 3)
+    }
+    
+    return baseSize
+}
+
+// Point size scaling utility
+function getResponsivePointSize(baseSize = 4, mobileScale = 0.8) {
+    const isMobile = isMobileDevice()
+    const containerWidth = window.innerWidth
+    
+    if (isMobile) {
+        // Scale down for mobile but maintain minimum readability
+        const scaledSize = Math.max(3, baseSize * mobileScale)
+        
+        // Further adjustments for very small screens
+        if (containerWidth < 400) {
+            return Math.max(2.5, scaledSize * 0.9)
+        } else if (containerWidth < 600) {
+            return Math.max(3, scaledSize * 0.95)
+        }
+        return scaledSize
+    }
+    
+    // Desktop - scale up for larger screens
+    if (containerWidth > 1400) {
+        return Math.min(baseSize * 1.2, baseSize + 2)
+    }
+    
+    return baseSize
+}
+
 export class ChartRenderer {
     constructor(container, margin, scales, teamConfig = null) {
         this.container = container
@@ -187,8 +239,8 @@ export class ChartRenderer {
             .attr('y', -bandwidth * 0.4)     // Position bars UP to align with team labels
             .attr('x', 0)
             .attr('width', 0)               // Start with 0 width - will grow horizontally only
-            .attr('rx', 6)  // Slightly smaller radius
-            .attr('ry', 6)
+            .attr('rx', getResponsivePointSize(6))  // Responsive corner radius
+            .attr('ry', getResponsivePointSize(6))
             .style('transform-origin', 'left center')  // Ensure bars grow from left edge
             .style('opacity', 1)  // Full opacity, no fade-in effects
         
@@ -197,7 +249,7 @@ export class ChartRenderer {
             .attr('class', 'segment-label')
             .attr('y', 0)    // Position text inside the bars (bars are centered at 0)
             .attr('dy', '0.35em')
-            .style('font-size', '14px')
+            .style('font-size', `${getResponsiveFontSize(14)}px`)
             .style('font-weight', '600')
             .style('text-anchor', 'middle')
             .style('fill', '#ffffff')      // White color for visibility inside bars
@@ -246,8 +298,8 @@ export class ChartRenderer {
             })
             .attr('height', bandwidth * 0.8)  // Consistent normal thickness
             .attr('y', -bandwidth * 0.4)     // Consistent positioning - bars aligned with team labels
-            .attr('rx', 6)  // Consistent radius
-            .attr('ry', 6)
+            .attr('rx', getResponsivePointSize(6))  // Responsive corner radius
+            .attr('ry', getResponsivePointSize(6))
             .style('fill', d => d.color)
             .style('stroke', 'rgba(0,0,0,0.8)')
             .style('stroke-width', '1px')
@@ -298,8 +350,9 @@ export class ChartRenderer {
                     ? (filteredGameIndices.includes(d.gameNumber) ? this.xScale(d.points) : 0)
                     : (d.gameNumber <= currentGameIndex ? this.xScale(d.points) : 0)
                 
-                // Use smaller font for narrow segments to ensure "1" fits
-                return segmentWidth < 25 ? '12px' : '14px'
+                // Use responsive font sizing for narrow segments
+                const baseSize = segmentWidth < 25 ? 12 : 14
+                return `${getResponsiveFontSize(baseSize)}px`
             })
     }
     
@@ -321,7 +374,7 @@ export class ChartRenderer {
             .attr('class', 'cumulative-label')
             .attr('y', 0)    // Position on same axis as bars
             .attr('dy', '0.35em')
-            .style('font-size', '14px')
+            .style('font-size', `${getResponsiveFontSize(14)}px`)
             .style('font-weight', '700')
             .style('fill', '#f1f5f9')
             .style('text-anchor', 'start')
@@ -377,9 +430,9 @@ export class ChartRenderer {
         const renderedTicks = this.xAxisGroup.selectAll('.tick text').nodes().map(node => node.textContent)
         console.log('🔍 Actually rendered tick labels:', renderedTicks)
         
-        // Force X-axis styling
+        // Force X-axis styling with responsive font size
         this.xAxisGroup.selectAll('text')
-            .style('font-size', '24px', 'important')
+            .style('font-size', `${getResponsiveFontSize(24, 0.75)}px`, 'important')
             .style('font-weight', '700', 'important')
             .style('font-family', 'Inter, Roboto Mono, monospace', 'important')
             .style('fill', '#f1f5f9', 'important')
@@ -516,7 +569,7 @@ export class ChartRenderer {
             .attr('width', 28)
             .attr('height', 28)
             .style('opacity', 0)
-            .style('clip-path', 'circle(14px at center)')
+            .style('clip-path', `circle(${getResponsivePointSize(14)}px at center)`)
         
         // Fallback logo
         const fallbackGroup = logoGroup.append('g')
@@ -525,7 +578,7 @@ export class ChartRenderer {
         
         fallbackGroup.append('circle')
             .attr('class', 'fallback-bg')
-            .attr('r', 14)
+            .attr('r', getResponsivePointSize(14))
             .style('stroke', 'rgba(0, 0, 0, 0.5)')
             .style('stroke-width', '1px')
         
@@ -533,7 +586,7 @@ export class ChartRenderer {
             .attr('class', 'fallback-text')
             .attr('dy', '0.35em')
             .style('text-anchor', 'middle')
-            .style('font-size', '12px')
+            .style('font-size', `${getResponsiveFontSize(12)}px`)
             .style('font-weight', '700')
             .style('fill', '#ffffff')
             .style('text-shadow', '0 1px 2px rgba(0,0,0,0.5)')
@@ -704,7 +757,7 @@ export class ChartRenderer {
         // Logo background circle
         logoGroup.append('circle')
             .attr('class', 'logo-background')
-            .attr('r', 16)
+            .attr('r', getResponsivePointSize(16))
             .style('fill', 'rgba(0, 0, 0, 0.8)')
             .style('stroke', 'rgba(0, 0, 0, 0.3)')
             .style('stroke-width', '1px')
@@ -718,7 +771,7 @@ export class ChartRenderer {
             .attr('width', 28)
             .attr('height', 28)
             .style('opacity', 0)
-            .style('clip-path', 'circle(14px at center)')
+            .style('clip-path', `circle(${getResponsivePointSize(14)}px at center)`)
         
         // Logo fallback
         const fallbackGroup = logoGroup.append('g')
@@ -727,7 +780,7 @@ export class ChartRenderer {
         
         fallbackGroup.append('circle')
             .attr('class', 'fallback-bg')
-            .attr('r', 14)
+            .attr('r', getResponsivePointSize(14))
             .style('stroke', 'rgba(0, 0, 0, 0.5)')
             .style('stroke-width', '1px')
         
@@ -735,7 +788,7 @@ export class ChartRenderer {
             .attr('class', 'fallback-text')
             .attr('dy', '0.35em')
             .style('text-anchor', 'middle')
-            .style('font-size', '12px')
+            .style('font-size', `${getResponsiveFontSize(12)}px`)
             .style('font-weight', '700')
             .style('fill', '#ffffff')
             .style('text-shadow', '0 1px 2px rgba(0,0,0,0.5)')
@@ -810,7 +863,7 @@ export class ChartRenderer {
                 .attr('class', 'celebration-particle')
                 .attr('cx', -30) // Start from left edge
                 .attr('cy', centerY)
-                .attr('r', effect.size)
+                .attr('r', getResponsivePointSize(effect.size))
                 .style('fill', effect.color)
                 .style('opacity', 1)
                 .style('filter', 'drop-shadow(0 0 3px rgba(255,255,255,0.8))')
@@ -835,9 +888,9 @@ export class ChartRenderer {
             if (!teamLabel.empty()) {
                 // Define glow intensity based on position
                 const glowIntensity = {
-                    1: { radius: 15, opacity: 0.9, strokeWidth: 4 },  // Strong glow for 1st
-                    2: { radius: 12, opacity: 0.7, strokeWidth: 3 },  // Medium glow for 2nd
-                    3: { radius: 8, opacity: 0.5, strokeWidth: 2 }    // Gentle glow for 3rd
+                    1: { radius: getResponsivePointSize(15), opacity: 0.9, strokeWidth: 4 },  // Strong glow for 1st
+                    2: { radius: getResponsivePointSize(12), opacity: 0.7, strokeWidth: 3 },  // Medium glow for 2nd
+                    3: { radius: getResponsivePointSize(8), opacity: 0.5, strokeWidth: 2 }    // Gentle glow for 3rd
                 }
                 
                 const glow = glowIntensity[position]
@@ -871,7 +924,7 @@ export class ChartRenderer {
             .attr('x', -50)
             .attr('y', centerY)
             .attr('dy', '0.35em')
-            .style('font-size', '24px')
+            .style('font-size', `${getResponsiveFontSize(24)}px`)
             .style('text-anchor', 'middle')
             .style('opacity', 0)
             .text(trophy)
