@@ -334,6 +334,141 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
+        /* Dashboard Navigation */
+        .dashboard-navigation {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+            padding: 80px 0;
+            margin-top: 60px;
+            border-top: 1px solid #374151;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            text-align: center;
+        }
+
+        .nav-container h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-container p {
+            font-size: 1.1rem;
+            color: #9ca3af;
+            margin-bottom: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .nav-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .nav-card {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1f1f1f 50%, #0f0f0f 100%);
+            border: 1px solid #374151;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(220, 38, 38, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-8px);
+            border-color: #dc2626;
+            box-shadow: 0 20px 40px rgba(220, 38, 38, 0.2), 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-card:hover::before {
+            opacity: 1;
+        }
+
+        .nav-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 10px rgba(220, 38, 38, 0.5));
+        }
+
+        .nav-card h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-card p {
+            font-size: 0.95rem;
+            color: #9ca3af;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+        }
+
+        .nav-button:hover::before {
+            left: 100%;
+        }
+
         /* Footer */
         .footer {
             text-align: center;
@@ -341,7 +476,7 @@
             color: #6b7280;
             font-size: 0.9rem;
             border-top: 1px solid #374151;
-            margin-top: 80px;
+            margin-top: 0;
         }
 
         /* Responsive Design */
@@ -487,6 +622,46 @@
                 </div>
             </div>
         </main>
+
+        <!-- Visualization Dashboard Navigation -->
+        <section class="dashboard-navigation">
+            <div class="nav-container">
+                <h2>📊 Visualization Dashboard</h2>
+                <p>Quick access to all tournament data visualizations and analytics</p>
+                
+                <div class="nav-cards-grid">
+                    <!-- Year 4 Championship Card -->
+                    <div class="nav-card" @click="goToTournament('year_4_championship.html')">
+                        <div class="nav-icon">🏆</div>
+                        <h3>Year 4 Championship</h3>
+                        <p>View detailed match analytics and team performance data</p>
+                        <a href="year_4_championship.html" class="nav-button">
+                            View Analytics
+                        </a>
+                    </div>
+                    
+                    <!-- Year 5 Open Card -->
+                    <div class="nav-card" @click="goToTournament('year_5_open.html')">
+                        <div class="nav-icon">🌍</div>
+                        <h3>Year 5 Open</h3>
+                        <p>Explore all 12 rounds of Year 5 tournament data</p>
+                        <a href="year_5_open.html" class="nav-button">
+                            View Analytics
+                        </a>
+                    </div>
+                    
+                    <!-- Data Management Card -->
+                    <div class="nav-card" @click="openDataManagement()">
+                        <div class="nav-icon">🔧</div>
+                        <h3>Data Management</h3>
+                        <p>Access automation tools and file management utilities</p>
+                        <button class="nav-button" onclick="openDataManagement()">
+                            Manage Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- Footer -->
         <footer class="footer">

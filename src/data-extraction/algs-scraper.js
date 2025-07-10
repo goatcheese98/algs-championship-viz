@@ -416,6 +416,297 @@ class ALGSScraper {
     }
 
     /**
+     * Extract map rotations and legend ban metadata from Replays and Bans tab
+     * @param {string} url - Full URL to the tournament round with #tab_replaysandbans
+     * @returns {Object} Metadata including maps, bans, and round info
+     */
+    async extractMetadata(url) {
+        console.log(`🎮 Extracting metadata from: ${url}`);
+        
+        try {
+            // Ensure we're going to the replays and bans tab
+            const metadataUrl = url.includes('#tab_replaysandbans') ? url : `${url}#tab_replaysandbans`;
+            
+            await this.page.goto(metadataUrl, { waitUntil: 'networkidle2', timeout: 30000 });
+            
+            // Wait for the replays and bans tab content to load
+            await this.page.waitForSelector('.replay-banner_content, #tab_replaysandbans', { timeout: 15000 });
+            
+            // Click on replays and bans tab if not already active
+            const replaysTab = await this.page.$('#tab_replaysandbans, [data-tab="replaysandbans"]');
+            if (replaysTab) {
+                await replaysTab.click();
+                await this.page.waitForTimeout(3000); // Wait for content to load
+            }
+
+            // Extract metadata using the structure described by the user
+            const metadata = await this.page.evaluate(() => {
+                const extractedData = {
+                    roundInfo: {
+                        url: window.location.href,
+                        timestamp: new Date().toISOString(),
+                        roundName: '',
+                        totalGames: 0
+                    },
+                    games: [],
+                    mapRotation: [],
+                    legendBans: []
+                };
+
+                // Find all replay-banner_content containers
+                const replayContainers = document.querySelectorAll('.replay-banner_content');
+                console.log(`Found ${replayContainers.length} replay containers`);
+
+                if (replayContainers.length === 0) {
+                    console.warn('No replay-banner_content containers found');
+                    return extractedData;
+                }
+
+                // Process each replay container (games are in descending order, earliest at bottom)
+                const containersArray = Array.from(replayContainers).reverse(); // Reverse to get chronological order
+                
+                containersArray.forEach((container, index) => {
+                    try {
+                        // Extract game title and map info from replay-banner_title
+                        const titleElement = container.querySelector('.replay-banner_title');
+                        if (!titleElement) {
+                            console.warn(`No title element found in container ${index}`);
+                            return;
+                        }
+
+                        const titleText = titleElement.textContent.trim();
+                        console.log(`Processing title: ${titleText}`);
+
+                        // Parse title format: "Winners R. 1 #5 - Game #1 - Storm Point"
+                        const titleMatch = titleText.match(/(.+?)\s*-\s*Game\s*#(\d+)\s*-\s*(.+)/i);
+                        
+                        let roundName = '';
+                        let gameNumber = 0;
+                        let mapName = '';
+
+                        if (titleMatch) {
+                            roundName = titleMatch[1].trim();
+                            gameNumber = parseInt(titleMatch[2]);
+                            mapName = titleMatch[3].trim();
+                        } else {
+                            // Fallback parsing
+                            const parts = titleText.split('-').map(part => part.trim());
+                            if (parts.length >= 3) {
+                                roundName = parts[0];
+                                const gameMatch = parts[1].match(/Game\s*#(\d+)/i);
+                                gameNumber = gameMatch ? parseInt(gameMatch[1]) : index + 1;
+                                mapName = parts[2];
+                            }
+                        }
+
+                        // Set round info from first game
+                        if (index === 0 && roundName) {
+                            extractedData.roundInfo.roundName = roundName;
+                        }
+
+                        // Extract legend ban information - improved logic
+                        const banDiv = container.querySelector('.replay-banner_ban-div');
+                        let bannedLegend = '';
+                        let legendLogoUrl = '';
+
+                        if (banDiv) {
+                            // Extract text from the legend text element
+                            const banTextElement = banDiv.querySelector('.replay-banner_ban-div_legend-text');
+                            if (banTextElement) {
+                                // Get inner HTML to handle <br> tags properly
+                                const banHTML = banTextElement.innerHTML;
+                                const banText = banHTML.replace(/<br\s*\/?>/gi, ' ').replace(/&nbsp;/g, ' ').trim();
+                                
+                                console.log(`Raw ban text: "${banText}"`);
+                                
+                                // Parse different formats: "Ban: Crypto", "Ban:Crypto", "Crypto", etc.
+                                const banMatch = banText.match(/(?:Ban\s*:\s*)?(.+)/i);
+                                if (banMatch && banMatch[1]) {
+                                    bannedLegend = banMatch[1].trim();
+                                    console.log(`Extracted banned legend: "${bannedLegend}"`);
+                                }
+                            }
+
+                            // Extract image URL from the legend image element
+                            const banImageElement = banDiv.querySelector('.replay-banner_ban-div_legend-image');
+                            if (banImageElement) {
+                                legendLogoUrl = banImageElement.getAttribute('src');
+                                console.log(`Raw image URL: "${legendLogoUrl}"`);
+                                
+                                // Convert relative URLs to absolute
+                                if (legendLogoUrl && legendLogoUrl.startsWith('/')) {
+                                    legendLogoUrl = `https://apexlegendsstatus.com${legendLogoUrl}`;
+                                    console.log(`Full image URL: "${legendLogoUrl}"`);
+                                }
+                            }
+
+                            // Debug: Log what we found
+                            if (!banTextElement && !banImageElement) {
+                                console.warn(`No ban elements found in container ${index}`);
+                                console.log('Available selectors in ban div:', banDiv.innerHTML.substring(0, 200));
+                            }
+                        } else {
+                            console.log(`No replay-banner_ban-div found in container ${index} - likely no legend bans for this game`);
+                            
+                            // Only try very specific fallback selectors to avoid false matches
+                            const fallbackTextElement = container.querySelector('.replay-banner_ban-div_legend-text, .legend-ban-text, .ban-legend-text');
+                            const fallbackImageElement = container.querySelector('.replay-banner_ban-div_legend-image, .legend-ban-image, .ban-legend-image');
+                            
+                            if (fallbackTextElement) {
+                                const fallbackText = fallbackTextElement.innerHTML.replace(/<br\s*\/?>/gi, ' ').replace(/&nbsp;/g, ' ').trim();
+                                // Only extract if it actually contains "Ban:" to avoid false matches
+                                if (fallbackText.toLowerCase().includes('ban:')) {
+                                    const fallbackMatch = fallbackText.match(/Ban\s*:\s*(.+)/i);
+                                    if (fallbackMatch && fallbackMatch[1]) {
+                                        bannedLegend = fallbackMatch[1].trim();
+                                        console.log(`Fallback extracted legend: "${bannedLegend}"`);
+                                    }
+                                }
+                            }
+                            
+                            if (fallbackImageElement && fallbackImageElement.getAttribute('src')?.includes('legend')) {
+                                legendLogoUrl = fallbackImageElement.getAttribute('src');
+                                if (legendLogoUrl && legendLogoUrl.startsWith('/')) {
+                                    legendLogoUrl = `https://apexlegendsstatus.com${legendLogoUrl}`;
+                                }
+                                console.log(`Fallback extracted image: "${legendLogoUrl}"`);
+                            }
+                        }
+
+                        // Create game entry
+                        const gameEntry = {
+                            gameNumber: gameNumber,
+                            mapName: mapName,
+                            bannedLegend: (bannedLegend && bannedLegend.trim() && !bannedLegend.includes('<')) ? bannedLegend : '',
+                            legendLogoUrl: legendLogoUrl || '',
+                            titleText: titleText,
+                            containerIndex: index
+                        };
+
+                        extractedData.games.push(gameEntry);
+
+                        // Add to map rotation (unique maps in order)
+                        if (mapName && !extractedData.mapRotation.find(m => m.map === mapName && m.gameNumber === gameNumber)) {
+                            extractedData.mapRotation.push({
+                                gameNumber: gameNumber,
+                                map: mapName
+                            });
+                        }
+
+                        // Add to legend bans only if we actually found a banned legend
+                        if (bannedLegend && bannedLegend.trim() && !bannedLegend.includes('<')) {
+                            extractedData.legendBans.push({
+                                gameNumber: gameNumber,
+                                legend: bannedLegend,
+                                logoUrl: legendLogoUrl
+                            });
+                        }
+
+                    } catch (error) {
+                        console.error(`Error processing container ${index}:`, error);
+                    }
+                });
+
+                // Sort data by game number
+                extractedData.games.sort((a, b) => a.gameNumber - b.gameNumber);
+                extractedData.mapRotation.sort((a, b) => a.gameNumber - b.gameNumber);
+                extractedData.legendBans.sort((a, b) => a.gameNumber - b.gameNumber);
+
+                // Set total games
+                extractedData.roundInfo.totalGames = extractedData.games.length;
+
+                return extractedData;
+            });
+
+            console.log(`✅ Extracted metadata for ${metadata.roundInfo.totalGames} games`);
+            console.log(`📍 Maps found: ${metadata.mapRotation.map(m => `Game ${m.gameNumber}: ${m.map}`).join(', ')}`);
+            
+            if (metadata.legendBans.length > 0) {
+                console.log(`🚫 Bans found: ${metadata.legendBans.map(b => `Game ${b.gameNumber}: ${b.legend}`).join(', ')}`);
+            } else {
+                console.log(`🚫 No legend bans found in this tournament round`);
+            }
+
+            return metadata;
+
+        } catch (error) {
+            console.error('❌ Error extracting metadata:', error.message);
+            throw error;
+        }
+    }
+
+    /**
+     * Save metadata to JSON file in processed folder
+     */
+    async saveMetadata(metadata, filename) {
+        try {
+            const outputDir = path.join(__dirname, '../../public/year5champions/processed');
+            
+            // Ensure output directory exists
+            await fs.mkdir(outputDir, { recursive: true });
+
+            // Generate filename if not provided
+            if (!filename) {
+                const roundName = metadata.roundInfo.roundName
+                    .replace(/[^a-zA-Z0-9]/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '');
+                filename = `${roundName}-metadata.json`;
+            }
+
+            const outputPath = path.join(outputDir, filename);
+            
+            // Add processing timestamp
+            metadata.processingInfo = {
+                extractedAt: new Date().toISOString(),
+                filename: filename,
+                version: '1.0'
+            };
+
+            await fs.writeFile(outputPath, JSON.stringify(metadata, null, 2));
+            console.log(`💾 Metadata saved to: ${outputPath}`);
+            
+            return outputPath;
+        } catch (error) {
+            console.error('❌ Error saving metadata:', error.message);
+            throw error;
+        }
+    }
+
+    /**
+     * Extract metadata from a single tournament URL
+     */
+    async extractSingleMetadata(url) {
+        try {
+            if (!this.browser) {
+                await this.init();
+            }
+
+            const metadata = await this.extractMetadata(url);
+            const savedPath = await this.saveMetadata(metadata);
+
+            return {
+                success: true,
+                metadata: metadata,
+                savedPath: savedPath,
+                summary: {
+                    roundName: metadata.roundInfo.roundName,
+                    totalGames: metadata.roundInfo.totalGames,
+                    maps: metadata.mapRotation.length,
+                    bans: metadata.legendBans.length
+                }
+            };
+        } catch (error) {
+            console.error('❌ Error in extractSingleMetadata:', error.message);
+            return {
+                success: false,
+                error: error.message,
+                metadata: null
+            };
+        }
+    }
+
+    /**
      * Close browser and cleanup
      */
     async close() {

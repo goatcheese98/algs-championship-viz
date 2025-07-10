@@ -109,27 +109,27 @@ class BatchProcessor {
         while (this.queue.length > 0 && this.isProcessing) {
             // Start up to maxConcurrent processes
             while (processingPromises.length < this.maxConcurrent && this.queue.length > 0) {
-                const item = this.queue.shift();
+            const item = this.queue.shift();
                 this.currentProcessing.set(item.id, item);
-                this.notifyStateChange();
+            this.notifyStateChange();
 
                 const processingPromise = this.processItemConcurrently(item)
                     .then(result => {
-                        this.results.push({
-                            ...item,
-                            result,
-                            timestamp: new Date().toISOString()
-                        });
+                this.results.push({
+                    ...item,
+                    result,
+                    timestamp: new Date().toISOString()
+                });
                         this.currentProcessing.delete(item.id);
                         this.notifyStateChange();
                         return { success: true, item };
                     })
                     .catch(error => {
-                        this.results.push({
-                            ...item,
-                            result: { success: false, error: error.message },
-                            timestamp: new Date().toISOString()
-                        });
+                this.results.push({
+                    ...item,
+                    result: { success: false, error: error.message },
+                    timestamp: new Date().toISOString()
+                });
                         this.currentProcessing.delete(item.id);
                         this.notifyStateChange();
                         return { success: false, error, item };
@@ -154,7 +154,7 @@ class BatchProcessor {
                 }
                 processingPromises.length = 0;
                 processingPromises.push(...stillPending);
-            }
+        }
         }
 
         // Wait for all remaining processes to complete

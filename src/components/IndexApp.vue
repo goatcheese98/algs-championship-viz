@@ -58,33 +58,81 @@
           </a>
         </div>
 
-        <!-- Future Tournament Placeholder -->
-        <div class="tournament-card coming-soon">
-          <div class="tournament-icon">🌟</div>
-          <h3>ALGS Future Tournaments</h3>
-          <div class="tournament-status">Coming Soon</div>
+        <!-- ALGS Year 5 Open -->
+        <div class="tournament-card" @click="goToTournament('year_5_open.html')">
+          <div class="tournament-icon">🌍</div>
+          <h3>ALGS Year 5 Open</h3>
+          <div class="tournament-status">Available Now</div>
           
           <p class="tournament-description">
-            More ALGS tournaments and regional competitions will be added to the dashboard as they become available.
+            Explore the global Year 5 Open tournament featuring 12 intense rounds across Winners Round 1, Winners Round 2, and Elimination Round 1.
           </p>
 
           <div class="tournament-details">
             <div class="detail-item">
-              <div class="detail-label">Status</div>
-              <div class="detail-value">In Development</div>
+              <div class="detail-label">Format</div>
+              <div class="detail-value">Global Open</div>
             </div>
             <div class="detail-item">
-              <div class="detail-label">Expected</div>
-              <div class="detail-value">TBA</div>
+              <div class="detail-label">Season</div>
+              <div class="detail-value">Split 1 - 2025</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Rounds</div>
+              <div class="detail-value">12 Total Matches</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Structure</div>
+              <div class="detail-value">Winners → Elimination</div>
             </div>
           </div>
 
-          <button class="enter-button" disabled>
-            Coming Soon
-          </button>
+          <a href="year_5_open.html" class="enter-button">
+            Enter Tournament
+          </a>
         </div>
       </div>
     </main>
+
+    <!-- Visualization Dashboard Navigation -->
+    <section class="dashboard-navigation">
+      <div class="nav-container">
+        <h2>📊 Visualization Dashboard</h2>
+        <p>Quick access to all tournament data visualizations and analytics</p>
+        
+        <div class="nav-cards-grid">
+          <!-- Year 4 Championship Card -->
+          <div class="nav-card" @click="goToTournament('year_4_championship.html')">
+            <div class="nav-icon">🏆</div>
+            <h3>Year 4 Championship</h3>
+            <p>View detailed match analytics and team performance data</p>
+            <a href="year_4_championship.html" class="nav-button">
+              View Analytics
+            </a>
+          </div>
+          
+          <!-- Year 5 Open Card -->
+          <div class="nav-card" @click="goToTournament('year_5_open.html')">
+            <div class="nav-icon">🌍</div>
+            <h3>Year 5 Open</h3>
+            <p>Explore all 12 rounds of Year 5 tournament data</p>
+            <a href="year_5_open.html" class="nav-button">
+              View Analytics
+            </a>
+          </div>
+          
+          <!-- Data Management Card -->
+          <div class="nav-card" @click="openDataManagement()">
+            <div class="nav-icon">🔧</div>
+            <h3>Data Management</h3>
+            <p>Access automation tools and file management utilities</p>
+            <button class="nav-button" @click="openDataManagement">
+              Manage Data
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- Footer -->
     <footer class="footer">
@@ -140,11 +188,56 @@ export default {
           delay: 0.3,
           ease: 'back.out(1.7)'
         })
+        
+        // Animate dashboard navigation cards
+        gsap.fromTo('.nav-card', {
+          y: 30,
+          opacity: 0
+        }, {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          delay: 0.8,
+          ease: 'power2.out'
+        })
       }
     },
     
     goToTournament(url) {
       window.location.href = url
+    },
+    
+    openDataManagement() {
+      // Check if we're running locally and the automation server might be available
+      const automationServerUrl = 'http://localhost:3000'
+      
+      // Try to open the automation server GUI
+      try {
+        window.open(automationServerUrl, '_blank')
+      } catch (error) {
+        // If that fails, show instructions
+        const message = `
+🔧 Data Management Tools
+
+To access the data management interface:
+
+1. Navigate to: src/data-extraction/
+2. Run: npm install (if not already done)
+3. Run: node automation-server.js
+4. Open: http://localhost:3000
+
+This will open the automation server GUI where you can:
+• Process tournament URLs
+• Manage concurrent processing
+• Rename files with day prefixes
+• Monitor processing results
+
+The automation server provides full control over data extraction and file management operations.
+        `
+        
+        alert(message)
+      }
     }
   }
 }
