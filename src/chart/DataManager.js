@@ -134,6 +134,90 @@ const MAP_SEQUENCES = {
             7: 'WORLD\'S EDGE',
             8: 'E-DISTRICT'
         }
+    },
+
+    // ========================================
+    // YEAR 5 OPEN TOURNAMENT MAP SEQUENCES
+    // ========================================
+    // All Year 5 rounds use AvsB rotation pattern (6 games)
+    // E-District (2) → Storm Point (2) → World's Edge (2)
+    
+    'Day1-WinnersRound1-1': {
+        name: 'Day 1 - Winners Round 1 #1',
+        gameCount: 6,
+        maps: {
+            1: 'E-DISTRICT',
+            2: 'E-DISTRICT',
+            3: 'STORM POINT',
+            4: 'STORM POINT',
+            5: 'WORLD\'S EDGE',
+            6: 'WORLD\'S EDGE'
+        }
+    },
+
+    'Day1-WinnersRound1-2': {
+        name: 'Day 1 - Winners Round 1 #2',
+        gameCount: 6,
+        maps: {
+            1: 'E-DISTRICT',
+            2: 'E-DISTRICT',
+            3: 'STORM POINT',
+            4: 'STORM POINT',
+            5: 'WORLD\'S EDGE',
+            6: 'WORLD\'S EDGE'
+        }
+    },
+
+    'Day1-WinnersRound1-3': {
+        name: 'Day 1 - Winners Round 1 #3',
+        gameCount: 6,
+        maps: {
+            1: 'E-DISTRICT',
+            2: 'E-DISTRICT',
+            3: 'STORM POINT',
+            4: 'STORM POINT',
+            5: 'WORLD\'S EDGE',
+            6: 'WORLD\'S EDGE'
+        }
+    },
+
+    'Day1-WinnersRound1-4': {
+        name: 'Day 1 - Winners Round 1 #4',
+        gameCount: 6,
+        maps: {
+            1: 'E-DISTRICT',
+            2: 'E-DISTRICT',
+            3: 'STORM POINT',
+            4: 'STORM POINT',
+            5: 'WORLD\'S EDGE',
+            6: 'WORLD\'S EDGE'
+        }
+    },
+
+    'Day1-WinnersRound1-5': {
+        name: 'Day 1 - Winners Round 1 #5',
+        gameCount: 6,
+        maps: {
+            1: 'E-DISTRICT',
+            2: 'E-DISTRICT',
+            3: 'STORM POINT',
+            4: 'STORM POINT',
+            5: 'WORLD\'S EDGE',
+            6: 'WORLD\'S EDGE'
+        }
+    },
+
+    'Day1-WinnersRound1-6': {
+        name: 'Day 1 - Winners Round 1 #6',
+        gameCount: 6,
+        maps: {
+            1: 'E-DISTRICT',
+            2: 'E-DISTRICT',
+            3: 'STORM POINT',
+            4: 'STORM POINT',
+            5: 'WORLD\'S EDGE',
+            6: 'WORLD\'S EDGE'
+        }
     }
 }
 

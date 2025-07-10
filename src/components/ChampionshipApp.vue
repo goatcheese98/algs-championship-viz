@@ -17,30 +17,31 @@
         
         <!-- Main Title -->
         <div ref="championshipTitle" class="championship-title">
-          <h1 ref="titleMain" class="title-main">ALGS Year 4 Championship</h1>
+          <h1 ref="titleMain" class="title-main">{{ isYear5Tournament ? 'ALGS Year 5 Open' : 'ALGS Year 4 Championship' }}</h1>
         </div>
         
         <!-- Tournament Details (Horizontal) -->
         <div ref="tournamentInfo" class="tournament-info-horizontal">
           <div ref="infoItem1" class="info-item">
-            <span ref="infoIcon1" class="info-icon">📍</span>
-            <span ref="infoText1" class="info-text">Sapporo, Japan</span>
+            <span ref="infoIcon1" class="info-icon">{{ isYear5Tournament ? '🌍' : '📍' }}</span>
+            <span ref="infoText1" class="info-text">{{ isYear5Tournament ? 'Global Tournament' : 'Sapporo, Japan' }}</span>
           </div>
           <div ref="infoSeparator1" class="info-separator">•</div>
           <div ref="infoItem2" class="info-item">
             <span ref="infoIcon2" class="info-icon">📅</span>
-            <span ref="infoText2" class="info-text">Jan 29 - Feb 2, 2025</span>
+            <span ref="infoText2" class="info-text">{{ isYear5Tournament ? 'Split 1 - 2025' : 'Jan 29 - Feb 2, 2025' }}</span>
           </div>
           <div ref="infoSeparator2" class="info-separator">•</div>
           <div ref="infoItem3" class="info-item">
             <span ref="infoIcon3" class="info-icon">⚔️</span>
-            <span ref="infoText3" class="info-text">40 Teams</span>
+            <span ref="infoText3" class="info-text">{{ isYear5Tournament ? '6 Tournament Rounds' : '40 Teams' }}</span>
           </div>
         </div>
         
         <!-- Navigation Links -->
         <div class="nav-links">
           <a href="index.html" class="nav-link">🏠 ALGS Dashboard</a>
+          <a v-if="isYear5Tournament" href="year_4_championship.html" class="nav-link">🏆 Year 4 Champions</a>
         </div>
       </div>
     </div>
@@ -316,10 +317,83 @@ export default {
   
   data() {
     console.log('📋 ChampionshipApp data() called - Vue is initializing');
+    
+    // Detect tournament type from URL
+    const currentPath = window.location.pathname;
+    const isYear5 = currentPath.includes('year_5_open') || currentPath.includes('year5');
+    
+    console.log('🎯 Tournament Detection:', {
+      currentPath,
+      isYear5: isYear5,
+      tournamentType: isYear5 ? 'Year 5 Open' : 'Year 4 Championship'
+    });
+    
     return {
+      // Tournament detection
+      isYear5Tournament: isYear5,
+      
       // Tournament structure
       selectedDay: 'day1',
-      tournamentDays: [
+      tournamentDays: isYear5 ? [
+        // ========================================
+        // YEAR 5 OPEN TOURNAMENT STRUCTURE
+        // ========================================
+        {
+          id: 'day1',
+          name: 'Day 1 - Winners Round 1',
+          description: 'Year 5 Open Winners Round 1 featuring 6 tournament rounds. All rounds use the same map rotation: E-District (2) → Storm Point (2) → World\'s Edge (2).',
+          matchups: [
+            {
+              id: 'Day1-WinnersRound1-1',
+              title: 'Winners Round 1 #1',
+              description: 'First round of Winners Round 1. 6 games with E-District opening sequence.',
+              teams: 20,
+              games: 6,
+              maps: 'E-District → Storm Point → World\'s Edge'
+            },
+            {
+              id: 'Day1-WinnersRound1-2',
+              title: 'Winners Round 1 #2',
+              description: 'Second round of Winners Round 1. Consistent map rotation pattern.',
+              teams: 20,
+              games: 6,
+              maps: 'E-District → Storm Point → World\'s Edge'
+            },
+            {
+              id: 'Day1-WinnersRound1-3',
+              title: 'Winners Round 1 #3',
+              description: 'Third round of Winners Round 1. Standard 6-game format.',
+              teams: 20,
+              games: 6,
+              maps: 'E-District → Storm Point → World\'s Edge'
+            },
+            {
+              id: 'Day1-WinnersRound1-4',
+              title: 'Winners Round 1 #4',
+              description: 'Fourth round of Winners Round 1. Maintaining competitive balance.',
+              teams: 20,
+              games: 6,
+              maps: 'E-District → Storm Point → World\'s Edge'
+            },
+            {
+              id: 'Day1-WinnersRound1-5',
+              title: 'Winners Round 1 #5',
+              description: 'Fifth round of Winners Round 1. Continued tournament progression.',
+              teams: 20,
+              games: 6,
+              maps: 'E-District → Storm Point → World\'s Edge'
+            },
+            {
+              id: 'Day1-WinnersRound1-6',
+              title: 'Winners Round 1 #6',
+              description: 'Final round of Winners Round 1. Concluding the first day of competition.',
+              teams: 20,
+              games: 6,
+              maps: 'E-District → Storm Point → World\'s Edge'
+            }
+          ]
+        }
+      ] : [
         {
           id: 'day1',
           name: 'Day 1 - Group Stages',
@@ -431,7 +505,6 @@ export default {
       
       // Game state for enhanced panel
       currentGame: 0,  // Start at 0 to show initial state
-      maxGames: 6,
       currentMap: '',
       manualSliderControl: false,
       
@@ -473,6 +546,29 @@ export default {
     displayedProgress() {
       // Ensure progress is always within valid range (0 to maxGames)
       return Math.min(Math.max(0, this.currentGame), this.maxGames);
+    },
+    
+    /**
+     * Dynamic maxGames based on selected matchup
+     * Year 4: 6 or 8 games depending on tournament round
+     * Year 5: 6 games for all rounds
+     */
+    maxGames() {
+      if (!this.selectedMatchup) {
+        return this.isYear5Tournament ? 6 : 6; // Default to 6 for both when no matchup selected
+      }
+      
+      // Find the selected matchup and return its game count
+      for (const day of this.tournamentDays) {
+        const matchup = day.matchups.find(m => m.id === this.selectedMatchup);
+        if (matchup) {
+          console.log(`🎮 Matchup ${this.selectedMatchup} has ${matchup.games} games`);
+          return matchup.games;
+        }
+      }
+      
+      // Fallback based on tournament type
+      return this.isYear5Tournament ? 6 : 8;
     }
   },
   
@@ -887,9 +983,36 @@ export default {
       this.selectedMatchup = '';
       this.chartEngine = null;
     },
+
+    /**
+     * Build CSV path based on tournament type and matchup ID
+     * Year 4: year4champions/{matchupId}_points.csv
+     * Year 5: year5champions/processed/{matchupId}-simple.csv
+     */
+    buildCsvPath(matchupId) {
+      if (this.isYear5Tournament) {
+        // Year 5 Open tournament paths
+        return `year5champions/processed/${matchupId}-simple.csv`;
+      } else {
+        // Year 4 Championship paths (original format)
+        return `year4champions/${matchupId}_points.csv`;
+      }
+    },
+
+    /**
+     * Get tournament-specific file format information
+     */
+    getTournamentInfo() {
+      return {
+        type: this.isYear5Tournament ? 'Year 5 Open' : 'Year 4 Championship',
+        dataPath: this.isYear5Tournament ? 'year5champions/processed/' : 'year4champions/',
+        fileFormat: this.isYear5Tournament ? '{matchupId}-simple.csv' : '{matchupId}_points.csv'
+      };
+    },
     
     async selectMatchup(matchupId) {
       console.log('🎯 Selected matchup:', matchupId);
+      console.log('🏆 Tournament Info:', this.getTournamentInfo());
       this.selectedMatchup = matchupId;
       await this.loadMatchup();
     },
@@ -939,12 +1062,12 @@ export default {
           teamConfig: this.teamConfig  // Pass Vue composable to chart engine
         });
         
-        // Initialize chart engine with matchup data
-        const csvPath = `year4champions/${this.selectedMatchup}_points.csv`;
+        // Initialize chart engine with tournament-specific matchup data
+        const csvPath = this.buildCsvPath(this.selectedMatchup);
+        console.log(`📂 Loading CSV for ${this.isYear5Tournament ? 'Year 5' : 'Year 4'}:`, csvPath);
         await this.chartEngine.initialize(csvPath);
         
-        // Update game state
-        this.maxGames = this.chartEngine.maxGames || 6;
+        // Update game state  
         this.currentGame = this.chartEngine.currentGameIndex; // Should be 0 for initial state
         this.updateCurrentMap();
         
@@ -1204,9 +1327,8 @@ export default {
     },
     
     updateGameState() {
-      if (this.chartEngine) {
-        this.maxGames = this.chartEngine.maxGames || 6;
-      }
+      // maxGames is now handled by computed property
+      // No manual assignment needed
     },
     
     async toggleGameFilter(gameNum) {
@@ -1402,7 +1524,7 @@ export default {
       }
       
       // Only initialize draggable on desktop
-      this.draggableManager = new GSAPDraggableManager(panel, {
+      this.draggableManager = GSAPDraggableManager.initializeDraggable(panel, {
         onDragStart: () => {
           console.log('🎯 Drag started')
         },
@@ -1420,7 +1542,9 @@ export default {
       this.$nextTick(() => {
         if (this.draggableManager && this.isMobileDevice()) {
           // Destroy draggable on mobile
-          this.draggableManager.destroy()
+          if (this.draggableManager.cleanup) {
+            this.draggableManager.cleanup()
+          }
           this.draggableManager = null
           console.log('📱 Destroyed draggable system for mobile')
         } else if (!this.draggableManager && !this.isMobileDevice()) {
@@ -1448,8 +1572,10 @@ export default {
     }
     
     // Cleanup GSAP draggable
-    if (this.draggableInstance && GSAPDraggableManager) {
-      GSAPDraggableManager.destroyAll();
+    if (this.draggableManager && GSAPDraggableManager) {
+      if (this.draggableManager.cleanup) {
+        this.draggableManager.cleanup();
+      }
     }
 
     // Remove window resize listener

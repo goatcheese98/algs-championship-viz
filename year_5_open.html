@@ -120,9 +120,74 @@
             <!-- Chart Section -->
             <div class="chart-section">
                 <div v-if="!selectedMatchup" class="no-selection">
-                    <div class="no-selection-icon">📊</div>
-                    <h3>Select a matchup to view the interactive chart</h3>
-                    <p>Choose from the tournament matchups above to see detailed race charts with game-by-game progression.</p>
+                    <!-- Optimized Vue.js + GSAP Chart Loading Animation -->
+                    <div ref="chartLoadingContainer" class="chart-loading-container">
+                        
+                        <!-- Central Glow Effect -->
+                        <div ref="centralGlow" class="central-glow"></div>
+                        
+                        <!-- Animated Chart Bars -->
+                        <div class="chart-bars-container">
+                            <div ref="chartBar1" class="chart-bar chart-bar-1"></div>
+                            <div ref="chartBar2" class="chart-bar chart-bar-2"></div>
+                            <div ref="chartBar3" class="chart-bar chart-bar-3"></div>
+                            <div ref="chartBar4" class="chart-bar chart-bar-4"></div>
+                            <div ref="chartBar5" class="chart-bar chart-bar-5"></div>
+                            
+                            <!-- Connecting Line -->
+                            <div ref="connectingLine" class="connecting-line"></div>
+                        </div>
+                        
+                        <!-- Rotating Outer Ring -->
+                        <div ref="outerRing" class="outer-ring">
+                            <div class="ring-circle"></div>
+                            <div class="ring-dot ring-dot-1"></div>
+                            <div class="ring-dot ring-dot-2"></div>
+                        </div>
+                        
+                        <!-- Inner Rotating Ring -->
+                        <div ref="innerRing" class="inner-ring">
+                            <div class="inner-ring-circle"></div>
+                            <div class="inner-ring-dot"></div>
+                        </div>
+                        
+                        <!-- Roaming Circles -->
+                        <div ref="roamingCircle1" class="roaming-circle roaming-circle-1"></div>
+                        <div ref="roamingCircle2" class="roaming-circle roaming-circle-2"></div>
+                        <div ref="roamingCircle3" class="roaming-circle roaming-circle-3"></div>
+                        <div ref="roamingCircle4" class="roaming-circle roaming-circle-4"></div>
+                        
+                        <!-- Scanning Effect -->
+                        <div ref="scanningLine" class="scanning-line"></div>
+                        
+                        <!-- Main Content -->
+                        <div class="loading-content">
+                            <h3 ref="mainHeading" class="loading-heading">
+                                Select a matchup to view the interactive chart
+                            </h3>
+                            <div class="loading-text-container">
+                                <p ref="subText1" class="loading-text">
+                                    Choose from the tournament matchups above to see detailed race charts with game-by-game progression.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Accent Line -->
+                        <div ref="accentLine" class="accent-line"></div>
+                        
+                        <!-- Corner Accents -->
+                        <div class="corner-accent corner-accent-tl"></div>
+                        <div class="corner-accent corner-accent-tr"></div>
+                        <div class="corner-accent corner-accent-bl"></div>
+                        <div class="corner-accent corner-accent-br"></div>
+                        
+                        <!-- Floating Data Points -->
+                        <div ref="floatingDot1" class="floating-dot floating-dot-1"></div>
+                        <div ref="floatingDot2" class="floating-dot floating-dot-2"></div>
+                        <div ref="floatingDot3" class="floating-dot floating-dot-3"></div>
+                        <div ref="floatingDot4" class="floating-dot floating-dot-4"></div>
+                        
+                    </div>
                 </div>
 
                 <template v-else>
@@ -152,8 +217,8 @@
                                 
                                 <div class="panel-header">
                                     <div class="panel-title">
-                                        <span class="drag-handle">⋮⋮ Drag Anywhere ⋮⋮</span>
-                                        Enhanced Controls
+                                        <span class="drag-handle">⋮⋮</span>
+                                        Controls
                                     </div>
                                     <button class="expand-btn" @click="togglePanel" @mousedown.stop>
                                         {{ panelExpanded ? '−' : '+' }}
@@ -164,11 +229,11 @@
                                 <div class="compact-status">
                                     <!-- Game Progress (always visible) -->
                                     <div class="game-progress-section">
-                                        <label class="section-label">Game Progress: {{ currentGame }} / {{ maxGames }}</label>
+                                        <label class="section-label">Game Progress: {{ displayedProgress }} / {{ maxGames }}</label>
                                         <div class="progress-container">
-                                            <span class="progress-value">{{ currentGame }}</span>
+                                            <span class="progress-value">0</span>
                                             <input type="range" 
-                                                   :min="1" 
+                                                   :min="0" 
                                                    :max="maxGames" 
                                                    v-model.number="currentGame"
                                                    @input="updateGameFromSlider"
@@ -182,14 +247,28 @@
                                         </div>
                                     </div>
 
-                                    <!-- Quick Controls (Play/Reset) -->
-                                    <div class="quick-controls">
-                                        <button @click="togglePlayback" class="control-btn play-btn">
-                                            {{ isPlaying ? 'Pause' : 'Play' }}
-                                        </button>
-                                        <button @click="restart" class="control-btn">
-                                            Reset
-                                        </button>
+                                    <!-- Game Filter Controls (merged with progress) -->
+                                    <div class="filter-controls">
+                                        <div class="filter-row">
+                                            <div class="game-filter-buttons">
+                                                <button v-for="game in maxGames" 
+                                                        :key="game"
+                                                        @click="toggleGameFilter(game)"
+                                                        class="game-filter-btn"
+                                                        :class="{ 
+                                                            active: selectedGames.includes(game),
+                                                            current: game === currentGame 
+                                                        }"
+                                                        :style="getGameButtonStyle(game)"
+                                                        :title="getGameTooltip(game)">
+                                                    {{ game }}
+                                                </button>
+                                            </div>
+                                            <button @click="resetGameFilter" class="reset-filter-btn">
+                                                ✕
+                                            </button>
+                                        </div>
+                                        <div class="filter-action-label">Apply Filter</div>
                                     </div>
 
                                     <!-- Current Map Info -->
@@ -199,9 +278,19 @@
                                             <span class="map-name">{{ currentMap || 'Loading...' }}</span>
                                         </div>
                                     </div>
+
+                                    <!-- Quick Controls (Play/Reset) - Moved below map badge -->
+                                    <div class="quick-controls">
+                                        <button @click="togglePlayback" class="control-btn play-btn">
+                                            {{ isPlaying ? 'Pause' : 'Play' }}
+                                        </button>
+                                        <button @click="restart" class="control-btn">
+                                            Reset
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <!-- Expanded Controls -->
+                                <!-- Expanded Controls (Export Only) -->
                                 <transition name="slide-down">
                                     <div v-if="panelExpanded" class="expanded-controls" @mousedown.stop>
                                         <!-- Export Controls -->
@@ -221,308 +310,7 @@
         </div>
     </div>
 
-    <!-- Vue 3 from CDN -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    
-    <!-- Load modules -->
-    <script type="module">
-        import { ChartEngine } from './src/chart/ChartEngine.js';
-        import { useTeamConfig } from './src/composables/useTeamConfig.js';
-        import { GSAPDraggableManager } from './src/utils/GSAPDraggableManager.js';
-
-        const { createApp } = Vue;
-
-        const Year5OpenApp = {
-            setup() {
-                const teamConfig = useTeamConfig();
-                return { teamConfig };
-            },
-            
-            data() {
-                return {
-                    // Tournament structure for Year 5 Open
-                    selectedDay: 'day1',
-                    tournamentDays: [
-                        {
-                            id: 'day1',
-                            name: 'Day 1 - All Rounds',
-                            description: 'Complete Day 1 tournament featuring Winners Round 1, Winners Round 2, and Elimination Round 1 matches.',
-                            matchups: [
-                                // Winners Round 1 - 8 matches
-                                {
-                                    id: 'Day1-WinnersRound1-1',
-                                    title: 'Winners Round 1-1',
-                                    description: 'First Winners Round 1 match featuring top-tier teams competing for bracket positioning.',
-                                    teams: 20,
-                                    games: 6,
-                                    maps: 'Multiple Maps'
-                                },
-                                {
-                                    id: 'Day1-WinnersRound1-2',
-                                    title: 'Winners Round 1-2',
-                                    description: 'Second Winners Round 1 match with fierce competition for advancement.',
-                                    teams: 20,
-                                    games: 6,
-                                    maps: 'Multiple Maps'
-                                },
-                                {
-                                    id: 'Day1-WinnersRound1-3',
-                                    title: 'Winners Round 1-3',
-                                    description: 'Third Winners Round 1 match showcasing strategic gameplay.',
-                                    teams: 20,
-                                    games: 6,
-                                    maps: 'Multiple Maps'
-                                },
-                                {
-                                    id: 'Day1-WinnersRound1-4',
-                                    title: 'Winners Round 1-4',
-                                    description: 'Fourth Winners Round 1 match with high-stakes competition.',
-                                    teams: 20,
-                                    games: 6,
-                                    maps: 'Multiple Maps'
-                                },
-                                {
-                                    id: 'Day1-WinnersRound1-5',
-                                    title: 'Winners Round 1-5',
-                                    description: 'Fifth Winners Round 1 match featuring tactical team play.',
-                                    teams: 20,
-                                    games: 6,
-                                    maps: 'Multiple Maps'
-                                },
-                                {
-                                    id: 'Day1-WinnersRound1-6',
-                                    title: 'Winners Round 1-6',
-                                    description: 'Sixth Winners Round 1 match with intense bracket implications.',
-                                    teams: 20,
-                                    games: 6,
-                                    maps: 'Multiple Maps'
-                                },
-                                {
-                                    id: 'Day1-WinnersRound1-7',
-                                    title: 'Winners Round 1-7',
-                                    description: 'Seventh Winners Round 1 match showcasing elite gameplay.',
-                                    teams: 20,
-                                    games: 6,
-                                    maps: 'Multiple Maps'
-                                },
-                                {
-                                    id: 'Day1-WinnersRound1-8',
-                                    title: 'Winners Round 1-8',
-                                    description: 'Final Winners Round 1 match completing the first bracket stage.',
-                                    teams: 20,
-                                    games: 6,
-                                    maps: 'Multiple Maps'
-                                },
-                                // Winners Round 2 - 2 matches
-                                {
-                                    id: 'Day1-WinnersRound2-3',
-                                    title: 'Winners Round 2-3',
-                                    description: 'First Winners Round 2 match featuring the best teams from Round 1.',
-                                    teams: 20,
-                                    games: 6,
-                                    maps: 'Multiple Maps'
-                                },
-                                {
-                                    id: 'Day1-WinnersRound2-4',
-                                    title: 'Winners Round 2-4',
-                                    description: 'Second Winners Round 2 match with championship implications.',
-                                    teams: 20,
-                                    games: 6,
-                                    maps: 'Multiple Maps'
-                                },
-                                // Elimination Round 1 - 2 matches
-                                {
-                                    id: 'Day1-EliminationRound1-3',
-                                    title: 'Elimination Round 1-3',
-                                    description: 'First Elimination Round match where teams fight for tournament survival.',
-                                    teams: 20,
-                                    games: 6,
-                                    maps: 'Multiple Maps'
-                                },
-                                {
-                                    id: 'Day1-EliminationRound1-4',
-                                    title: 'Elimination Round 1-4',
-                                    description: 'Second Elimination Round match with high-stakes elimination pressure.',
-                                    teams: 20,
-                                    games: 6,
-                                    maps: 'Multiple Maps'
-                                }
-                            ]
-                        }
-                    ],
-                    
-                    // UI state
-                    selectedMatchup: '',
-                    isLoading: false,
-                    chartEngine: null,
-                    loadedMatchups: new Set(),
-                    loadingMatchups: new Set(),
-                    
-                    // Chart state
-                    currentGame: 0,
-                    maxGames: 6,
-                    currentMap: '',
-                    isPlaying: false,
-                    panelExpanded: false,
-                    
-                    // GSAP
-                    draggableManager: null
-                };
-            },
-            
-            computed: {
-                currentDayInfo() {
-                    return this.tournamentDays.find(day => day.id === this.selectedDay) || this.tournamentDays[0];
-                },
-                
-                currentDayMatchups() {
-                    return this.currentDayInfo.matchups || [];
-                }
-            },
-            
-            methods: {
-                selectDay(dayId) {
-                    console.log('📅 Selected day:', dayId);
-                    this.selectedDay = dayId;
-                    this.selectedMatchup = '';
-                    this.chartEngine = null;
-                },
-                
-                async selectMatchup(matchupId) {
-                    console.log('🎯 Selected matchup:', matchupId);
-                    this.selectedMatchup = matchupId;
-                    await this.loadMatchup();
-                },
-                
-                getStatusClass(matchupId) {
-                    if (this.loadedMatchups.has(matchupId)) return 'loaded';
-                    if (this.loadingMatchups.has(matchupId)) return 'loading';
-                    return 'available';
-                },
-                
-                getStatusText(matchupId) {
-                    if (this.loadedMatchups.has(matchupId)) return 'Loaded';
-                    if (this.loadingMatchups.has(matchupId)) return 'Loading...';
-                    return 'Available';
-                },
-                
-                getMatchupTitle(matchupId) {
-                    const matchup = this.tournamentDays.flatMap(day => day.matchups).find(m => m.id === matchupId);
-                    return matchup ? matchup.title : 'Unknown Matchup';
-                },
-                
-                async loadMatchup() {
-                    if (!this.selectedMatchup) return;
-                    
-                    this.isLoading = true;
-                    this.loadingMatchups.add(this.selectedMatchup);
-                    
-                    try {
-                        console.log('📊 Loading matchup:', this.selectedMatchup);
-                        
-                        // Cleanup existing chart engine
-                        if (this.chartEngine) {
-                            this.chartEngine.cleanup();
-                        }
-                        
-                        // Wait for DOM to be ready
-                        await this.$nextTick();
-                        
-                        // Initialize chart engine
-                        this.chartEngine = new ChartEngine('vue-chart-container', {
-                            debugMode: false,
-                            transitionDuration: 2500,
-                            enableAnimation: true,
-                            teamConfig: this.teamConfig
-                        });
-                        
-                        // Load the appropriate CSV file for Year 5 Open
-                        const csvPath = `year5champions/processed/${this.selectedMatchup}-simple.csv`;
-                        await this.chartEngine.initialize(csvPath);
-                        
-                        // Update game state
-                        this.maxGames = this.chartEngine.maxGames || 6;
-                        this.currentGame = this.chartEngine.currentGameIndex;
-                        this.updateCurrentMap();
-                        
-                        // Mark as loaded
-                        this.loadedMatchups.add(this.selectedMatchup);
-                        this.loadingMatchups.delete(this.selectedMatchup);
-                        
-                        console.log('✅ Matchup loaded successfully');
-                        
-                    } catch (error) {
-                        console.error('❌ Error loading matchup:', error);
-                        this.loadingMatchups.delete(this.selectedMatchup);
-                    } finally {
-                        this.isLoading = false;
-                    }
-                },
-                
-                updateCurrentMap() {
-                    if (this.chartEngine) {
-                        this.currentMap = this.chartEngine.getCurrentMap() || 'Unknown Map';
-                    }
-                },
-                
-                updateGameFromSlider() {
-                    if (this.chartEngine) {
-                        this.chartEngine.updateToGame(this.currentGame);
-                        this.updateCurrentMap();
-                    }
-                },
-                
-                togglePlayback() {
-                    if (this.chartEngine) {
-                        if (this.isPlaying) {
-                            this.chartEngine.pauseAnimation();
-                        } else {
-                            this.chartEngine.startAnimation();
-                        }
-                        this.isPlaying = !this.isPlaying;
-                    }
-                },
-                
-                restart() {
-                    if (this.chartEngine) {
-                        this.chartEngine.restart();
-                        this.currentGame = 0;
-                        this.isPlaying = false;
-                        this.updateCurrentMap();
-                    }
-                },
-                
-                togglePanel() {
-                    this.panelExpanded = !this.panelExpanded;
-                },
-                
-                exportData() {
-                    if (this.chartEngine) {
-                        this.chartEngine.exportData();
-                    }
-                },
-                
-                getCurrentMapStyle() {
-                    return {
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        color: 'white'
-                    };
-                },
-                
-                startSliderControl() {
-                    this.isPlaying = false;
-                    if (this.chartEngine) {
-                        this.chartEngine.pauseAnimation();
-                    }
-                },
-                
-                endSliderControl() {
-                    // Slider control ended
-                }
-            }
-        };
-
-        createApp(Year5OpenApp).mount('#app');
-    </script>
+    <!-- Modern modular system entry point -->
+    <script type="module" src="src/main.js"></script>
 </body>
 </html> 

@@ -35,8 +35,12 @@ const loadApp = async () => {
     
     console.log('✅ DOM ready, mounting Vue app...')
     
-    if (currentPath.includes('year_4_championship.html') || currentPath.includes('championship')) {
-        console.log('📊 Lazy loading Championship App...')
+    if (currentPath.includes('year_4_championship.html') || 
+        currentPath.includes('year_5_open.html') || 
+        currentPath.includes('championship') ||
+        currentPath.includes('year5') ||
+        currentPath.includes('year_5')) {
+        console.log('📊 Lazy loading Championship App for tournament...')
         const { default: ChampionshipApp } = await import('./components/ChampionshipApp.vue')
         createApp(ChampionshipApp).mount('#app')
     } else {
