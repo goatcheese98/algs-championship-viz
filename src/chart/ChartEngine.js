@@ -84,30 +84,33 @@ export class ChartEngine {
             // Load data
             await this.dataManager.loadData(csvPath)
             
+            // Set initial game index to 0 for proper initial state scaling
+            this.currentGameIndex = 0
+            console.log('🔍 ChartEngine currentGameIndex set to:', this.currentGameIndex)
+            
             // Setup dimensions and scales
             this.calculateDimensions()
             this.setupScales()
             
-            // Set initial fallback domains to prevent NaN values
-            this.scales.x.domain([0, 100])
-            this.scales.y.domain(['Team1', 'Team2']) // Temporary until real data loads
+            // DEBUG: Check initial scale domain after setupScales
+            console.log('🔍 ChartEngine after setupScales - xScale domain:', this.scales.x.domain())
             
-            // Initialize renderer
+            // Setup renderer
             this.renderer = new ChartRenderer(this.container, this.config.margin, this.scales, this.teamConfig)
             
             // Setup event listeners
             this.setupEventListeners()
             
-            // Initial render - show initial state
+            // Render initial state
             await this.renderInitialState()
             
             this.initialized = true
             
-            const initTime = performance.now() - startTime
-            console.log(`✅ ChartEngine initialized in ${initTime.toFixed(2)}ms`)
+            const endTime = performance.now()
+            console.log(`✅ ChartEngine initialized in ${(endTime - startTime).toFixed(2)}ms`)
             
         } catch (error) {
-            console.error('❌ ChartEngine initialization failed:', error)
+            console.error('❌ ChartEngine initialization error:', error)
             throw error
         }
     }
@@ -131,27 +134,30 @@ export class ChartEngine {
             // Update renderer dimensions
             this.renderer.updateDimensions(this.dimensions.width, this.dimensions.height)
             
-            // Set up scales for initial state (show team names with zero scores)
-            const maxPossibleScore = this.dataManager.getMaxPossibleScore() || 100
-            this.scales.x.domain([0, maxPossibleScore])
+            // Set up scales for initial state using dynamic scaling
+            const initialMax = this.dataManager.getMaxScoreAtGame(0)  // Game 0 = initial state
+            console.log('📊 Initial state scaling - getMaxScoreAtGame(0):', initialMax)
+            
+            // Update scales with dynamic domain
+            this.scales.x.domain([0, initialMax])
             this.scales.y.domain(allData.map(d => d.team))
             
-            // Update scales to renderer
+            // Update scales to renderer (critical for proper axis rendering)
             this.renderer.xScale = this.scales.x
             this.renderer.yScale = this.scales.y
             
-            // Render initial team layout (just names and axes, no bars)
-            this.renderer.renderInitialTeamLayout(allData, {
-                transitionDuration: this.config.transitionDuration
-            })
+            console.log('📊 Initial state final x-axis domain:', this.scales.x.domain())
             
-            console.log('✅ Initial state rendered')
+            // CRITICAL: Call updateAxes to properly render the x-axis with correct domain
+            this.renderer.updateAxes(allData, 0)  // No transition for initial state
+            
+            // Render initial team layout
+            await this.renderer.renderInitialTeamLayout(allData)
+            
+            console.log('✅ Initial state rendered with dynamic scaling')
             
         } catch (error) {
-            console.error('❌ Initial state render failed:', error)
-            // Fallback to regular render
-            this.currentGameIndex = 1
-            await this.render()
+            console.error('❌ Error rendering initial state:', error)
         }
     }
 
@@ -179,10 +185,18 @@ export class ChartEngine {
             // Update renderer dimensions first (sets scale ranges)
             this.renderer.updateDimensions(this.dimensions.width, this.dimensions.height)
             
-            // Then update scales domain (after ranges are set)
+            // Update scales with dynamic scaling based on current game progress
             this.updateScales(processedData)
             
-            // Render chart elements
+            // DEBUG: Check scale domain after updateScales
+            console.log('🔍 ChartEngine after updateScales - xScale domain:', this.scales.x.domain())
+            
+            // CRITICAL: Update renderer scale references so it uses the dynamic scaling
+            this.renderer.xScale = this.scales.x
+            this.renderer.yScale = this.scales.y
+            console.log('🔍 ChartEngine updated renderer scale references')
+            
+            // Render the chart
             this.renderer.renderStackedBars(processedData, {
                 transitionDuration: this.config.transitionDuration,
                 currentGameIndex: this.currentGameIndex,
@@ -190,14 +204,14 @@ export class ChartEngine {
                 filteredGameIndices: this.dataManager.filteredGameIndices
             })
             
-            // Update axes with synchronized timing
+            // Update axes with the dynamic scaling
             this.renderer.updateAxes(processedData, this.config.transitionDuration)
             
-            // Track performance
-            this.trackRenderPerformance(startTime)
+            const endTime = performance.now()
+            console.log(`✅ Chart rendered in ${(endTime - startTime).toFixed(2)}ms`)
             
         } catch (error) {
-            console.error('❌ Render failed:', error)
+            console.error('❌ Chart rendering error:', error)
             throw error
         }
     }
@@ -454,13 +468,20 @@ export class ChartEngine {
      * Setup D3 scales
      */
     setupScales() {
+        // Get dynamic max for current game index
+        const dynamicMax = this.dataManager ? this.dataManager.getMaxScoreAtGame(this.currentGameIndex) : 100
+        console.log('🔍 ChartEngine setupScales - currentGameIndex:', this.currentGameIndex)
+        console.log('🔍 ChartEngine setupScales - dynamicMax:', dynamicMax)
+        
         this.scales.x = d3.scaleLinear()
             .range([0, this.dimensions.width])
-            .domain([0, 100])  // Initialize with reasonable domain to prevent 0-1 decimals
+            .domain([0, dynamicMax])  // Use dynamic scaling instead of hardcoded [0, 100]
         
         this.scales.y = d3.scaleBand()
             .range([0, this.dimensions.height])
             .padding(0.1)
+            
+        console.log('🔍 ChartEngine setupScales - final xScale domain:', this.scales.x.domain())
     }
     
     /**
@@ -468,15 +489,23 @@ export class ChartEngine {
      * @param {Array} data - Processed data
      */
     updateScales(data) {
-        // Update X scale domain with minimum reasonable range
-        const maxScore = d3.max(data, d => d.cumulativeScore) || 100
+        // Use dynamic scaling based on current game progress
+        // Get maximum score at current game index for responsive scaling
+        const dynamicMax = this.dataManager.getMaxScoreAtGame(this.currentGameIndex)
         
-        // Ensure minimum scale range to prevent 0-1 decimal display
-        const minDomain = Math.max(10, maxScore * 1.1)
-        this.scales.x.domain([0, minDomain])
+        console.log('🔍 ChartEngine updateScales - currentGameIndex:', this.currentGameIndex)
+        console.log('🔍 ChartEngine updateScales - dynamicMax:', dynamicMax)
+        console.log('🔍 ChartEngine updateScales - current xScale domain before update:', this.scales.x.domain())
+        
+        // Update X scale domain with dynamic maximum
+        this.scales.x.domain([0, dynamicMax])
+        
+        console.log('🔍 ChartEngine updateScales - xScale domain after update:', this.scales.x.domain())
         
         // Update Y scale domain
         this.scales.y.domain(data.map(d => d.team))
+        
+        console.log('🔍 ChartEngine updateScales - yScale domain:', this.scales.y.domain())
     }
     
     /**

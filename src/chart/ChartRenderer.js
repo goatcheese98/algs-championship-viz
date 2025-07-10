@@ -325,13 +325,46 @@ export class ChartRenderer {
     }
     
     updateAxes(data, transitionDuration = 1500) {
+        // DEBUG: Check what the x-axis domain actually is
+        console.log('🔍 ChartRenderer updateAxes - xScale domain:', this.xScale.domain())
+        console.log('🔍 ChartRenderer updateAxes - xScale range:', this.xScale.range())
+        
         // Update X axis with improved configuration
         const xAxis = d3.axisBottom(this.xScale)
             .tickFormat(d3.format('.0f'))  // Force integer format
             .ticks(8)  // Limit number of ticks
-            .tickValues(this.xScale.ticks(8).filter(tick => tick % 1 === 0))  // Only integer tick values
+            
+        // DEBUG: Check what ticks we're getting
+        const allTicks = this.xScale.ticks(8)
+        const integerTicks = allTicks.filter(tick => tick % 1 === 0)
+        console.log('🔍 All ticks:', allTicks)
+        console.log('🔍 Integer ticks:', integerTicks)
         
+        // Only filter for integer ticks if we have a reasonable domain
+        const domain = this.xScale.domain()
+        const domainRange = domain[1] - domain[0]
+        
+        if (domainRange > 1) {
+            // Normal case - filter for integer ticks
+            console.log('🔍 Setting tickValues to integer ticks:', integerTicks)
+            xAxis.tickValues(integerTicks)
+        } else {
+            // Small domain case - use default ticks
+            console.log('🔍 Using default ticks due to small domain range:', domainRange)
+        }
+        
+        // DEBUG: Check what the axis is actually going to render
+        console.log('🔍 Final axis configuration:')
+        console.log('  - Domain:', domain)
+        console.log('  - Range:', this.xScale.range())
+        console.log('  - Tick values:', integerTicks)
+        
+        // Apply the axis
         this.xAxisGroup.call(xAxis)
+        
+        // DEBUG: Check what ticks were actually rendered
+        const renderedTicks = this.xAxisGroup.selectAll('.tick text').nodes().map(node => node.textContent)
+        console.log('🔍 Actually rendered tick labels:', renderedTicks)
         
         // Force X-axis styling
         this.xAxisGroup.selectAll('text')
@@ -570,9 +603,15 @@ export class ChartRenderer {
         
         console.log('🧹 Cleared all existing elements for initial state')
         
-        // Update axes with initial state (zero domain)
-        const tempXScale = this.xScale.copy().domain([0, 1]) // Minimal domain for initial state
-        this.xAxisGroup.call(d3.axisBottom(tempXScale))
+        // Update axes with initial state - USE PROPER DYNAMIC SCALING
+        // Don't override with hardcoded [0, 1] domain!
+        console.log('🔍 renderInitialTeamLayout - Using current xScale domain:', this.xScale.domain())
+        this.xAxisGroup.call(d3.axisBottom(this.xScale)
+            .tickFormat(d3.format('.0f'))  // Force integer format
+            .tickValues(this.xScale.domain()[1] <= 12 ? 
+                [0, 2, 4, 6, 8, 10, 12] : 
+                this.xScale.ticks().filter(tick => tick % 1 === 0))
+        )
         
         // Create team groups for initial state - NO BARS, only team info
         const teamGroups = this.mainGroup.selectAll('.team-group')
