@@ -501,7 +501,49 @@
                         <div class="value" id="processingStatus">-</div>
                         <div class="label">Processing Status</div>
                     </div>
+                    <div class="stat-card">
+                        <div class="value" id="selectedFolderDisplay">-</div>
+                        <div class="label">Selected Folder</div>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Folder Management Section -->
+            <div class="section">
+                <h2>📁 Folder Management</h2>
+                <p>Select or create folders for organizing tournament data in /public directory</p>
+                
+                <div class="input-group">
+                    <button class="btn btn-secondary" onclick="loadFolders()">
+                        📂 Load Folders
+                    </button>
+                    <button class="btn btn-primary" onclick="showCreateFolderDialog()" style="margin-left: 10px;">
+                        ➕ Create New Folder
+                    </button>
+                </div>
+
+                <div id="foldersList" style="margin-top: 20px;"></div>
+                
+                <div id="createFolderDialog" style="display: none; margin-top: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9;">
+                    <h3>📁 Create New Folder</h3>
+                    <div class="input-group">
+                        <label for="newFolderName">Folder Name (letters, numbers, underscore, dash only):</label>
+                        <input type="text" id="newFolderName" placeholder="year6champions" 
+                               pattern="[a-zA-Z0-9_-]+" 
+                               style="width: 200px; padding: 8px; border: 2px solid #ddd; border-radius: 5px;">
+                        <button class="btn btn-primary" onclick="createFolder()" style="margin-left: 10px;">
+                            ✅ Create
+                        </button>
+                        <button class="btn btn-secondary" onclick="hideCreateFolderDialog()" style="margin-left: 10px;">
+                            ❌ Cancel
+                        </button>
+                    </div>
+                    <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                        This will create a folder structure with 'processed' and 'raw' subdirectories.
+                    </p>
+                </div>
+                
+                <div id="folderResults" style="margin-top: 15px;"></div>
             </div>
 
             <!-- Single URL Processing -->
@@ -703,6 +745,11 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             socket.on('batch-complete', (data) => {
                 handleBatchComplete(data);
             });
+
+            socket.on('folder-selected', (data) => {
+                updateSelectedFolderDisplay(data.selectedFolder);
+                showNotification(`Folder selected: ${data.selectedFolder}`);
+            });
         }
 
         // Update connection status display
@@ -725,6 +772,11 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             document.getElementById('scraperStatus').textContent = data.scraperInitialized ? 'Ready' : 'Not Ready';
             document.getElementById('processingStatus').textContent = data.isProcessing ? 'Processing' : 'Idle';
             
+            // Update selected folder display
+            if (data.selectedFolder) {
+                updateSelectedFolderDisplay(data.selectedFolder);
+            }
+            
             // Update button states
             const startBtn = document.getElementById('startBatchBtn');
             const stopBtn = document.getElementById('stopBatchBtn');
@@ -738,6 +790,11 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
                 stopBtn.disabled = true;
                 startBtn.innerHTML = '🚀 Start Batch Processing';
             }
+        }
+
+        // Update selected folder display
+        function updateSelectedFolderDisplay(folderName) {
+            document.getElementById('selectedFolderDisplay').textContent = folderName || 'None';
         }
 
         // Show notification
@@ -928,8 +985,8 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
         }
 
         // File Management Functions
-        let processedFiles = [];
-        let selectedFiles = new Set();
+        let fileManagementProcessedFiles = [];
+        let fileManagementSelectedFiles = new Set();
 
         async function loadProcessedFiles() {
             try {
@@ -937,8 +994,8 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
                 const result = await response.json();
                 
                 if (result.success) {
-                    processedFiles = result.files;
-                    selectedFiles.clear();
+                    fileManagementProcessedFiles = result.files;
+                    fileManagementSelectedFiles.clear();
                     displayProcessedFiles();
                     document.getElementById('fileSelectionContainer').style.display = 'block';
                     
@@ -954,7 +1011,7 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
         function displayProcessedFiles() {
             const filesList = document.getElementById('filesList');
             
-            if (processedFiles.length === 0) {
+            if (fileManagementProcessedFiles.length === 0) {
                 filesList.innerHTML = `
                     <div class="empty-state" style="text-align: center; padding: 20px; color: #666;">
                         <p>📁 No CSV files found in processed directory</p>
@@ -964,8 +1021,8 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             }
 
             let html = '';
-            processedFiles.forEach((file, index) => {
-                const isSelected = selectedFiles.has(file.name);
+            fileManagementProcessedFiles.forEach((file, index) => {
+                const isSelected = fileManagementSelectedFiles.has(file.name);
                 html += `
                     <div class="file-item" style="display: flex; align-items: center; padding: 8px; margin-bottom: 5px; background: ${isSelected ? '#e3f2fd' : '#f9f9f9'}; border-radius: 5px; border-left: 4px solid ${isSelected ? '#2196f3' : '#ddd'};">
                         <input type="checkbox" id="file_${index}" ${isSelected ? 'checked' : ''} 
@@ -982,24 +1039,24 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
         }
 
         function toggleFileSelection(fileName) {
-            if (selectedFiles.has(fileName)) {
-                selectedFiles.delete(fileName);
+            if (fileManagementSelectedFiles.has(fileName)) {
+                fileManagementSelectedFiles.delete(fileName);
             } else {
-                selectedFiles.add(fileName);
+                fileManagementSelectedFiles.add(fileName);
             }
             displayProcessedFiles();
         }
 
         function selectAllFiles() {
-            selectedFiles.clear();
-            processedFiles.forEach(file => {
-                selectedFiles.add(file.name);
+            fileManagementSelectedFiles.clear();
+            fileManagementProcessedFiles.forEach(file => {
+                fileManagementSelectedFiles.add(file.name);
             });
             displayProcessedFiles();
         }
 
         function deselectAllFiles() {
-            selectedFiles.clear();
+            fileManagementSelectedFiles.clear();
             displayProcessedFiles();
         }
 
@@ -1011,12 +1068,12 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
                 return;
             }
             
-            if (selectedFiles.size === 0) {
+            if (fileManagementSelectedFiles.size === 0) {
                 alert('Please select at least one file to rename');
                 return;
             }
             
-            const confirmMessage = `Are you sure you want to rename ${selectedFiles.size} file(s) with prefix "${dayPrefix}-"?`;
+            const confirmMessage = `Are you sure you want to rename ${fileManagementSelectedFiles.size} file(s) with prefix "${dayPrefix}-"?`;
             if (!confirm(confirmMessage)) {
                 return;
             }
@@ -1027,7 +1084,7 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         dayPrefix: dayPrefix,
-                        selectedFiles: Array.from(selectedFiles)
+                        selectedFiles: Array.from(fileManagementSelectedFiles)
                     })
                 });
                 
@@ -1419,9 +1476,168 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             });
         }
 
+        // Folder Management Functions
+        async function loadFolders() {
+            try {
+                const response = await fetch('/api/list-folders');
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayFoldersList(result);
+                } else {
+                    alert('Failed to load folders: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error loading folders: ' + error.message);
+            }
+        }
+
+        function displayFoldersList(result) {
+            const foldersListDiv = document.getElementById('foldersList');
+            
+            if (result.folders.length === 0) {
+                foldersListDiv.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #666; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9;">
+                        <p>📁 No folders found in /public directory</p>
+                        <p style="font-size: 12px;">Create a new folder to get started.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 8px; background: #f9f9f9;">
+                    <h4 style="margin: 0 0 15px 0; color: #333;">📂 Available Folders (${result.folders.length})</h4>
+                    <p style="font-size: 12px; color: #666; margin-bottom: 15px;">
+                        Current: <strong>${result.selectedFolder}</strong> | Click a folder to select it for data processing
+                    </p>
+                    <div style="max-height: 300px; overflow-y: auto;">
+            `;
+            
+            result.folders.forEach(folder => {
+                const isSelected = folder.isSelected;
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 8px; background: ${isSelected ? '#e8f5e8' : 'white'}; border-radius: 5px; border-left: 4px solid ${isSelected ? '#28a745' : '#ddd'}; cursor: pointer; transition: all 0.2s ease;"
+                         onclick="selectFolder('${folder.name}')">
+                        <div style="flex: 1;">
+                            <div style="font-weight: ${isSelected ? 'bold' : 'normal'}; color: ${isSelected ? '#28a745' : '#333'};">
+                                ${isSelected ? '🎯' : '📁'} ${folder.name}
+                            </div>
+                            <div style="font-size: 12px; color: #666;">
+                                ${folder.fileCount} files • 
+                                ${folder.hasProcessed ? '✅' : '❌'} processed • 
+                                ${folder.hasRaw ? '✅' : '❌'} raw
+                            </div>
+                            <div style="font-size: 11px; color: #999;">
+                                Created: ${new Date(folder.created).toLocaleDateString()}
+                            </div>
+                        </div>
+                        ${isSelected ? `
+                            <div style="color: #28a745; font-weight: bold; margin-left: 10px;">
+                                SELECTED
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+
+            foldersListDiv.innerHTML = html;
+        }
+
+        async function selectFolder(folderName) {
+            try {
+                const response = await fetch('/api/select-folder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ folderName: folderName })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    updateSelectedFolderDisplay(result.selectedFolder);
+                    showNotification(`Selected folder: ${result.selectedFolder}`);
+                    
+                    // Refresh the folders list to show the new selection
+                    await loadFolders();
+                } else {
+                    alert('Failed to select folder: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error selecting folder: ' + error.message);
+            }
+        }
+
+        function showCreateFolderDialog() {
+            document.getElementById('createFolderDialog').style.display = 'block';
+            document.getElementById('newFolderName').focus();
+        }
+
+        function hideCreateFolderDialog() {
+            document.getElementById('createFolderDialog').style.display = 'none';
+            document.getElementById('newFolderName').value = '';
+        }
+
+        async function createFolder() {
+            const folderName = document.getElementById('newFolderName').value.trim();
+            
+            if (!folderName) {
+                alert('Please enter a folder name');
+                return;
+            }
+            
+            if (!/^[a-zA-Z0-9_-]+$/.test(folderName)) {
+                alert('Folder name can only contain letters, numbers, underscores, and dashes');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/create-folder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ folderName: folderName })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    hideCreateFolderDialog();
+                    showNotification(`Created folder: ${result.folderName}`);
+                    
+                    // Refresh the folders list to show the new folder
+                    await loadFolders();
+                    
+                    // Display success message
+                    const resultsDiv = document.getElementById('folderResults');
+                    resultsDiv.innerHTML = `
+                        <div style="border: 1px solid #28a745; padding: 15px; border-radius: 8px; background: #f8fff8;">
+                            <h4 style="margin: 0 0 10px 0; color: #28a745;">✅ Folder Created Successfully</h4>
+                            <p>Folder <strong>${result.folderName}</strong> has been created with the following structure:</p>
+                            <ul style="margin: 10px 0; padding-left: 20px;">
+                                <li>📁 ${result.folderName}/</li>
+                                <li>📁 ${result.folderName}/processed/</li>
+                                <li>📁 ${result.folderName}/raw/</li>
+                            </ul>
+                            <p style="font-size: 12px; color: #666;">
+                                You can now select this folder for data processing operations.
+                            </p>
+                        </div>
+                    `;
+                } else {
+                    alert('Failed to create folder: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error creating folder: ' + error.message);
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             connectWebSocket();
+            loadFolders(); // Load folders on page load
         });
     </script>
 </body>

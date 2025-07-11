@@ -24,6 +24,7 @@ let scraper = null;
 let batchProcessor = null;
 let isProcessing = false;
 let processingQueue = [];
+let selectedFolder = 'year5champions'; // Default folder
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
@@ -33,7 +34,8 @@ io.on('connection', (socket) => {
     socket.emit('status', {
         isProcessing,
         queueLength: processingQueue.length,
-        scraperInitialized: scraper !== null
+        scraperInitialized: scraper !== null,
+        selectedFolder: selectedFolder
     });
     
     socket.on('disconnect', () => {
@@ -46,7 +48,8 @@ function broadcastState() {
     io.emit('status', {
         isProcessing,
         queueLength: processingQueue.length,
-        scraperInitialized: scraper !== null
+        scraperInitialized: scraper !== null,
+        selectedFolder: selectedFolder
     });
 }
 
@@ -66,6 +69,7 @@ app.get('/api/status', (req, res) => {
         isProcessing,
         queueLength: processingQueue.length,
         scraperInitialized: scraper !== null,
+        selectedFolder: selectedFolder,
         timestamp: new Date().toISOString()
     });
 });
@@ -106,7 +110,7 @@ app.post('/api/process-url', async (req, res) => {
             });
         }
         
-        console.log(`📊 Processing single URL: ${url}`);
+        console.log(`📊 Processing single URL: ${url} to folder: ${selectedFolder}`);
         
         // Initialize scraper if needed
         if (!scraper) {
@@ -114,6 +118,9 @@ app.post('/api/process-url', async (req, res) => {
             scraper = new ALGSScraper();
             await scraper.init();
         }
+        
+        // Set the selected folder for the scraper
+        scraper.setSelectedFolder(selectedFolder);
         
         const result = await scraper.processURL(url);
         
@@ -173,6 +180,9 @@ app.post('/api/start-batch', async (req, res) => {
             scraper = new ALGSScraper();
             await scraper.init();
         }
+        
+        // Set the selected folder for the scraper
+        scraper.setSelectedFolder(selectedFolder);
         
         // Start processing
         isProcessing = true;
@@ -272,10 +282,217 @@ app.get('/api/queue', (req, res) => {
     });
 });
 
+// Folder Management API Endpoints
+
+// List available folders in /public
+app.get('/api/list-folders', async (req, res) => {
+    try {
+        const publicDir = path.join(__dirname, '../../public');
+        
+        // Check if public directory exists
+        try {
+            await fs.access(publicDir);
+        } catch (error) {
+            return res.json({
+                success: true,
+                folders: [],
+                selectedFolder: selectedFolder,
+                message: 'Public directory not found'
+            });
+        }
+        
+        const items = await fs.readdir(publicDir);
+        const folders = [];
+        
+        for (const item of items) {
+            const itemPath = path.join(publicDir, item);
+            const stats = await fs.stat(itemPath);
+            
+            if (stats.isDirectory()) {
+                // Check if it has processed and raw subdirectories
+                const processedPath = path.join(itemPath, 'processed');
+                const rawPath = path.join(itemPath, 'raw');
+                
+                let hasProcessed = false;
+                let hasRaw = false;
+                let fileCount = 0;
+                
+                try {
+                    await fs.access(processedPath);
+                    hasProcessed = true;
+                    const processedFiles = await fs.readdir(processedPath);
+                    fileCount = processedFiles.filter(f => f.endsWith('.csv')).length;
+                } catch (error) {
+                    // No processed folder
+                }
+                
+                try {
+                    await fs.access(rawPath);
+                    hasRaw = true;
+                } catch (error) {
+                    // No raw folder
+                }
+                
+                folders.push({
+                    name: item,
+                    hasProcessed: hasProcessed,
+                    hasRaw: hasRaw,
+                    fileCount: fileCount,
+                    created: stats.birthtime,
+                    modified: stats.mtime,
+                    isSelected: item === selectedFolder
+                });
+            }
+        }
+        
+        // Sort folders by name
+        folders.sort((a, b) => a.name.localeCompare(b.name));
+        
+        res.json({
+            success: true,
+            folders: folders,
+            selectedFolder: selectedFolder,
+            count: folders.length
+        });
+        
+    } catch (error) {
+        console.error('❌ Error listing folders:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Create new folder
+app.post('/api/create-folder', async (req, res) => {
+    try {
+        const { folderName } = req.body;
+        
+        if (!folderName || typeof folderName !== 'string') {
+            return res.status(400).json({
+                success: false,
+                error: 'Folder name is required and must be a string'
+            });
+        }
+        
+        // Sanitize folder name
+        const sanitizedName = folderName.replace(/[^a-zA-Z0-9_-]/g, '');
+        
+        if (sanitizedName.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'Folder name must contain at least one alphanumeric character'
+            });
+        }
+        
+        const publicDir = path.join(__dirname, '../../public');
+        const folderPath = path.join(publicDir, sanitizedName);
+        const processedPath = path.join(folderPath, 'processed');
+        const rawPath = path.join(folderPath, 'raw');
+        
+        // Check if folder already exists
+        try {
+            await fs.access(folderPath);
+            return res.status(400).json({
+                success: false,
+                error: 'Folder already exists'
+            });
+        } catch (error) {
+            // Folder doesn't exist, which is what we want
+        }
+        
+        // Create the folder structure
+        await fs.mkdir(folderPath, { recursive: true });
+        await fs.mkdir(processedPath, { recursive: true });
+        await fs.mkdir(rawPath, { recursive: true });
+        
+        console.log(`📁 Created new folder: ${sanitizedName}`);
+        
+        res.json({
+            success: true,
+            message: 'Folder created successfully',
+            folderName: sanitizedName,
+            folderPath: folderPath
+        });
+        
+    } catch (error) {
+        console.error('❌ Error creating folder:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Select folder for data processing
+app.post('/api/select-folder', async (req, res) => {
+    try {
+        const { folderName } = req.body;
+        
+        if (!folderName || typeof folderName !== 'string') {
+            return res.status(400).json({
+                success: false,
+                error: 'Folder name is required'
+            });
+        }
+        
+        const publicDir = path.join(__dirname, '../../public');
+        const folderPath = path.join(publicDir, folderName);
+        
+        // Check if folder exists
+        try {
+            await fs.access(folderPath);
+            const stats = await fs.stat(folderPath);
+            
+            if (!stats.isDirectory()) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Selected item is not a folder'
+                });
+            }
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                error: 'Selected folder does not exist'
+            });
+        }
+        
+        selectedFolder = folderName;
+        console.log(`📁 Selected folder: ${selectedFolder}`);
+        
+        // Broadcast folder selection to all connected clients
+        io.emit('folder-selected', {
+            selectedFolder: selectedFolder
+        });
+        
+        res.json({
+            success: true,
+            message: 'Folder selected successfully',
+            selectedFolder: selectedFolder
+        });
+        
+    } catch (error) {
+        console.error('❌ Error selecting folder:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Get current selected folder
+app.get('/api/selected-folder', (req, res) => {
+    res.json({
+        success: true,
+        selectedFolder: selectedFolder
+    });
+});
+
 // List processed files
 app.get('/api/list-processed-files', async (req, res) => {
     try {
-        const processedDir = path.join(__dirname, '../../public/year5champions/processed');
+        const processedDir = path.join(__dirname, `../../public/${selectedFolder}/processed`);
         
         // Check if directory exists
         try {
@@ -285,7 +502,7 @@ app.get('/api/list-processed-files', async (req, res) => {
                 success: true,
                 files: [],
                 count: 0,
-                message: 'Processed directory not found'
+                message: `Processed directory not found for ${selectedFolder}`
             });
         }
         
@@ -330,7 +547,7 @@ app.post('/api/rename-files-with-prefix', async (req, res) => {
             });
         }
         
-        const processedDir = path.join(__dirname, '../../public/year5champions/processed');
+        const processedDir = path.join(__dirname, `../../public/${selectedFolder}/processed`);
         const results = {
             total: selectedFiles.length,
             successful: 0,
@@ -385,7 +602,7 @@ app.post('/api/extract-metadata', async (req, res) => {
             });
         }
 
-        console.log(`📊 Starting metadata extraction for: ${url}`);
+        console.log(`📊 Starting metadata extraction for: ${url} to folder: ${selectedFolder}`);
         
         // Initialize scraper if needed
         if (!scraper) {
@@ -393,6 +610,9 @@ app.post('/api/extract-metadata', async (req, res) => {
             scraper = new ALGSScraper();
             await scraper.init();
         }
+
+        // Set the selected folder for the scraper
+        scraper.setSelectedFolder(selectedFolder);
 
         const result = await scraper.extractSingleMetadata(url);
         
@@ -433,7 +653,7 @@ app.post('/api/batch-extract-metadata', async (req, res) => {
             });
         }
 
-        console.log(`📊 Starting batch metadata extraction for ${urls.length} URLs`);
+        console.log(`📊 Starting batch metadata extraction for ${urls.length} URLs to folder: ${selectedFolder}`);
         
         // Initialize scraper if needed
         if (!scraper) {
@@ -441,6 +661,9 @@ app.post('/api/batch-extract-metadata', async (req, res) => {
             scraper = new ALGSScraper();
             await scraper.init();
         }
+
+        // Set the selected folder for the scraper
+        scraper.setSelectedFolder(selectedFolder);
 
         const results = [];
         const errors = [];
@@ -499,7 +722,7 @@ app.post('/api/batch-extract-metadata', async (req, res) => {
 // Get metadata files from processed directory
 app.get('/api/list-metadata-files', async (req, res) => {
     try {
-        const processedDir = path.join(__dirname, '../../public/year5champions/processed');
+        const processedDir = path.join(__dirname, `../../public/${selectedFolder}/processed`);
         
         // Check if directory exists
         try {
@@ -569,7 +792,7 @@ app.get('/api/list-metadata-files', async (req, res) => {
 app.get('/api/get-metadata/:filename', async (req, res) => {
     try {
         const { filename } = req.params;
-        const processedDir = path.join(__dirname, '../../public/year5champions/processed');
+        const processedDir = path.join(__dirname, `../../public/${selectedFolder}/processed`);
         const filePath = path.join(processedDir, filename);
         
         // Security check - ensure filename doesn't contain path traversal
@@ -611,7 +834,7 @@ app.get('/api/get-metadata/:filename', async (req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 server.listen(PORT, () => {
     console.log(`
 🚀 ALGS Tournament Batch Processor Server Started!

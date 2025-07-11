@@ -24,7 +24,7 @@ A comprehensive data extraction system for ALGS (Apex Legends Global Series) tou
    ```
 
 3. **Access the GUI**
-   Open your browser to: `http://localhost:3001`
+   Open your browser to: `http://localhost:3002`
 
 ## Usage
 
@@ -94,13 +94,13 @@ Processed data is saved to:
 
 ## Configuration
 
-- **Port**: Default 3001 (set via `PORT` environment variable)
+- **Port**: Default 3002 (set via `PORT` environment variable)
 - **Concurrency**: Configurable via web interface (1-5 concurrent processes)
 - **File Naming**: Day prefixes can be customized (Day1, Day2, etc.)
 
 ## Troubleshooting
 
-1. **Connection Issues**: Ensure port 3001 is available
+1. **Connection Issues**: Ensure port 3002 is available
 2. **Processing Errors**: Check browser console for detailed error messages
 3. **File Permissions**: Ensure write permissions for output directories
 

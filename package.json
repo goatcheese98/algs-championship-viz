@@ -10,10 +10,10 @@
     "preview": "vite preview",
     "serve": "vite preview --port=8080",
     "championship": "vite --open=/year_4_championship.html",
+    "automation-server": "node start-automation-server.js",
     "test": "echo 'No tests specified'",
     "lint": "echo 'No linting configured'",
     "pages": "npm run build && echo 'Build complete for GitHub Pages'"
-
   },
   "keywords": [
     "algs",
