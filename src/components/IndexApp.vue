@@ -210,7 +210,7 @@ export default {
     
     openDataManagement() {
       // Check if we're running locally and the automation server might be available
-      const automationServerUrl = 'http://localhost:3000'
+      const automationServerUrl = 'http://localhost:3001'
       
       // Try to open the automation server GUI
       try {
@@ -225,7 +225,7 @@ To access the data management interface:
 1. Navigate to: src/data-extraction/
 2. Run: npm install (if not already done)
 3. Run: node automation-server.js
-4. Open: http://localhost:3000
+4. Open: http://localhost:3001
 
 This will open the automation server GUI where you can:
 • Process tournament URLs
