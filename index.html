@@ -24,14 +24,14 @@
             overflow-x: hidden;
         }
 
-        /* Professional ALGS Header */
+        /* Professional ALGS Header (more compact) */
         .algs-header {
             background: linear-gradient(135deg, #1a0000 0%, #2d0000 25%, #4a0000 50%, #2d0000 75%, #1a0000 100%);
             border-bottom: 2px solid #dc2626;
             box-shadow: 0 4px 20px rgba(220, 38, 38, 0.3), 0 8px 40px rgba(0, 0, 0, 0.6);
             position: relative;
             overflow: hidden;
-            padding: 30px 0;
+            padding: 20px 0;
         }
 
         .algs-header::before {
@@ -69,7 +69,7 @@
         }
 
         .algs-icon {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             filter: drop-shadow(0 0 15px rgba(220, 38, 38, 0.8));
             animation: trophyGlow 3s ease-in-out infinite alternate;
         }
@@ -84,10 +84,14 @@
         .platform-info {
             text-align: right;
             max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 15px;
         }
 
         .main-title {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 900;
             background: linear-gradient(45deg, #dc2626, #ef4444, #f87171, #ef4444, #dc2626);
             background-size: 300% 300%;
@@ -118,7 +122,7 @@
         }
 
         .subtitle {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             color: #f1f5f9;
             opacity: 0.9;
@@ -128,7 +132,7 @@
         }
 
         .tagline {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 400;
             color: #d1d5db;
             opacity: 0.8;
@@ -137,47 +141,73 @@
             text-align: right;
         }
 
-        /* Tournament Dashboard */
+        /* Data Management Button */
+        .data-management-btn {
+            background: linear-gradient(135deg, #374151, #4b5563);
+            color: #f1f5f9;
+            border: 1px solid #6b7280;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .data-management-btn:hover {
+            background: linear-gradient(135deg, #4b5563, #6b7280);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(75, 85, 99, 0.3);
+        }
+
+        .btn-icon {
+            font-size: 1rem;
+        }
+
+        /* Tournament Dashboard (more compact) */
         .dashboard-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 80px 40px;
+            padding: 50px 40px;
         }
 
         .dashboard-title {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 40px;
         }
 
         .dashboard-title h2 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 800;
             color: #f1f5f9;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             letter-spacing: -1px;
         }
 
         .dashboard-title p {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #9ca3af;
             max-width: 700px;
             margin: 0 auto;
             line-height: 1.6;
         }
 
-        /* EWC 2025 Banner */
+        /* EWC 2025 Banner (more compact) */
         .ewc-banner {
             background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 25%, #2d4a5f 50%, #1b263b 75%, #0d1b2a 100%);
             border-bottom: 3px solid #00b4d8;
             position: relative;
             overflow: hidden;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .ewc-banner-content {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 60px 40px;
+            padding: 40px 40px;
             position: relative;
             z-index: 2;
         }
@@ -199,25 +229,25 @@
         }
 
         .ewc-glow-orb-1 {
-            width: 300px;
-            height: 300px;
-            top: -150px;
-            left: -150px;
+            width: 200px;
+            height: 200px;
+            top: -100px;
+            left: -100px;
             animation-delay: 0s;
         }
 
         .ewc-glow-orb-2 {
-            width: 200px;
-            height: 200px;
-            top: 50%;
-            right: -100px;
+            width: 150px;
+            height: 150px;
+            top: 30%;
+            right: -75px;
             animation-delay: 2s;
         }
 
         .ewc-glow-orb-3 {
-            width: 150px;
-            height: 150px;
-            bottom: -75px;
+            width: 100px;
+            height: 100px;
+            bottom: -50px;
             left: 50%;
             animation-delay: 4s;
         }
@@ -230,7 +260,7 @@
         .ewc-banner-info {
             display: flex;
             align-items: center;
-            gap: 40px;
+            gap: 30px;
         }
 
         .ewc-banner-logo {
@@ -239,7 +269,7 @@
         }
 
         .ewc-banner-icon {
-            font-size: 4rem;
+            font-size: 3rem;
             filter: drop-shadow(0 0 20px rgba(0, 180, 216, 0.8));
             animation: ewcIconPulse 3s ease-in-out infinite;
         }
@@ -249,21 +279,12 @@
             50% { transform: scale(1.1); filter: drop-shadow(0 0 30px rgba(0, 180, 216, 1)); }
         }
 
-        .ewc-banner-particles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-        }
-
         .ewc-banner-text {
             flex: 1;
         }
 
         .ewc-banner-title {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: 900;
             background: linear-gradient(45deg, #00b4d8, #0077b6, #023e8a, #0077b6, #00b4d8);
             background-size: 300% 300%;
@@ -271,7 +292,7 @@
             background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: ewcTitleFlow 4s ease-in-out infinite;
-            margin: 0 0 15px 0;
+            margin: 0 0 10px 0;
             letter-spacing: -2px;
         }
 
@@ -281,24 +302,24 @@
         }
 
         .ewc-banner-subtitle {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: #caf0f8;
-            margin: 0 0 20px 0;
+            margin: 0 0 15px 0;
             opacity: 0.9;
         }
 
         .ewc-banner-stats {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
         }
 
         .ewc-stat {
             background: rgba(0, 180, 216, 0.1);
             border: 1px solid rgba(0, 180, 216, 0.3);
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 20px;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: #caf0f8;
             font-weight: 600;
         }
@@ -310,16 +331,16 @@
         .ewc-banner-button {
             display: inline-flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             background: linear-gradient(135deg, #00b4d8, #0077b6);
             color: white;
-            padding: 20px 40px;
+            padding: 16px 32px;
             border-radius: 50px;
             text-decoration: none;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(0, 180, 216, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 180, 216, 0.4);
             position: relative;
             overflow: hidden;
         }
@@ -337,7 +358,7 @@
 
         .ewc-banner-button:hover {
             transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 20px 50px rgba(0, 180, 216, 0.6);
+            box-shadow: 0 15px 40px rgba(0, 180, 216, 0.6);
         }
 
         .ewc-banner-button:hover::before {
@@ -345,7 +366,7 @@
         }
 
         .ewc-button-arrow {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             transition: transform 0.3s ease;
         }
 
@@ -353,26 +374,38 @@
             transform: translateX(5px);
         }
 
-        /* Tournament Grid */
-        .tournaments-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-            max-width: 800px;
+        /* Carousel Container */
+        .carousel-container {
+            position: relative;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
+        .carousel-wrapper {
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .tournaments-carousel {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        /* Tournament Cards (more compact) */
         .tournament-card {
             background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
             border: 2px solid #dc2626;
-            border-radius: 20px;
-            padding: 40px;
+            border-radius: 0;
+            padding: 30px;
             text-align: center;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
             cursor: pointer;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 0 0 rgba(220, 38, 38, 0.3);
+            min-width: 100%;
+            flex-shrink: 0;
         }
 
         .tournament-card::before {
@@ -388,7 +421,7 @@
         }
 
         .tournament-card:hover {
-            transform: translateY(-10px) scale(1.02);
+            transform: translateY(-5px) scale(1.02);
             border-color: #ef4444;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(220, 38, 38, 0.4);
         }
@@ -398,36 +431,36 @@
         }
 
         .tournament-icon {
-            font-size: 3.5rem;
-            margin-bottom: 25px;
+            font-size: 3rem;
+            margin-bottom: 20px;
             filter: drop-shadow(0 5px 15px rgba(220, 38, 38, 0.3));
         }
 
         .tournament-card h3 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 800;
             color: #f1f5f9;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             letter-spacing: -1px;
         }
 
         .tournament-status {
             display: inline-block;
-            padding: 8px 20px;
+            padding: 6px 16px;
             background: linear-gradient(135deg, #dc2626, #ef4444);
             color: white;
             border-radius: 25px;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
         }
 
         .tournament-description {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #d1d5db;
-            line-height: 1.6;
-            margin-bottom: 25px;
+            line-height: 1.5;
+            margin-bottom: 20px;
             max-width: 500px;
             margin-left: auto;
             margin-right: auto;
@@ -436,26 +469,29 @@
         .tournament-details {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 15px;
+            margin-bottom: 25px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .detail-item {
             background: rgba(220, 38, 38, 0.1);
             border: 1px solid rgba(220, 38, 38, 0.3);
             border-radius: 10px;
-            padding: 15px;
+            padding: 12px;
         }
 
         .detail-label {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: #9ca3af;
             font-weight: 500;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .detail-value {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #f1f5f9;
             font-weight: 700;
         }
@@ -464,8 +500,8 @@
             background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #dc2626 100%);
             color: white;
             border: none;
-            padding: 18px 40px;
-            font-size: 1.2rem;
+            padding: 14px 30px;
+            font-size: 1.1rem;
             font-weight: 700;
             border-radius: 50px;
             cursor: pointer;
@@ -497,181 +533,75 @@
             left: 100%;
         }
 
-        /* Coming Soon Card */
-        .coming-soon {
-            opacity: 0.6;
-            cursor: not-allowed;
+        /* Carousel Navigation */
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 30px;
         }
 
-        .coming-soon .tournament-status {
-            background: linear-gradient(135deg, #6b7280, #9ca3af);
-        }
-
-        .coming-soon .detail-item {
-            background: rgba(100, 100, 100, 0.1);
-            border-color: rgba(100, 100, 100, 0.3);
-        }
-
-        .coming-soon .enter-button {
-            background: linear-gradient(135deg, #6b7280, #9ca3af);
-            cursor: not-allowed;
-        }
-
-        .coming-soon:hover {
-            transform: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Dashboard Navigation */
-        .dashboard-navigation {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
-            padding: 80px 0;
-            margin-top: 60px;
-            border-top: 1px solid #374151;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 40px;
-            text-align: center;
-        }
-
-        .nav-container h2 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin-bottom: 15px;
-            letter-spacing: -0.5px;
-        }
-
-        .nav-container p {
-            font-size: 1.1rem;
-            color: #9ca3af;
-            margin-bottom: 50px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .nav-cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .nav-card {
-            background: linear-gradient(135deg, #0f0f0f 0%, #1f1f1f 50%, #0f0f0f 100%);
-            border: 1px solid #374151;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent, rgba(220, 38, 38, 0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .nav-card:hover {
-            transform: translateY(-8px);
-            border-color: #dc2626;
-            box-shadow: 0 20px 40px rgba(220, 38, 38, 0.2), 0 10px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .nav-card:hover::before {
-            opacity: 1;
-        }
-
-        .nav-icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 10px rgba(220, 38, 38, 0.5));
-        }
-
-        .nav-card h3 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 15px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .nav-card p {
-            font-size: 0.95rem;
-            color: #9ca3af;
-            margin-bottom: 25px;
-            line-height: 1.5;
-            position: relative;
-            z-index: 2;
-        }
-
-        .nav-button {
-            display: inline-block;
+        .carousel-btn {
             background: linear-gradient(135deg, #dc2626, #ef4444);
             color: white;
-            padding: 12px 25px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
             border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
-            z-index: 2;
-            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
         }
 
-        .nav-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
+        .carousel-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.6);
         }
 
-        .nav-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+        .carousel-dots {
+            display: flex;
+            gap: 12px;
         }
 
-        .nav-button:hover::before {
-            left: 100%;
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(220, 38, 38, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #dc2626;
+            transform: scale(1.2);
+        }
+
+        .dot:hover {
+            background: #ef4444;
+            transform: scale(1.1);
         }
 
         /* Footer */
         .footer {
             text-align: center;
-            padding: 40px;
+            padding: 30px;
             color: #6b7280;
             font-size: 0.9rem;
             border-top: 1px solid #374151;
-            margin-top: 0;
+            margin-top: 20px;
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
-                gap: 20px;
+                gap: 15px;
                 text-align: center;
             }
             
@@ -686,6 +616,7 @@
             .platform-info {
                 text-align: center;
                 max-width: none;
+                align-items: center;
             }
             
             .main-title {
@@ -702,11 +633,11 @@
             }
             
             .dashboard-container {
-                padding: 40px 20px;
+                padding: 30px 20px;
             }
             
             .tournament-card {
-                padding: 30px 20px;
+                padding: 25px 20px;
             }
             
             .tournament-details {
@@ -715,7 +646,7 @@
             
             /* EWC Banner Mobile */
             .ewc-banner-content {
-                padding: 40px 20px;
+                padding: 30px 20px;
             }
             
             .ewc-banner-info {
@@ -735,240 +666,30 @@
             
             .ewc-banner-stats {
                 justify-content: center;
-                gap: 15px;
+                gap: 10px;
             }
             
             .ewc-stat {
-                padding: 6px 12px;
-                font-size: 0.8rem;
+                padding: 5px 10px;
+                font-size: 0.75rem;
             }
             
             .ewc-banner-button {
-                padding: 15px 30px;
-                font-size: 1.1rem;
+                padding: 12px 24px;
+                font-size: 1rem;
+            }
+            
+            .carousel-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
             }
         }
     </style>
 </head>
 <body>
     <div id="app">
-        <!-- ALGS Header -->
-        <header class="algs-header">
-            <div class="header-content">
-                <div class="algs-branding">
-                    <div class="algs-icon">🏆</div>
-                    <div class="algs-info">
-                        <h1 class="main-title">ALGS</h1>
-                        <p class="subtitle">Apex Legends Global Series</p>
-                    </div>
-                </div>
-                <div class="platform-info">
-                    <p class="tagline">Professional tournament visualization and analytics platform</p>
-                </div>
-            </div>
-        </header>
-
-        <!-- EWC 2025 Banner -->
-        <section class="ewc-banner">
-            <div class="ewc-banner-content">
-                <div class="ewc-banner-background">
-                    <div class="ewc-glow-orb ewc-glow-orb-1"></div>
-                    <div class="ewc-glow-orb ewc-glow-orb-2"></div>
-                    <div class="ewc-glow-orb ewc-glow-orb-3"></div>
-                </div>
-                
-                <div class="ewc-banner-info">
-                    <div class="ewc-banner-logo">
-                        <span class="ewc-banner-icon">🏆</span>
-                        <div class="ewc-banner-particles"></div>
-                    </div>
-                    
-                    <div class="ewc-banner-text">
-                        <h2 class="ewc-banner-title">EWC 2025 - NOW LIVE!</h2>
-                        <p class="ewc-banner-subtitle">Experience the Esports World Cup 2025 featuring 20 elite teams</p>
-                        <div class="ewc-banner-stats">
-                            <span class="ewc-stat">🌍 Global Event</span>
-                            <span class="ewc-stat">👥 20 Teams</span>
-                            <span class="ewc-stat">🎮 10 Games</span>
-                        </div>
-                    </div>
-                    
-                    <div class="ewc-banner-action">
-                        <a href="ewc_2025.html" class="ewc-banner-button">
-                            <span class="ewc-button-text">View EWC 2025</span>
-                            <span class="ewc-button-arrow">→</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Tournament Dashboard -->
-        <main class="dashboard-container">
-            <div class="dashboard-title">
-                <h2>Tournament Dashboard</h2>
-                <p>Explore comprehensive visualizations and analytics for ALGS tournaments worldwide</p>
-            </div>
-
-            <div class="tournaments-grid">
-                <!-- ALGS Year 4 Championship -->
-                <div class="tournament-card" @click="goToTournament('year_4_championship.html')">
-                    <div class="tournament-icon">🏆</div>
-                    <h3>ALGS Year 4 Championship</h3>
-                    <div class="tournament-status">Available Now</div>
-                    
-                    <p class="tournament-description">
-                        Experience the ultimate championship with 40 professional teams competing across 4 days of intense competition in Sapporo, Japan.
-                    </p>
-
-                    <div class="tournament-details">
-                        <div class="detail-item">
-                            <div class="detail-label">Location</div>
-                            <div class="detail-value">Sapporo, Japan</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Duration</div>
-                            <div class="detail-value">Jan 29 - Feb 2, 2025</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Teams</div>
-                            <div class="detail-value">40 Professionals</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Format</div>
-                            <div class="detail-value">Groups → Elimination → Finals</div>
-                        </div>
-                    </div>
-
-                    <a href="year_4_championship.html" class="enter-button">
-                        Enter Championship
-                    </a>
-                </div>
-
-                <!-- ALGS Year 5 Open -->
-                <div class="tournament-card" @click="goToTournament('year_5_open.html')">
-                    <div class="tournament-icon">🌍</div>
-                    <h3>ALGS Year 5 Open</h3>
-                    <div class="tournament-status">Available Now</div>
-                    
-                    <p class="tournament-description">
-                        Explore the global Year 5 Open tournament featuring 12 intense rounds across Winners Round 1, Winners Round 2, and Elimination Round 1.
-                    </p>
-
-                    <div class="tournament-details">
-                        <div class="detail-item">
-                            <div class="detail-label">Format</div>
-                            <div class="detail-value">Global Open</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Season</div>
-                            <div class="detail-value">Split 1 - 2025</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Rounds</div>
-                            <div class="detail-value">12 Total Matches</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Structure</div>
-                            <div class="detail-value">Winners → Elimination</div>
-                        </div>
-                    </div>
-
-                    <a href="year_5_open.html" class="enter-button">
-                        Enter Tournament
-                    </a>
-                </div>
-
-                <!-- EWC 2025 -->
-                <div class="tournament-card" @click="goToTournament('ewc_2025.html')">
-                    <div class="tournament-icon">🏆</div>
-                    <h3>EWC 2025</h3>
-                    <div class="tournament-status">Available Now</div>
-                    
-                    <p class="tournament-description">
-                        Experience the prestigious Esports World Cup 2025 featuring 20 elite teams competing in Group A across 10 intense games with diverse maps and strategic legend bans.
-                    </p>
-
-                    <div class="tournament-details">
-                        <div class="detail-item">
-                            <div class="detail-label">Event</div>
-                            <div class="detail-value">Esports World Cup</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Date</div>
-                            <div class="detail-value">July 2025</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Teams</div>
-                            <div class="detail-value">20 Elite Teams</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Format</div>
-                            <div class="detail-value">Group A - 10 Games</div>
-                        </div>
-                    </div>
-
-                    <a href="ewc_2025.html" class="enter-button">
-                        Enter EWC 2025
-                    </a>
-                </div>
-            </div>
-        </main>
-
-        <!-- Visualization Dashboard Navigation -->
-        <section class="dashboard-navigation">
-            <div class="nav-container">
-                <h2>📊 Visualization Dashboard</h2>
-                <p>Quick access to all tournament data visualizations and analytics</p>
-                
-                <div class="nav-cards-grid">
-                    <!-- Year 4 Championship Card -->
-                    <div class="nav-card" @click="goToTournament('year_4_championship.html')">
-                        <div class="nav-icon">🏆</div>
-                        <h3>Year 4 Championship</h3>
-                        <p>View detailed match analytics and team performance data</p>
-                        <a href="year_4_championship.html" class="nav-button">
-                            View Analytics
-                        </a>
-                    </div>
-                    
-                    <!-- Year 5 Open Card -->
-                    <div class="nav-card" @click="goToTournament('year_5_open.html')">
-                        <div class="nav-icon">🌍</div>
-                        <h3>Year 5 Open</h3>
-                        <p>Explore all 12 rounds of Year 5 tournament data</p>
-                        <a href="year_5_open.html" class="nav-button">
-                            View Analytics
-                        </a>
-                    </div>
-                    
-                    <!-- EWC 2025 Card -->
-                    <div class="nav-card" @click="goToTournament('ewc_2025.html')">
-                        <div class="nav-icon">🏆</div>
-                        <h3>EWC 2025</h3>
-                        <p>Analyze the Esports World Cup 2025 Group A tournament data</p>
-                        <a href="ewc_2025.html" class="nav-button">
-                            View Analytics
-                        </a>
-                    </div>
-                    
-                    <!-- Data Management Card -->
-                    <div class="nav-card" @click="openDataManagement()">
-                        <div class="nav-icon">🔧</div>
-                        <h3>Data Management</h3>
-                        <p>Access automation tools and file management utilities</p>
-                        <button class="nav-button" onclick="openDataManagement()">
-                            Manage Data
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p>&copy; 2025 ALGS Tournament Dashboard. Built for competitive Apex Legends visualization.</p>
-        </footer>
+        <!-- Vue component will be mounted here -->
     </div>
 
     <script type="module" src="src/main.js"></script>

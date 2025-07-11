@@ -12,11 +12,15 @@
         </div>
         <div class="platform-info">
           <p class="tagline">Professional tournament visualization and analytics platform</p>
+          <button class="data-management-btn" @click="openDataManagement">
+            <span class="btn-icon">🔧</span>
+            Data Tools
+          </button>
         </div>
       </div>
     </header>
 
-    <!-- EWC 2025 Banner -->
+    <!-- EWC 2025 Banner (more compact) -->
     <section class="ewc-banner">
       <div class="ewc-banner-content">
         <div class="ewc-banner-background">
@@ -28,7 +32,6 @@
         <div class="ewc-banner-info">
           <div class="ewc-banner-logo">
             <span class="ewc-banner-icon">🏆</span>
-            <div class="ewc-banner-particles"></div>
           </div>
           
           <div class="ewc-banner-text">
@@ -51,167 +54,115 @@
       </div>
     </section>
 
-    <!-- Tournament Dashboard -->
+    <!-- Tournament Dashboard with Carousel -->
     <main class="dashboard-container">
       <div class="dashboard-title">
         <h2>Tournament Dashboard</h2>
         <p>Explore comprehensive visualizations and analytics for ALGS tournaments worldwide</p>
       </div>
 
-      <div class="tournaments-grid">
-        <!-- ALGS Year 4 Championship -->
-        <div class="tournament-card" @click="goToTournament('year_4_championship.html')">
-          <div class="tournament-icon">🏆</div>
-          <h3>ALGS Year 4 Championship</h3>
-          <div class="tournament-status">Available Now</div>
-          
-          <p class="tournament-description">
-            Experience the ultimate championship with 40 professional teams competing across 4 days of intense competition in Sapporo, Japan.
-          </p>
+      <!-- Tournament Carousel -->
+      <div class="carousel-container">
+        <div class="carousel-wrapper">
+          <div class="tournaments-carousel" ref="carousel">
+            <!-- ALGS Year 4 Championship -->
+            <div class="tournament-card" @click="goToTournament('year_4_championship.html')">
+              <div class="tournament-icon">🏆</div>
+              <h3>ALGS Year 4 Championship</h3>
+              <div class="tournament-status">Available Now</div>
+              
+              <p class="tournament-description">
+                Experience the ultimate championship with 40 professional teams competing across 4 days of intense competition in Sapporo, Japan.
+              </p>
 
-          <div class="tournament-details">
-            <div class="detail-item">
-              <div class="detail-label">Location</div>
-              <div class="detail-value">Sapporo, Japan</div>
+              <div class="tournament-details">
+                <div class="detail-item">
+                  <div class="detail-label">Location</div>
+                  <div class="detail-value">Sapporo, Japan</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Teams</div>
+                  <div class="detail-value">40 Professionals</div>
+                </div>
+              </div>
+
+              <a href="year_4_championship.html" class="enter-button">
+                Enter Championship
+              </a>
             </div>
-            <div class="detail-item">
-              <div class="detail-label">Duration</div>
-              <div class="detail-value">Jan 29 - Feb 2, 2025</div>
+
+            <!-- ALGS Year 5 Open -->
+            <div class="tournament-card" @click="goToTournament('year_5_open.html')">
+              <div class="tournament-icon">🌍</div>
+              <h3>ALGS Year 5 Open</h3>
+              <div class="tournament-status">Available Now</div>
+              
+              <p class="tournament-description">
+                Explore the global Year 5 Open tournament featuring 12 intense rounds across Winners Round 1, Winners Round 2, and Elimination Round 1.
+              </p>
+
+              <div class="tournament-details">
+                <div class="detail-item">
+                  <div class="detail-label">Format</div>
+                  <div class="detail-value">Global Open</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Rounds</div>
+                  <div class="detail-value">12 Total Matches</div>
+                </div>
+              </div>
+
+              <a href="year_5_open.html" class="enter-button">
+                Enter Tournament
+              </a>
             </div>
-            <div class="detail-item">
-              <div class="detail-label">Teams</div>
-              <div class="detail-value">40 Professionals</div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-label">Format</div>
-              <div class="detail-value">Groups → Elimination → Finals</div>
+
+            <!-- EWC 2025 -->
+            <div class="tournament-card" @click="goToTournament('ewc_2025.html')">
+              <div class="tournament-icon">🏆</div>
+              <h3>EWC 2025</h3>
+              <div class="tournament-status">Available Now</div>
+              
+              <p class="tournament-description">
+                Experience the prestigious Esports World Cup 2025 featuring 20 elite teams competing in Group A across 10 intense games with diverse maps and strategic legend bans.
+              </p>
+
+              <div class="tournament-details">
+                <div class="detail-item">
+                  <div class="detail-label">Event</div>
+                  <div class="detail-value">Esports World Cup</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Teams</div>
+                  <div class="detail-value">20 Elite Teams</div>
+                </div>
+              </div>
+
+              <a href="ewc_2025.html" class="enter-button">
+                Enter EWC 2025
+              </a>
             </div>
           </div>
-
-          <a href="year_4_championship.html" class="enter-button">
-            Enter Championship
-          </a>
         </div>
-
-        <!-- ALGS Year 5 Open -->
-        <div class="tournament-card" @click="goToTournament('year_5_open.html')">
-          <div class="tournament-icon">🌍</div>
-          <h3>ALGS Year 5 Open</h3>
-          <div class="tournament-status">Available Now</div>
-          
-          <p class="tournament-description">
-            Explore the global Year 5 Open tournament featuring 12 intense rounds across Winners Round 1, Winners Round 2, and Elimination Round 1.
-          </p>
-
-          <div class="tournament-details">
-            <div class="detail-item">
-              <div class="detail-label">Format</div>
-              <div class="detail-value">Global Open</div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-label">Season</div>
-              <div class="detail-value">Split 1 - 2025</div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-label">Rounds</div>
-              <div class="detail-value">12 Total Matches</div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-label">Structure</div>
-              <div class="detail-value">Winners → Elimination</div>
-            </div>
+        
+        <!-- Carousel Navigation -->
+        <div class="carousel-nav">
+          <button class="carousel-btn prev" @click="prevSlide">
+            <span>‹</span>
+          </button>
+          <div class="carousel-dots">
+            <span class="dot" 
+                  v-for="(card, index) in tournaments" 
+                  :key="index"
+                  :class="{ active: index === currentSlide }"
+                  @click="goToSlide(index)"></span>
           </div>
-
-          <a href="year_5_open.html" class="enter-button">
-            Enter Tournament
-          </a>
-        </div>
-
-        <!-- EWC 2025 -->
-        <div class="tournament-card" @click="goToTournament('ewc_2025.html')">
-          <div class="tournament-icon">🏆</div>
-          <h3>EWC 2025</h3>
-          <div class="tournament-status">Available Now</div>
-          
-          <p class="tournament-description">
-            Experience the prestigious Esports World Cup 2025 featuring 20 elite teams competing in Group A across 10 intense games with diverse maps and strategic legend bans.
-          </p>
-
-          <div class="tournament-details">
-            <div class="detail-item">
-              <div class="detail-label">Event</div>
-              <div class="detail-value">Esports World Cup</div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-label">Date</div>
-              <div class="detail-value">July 2025</div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-label">Teams</div>
-              <div class="detail-value">20 Elite Teams</div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-label">Format</div>
-              <div class="detail-value">Group A - 10 Games</div>
-            </div>
-          </div>
-
-          <a href="ewc_2025.html" class="enter-button">
-            Enter EWC 2025
-          </a>
+          <button class="carousel-btn next" @click="nextSlide">
+            <span>›</span>
+          </button>
         </div>
       </div>
     </main>
-
-    <!-- Visualization Dashboard Navigation -->
-    <section class="dashboard-navigation">
-      <div class="nav-container">
-        <h2>📊 Visualization Dashboard</h2>
-        <p>Quick access to all tournament data visualizations and analytics</p>
-        
-        <div class="nav-cards-grid">
-          <!-- Year 4 Championship Card -->
-          <div class="nav-card" @click="goToTournament('year_4_championship.html')">
-            <div class="nav-icon">🏆</div>
-            <h3>Year 4 Championship</h3>
-            <p>View detailed match analytics and team performance data</p>
-            <a href="year_4_championship.html" class="nav-button">
-              View Analytics
-            </a>
-          </div>
-          
-          <!-- Year 5 Open Card -->
-          <div class="nav-card" @click="goToTournament('year_5_open.html')">
-            <div class="nav-icon">🌍</div>
-            <h3>Year 5 Open</h3>
-            <p>Explore all 12 rounds of Year 5 tournament data</p>
-            <a href="year_5_open.html" class="nav-button">
-              View Analytics
-            </a>
-          </div>
-          
-          <!-- EWC 2025 Card -->
-          <div class="nav-card" @click="goToTournament('ewc_2025.html')">
-            <div class="nav-icon">🏆</div>
-            <h3>EWC 2025</h3>
-            <p>Analyze the Esports World Cup 2025 Group A tournament data</p>
-            <a href="ewc_2025.html" class="nav-button">
-              View Analytics
-            </a>
-          </div>
-          
-          <!-- Data Management Card -->
-          <div class="nav-card" @click="openDataManagement()">
-            <div class="nav-icon">🔧</div>
-            <h3>Data Management</h3>
-            <p>Access automation tools and file management utilities</p>
-            <button class="nav-button" @click="openDataManagement">
-              Manage Data
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- Footer -->
     <footer class="footer">
@@ -227,13 +178,20 @@ export default {
   data() {
     console.log('🏠 IndexApp data() called - Vue is initializing')
     return {
-      message: 'Welcome to ALGS Tournament Dashboard'
+      message: 'Welcome to ALGS Tournament Dashboard',
+      currentSlide: 0,
+      tournaments: [
+        { name: 'ALGS Year 4 Championship', url: 'year_4_championship.html' },
+        { name: 'ALGS Year 5 Open', url: 'year_5_open.html' },
+        { name: 'EWC 2025', url: 'ewc_2025.html' }
+      ]
     }
   },
   
   mounted() {
     console.log('🎯 IndexApp mounted() called - Vue component is ready')
     this.initializeAnimations()
+    this.initializeCarousel()
   },
   
   methods: {
@@ -267,24 +225,41 @@ export default {
           delay: 0.3,
           ease: 'back.out(1.7)'
         })
-        
-        // Animate dashboard navigation cards
-        gsap.fromTo('.nav-card', {
-          y: 30,
-          opacity: 0
-        }, {
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
-          stagger: 0.1,
-          delay: 0.8,
-          ease: 'power2.out'
-        })
       }
+    },
+    
+    initializeCarousel() {
+      // Auto-advance carousel every 8 seconds
+      setInterval(() => {
+        this.nextSlide()
+      }, 8000)
     },
     
     goToTournament(url) {
       window.location.href = url
+    },
+    
+    nextSlide() {
+      this.currentSlide = (this.currentSlide + 1) % this.tournaments.length
+      this.updateCarousel()
+    },
+    
+    prevSlide() {
+      this.currentSlide = this.currentSlide === 0 ? this.tournaments.length - 1 : this.currentSlide - 1
+      this.updateCarousel()
+    },
+    
+    goToSlide(index) {
+      this.currentSlide = index
+      this.updateCarousel()
+    },
+    
+    updateCarousel() {
+      const carousel = this.$refs.carousel
+      if (carousel) {
+        const translateX = -this.currentSlide * 100
+        carousel.style.transform = `translateX(${translateX}%)`
+      }
     },
     
     openDataManagement() {
@@ -322,4 +297,4 @@ The automation server provides full control over data extraction and file manage
 }
 </script>
 
-<!-- No scoped styles needed as the CSS is already in index.html --> 
+<!-- No scoped styles needed as the CSS is in index.html --> 
