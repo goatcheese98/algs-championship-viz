@@ -12,8 +12,8 @@
     "championship": "vite --open=/year_4_championship.html",
     "test": "echo 'No tests specified'",
     "lint": "echo 'No linting configured'",
-    "pages": "npm run build && echo 'Build complete for GitHub Pages'",
-    "deploy-test": "node deploy-test.js"
+    "pages": "npm run build && echo 'Build complete for GitHub Pages'"
+
   },
   "keywords": [
     "algs",

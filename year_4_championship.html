@@ -142,102 +142,100 @@
                                     <div class="loading-spinner"></div>
                                 </div>
                             </transition>
-
-                            <!-- ChartEngine now handles all controls internally via mini-dashboard -->
+                        </div>
                         
-                            <!-- Enhanced GSAP-powered Draggable Action Panel -->
-                            <div v-if="chartEngine" 
-                            ref="actionPanel"
-                            class="enhanced-action-panel"
-                            :class="{ expanded: panelExpanded }">
-                                
-                                <div class="panel-header">
+                        <!-- Enhanced GSAP-powered Draggable Action Panel - Moved outside chart-area for full page dragging -->
+                        <div v-if="chartEngine" 
+                             ref="actionPanel"
+                             class="enhanced-action-panel tournament-controls"
+                             :class="{ expanded: panelExpanded }">
+                            
+                            <div class="panel-header">
                                 <div class="panel-title">
-                                    <span class="drag-handle">⋮⋮ Drag Anywhere ⋮⋮</span>
-                                        Enhanced Controls
+                                    <span class="drag-handle">⋮⋮</span>
+                                    Controls
                                 </div>
-                                    <button class="expand-btn" @click="togglePanel" @mousedown.stop>
+                                <button class="expand-btn" @click="togglePanel" @mousedown.stop>
                                     {{ panelExpanded ? '−' : '+' }}
                                 </button>
                             </div>
 
-                                <!-- Always visible: Game Progress and Controls -->
+                            <!-- Always visible: Game Progress and Controls -->
                             <div class="compact-status">
-                                    <!-- Game Progress (always visible) -->
-                                    <div class="game-progress-section">
-                                        <label class="section-label">Game Progress: {{ currentGame }} / {{ maxGames }}</label>
-                                        <div class="progress-container">
-                                            <span class="progress-value">{{ currentGame }}</span>
-                                            <input type="range" 
-                                                   :min="1" 
-                                                   :max="maxGames" 
-                                                   v-model.number="currentGame"
-                                                   @input="updateGameFromSlider"
-                                                   @change="updateGameFromSlider"
-                                                   @mousedown="startSliderControl"
-                                                   @mouseup="endSliderControl"
-                                                   @touchstart="startSliderControl"
-                                                   @touchend="endSliderControl"
-                                                   class="progress-slider">
-                                            <span class="progress-value">{{ maxGames }}</span>
-                            </div>
-                            </div>
-
-                                    <!-- Quick Controls (Play/Reset) -->
-                            <div class="quick-controls">
-                                        <button @click="togglePlayback" class="control-btn play-btn">
-                                            {{ isPlaying ? 'Pause' : 'Play' }}
-                                </button>
-                                        <button @click="restart" class="control-btn">
-                                            Reset
-                                </button>
-                            </div>
-
-                                    <!-- Current Map Info -->
-                                    <div class="current-map-display">
-                                        <div class="map-badge" :style="getCurrentMapStyle()">
-                                            <span class="map-icon">🗺️</span>
-                                            <span class="map-name">{{ currentMap || 'Loading...' }}</span>
-                                        </div>
-                                        </div>
+                                <!-- Game Progress (always visible) -->
+                                <div class="game-progress-section">
+                                    <label class="section-label">Game Progress: {{ currentGame }} / {{ maxGames }}</label>
+                                    <div class="progress-container">
+                                        <span class="progress-value">{{ currentGame }}</span>
+                                        <input type="range" 
+                                               :min="1" 
+                                               :max="maxGames" 
+                                               v-model.number="currentGame"
+                                               @input="updateGameFromSlider"
+                                               @change="updateGameFromSlider"
+                                               @mousedown="startSliderControl"
+                                               @mouseup="endSliderControl"
+                                               @touchstart="startSliderControl"
+                                               @touchend="endSliderControl"
+                                               class="progress-slider">
+                                        <span class="progress-value">{{ maxGames }}</span>
                                     </div>
+                                </div>
 
-                                <!-- Expanded Controls (Game Filtering & Export) -->
-                                <transition name="slide-down">
-                                    <div v-if="panelExpanded" class="expanded-controls" @mousedown.stop>
-                                        <!-- Game Filtering -->
+                                <!-- Quick Controls (Play/Reset) -->
+                                <div class="quick-controls">
+                                    <button @click="togglePlayback" class="control-btn play-btn">
+                                        {{ isPlaying ? 'Pause' : 'Play' }}
+                                    </button>
+                                    <button @click="restart" class="control-btn">
+                                        Reset
+                                    </button>
+                                </div>
+
+                                <!-- Current Map Info -->
+                                <div class="current-map-display">
+                                    <div class="map-badge" :style="getCurrentMapStyle()">
+                                        <span class="map-icon">🗺️</span>
+                                        <span class="map-name">{{ currentMap || 'Loading...' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Expanded Controls (Game Filtering & Export) -->
+                            <transition name="slide-down">
+                                <div v-if="panelExpanded" class="expanded-controls" @mousedown.stop>
+                                    <!-- Game Filtering -->
                                     <div class="control-section">
-                                            <label class="section-label">🎮 Game {{ currentGame }} / {{ maxGames }}</label>
+                                        <label class="section-label">🎮 Game {{ currentGame }} / {{ maxGames }}</label>
                                         <div class="game-filter-buttons">
-                                                <button v-for="game in maxGames" 
-                                                        :key="game"
-                                                        @click="toggleGameFilter(game)"
-                                                        class="game-filter-btn"
-                                                        :class="{ 
-                                                            active: selectedGames.includes(game),
-                                                            current: game === currentGame 
-                                                        }"
-                                                        :style="getGameButtonStyle(game)">
-                                                    {{ game }}
-                                        </button>
-                                            </div>
-                                            <div class="filter-action-buttons">
-                                                <button @click="resetGameFilter" class="reset-filter-btn">
-                                                    Clear
+                                            <button v-for="game in maxGames" 
+                                                    :key="game"
+                                                    @click="toggleGameFilter(game)"
+                                                    class="game-filter-btn"
+                                                    :class="{ 
+                                                        active: selectedGames.includes(game),
+                                                        current: game === currentGame 
+                                                    }"
+                                                    :style="getGameButtonStyle(game)">
+                                                {{ game }}
+                                            </button>
+                                        </div>
+                                        <div class="filter-action-buttons">
+                                            <button @click="resetGameFilter" class="reset-filter-btn">
+                                                Clear
                                             </button>
                                         </div>
                                     </div>
 
-                                        <!-- Export Controls -->
+                                    <!-- Export Controls -->
                                     <div class="control-section">
-                                            <label class="section-label">Export Data</label>
-                                            <button @click="exportData" :disabled="!chartEngine" class="export-btn">
-                                                📊 Export CSV
+                                        <label class="section-label">Export Data</label>
+                                        <button @click="exportData" :disabled="!chartEngine" class="export-btn">
+                                            📊 Export CSV
                                         </button>
                                     </div>
                                 </div>
                             </transition>
-                            </div>
                         </div>
                     </div>
                 </template>

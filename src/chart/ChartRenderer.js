@@ -162,14 +162,34 @@ export class ChartRenderer {
             console.warn('⚠️ Y scale bandwidth is NaN, skipping render')
             return
         }
+
+        // CRITICAL FIX: If currentGameIndex is 0, render initial state instead of clearing
+        if (currentGameIndex === 0) {
+            console.log('🔄 Returning to initial state (game 0), rendering initial layout')
+            this.renderInitialTeamLayout(data, { transitionDuration })
+            return
+        }
         
-        // CRITICAL: Clear ALL initial state elements ONLY if they exist (to prevent repeated clearing)
-        if (this.mainGroup.selectAll('.team-group.initial-state').size() > 0) {
-            this.mainGroup.selectAll('.team-group.initial-state').remove()
+        // CRITICAL: Clear ALL initial state elements ONLY if they exist and we're transitioning to playing state
+        const hasInitialState = this.mainGroup.selectAll('.team-group.initial-state').size() > 0
+        if (hasInitialState && currentGameIndex > 0) {
+            // Clear initial state elements with smooth transition
+            this.mainGroup.selectAll('.team-group.initial-state')
+                .transition()
+                .duration(transitionDuration / 2)  // Faster transition for clearing
+                .ease(d3.easeQuadOut)
+                .style('opacity', 0)
+                .remove()
+            
+            // Clear initial state team info elements (they'll be recreated in custom y-axis)
             this.mainGroup.selectAll('.ranking-number').remove()
             this.mainGroup.selectAll('.team-label').remove()
             this.mainGroup.selectAll('.logo-container').remove()
-            console.log('🧹 Cleared initial state elements (one-time transition)')
+            
+            // CRITICAL: Also clear any existing custom y-axis elements to prevent conflicts
+            this.customYAxisGroup.selectAll('.team-entry').remove()
+            
+            console.log('🧹 Cleared initial state elements and custom y-axis for fresh progressive gameplay')
         }
         
         // Create team groups for playing state
@@ -188,16 +208,11 @@ export class ChartRenderer {
         allTeamGroups
             .transition()
             .duration(transitionDuration)
-            .ease(d3.easeQuadOut)
+            .ease(d3.easeQuadOut)  // Consistent easing for smooth movement
             .attr('transform', d => {
                 const yPos = this.yScale(d.team)
                 const bandwidth = this.yScale.bandwidth()
-                
-                if (isNaN(yPos) || isNaN(bandwidth)) {
-                    console.warn('⚠️ Invalid position values, using fallback')
-                    return `translate(0, 0)`
-                }
-                
+                if (isNaN(yPos) || isNaN(bandwidth)) return 'translate(0, 0)'
                 return `translate(0, ${yPos + bandwidth / 2})`
             })
         
@@ -210,6 +225,10 @@ export class ChartRenderer {
                 filteredGameIndices 
             })
         })
+        
+        // Update axes - this will trigger updateCustomYAxis to render team names/logos
+        console.log('🔄 Updating axes and team names/logos for progressive gameplay')
+        this.updateAxes(data, transitionDuration)
     }
     
     renderTeamSegments(teamGroup, teamData, config) {
@@ -443,22 +462,24 @@ export class ChartRenderer {
     }
     
     updateCustomYAxis(data, transitionDuration = 1500) {
-        // Prevent double rendering during transitions
-        if (this.yAxisUpdateInProgress) {
-            return;
-        }
-        this.yAxisUpdateInProgress = true;
+        // CRITICAL FIX: Always allow updates during progressive gameplay
+        // The blocking logic was preventing team names from rendering during slider movements
+        console.log('🎯 Updating y-axis with team names and logos - synchronized with bar animation')
+        console.log('🔍 Data received:', data.length, 'teams')
+        console.log('🔍 Team names:', data.map(d => d.team))
         
-        console.log('🎯 Updating y-axis - synchronized with bar animation')
+        // Debug y-axis scale configuration
+        console.log('🔍 Y-axis scale domain:', this.yScale.domain())
+        console.log('🔍 Y-axis scale range:', this.yScale.range())
+        console.log('🔍 Y-axis scale bandwidth:', this.yScale.bandwidth())
         
-        // CRITICAL: Remove ALL initial state elements to prevent dual text effect (only once)
-        if (this.mainGroup.selectAll('.team-group.initial-state').size() > 0) {
-            this.mainGroup.selectAll('.team-group.initial-state').remove()
-            this.mainGroup.selectAll('.ranking-number').remove()
-            this.mainGroup.selectAll('.team-label').remove()
-            this.mainGroup.selectAll('.logo-container').remove()
-            console.log('🧹 Cleared initial state elements from y-axis (one-time)')
-        }
+        // Debug custom y-axis group positioning
+        const customYAxisTransform = this.customYAxisGroup.attr('transform')
+        console.log('🔍 Custom Y-axis group transform:', customYAxisTransform)
+        console.log('🔍 Custom Y-axis group node:', this.customYAxisGroup.node())
+        
+        // Reset any previous update state to ensure fresh rendering
+        this.yAxisUpdateInProgress = false;
         
         // Use data join approach to handle updates properly
         const teamEntries = this.customYAxisGroup.selectAll('.team-entry')
@@ -471,35 +492,54 @@ export class ChartRenderer {
         const teamEntriesEnter = teamEntries.enter()
             .append('g')
             .attr('class', 'team-entry')
-            .attr('transform', d => `translate(0, ${this.yScale(d.team) + this.yScale.bandwidth() / 2})`)
+            .attr('transform', d => {
+                const yPos = this.yScale(d.team)
+                const bandwidth = this.yScale.bandwidth()
+                console.log(`🔍 Team ${d.team}: yPos=${yPos}, bandwidth=${bandwidth}`)
+                return `translate(0, ${yPos + bandwidth / 2})`
+            })
+        
+        console.log('🔍 Creating', teamEntriesEnter.size(), 'new team entries')
         
         this.setupTeamEntries(teamEntriesEnter)
         
         // Merge enter and update selections
         const allTeamEntries = teamEntries.merge(teamEntriesEnter)
         
-        // Synchronize with bar animation timing (use passed duration)
+        console.log('🔍 Total team entries after merge:', allTeamEntries.size())
+        
+        // IMPORTANT: Always update team content BEFORE starting transitions
+        // This ensures team names are visible during the entire transition
+        allTeamEntries.select('.ranking-number')
+            .text((d, i) => {
+                console.log(`🔍 Setting ranking ${i + 1} for team ${d.team}`)
+                return i + 1
+            })
+            .style('fill', '#dc2626')
+            .style('font-weight', '700')
+            .style('opacity', 1)
+        
+        allTeamEntries.select('.team-label')
+            .text(d => {
+                console.log(`🔍 Setting team label for ${d.team}`)
+                return d.team
+            })
+            .style('display', isMobileDevice() ? 'none' : 'block')
+            .style('fill', '#f1f5f9')
+            .style('font-weight', '600')
+            .style('opacity', 1)
+        
+        // Update team logos immediately to prevent flickering
+        this.updateTeamLogos(allTeamEntries)
+        
+        // THEN apply position transitions with synchronized timing
         allTeamEntries
             .transition()
-            .duration(transitionDuration)  // Match bar animation duration exactly
+            .duration(transitionDuration)
             .ease(d3.easeQuadOut)
             .attr('transform', d => `translate(0, ${this.yScale(d.team) + this.yScale.bandwidth() / 2})`)
         
-        // Update text content with same timing
-        allTeamEntries.select('.ranking-number')
-            .text((d, i) => i + 1)
-        
-        allTeamEntries.select('.team-label')
-            .text(d => d.team)
-            .style('display', isMobileDevice() ? 'none' : 'block')
-        
-        // Update team logos
-        this.updateTeamLogos(allTeamEntries)
-        
-        // Reset flag after animation completes
-        setTimeout(() => {
-            this.yAxisUpdateInProgress = false;
-        }, transitionDuration + 100);  // Slightly longer than animation duration
+        console.log('✅ Team names and logos updated successfully - should be visible now')
     }
     
     setupTeamEntries(teamEntriesEnter) {
@@ -546,11 +586,15 @@ export class ChartRenderer {
             .style('font-size', windowWidth < 700 ? '14px' : '18px')
             .style('font-weight', '700')
             .style('fill', '#dc2626')
+            .style('opacity', 1)  // Ensure visibility
+            .style('pointer-events', 'none')  // Prevent interference
         
         // Add team logo container with responsive positioning
         const logoGroup = teamEntriesEnter.append('g')
             .attr('class', 'logo-container')
             .attr('transform', `translate(${logoX}, 0)`)
+            .style('opacity', 1)  // Ensure visibility
+            .style('pointer-events', 'none')  // Prevent interference
         
         // Logo background
         logoGroup.append('circle')
@@ -560,6 +604,7 @@ export class ChartRenderer {
             .style('stroke', 'rgba(0, 0, 0, 0.3)')
             .style('stroke-width', '1px')
             .style('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))')
+            .style('opacity', 1)  // Ensure visibility
         
         // Logo image
         logoGroup.append('image')
@@ -574,13 +619,16 @@ export class ChartRenderer {
         // Fallback logo
         const fallbackGroup = logoGroup.append('g')
             .attr('class', 'logo-fallback')
-            .style('opacity', 1)
+            .style('opacity', 1)  // Ensure visibility
+            .style('pointer-events', 'none')  // Prevent interference
         
         fallbackGroup.append('circle')
             .attr('class', 'fallback-bg')
             .attr('r', getResponsivePointSize(14))
             .style('stroke', 'rgba(0, 0, 0, 0.5)')
             .style('stroke-width', '1px')
+            .style('opacity', 1)  // Ensure visibility
+            .style('fill', '#ff6b6b')  // Bright red for debugging - make logos highly visible
         
         fallbackGroup.append('text')
             .attr('class', 'fallback-text')
@@ -590,6 +638,8 @@ export class ChartRenderer {
             .style('font-weight', '700')
             .style('fill', '#ffffff')
             .style('text-shadow', '0 1px 2px rgba(0,0,0,0.5)')
+            .style('opacity', 1)  // Ensure visibility
+            .style('pointer-events', 'none')  // Prevent interference
         
         // Add team name label with responsive positioning (hidden on mobile)
         teamEntriesEnter.append('text')
@@ -601,6 +651,8 @@ export class ChartRenderer {
             .style('font-weight', '600')
             .style('fill', '#f1f5f9')
             .style('display', isMobileDevice() ? 'none' : 'block')
+            .style('opacity', 1)  // Ensure visibility
+            .style('pointer-events', 'none')  // Prevent interference
     }
     
     updateTeamLogos(teamEntries) {
@@ -929,16 +981,16 @@ export class ChartRenderer {
             .style('opacity', 0)
             .text(trophy)
         
-        // Animate trophy
+        // Animate trophy - REMOVED ZOOM EFFECT: Changed from easeBackOut to easeQuadOut for smoother animation
         trophyText.transition()
             .duration(500)
-            .ease(d3.easeBackOut)
+            .ease(d3.easeQuadOut)  // Changed from d3.easeBackOut to remove bounce/zoom effect
             .style('opacity', 1)
             .attr('x', -40)
             .transition()
             .delay(2000)
             .duration(1000)
-            .ease(d3.easeQuadIn)
+            .ease(d3.easeQuadOut)  // Changed from d3.easeQuadIn to easeQuadOut for consistency
             .style('opacity', 0)
             .remove()
     }

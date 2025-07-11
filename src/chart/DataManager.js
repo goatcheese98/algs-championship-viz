@@ -3,222 +3,20 @@
  * Extracted from ChartEngine.js for better modularity and performance
  */
 
+// Import separate modules for better organization
+import { MAP_SEQUENCES, getMapSequence } from './MapSequenceData.js';
+import { 
+    getBaseMapColor, 
+    getMapColorByOccurrence, 
+    calculateMapOccurrence,
+    getMapColorInfo,
+    SPECIAL_STATE_COLORS 
+} from './MapColoringLogic.js';
+
 // Ensure D3 is available
 const d3 = window.d3
 if (!d3) {
     throw new Error('D3.js is not available. Please ensure d3.v7.min.js is loaded.')
-}
-
-// Integrated map sequences data (moved from js/mapSequences.js)
-const MAP_SEQUENCES = {
-    // Group Stage Matchups (6 games each)
-    'AvsB': {
-        name: 'Groups A vs B',
-        gameCount: 6,
-        maps: {
-            1: 'E-DISTRICT',
-            2: 'E-DISTRICT',
-            3: 'STORM POINT',
-            4: 'STORM POINT',
-            5: 'WORLD\'S EDGE',
-            6: 'WORLD\'S EDGE'
-        }
-    },
-
-    'CvsD': {
-        name: 'Groups C vs D',
-        gameCount: 6,
-        maps: {
-            1: 'E-DISTRICT',
-            2: 'E-DISTRICT',
-            3: 'STORM POINT',
-            4: 'STORM POINT',
-            5: 'WORLD\'S EDGE',
-            6: 'WORLD\'S EDGE'
-        }
-    },
-
-    'BvsD': {
-        name: 'Groups B vs D',
-        gameCount: 6,
-        maps: {
-            1: 'STORM POINT',
-            2: 'STORM POINT',
-            3: 'WORLD\'S EDGE',
-            4: 'WORLD\'S EDGE',
-            5: 'E-DISTRICT',
-            6: 'E-DISTRICT'
-        }
-    },
-
-    'AvsC': {
-        name: 'Groups A vs C',
-        gameCount: 6,
-        maps: {
-            1: 'E-DISTRICT',
-            2: 'E-DISTRICT',
-            3: 'STORM POINT',
-            4: 'STORM POINT',
-            5: 'WORLD\'S EDGE',
-            6: 'WORLD\'S EDGE'
-        }
-    },
-
-    'BvsC': {
-        name: 'Groups B vs C',
-        gameCount: 6,
-        maps: {
-            1: 'STORM POINT',
-            2: 'STORM POINT',
-            3: 'WORLD\'S EDGE',
-            4: 'WORLD\'S EDGE',
-            5: 'E-DISTRICT',
-            6: 'E-DISTRICT'
-        }
-    },
-
-    'AvsD': {
-        name: 'Groups A vs D',
-        gameCount: 6,
-        maps: {
-            1: 'E-DISTRICT',
-            2: 'E-DISTRICT',
-            3: 'STORM POINT',
-            4: 'STORM POINT',
-            5: 'WORLD\'S EDGE',
-            6: 'WORLD\'S EDGE'
-        }
-    },
-
-    // Bracket Stage Matchups (8 games each)
-    'ER1': {
-        name: 'Elimination Round 1',
-        gameCount: 8,
-        maps: {
-            1: 'E-DISTRICT',
-            2: 'E-DISTRICT',
-            3: 'E-DISTRICT',
-            4: 'STORM POINT',
-            5: 'STORM POINT',
-            6: 'WORLD\'S EDGE',
-            7: 'WORLD\'S EDGE',
-            8: 'WORLD\'S EDGE'
-        }
-    },
-
-    'ER2': {
-        name: 'Elimination Round 2',
-        gameCount: 8,
-        maps: {
-            1: 'STORM POINT',
-            2: 'STORM POINT',
-            3: 'WORLD\'S EDGE',
-            4: 'WORLD\'S EDGE',
-            5: 'E-DISTRICT',
-            6: 'E-DISTRICT',
-            7: 'STORM POINT',
-            8: 'WORLD\'S EDGE'
-        }
-    },
-
-    'WR1': {
-        name: 'Winners Round 1',
-        gameCount: 8,
-        maps: {
-            1: 'WORLD\'S EDGE',
-            2: 'WORLD\'S EDGE',
-            3: 'E-DISTRICT',
-            4: 'E-DISTRICT',
-            5: 'STORM POINT',
-            6: 'STORM POINT',
-            7: 'WORLD\'S EDGE',
-            8: 'E-DISTRICT'
-        }
-    },
-
-    // ========================================
-    // YEAR 5 OPEN TOURNAMENT MAP SEQUENCES
-    // ========================================
-    // All Year 5 rounds use AvsB rotation pattern (6 games)
-    // E-District (2) → Storm Point (2) → World's Edge (2)
-    
-    'Day1-WinnersRound1-1': {
-        name: 'Day 1 - Winners Round 1 #1',
-        gameCount: 6,
-        maps: {
-            1: 'E-DISTRICT',
-            2: 'E-DISTRICT',
-            3: 'STORM POINT',
-            4: 'STORM POINT',
-            5: 'WORLD\'S EDGE',
-            6: 'WORLD\'S EDGE'
-        }
-    },
-
-    'Day1-WinnersRound1-2': {
-        name: 'Day 1 - Winners Round 1 #2',
-        gameCount: 6,
-        maps: {
-            1: 'E-DISTRICT',
-            2: 'E-DISTRICT',
-            3: 'STORM POINT',
-            4: 'STORM POINT',
-            5: 'WORLD\'S EDGE',
-            6: 'WORLD\'S EDGE'
-        }
-    },
-
-    'Day1-WinnersRound1-3': {
-        name: 'Day 1 - Winners Round 1 #3',
-        gameCount: 6,
-        maps: {
-            1: 'E-DISTRICT',
-            2: 'E-DISTRICT',
-            3: 'STORM POINT',
-            4: 'STORM POINT',
-            5: 'WORLD\'S EDGE',
-            6: 'WORLD\'S EDGE'
-        }
-    },
-
-    'Day1-WinnersRound1-4': {
-        name: 'Day 1 - Winners Round 1 #4',
-        gameCount: 6,
-        maps: {
-            1: 'E-DISTRICT',
-            2: 'E-DISTRICT',
-            3: 'STORM POINT',
-            4: 'STORM POINT',
-            5: 'WORLD\'S EDGE',
-            6: 'WORLD\'S EDGE'
-        }
-    },
-
-    'Day1-WinnersRound1-5': {
-        name: 'Day 1 - Winners Round 1 #5',
-        gameCount: 6,
-        maps: {
-            1: 'E-DISTRICT',
-            2: 'E-DISTRICT',
-            3: 'STORM POINT',
-            4: 'STORM POINT',
-            5: 'WORLD\'S EDGE',
-            6: 'WORLD\'S EDGE'
-        }
-    },
-
-    'Day1-WinnersRound1-6': {
-        name: 'Day 1 - Winners Round 1 #6',
-        gameCount: 6,
-        maps: {
-            1: 'E-DISTRICT',
-            2: 'E-DISTRICT',
-            3: 'STORM POINT',
-            4: 'STORM POINT',
-            5: 'WORLD\'S EDGE',
-            6: 'WORLD\'S EDGE'
-        }
-    }
 }
 
 export class DataManager {
@@ -227,47 +25,59 @@ export class DataManager {
         this.gameColumns = []
         this.maxGames = 0
         this.matchupInfo = null
-        this.cache = new Map()
         this.isFiltered = false
         this.filteredGameIndices = []
-        this.preCalculatedScales = null  // Will store pre-calculated scaling values
-        this._missingMatchupWarningLogged = false // Flag to prevent spamming console
+        this.preCalculatedScales = null
+        this.cache = new Map()
+        this._missingMatchupWarningLogged = false
+        
+        // Pre-computed game data for better performance and reliability
+        this.preComputedGameData = null
+        this.teamsList = []
+
+        console.log('📊 DataManager initialized with separated modules')
     }
 
     /**
-     * Load and cache CSV data
+     * Load data from CSV file
      * @param {string} csvPath - Path to CSV file
-     * @returns {Promise<Array>} Parsed CSV data
+     * @returns {Promise} Promise that resolves when data is loaded
      */
     async loadData(csvPath) {
+        console.log('📊 Loading data from:', csvPath)
+        
         // Check cache first
-        if (this.cache.has(csvPath)) {
-            console.log('📊 Loading data from cache:', csvPath)
-            this.data = this.cache.get(csvPath)
+        const cacheKey = `data_${csvPath}`
+        if (this.cache.has(cacheKey)) {
+            console.log('📊 Using cached data for:', csvPath)
+            this.data = this.cache.get(cacheKey)
             this.setupDataProperties(csvPath)
-            return this.data
+            return Promise.resolve()
         }
 
         try {
-            console.log('📊 Loading CSV data:', csvPath)
-            this.data = await d3.csv(csvPath)
-
-            // Cache the data for future use
-            this.cache.set(csvPath, this.data)
-
+            const loadedData = await d3.csv(csvPath)
+            
+            if (!loadedData || loadedData.length === 0) {
+                throw new Error(`No data loaded from ${csvPath}`)
+            }
+            
+            this.data = loadedData
             this.setupDataProperties(csvPath)
-
-            console.log('✅ Data loaded successfully:', {
-                teams: this.data.length,
-                games: this.maxGames,
-                columns: this.gameColumns
+            
+            // Cache the data
+            this.cache.set(cacheKey, this.data)
+            
+            console.log('📊 Data loaded successfully:', {
+                rows: this.data.length,
+                columns: Object.keys(this.data[0]).length,
+                maxGames: this.maxGames
             })
-
-            return this.data
-
+            
+            return Promise.resolve()
         } catch (error) {
             console.error('❌ Error loading data:', error)
-            throw new Error(`Failed to load data from ${csvPath}: ${error.message}`)
+            throw error
         }
     }
 
@@ -276,105 +86,113 @@ export class DataManager {
      * @param {string} csvPath - Path to CSV file
      */
     setupDataProperties(csvPath) {
-        if (!this.data) return
-        
-        // Identify game columns (exclude first Team column and last Total column)
-        const allColumns = this.data.columns
-        this.gameColumns = allColumns.slice(1, -1)
+        if (!this.data || this.data.length === 0) return
+
+        // Extract game columns (assuming they start with 'Game')
+        const firstRow = this.data[0]
+        this.gameColumns = Object.keys(firstRow).filter(key => key.startsWith('Game'))
         this.maxGames = this.gameColumns.length
+
+        // Setup matchup info from CSV path
+        const matchupId = this.extractMatchupFromPath(csvPath)
+        this.matchupInfo = getMapSequence(matchupId) // Use imported function
+
+        if (!this.matchupInfo && !this._missingMatchupWarningLogged) {
+            console.warn(`⚠️ No matchup info found for: ${matchupId}`)
+            this._missingMatchupWarningLogged = true
+        }
         
-        // Get matchup info from integrated sequences
-        const matchupKey = this.extractMatchupFromPath(csvPath)
-        this.matchupInfo = MAP_SEQUENCES[matchupKey]
+        // Pre-compute all game data for better performance
+        this.preComputeGameData()
         
-        // Pre-calculate scaling values for better performance
-        console.log('📊 Setting up data properties and pre-calculating scales...')
+        // Pre-calculate scales for performance
         this.preCalculateScales()
-        
-        console.log('📊 Data properties setup:', {
-            matchup: matchupKey,
-            gameColumns: this.gameColumns,
-            maxGames: this.maxGames,
-            dataRows: this.data.length,
-            hasScales: !!this.preCalculatedScales
-        })
     }
 
     /**
-     * Extract matchup key from CSV path
+     * Extract matchup ID from CSV path
      * @param {string} csvPath - Path to CSV file
-     * @returns {string} Matchup key
+     * @returns {string} Matchup ID
      */
     extractMatchupFromPath(csvPath) {
-        const filename = csvPath.split('/').pop().split('.')[0]
-        return filename.replace('_points', '')
+        const pathParts = csvPath.split('/')
+        const fileName = pathParts[pathParts.length - 1]
+        return fileName.replace(/[-_]?points\.csv$|[-_]?simple\.csv$/, '')
     }
 
     /**
-     * Process data for chart rendering
-     * @param {number} currentGameIndex - Current game to display up to (0 = initial state)
-     * @returns {Array} Processed data for chart
+     * Process data for specific game index using pre-computed data
+     * @param {number} currentGameIndex - Current game index (0 = initial state)
+     * @returns {Array} Processed data for visualization
      */
     processData(currentGameIndex = 0) {
-        if (!this.data || !this.gameColumns) return []
-
-        // Handle initial state (Game 0) - show all teams with 0 points
-        if (currentGameIndex === 0) {
-            return this.getAllTeamsData()
+        if (!this.preComputedGameData || !this.teamsList) {
+            console.warn('⚠️ Pre-computed data not available, falling back to empty array')
+            return []
         }
 
-        // Ensure currentGameIndex is within valid bounds (1 to maxGames)
-        currentGameIndex = Math.max(1, Math.min(currentGameIndex, this.maxGames))
+        console.log('📊 Processing data for game index:', currentGameIndex, 'using pre-computed data')
 
-        const processedData = this.data.map(d => {
-            const teamData = {
-                team: d.Team,
-                games: [],
-                cumulativeScore: 0
-            }
+        // Handle game filtering if active
+        let teamsData = []
+        
+        if (this.isFiltered && this.filteredGameIndices.length > 0) {
+            // Handle filtered games - need to reconstruct with only selected games
+            teamsData = this.teamsList.map(team => {
+                const teamPrecomputed = this.preComputedGameData[team]
+                const filteredGames = []
+                let cumulativeScore = 0
 
-            // Determine which games to include
-            let gamesToInclude
-            if (this.isFiltered && this.filteredGameIndices.length > 0) {
-                gamesToInclude = this.filteredGameIndices.slice().sort((a, b) => a - b)
-            } else {
-                gamesToInclude = Array.from({length: currentGameIndex}, (_, i) => i + 1)
-            }
-
-            // Build game-by-game data with colors based on original game numbers
-            gamesToInclude.forEach(originalGameNum => {
-                const gameCol = this.gameColumns[originalGameNum - 1]
-                const gamePoints = +d[gameCol] || 0
-                const mapForGame = this.getMapForGame(originalGameNum)
-                const gameColor = this.getMapColor(mapForGame, originalGameNum)
-
-                teamData.games.push({
-                    gameNumber: originalGameNum,
-                    points: gamePoints,
-                    color: gameColor,
-                    map: mapForGame,
-                    startX: teamData.cumulativeScore
+                // Only include games that are in the filter AND up to currentGameIndex
+                this.filteredGameIndices.forEach(gameNum => {
+                    if (gameNum <= currentGameIndex) {
+                        const gameData = teamPrecomputed.games.find(g => g.gameNumber === gameNum)
+                        if (gameData) {
+                            // Recalculate startX for filtered view
+                            const filteredGameData = {
+                                ...gameData,
+                                startX: cumulativeScore
+                            }
+                            filteredGames.push(filteredGameData)
+                            cumulativeScore += gameData.points
+                        }
+                    }
                 })
 
-                teamData.cumulativeScore += gamePoints
+                return {
+                    team: team,
+                    games: filteredGames,
+                    cumulativeScore: cumulativeScore,
+                    totalScore: teamPrecomputed.totalScore
+                }
             })
-
-            return teamData
-        })
-
-        // Sort by cumulative score (or alphabetically for initial state)
-        if (currentGameIndex === 0) {
-            processedData.sort((a, b) => a.team.localeCompare(b.team))
         } else {
-            processedData.sort((a, b) => b.cumulativeScore - a.cumulativeScore)
+            // Normal processing - use pre-computed data directly
+            teamsData = this.teamsList.map(team => {
+                const teamData = this.preComputedGameData[team].gameByGame[currentGameIndex]
+                return {
+                    team: teamData.team,
+                    games: teamData.games,
+                    cumulativeScore: teamData.cumulativeScore,
+                    totalScore: this.preComputedGameData[team].totalScore
+                }
+            })
         }
 
-        return processedData
+        // Sort by cumulative score (descending) for game progress > 0, alphabetically for initial state
+        if (currentGameIndex === 0) {
+            teamsData.sort((a, b) => a.team.localeCompare(b.team))
+        } else {
+            teamsData.sort((a, b) => b.cumulativeScore - a.cumulativeScore)
+        }
+
+        console.log('✅ Processed data for', teamsData.length, 'teams at game index', currentGameIndex)
+        return teamsData
     }
 
     /**
-     * Apply game filter
-     * @param {Array<number>} selectedGames - Array of game numbers to show
+     * Filter data by selected games
+     * @param {Array} selectedGames - Array of game numbers to show
      */
     filterByGames(selectedGames) {
         if (!selectedGames || selectedGames.length === 0) {
@@ -382,76 +200,55 @@ export class DataManager {
             return
         }
 
-        this.selectedGames = selectedGames
         this.isFiltered = true
-        this.filteredGameIndices = selectedGames.slice()
-
-        console.log('📊 Applied game filter:', selectedGames)
+        this.filteredGameIndices = [...selectedGames].sort((a, b) => a - b)
+        console.log('📊 Applied game filter:', this.filteredGameIndices)
     }
 
     /**
      * Clear game filter
      */
     clearGameFilter() {
-        this.selectedGames = []
         this.isFiltered = false
         this.filteredGameIndices = []
-
-        console.log('📊 Cleared game filter')
+        console.log('📊 Game filter cleared')
     }
 
     /**
-     * Get map name for a specific game
-     * @param {number} gameNumber - Game number
+     * Get map for specific game number
+     * @param {number} gameNumber - Game number (1-based)
      * @returns {string} Map name
      */
     getMapForGame(gameNumber) {
-        if (!this.matchupInfo || !this.matchupInfo.maps) {
-            // Only log warning once per session to avoid spam
-            if (!this._missingMatchupWarningLogged) {
-                console.warn('📊 DataManager: Matchup info not yet loaded, using fallback map data')
-                this._missingMatchupWarningLogged = true
-            }
-            return 'Loading...'
-        }
-
-        // Handle initial state (game 0)
+        // Handle pre-game state
         if (gameNumber === 0) {
             return 'Pre-Game'
         }
 
-        return this.matchupInfo.maps[gameNumber] || 'Unknown'
+        // Use matchup info if available
+        if (this.matchupInfo && this.matchupInfo.maps) {
+            return this.matchupInfo.maps[gameNumber] || 'Unknown'
+        }
+
+        // Fallback to unknown
+        return 'Unknown'
     }
 
     /**
-     * Get color for a map based on occurrence
+     * Get color for a map
      * @param {string} mapName - Map name
-     * @param {number} gameNumber - Game number for occurrence calculation
+     * @param {number} gameNumber - Game number (optional)
      * @returns {string} CSS color string
      */
     getMapColor(mapName, gameNumber = null) {
-        if (!mapName || mapName === 'Unknown') {
-            return '#6b7280' // Gray for unknown maps
-        }
-
-        // Handle pre-game state
-        if (mapName === 'Pre-Game') {
-            return '#8b5cf6' // Purple for pre-game state
-        }
-
         // Use occurrence-based coloring if gameNumber is provided
         if (gameNumber !== null && this.matchupInfo) {
-            return this.getMapColorByOccurrence(mapName, gameNumber)
+            const occurrenceCount = calculateMapOccurrence(mapName, gameNumber, this.matchupInfo);
+            return getMapColorByOccurrence(mapName, occurrenceCount);
         }
 
-        // Default map colors (using new HSL scheme - first occurrence)
-        const mapColors = {
-            'E-DISTRICT': 'hsl(198, 40%, 50%)',     // Blue
-            'STORM POINT': 'hsl(28, 40%, 50%)',     // Orange
-            'WORLD\'S EDGE': 'hsl(350, 40%, 50%)'   // Red
-        }
-
-        return mapColors[mapName] || '#6b7280'
+        // Return base color for first occurrence
+        return getBaseMapColor(mapName);
     }
 
     /**
@@ -461,45 +258,12 @@ export class DataManager {
      * @returns {string} CSS color string
      */
     getMapColorByOccurrence(mapName, gameNumber) {
-        if (!this.matchupInfo || !this.matchupInfo.maps) {
-            return this.getMapColor(mapName)
+        if (!this.matchupInfo) {
+            return getBaseMapColor(mapName);
         }
 
-        // Count occurrences of this map up to the current game
-        let occurrenceCount = 0
-        for (let i = 1; i <= gameNumber; i++) {
-            if (this.matchupInfo.maps[i] === mapName) {
-                occurrenceCount++
-            }
-        }
-
-        // New HSL color scheme based on occurrence
-        const hslColorVariations = {
-            'E-DISTRICT': [
-                'hsl(198, 40%, 50%)',   // 1st occurrence
-                'hsl(198, 50%, 50%)',   // 2nd occurrence
-                'hsl(198, 60%, 50%)'    // 3rd+ occurrence
-            ],
-            'STORM POINT': [
-                'hsl(28, 40%, 50%)',    // 1st occurrence
-                'hsl(28, 50%, 50%)',    // 2nd occurrence
-                'hsl(28, 60%, 50%)'     // 3rd+ occurrence
-            ],
-            'WORLD\'S EDGE': [
-                'hsl(350, 40%, 50%)',   // 1st occurrence
-                'hsl(350, 50%, 50%)',   // 2nd occurrence
-                'hsl(350, 60%, 50%)'    // 3rd+ occurrence
-            ]
-        }
-
-        const variations = hslColorVariations[mapName]
-        if (!variations) {
-            return '#6b7280' // Gray fallback
-        }
-
-        // Return color based on occurrence (1st, 2nd, 3rd+ occurrence)
-        const colorIndex = Math.min(occurrenceCount - 1, variations.length - 1)
-        return variations[colorIndex]
+        const occurrenceCount = calculateMapOccurrence(mapName, gameNumber, this.matchupInfo);
+        return getMapColorByOccurrence(mapName, occurrenceCount);
     }
 
     /**
@@ -537,39 +301,43 @@ export class DataManager {
             matchupInfo: this.matchupInfo,
             isFiltered: this.isFiltered,
             filteredGameIndices: this.filteredGameIndices,
-            cacheSize: this.cache.size
+            cacheSize: this.cache.size,
+            hasPreComputedData: !!this.preComputedGameData,
+            teamsCount: this.teamsList.length,
+            modulesLoaded: {
+                mapSequences: !!MAP_SEQUENCES,
+                mapColoring: !!getBaseMapColor
+            }
         }
     }
 
     /**
-     * Reset data manager
-     */
-    reset() {
-        this.data = null
-        this.gameColumns = []
-        this.maxGames = 0
-        this.matchupInfo = null
-        this.isFiltered = false
-        this.filteredGameIndices = []
-        this.preCalculatedScales = null  // Reset pre-calculated scales
-        this._missingMatchupWarningLogged = false // Reset warning flag
-        // Keep cache for performance
-
-        console.log('📊 DataManager reset')
-    }
-
-    /**
-     * Get all teams data for initial state
+     * Get all teams data for initial state using pre-computed data
      * @returns {Array} Team data with zero scores
      */
     getAllTeamsData() {
-        if (!this.data) return []
+        if (!this.preComputedGameData || !this.teamsList) {
+            // Fallback to basic structure if pre-computed data isn't available
+            if (!this.data) return []
+            
+            return this.data.map(d => ({
+                team: d.Team,
+                games: [],
+                cumulativeScore: 0,
+                totalScore: parseInt(d.Total) || 0
+            })).sort((a, b) => a.team.localeCompare(b.team))
+        }
 
-        return this.data.map(d => ({
-            team: d.Team,
-            games: [],
-            cumulativeScore: 0
-        }))
+        // Use pre-computed initial state data
+        return this.teamsList.map(team => {
+            const teamData = this.preComputedGameData[team].gameByGame[0]
+            return {
+                team: teamData.team,
+                games: teamData.games,
+                cumulativeScore: teamData.cumulativeScore,
+                totalScore: this.preComputedGameData[team].totalScore
+            }
+        }).sort((a, b) => a.team.localeCompare(b.team))
     }
 
     /**
@@ -628,60 +396,137 @@ export class DataManager {
         // Calculate actual max cumulative score at this game index
         this.data.forEach(d => {
             let cumulativeScore = 0
-
-            // Sum up scores for all games up to this point
             for (let i = 1; i <= gameIndex; i++) {
-                const gameCol = this.gameColumns[i - 1]
-                const gamePoints = parseInt(d[gameCol]) || 0
-                cumulativeScore += gamePoints
+                const gameColumn = `Game ${i}`
+                const gameScore = parseInt(d[gameColumn]) || 0
+                cumulativeScore += gameScore
             }
-
             maxScore = Math.max(maxScore, cumulativeScore)
         })
 
-        // Apply user's exact scaling rules:
-        // - If max ≤ 50: round up to nearest 5
-        // - If max > 50: round up to nearest 10
-        if (maxScore === 0) {
-            return 5  // Minimum scale when no scores yet
-        }
-
-        if (maxScore <= 50) {
-            // Round up to nearest 5
-            return Math.ceil(maxScore / 5) * 5
-        } else {
-            // Round up to nearest 10
-            return Math.ceil(maxScore / 10) * 10
-        }
+        // Add buffer for better visualization
+        const bufferedMax = Math.ceil(maxScore * 1.1)
+        return Math.max(bufferedMax, 12) // Ensure minimum scale
     }
 
     /**
-     * Pre-calculate all scaling values for better performance
+     * Pre-calculate scales for all game indices for better performance
      */
     preCalculateScales() {
         if (!this.data || !this.gameColumns) return
 
-        console.log('📊 Pre-calculating scaling values for all game indices...')
-
+        console.log('📊 Pre-calculating scales for performance...')
+        
         this.preCalculatedScales = {}
-
+        
         // Calculate for initial state (game 0)
         this.preCalculatedScales[0] = 12
-
-        // Calculate for all game indices
+        
+        // Calculate for each game
         for (let gameIndex = 1; gameIndex <= this.maxGames; gameIndex++) {
             this.preCalculatedScales[gameIndex] = this.calculateMaxScoreAtGame(gameIndex)
         }
-
-        // Always show pre-calculated scales for verification
+        
         console.log('📊 Pre-calculated scales:', this.preCalculatedScales)
     }
 
     /**
-     * Clear cache
+     * Clear cache to free memory
      */
     clearCache() {
         this.cache.clear()
-        console.log('📊 DataManager cache cleared')
+        console.log('📊 Cache cleared')
+    }
+
+    /**
+     * Pre-compute all game data including cumulative scores for better performance
+     * This eliminates on-the-fly calculations and prevents timing issues
+     */
+    preComputeGameData() {
+        if (!this.data || !this.gameColumns) return
+
+        console.log('📊 Pre-computing all game data for better performance...')
+        
+        this.preComputedGameData = {}
+        this.teamsList = []
+
+        // Process each team
+        this.data.forEach(d => {
+            const team = d.Team
+            this.teamsList.push(team)
+            
+            this.preComputedGameData[team] = {
+                team: team,
+                totalScore: parseInt(d.Total) || 0,
+                gameByGame: [], // Will store data for each game index (0 to maxGames)
+                games: []       // Will store individual game data
+            }
+
+            let cumulativeScore = 0
+            
+            // Game 0 - Initial state
+            this.preComputedGameData[team].gameByGame[0] = {
+                currentGameIndex: 0,
+                cumulativeScore: 0,
+                games: [],
+                team: team
+            }
+
+            // Games 1 to maxGames
+            for (let gameIndex = 1; gameIndex <= this.maxGames; gameIndex++) {
+                const gameColumn = `Game ${gameIndex}`
+                const gameScore = parseInt(d[gameColumn]) || 0
+                const mapForGame = this.getMapForGame(gameIndex)
+                const gameColor = this.getMapColor(mapForGame, gameIndex)
+
+                // Add to individual games array
+                const gameData = {
+                    gameNumber: gameIndex,
+                    game: gameIndex,
+                    points: gameScore,
+                    score: gameScore,
+                    color: gameColor,
+                    map: mapForGame,
+                    startX: cumulativeScore,
+                    cumulativeScore: cumulativeScore + gameScore
+                }
+                
+                this.preComputedGameData[team].games.push(gameData)
+                cumulativeScore += gameScore
+
+                // Store cumulative data for this game index
+                this.preComputedGameData[team].gameByGame[gameIndex] = {
+                    currentGameIndex: gameIndex,
+                    cumulativeScore: cumulativeScore,
+                    games: this.preComputedGameData[team].games.slice(0, gameIndex), // Games up to this index
+                    team: team,
+                    totalScore: parseInt(d.Total) || 0
+                }
+            }
+        })
+
+        console.log('✅ Pre-computed game data for', this.teamsList.length, 'teams and', this.maxGames, 'games')
+    }
+
+    /**
+     * Reset data manager
+     */
+    reset() {
+        this.data = null
+        this.gameColumns = []
+        this.maxGames = 0
+        this.matchupInfo = null
+        this.isFiltered = false
+        this.filteredGameIndices = []
+        this.preCalculatedScales = null  // Reset pre-calculated scales
+        this._missingMatchupWarningLogged = false // Reset warning flag
+        
+        // Clear pre-computed data
+        this.preComputedGameData = null
+        this.teamsList = []
+        
+        // Keep cache for performance
+
+        console.log('📊 DataManager reset')
     }
 } 

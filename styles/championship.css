@@ -516,6 +516,27 @@ body {
     height: 100%;
     width: 100%;
     min-height: 600px;
+    flex-direction: column;
+    text-align: center;
+    color: #9ca3af;
+}
+
+.no-selection-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.6;
+}
+
+.no-selection h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #f1f5f9;
+}
+
+.no-selection p {
+    font-size: 1rem;
+    opacity: 0.8;
+    line-height: 1.5;
 }
 
 /* Vue.js + GSAP Chart Loading Animation */
@@ -1099,6 +1120,39 @@ body {
     contain: layout style paint;
 }
 
+/* Tournament Controls - Specific styling for tournament action panels */
+.tournament-controls {
+    position: fixed !important;  /* Use fixed instead of absolute for viewport-relative positioning */
+    top: 120px;
+    right: 20px;
+    z-index: 1000;
+    cursor: grab;
+    /* Ensure the panel can be moved freely */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    /* Prevent text selection during drag */
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tournament-controls:active {
+    cursor: grabbing;
+}
+
+.tournament-controls .panel-header {
+    cursor: grab;
+    /* Make the header easily draggable */
+    padding: 8px 14px;
+    border-radius: 8px 8px 0 0;
+    background: linear-gradient(135deg, rgba(17, 24, 39, 0.98) 0%, rgba(31, 41, 55, 0.98) 100%);
+}
+
+.tournament-controls .panel-header:active {
+    cursor: grabbing;
+}
+
 .enhanced-action-panel:hover {
     border-color: rgba(217, 119, 6, 0.5);
     box-shadow: 
@@ -1246,13 +1300,7 @@ body {
     margin-bottom: 4px;
 }
 
-.filter-description {
-    font-size: 0.7rem;
-    color: #9ca3af;
-    margin: 0 0 8px 0;
-    padding: 0;
-    font-style: italic;
-}
+
 
 .progress-container {
     display: flex;
@@ -1426,26 +1474,10 @@ body {
     opacity: 0.8;
 }
 
-@keyframes filter-glow {
-    0%, 100% { 
-        border-color: rgba(217, 119, 6, 0.3);
-        box-shadow: 0 0 5px rgba(217, 119, 6, 0.2);
-    }
-    50% { 
-        border-color: rgba(217, 119, 6, 0.5);
-        box-shadow: 0 0 10px rgba(217, 119, 6, 0.3);
-    }
-}
-
-@keyframes mini-pulse {
-    0%, 100% { 
-        transform: scale(1);
-        box-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
-    }
-    50% { 
-        transform: scale(1.05);
-        box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
-    }
+.filter-action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
 }
 
 .expanded-controls {
@@ -1754,12 +1786,42 @@ body {
         clear: both !important;
     }
     
+    /* Mobile Tournament Controls - Same as regular action panel on mobile */
+    .enhanced-action-panel.tournament-controls {
+        position: static !important;
+        top: auto !important;
+        right: auto !important;
+        left: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        width: calc(100% - 40px) !important;
+        min-width: auto !important;
+        max-width: none !important;
+        margin: 20px auto 100px auto !important;
+        padding: 20px;
+        border-radius: 12px;
+        cursor: default;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        display: block !important;
+        z-index: 10;
+        clear: both !important;
+    }
+    
     .enhanced-action-panel:hover {
         transform: none !important;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
     
+    .enhanced-action-panel.tournament-controls:hover {
+        transform: none !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
     .enhanced-action-panel:active {
+        cursor: default;
+    }
+    
+    .enhanced-action-panel.tournament-controls:active {
         cursor: default;
     }
     
@@ -1875,6 +1937,11 @@ body {
         margin: 16px auto 100px auto !important;
     }
     
+    .enhanced-action-panel.tournament-controls {
+        padding: 16px;
+        margin: 16px auto 100px auto !important;
+    }
+    
     .game-filter-buttons {
         gap: 6px;
     }
@@ -1924,6 +1991,14 @@ body {
     }
     
     .enhanced-action-panel {
+        position: static !important;
+        margin: 30px auto 120px auto !important;
+        width: calc(100% - 40px) !important;
+        display: block !important;
+        clear: both !important;
+    }
+    
+    .enhanced-action-panel.tournament-controls {
         position: static !important;
         margin: 30px auto 120px auto !important;
         width: calc(100% - 40px) !important;

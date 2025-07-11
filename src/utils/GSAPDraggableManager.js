@@ -57,7 +57,12 @@ export const GSAPDraggableManager = {
             const draggableInstance = Draggable.create(panelElement, {
                 type: 'x,y',
                 trigger: dragHandle,
-                bounds: window, // Keep within window bounds
+                bounds: {
+                    minX: -window.innerWidth,  // Allow dragging completely off-screen to the left
+                    minY: -100,                // Allow dragging slightly above viewport
+                    maxX: window.innerWidth,   // Allow dragging completely off-screen to the right
+                    maxY: window.innerHeight   // Allow dragging to bottom of viewport
+                },
                 
                 // Performance settings
                 force3D: true,
@@ -80,8 +85,13 @@ export const GSAPDraggableManager = {
                 },
                 
                 onDrag: function() {
-                    // Optional: Add any during-drag logic here
-                    // console.log('Dragging position:', this.x, this.y);
+                    // Update bounds dynamically in case window is resized
+                    this.applyBounds({
+                        minX: -window.innerWidth,  // Allow dragging completely off-screen to the left
+                        minY: -100,                // Allow dragging slightly above viewport
+                        maxX: window.innerWidth,   // Allow dragging completely off-screen to the right
+                        maxY: window.innerHeight   // Allow dragging to bottom of viewport
+                    });
                 },
                 
                 onDragEnd: function() {
@@ -90,7 +100,7 @@ export const GSAPDraggableManager = {
                         duration: 0.3,
                         ease: 'power2.out',
                         cursor: 'grab',
-                        zIndex: 1000,
+                        zIndex: 9999,
                         scale: 1,
                         boxShadow: '0 12px 24px rgba(0,0,0,0.3)'
                     });

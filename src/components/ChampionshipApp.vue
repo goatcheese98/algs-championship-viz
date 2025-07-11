@@ -47,59 +47,16 @@
     </div>
 
     <div class="mega-container">
-      <!-- Tournament Overview Section -->
-      <div class="tournament-overview">
-        <div class="overview-header">
-          <h1 class="overview-title">Tournament Overview</h1>
-          <div class="day-selector">
-            <button 
-              v-for="day in tournamentDays" 
-              :key="day.id"
-              :class="['day-tab', { active: selectedDay === day.id }]"
-              @click="selectDay(day.id)"
-            >
-              {{ day.name }}
-            </button>
-          </div>
-        </div>
-
-        <transition name="fade" mode="out-in">
-          <div :key="selectedDay" class="day-content active">
-            <p style="color: #cbd5e1; margin-bottom: 20px;">{{ currentDayInfo.description }}</p>
-            
-            <div class="matchups-grid">
-              <div 
-                v-for="matchup in currentDayMatchups" 
-                :key="matchup.id"
-                :class="['matchup-card', { selected: selectedMatchup === matchup.id }]"
-                @click="selectMatchup(matchup.id)"
-              >
-                <div class="matchup-header">
-                  <h3 class="matchup-title">{{ matchup.title }}</h3>
-                  <span :class="['matchup-status', getStatusClass(matchup.id)]">
-                    {{ getStatusText(matchup.id) }}
-                  </span>
-                </div>
-                <p class="matchup-info">{{ matchup.description }}</p>
-                <div class="matchup-stats">
-                  <div class="stat-item">
-                    <span>👥</span>
-                    <span>{{ matchup.teams }} Teams</span>
-                  </div>
-                  <div class="stat-item">
-                    <span>🎮</span>
-                    <span>{{ matchup.games }} Games</span>
-                  </div>
-                  <div class="stat-item">
-                    <span>🗺️</span>
-                    <span>{{ matchup.maps }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </transition>
-      </div>
+      <!-- Tournament Selector Component -->
+      <TournamentSelector
+        ref="tournamentSelector"
+        :is-year5-tournament="isYear5Tournament"
+        :selected-matchup="selectedMatchup"
+        :loaded-matchups="loadedMatchups"
+        :loading-matchups="loadingMatchups"
+        @matchup-selected="handleMatchupSelected"
+        @day-changed="handleDayChanged"
+      />
 
       <!-- Chart Section -->
       <div class="chart-section">
@@ -140,8 +97,6 @@
             <div ref="roamingCircle2" class="roaming-circle roaming-circle-2"></div>
             <div ref="roamingCircle3" class="roaming-circle roaming-circle-3"></div>
             <div ref="roamingCircle4" class="roaming-circle roaming-circle-4"></div>
-            
-
             
             <!-- Scanning Effect -->
             <div ref="scanningLine" class="scanning-line"></div>
@@ -194,102 +149,20 @@
                   <div class="loading-spinner"></div>
                 </div>
               </transition>
-
-              <!-- Enhanced GSAP-powered Draggable Action Panel -->
-              <div v-if="chartEngine" 
-                   ref="actionPanel"
-                   class="enhanced-action-panel"
-                   :class="{ expanded: panelExpanded }">
-                
-                <div class="panel-header">
-                  <div class="panel-title">
-                    <span class="drag-handle">⋮⋮</span>
-                    Controls
-                  </div>
-                  <button class="expand-btn" @click="togglePanel" @mousedown.stop>
-                    {{ panelExpanded ? '−' : '+' }}
-                  </button>
-                </div>
-
-                <!-- Always visible: Game Progress and Controls -->
-                <div class="compact-status">
-                  <!-- Game Progress (always visible) -->
-                  <div class="game-progress-section">
-                    <label class="section-label">Game Progress: {{ displayedProgress }} / {{ maxGames }}</label>
-                    <div class="progress-container">
-                      <span class="progress-value">0</span>
-                      <input type="range" 
-                             :min="0" 
-                             :max="maxGames" 
-                             v-model.number="currentGame"
-                             @input="updateGameFromSlider"
-                             @change="updateGameFromSlider"
-                             @mousedown="startSliderControl"
-                             @mouseup="endSliderControl"
-                             @touchstart="startSliderControl"
-                             @touchend="endSliderControl"
-                             class="progress-slider">
-                      <span class="progress-value">{{ maxGames }}</span>
-                    </div>
-                  </div>
-
-                  <!-- Game Filter Controls (merged with progress) -->
-                  <div class="filter-controls">
-                    <div class="filter-row">
-                      <div class="game-filter-buttons">
-                        <button v-for="game in maxGames" 
-                                :key="game"
-                                @click="toggleGameFilter(game)"
-                                class="game-filter-btn"
-                                :class="{ 
-                                  active: selectedGames.includes(game),
-                                  current: game === currentGame 
-                                }"
-                                :style="getGameButtonStyle(game)"
-                                :title="getGameTooltip(game)">
-                          {{ game }}
-                        </button>
-                      </div>
-                        <button @click="resetGameFilter" class="reset-filter-btn">
-                        ✕
-                        </button>
-                      </div>
-                    <div class="filter-action-label">Apply Filter</div>
-                    </div>
-
-                  <!-- Current Map Info -->
-                  <div class="current-map-display">
-                    <div class="map-badge" :style="getCurrentMapStyle()">
-                      <span class="map-icon">🗺️</span>
-                      <span class="map-name">{{ currentMap || 'Loading...' }}</span>
-                    </div>
-                  </div>
-
-                  <!-- Quick Controls (Play/Reset) - Moved below map badge -->
-                  <div class="quick-controls">
-                    <button @click="togglePlayback" class="control-btn play-btn">
-                      {{ isPlaying ? 'Pause' : 'Play' }}
-                    </button>
-                    <button @click="restart" class="control-btn">
-                      Reset
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Expanded Controls (Export Only) -->
-                <transition name="slide-down">
-                  <div v-if="panelExpanded" class="expanded-controls" @mousedown.stop>
-                    <!-- Export Controls -->
-                    <div class="control-section">
-                      <label class="section-label">Export Data</label>
-                      <button @click="exportData" :disabled="!chartEngine" class="export-btn">
-                        📊 Export CSV
-                      </button>
-                    </div>
-                  </div>
-                </transition>
-              </div>
             </div>
+            
+            <!-- Action Panel Component - Moved outside chart-area for full page dragging -->
+            <ActionPanel
+              :chart-engine="chartEngine"
+              :selected-matchup="selectedMatchup"
+              :max-games="maxGames"
+              :is-playing="isPlaying"
+              @game-changed="handleGameChanged"
+              @play-toggled="handlePlayToggled"
+              @restart-requested="handleRestartRequested"
+              @game-filter-changed="handleGameFilterChanged"
+              @export-requested="handleExportRequested"
+            />
           </div>
         </template>
       </div>
@@ -298,12 +171,18 @@
 </template>
 
 <script>
-import { GSAPDraggableManager } from '../utils/GSAPDraggableManager.js'
 import { ChartEngine } from '../chart/ChartEngine.js'
 import { useTeamConfig } from '../composables/useTeamConfig.js'
+import TournamentSelector from './TournamentSelector.vue'
+import ActionPanel from './ActionPanel.vue'
 
 export default {
   name: 'ChampionshipApp',
+  
+  components: {
+    TournamentSelector,
+    ActionPanel
+  },
   
   setup() {
     // Initialize team configuration composable
@@ -332,170 +211,6 @@ export default {
       // Tournament detection
       isYear5Tournament: isYear5,
       
-      // Tournament structure
-      selectedDay: 'day1',
-      tournamentDays: isYear5 ? [
-        // ========================================
-        // YEAR 5 OPEN TOURNAMENT STRUCTURE
-        // ========================================
-        {
-          id: 'day1',
-          name: 'Day 1 - Winners Round 1',
-          description: 'Year 5 Open Winners Round 1 featuring 6 tournament rounds. All rounds use the same map rotation: E-District (2) → Storm Point (2) → World\'s Edge (2).',
-          matchups: [
-            {
-              id: 'Day1-WinnersRound1-1',
-              title: 'Winners Round 1 #1',
-              description: 'First round of Winners Round 1. 6 games with E-District opening sequence.',
-              teams: 20,
-              games: 6,
-              maps: 'E-District → Storm Point → World\'s Edge'
-            },
-            {
-              id: 'Day1-WinnersRound1-2',
-              title: 'Winners Round 1 #2',
-              description: 'Second round of Winners Round 1. Consistent map rotation pattern.',
-              teams: 20,
-              games: 6,
-              maps: 'E-District → Storm Point → World\'s Edge'
-            },
-            {
-              id: 'Day1-WinnersRound1-3',
-              title: 'Winners Round 1 #3',
-              description: 'Third round of Winners Round 1. Standard 6-game format.',
-              teams: 20,
-              games: 6,
-              maps: 'E-District → Storm Point → World\'s Edge'
-            },
-            {
-              id: 'Day1-WinnersRound1-4',
-              title: 'Winners Round 1 #4',
-              description: 'Fourth round of Winners Round 1. Maintaining competitive balance.',
-              teams: 20,
-              games: 6,
-              maps: 'E-District → Storm Point → World\'s Edge'
-            },
-            {
-              id: 'Day1-WinnersRound1-5',
-              title: 'Winners Round 1 #5',
-              description: 'Fifth round of Winners Round 1. Continued tournament progression.',
-              teams: 20,
-              games: 6,
-              maps: 'E-District → Storm Point → World\'s Edge'
-            },
-            {
-              id: 'Day1-WinnersRound1-6',
-              title: 'Winners Round 1 #6',
-              description: 'Final round of Winners Round 1. Concluding the first day of competition.',
-              teams: 20,
-              games: 6,
-              maps: 'E-District → Storm Point → World\'s Edge'
-            }
-          ]
-        }
-      ] : [
-        {
-          id: 'day1',
-          name: 'Day 1 - Group Stages',
-          description: 'Initial group stage matchups determining bracket positions for the tournament. Teams compete across E-District, Storm Point, and World\'s Edge.',
-          matchups: [
-            {
-              id: 'AvsB',
-              title: 'Group A vs Group B',
-              description: 'Opening group stage matchup featuring teams from Groups A and B. 6 games across E-District (2), Storm Point (2), and World\'s Edge (2).',
-              teams: 20,
-              games: 6,
-              maps: 'E-District → Storm Point → World\'s Edge'
-            },
-            {
-              id: 'CvsD',
-              title: 'Group C vs Group D',
-              description: 'Second group stage matchup with teams from Groups C and D. Same map rotation as A vs B for fair competition.',
-              teams: 20,
-              games: 6,
-              maps: 'E-District → Storm Point → World\'s Edge'
-            },
-            {
-              id: 'BvsD',
-              title: 'Group B vs Group D',
-              description: 'Cross-group matchup between Groups B and D. Rotated map order starting with Storm Point for strategic variety.',
-              teams: 20,
-              games: 6,
-              maps: 'Storm Point → World\'s Edge → E-District'
-            }
-          ]
-        },
-        {
-          id: 'day2',
-          name: 'Day 2 - Cross Groups',
-          description: 'Cross-group matchups determining final bracket seeding. Advanced map rotations test team adaptability.',
-          matchups: [
-            {
-              id: 'AvsC',
-              title: 'Group A vs Group C',
-              description: 'Day 2 cross-group matchup between Groups A and C. 6 games with E-District focus.',
-              teams: 20,
-              games: 6,
-              maps: 'E-District → Storm Point → World\'s Edge'
-            },
-            {
-              id: 'BvsC',
-              title: 'Group B vs Group C',
-              description: 'Strategic cross-group battle between Groups B and C. Storm Point opening rotation.',
-              teams: 20,
-              games: 6,
-              maps: 'Storm Point → World\'s Edge → E-District'
-            },
-            {
-              id: 'AvsD',
-              title: 'Group A vs Group D',
-              description: 'Final day 2 matchup between Groups A and D. Classic E-District to World\'s Edge progression.',
-              teams: 20,
-              games: 6,
-              maps: 'E-District → Storm Point → World\'s Edge'
-            }
-          ]
-        },
-        {
-          id: 'day3',
-          name: 'Day 3 - Elimination Rounds',
-          description: 'High-stakes elimination rounds where teams fight for tournament survival. Extended 8-game series with diverse map pools.',
-          matchups: [
-            {
-              id: 'ER1',
-              title: 'Elimination Round 1',
-              description: 'First elimination round featuring 8 intense games. Heavy E-District focus with World\'s Edge finale.',
-              teams: 20,
-              games: 8,
-              maps: 'E-District (3) → Storm Point (2) → World\'s Edge (3)'
-            }
-          ]
-        },
-        {
-          id: 'day4',
-          name: 'Day 4 - Finals',
-          description: 'Championship finals featuring the ultimate competition. Winners and elimination rounds determine the ALGS Champion.',
-          matchups: [
-            {
-              id: 'ER2',
-              title: 'Elimination Round 2',
-              description: 'Second elimination round with 8 crucial games. Balanced map rotation for fair competition.',
-              teams: 20,
-              games: 8,
-              maps: 'Storm Point (2) → World\'s Edge (2) → E-District (2) → Mixed (2)'
-            },
-            {
-              id: 'WR1',
-              title: 'Winners Round 1',
-              description: 'Winners bracket final featuring the top teams. 8 games across all three maps for ultimate victory.',
-              teams: 20,
-              games: 8,
-              maps: 'World\'s Edge (2) → E-District (2) → Storm Point (2) → Mixed (2)'
-            }
-          ]
-        }
-      ],
-
       // Chart state
       selectedMatchup: '',
       chartEngine: null,
@@ -506,14 +221,6 @@ export default {
       // Game state for enhanced panel
       currentGame: 0,  // Start at 0 to show initial state
       currentMap: '',
-      manualSliderControl: false,
-      
-      // Enhanced Action Panel (GSAP-optimized)
-      panelExpanded: false,
-      selectedGames: [],
-      
-      // GSAP instances
-      draggableInstance: null,
       
       // Status tracking
       loadedMatchups: new Set(),
@@ -525,46 +232,21 @@ export default {
   },
   
   computed: {
-    availableMatchups() {
-      return this.tournamentDays.flatMap(day => 
-        day.matchups.map(matchup => ({
-          value: matchup.id,
-          label: matchup.title
-        }))
-      );
-    },
-    
-    currentDayMatchups() {
-      const currentDay = this.tournamentDays.find(day => day.id === this.selectedDay);
-      return currentDay ? currentDay.matchups : [];
-    },
-    
-    currentDayInfo() {
-      return this.tournamentDays.find(day => day.id === this.selectedDay) || {};
-    },
-    
-    displayedProgress() {
-      // Ensure progress is always within valid range (0 to maxGames)
-      return Math.min(Math.max(0, this.currentGame), this.maxGames);
-    },
-    
     /**
      * Dynamic maxGames based on selected matchup
      * Year 4: 6 or 8 games depending on tournament round
      * Year 5: 6 games for all rounds
      */
     maxGames() {
-      if (!this.selectedMatchup) {
+      if (!this.selectedMatchup || !this.$refs.tournamentSelector) {
         return this.isYear5Tournament ? 6 : 6; // Default to 6 for both when no matchup selected
       }
       
-      // Find the selected matchup and return its game count
-      for (const day of this.tournamentDays) {
-        const matchup = day.matchups.find(m => m.id === this.selectedMatchup);
-        if (matchup) {
-          console.log(`🎮 Matchup ${this.selectedMatchup} has ${matchup.games} games`);
-          return matchup.games;
-        }
+      // Get matchup info from tournament selector
+      const matchupInfo = this.$refs.tournamentSelector.getMatchupInfo(this.selectedMatchup);
+      if (matchupInfo) {
+        console.log(`🎮 Matchup ${this.selectedMatchup} has ${matchupInfo.games} games`);
+        return matchupInfo.games;
       }
       
       // Fallback based on tournament type
@@ -581,33 +263,17 @@ export default {
     // Initialize chart loading animation
     this.initializeChartLoadingAnimation();
     
-    // Initialize GSAP dragging when DOM is ready (desktop only)
-    this.$nextTick(() => {
-      this.initializeDraggableSystem();
-    });
-    
-    // Add window resize handler for mobile optimization
-    window.addEventListener('resize', this.handleResize);
-    
-    // Verify centralized draggable manager is available
-    if (GSAPDraggableManager) {
-      console.log('✅ Centralized GSAP Draggable Manager detected and ready');
-    } else {
-      console.warn('⚠️ GSAP Draggable Manager not available - dragging may not work properly');
-    }
-    
     // Set up periodic updates for game state
     this.gameStateInterval = setInterval(() => {
       if (this.chartEngine) {
         const engineGameIndex = this.chartEngine.currentGameIndex !== undefined ? this.chartEngine.currentGameIndex : 1;
         
-        if (Math.abs(this.currentGame - engineGameIndex) > 0 && !this.manualSliderControl) {
+        if (Math.abs(this.currentGame - engineGameIndex) > 0) {
           this.currentGame = engineGameIndex;
         }
         
         this.isPlaying = this.chartEngine.isPlaying || false;
         this.updateCurrentMap();
-        this.updateGameState();
       }
     }, 300);
   },
@@ -897,8 +563,6 @@ export default {
           });
         }
         
-
-        
         // Scanning line animation - vertical movement
         if (this.$refs.scanningLine) {
           gsap.to(this.$refs.scanningLine, {
@@ -974,14 +638,104 @@ export default {
         console.log('✨ Chart loading animations initialized successfully!');
       });
     },
-    
-    selectDay(dayId) {
-      console.log('📅 Selected day:', dayId);
-      this.selectedDay = dayId;
+
+    // Event handlers for child components
+    handleDayChanged(dayId) {
+      console.log('📅 Day changed:', dayId);
       
       // Clear selection when switching days
       this.selectedMatchup = '';
       this.chartEngine = null;
+    },
+
+    async handleMatchupSelected(matchupId) {
+      console.log('🎯 Matchup selected:', matchupId);
+      console.log('🏆 Tournament Info:', this.getTournamentInfo());
+      this.selectedMatchup = matchupId;
+      await this.loadMatchup();
+    },
+
+    async handleGameChanged(gameIndex) {
+      console.log('🎮 Game changed to:', gameIndex);
+      this.currentGame = gameIndex;
+      if (this.chartEngine) {
+        await this.chartEngine.jumpToGame(gameIndex);
+        this.updateCurrentMap();
+        
+        // Reset filters when dragging back to initial state (game 0)
+        if (gameIndex === 0) {
+          await this.chartEngine.clearFilter();
+        }
+      }
+    },
+
+    async handlePlayToggled() {
+      if (this.chartEngine) {
+        if (this.isPlaying) {
+          // True pause - stop animation and remember current position
+          this.chartEngine.stopAnimation();
+          this.isPlaying = false;
+          this.currentGame = this.chartEngine.getCurrentGameIndex();
+          console.log(`⏸️ Paused at game ${this.currentGame}`);
+          
+          // Clear sync interval when paused
+          if (this.syncInterval) {
+            clearInterval(this.syncInterval);
+            this.syncInterval = null;
+          }
+        } else {
+          // Resume from current position
+          await this.playAnimation();
+        }
+      }
+    },
+
+    async handleRestartRequested() {
+      if (this.chartEngine) {
+        this.chartEngine.stopAnimation();
+        await this.chartEngine.jumpToGame(0);  // Reset to initial state
+        this.currentGame = 0;
+        this.isPlaying = false;
+        this.updateCurrentMap();
+      }
+    },
+
+    async handleGameFilterChanged(filterData) {
+      if (this.chartEngine) {
+        const { games, action } = filterData;
+        
+        if (action === 'clear' || games.length === 0) {
+          console.log('🔄 Clearing game filter');
+          await this.chartEngine.clearFilter();
+        } else {
+          console.log(`🎮 Applying filter for games: ${games.join(', ')}`);
+          
+          // Ensure we're at max game level for filtering
+          if (this.currentGame < this.maxGames) {
+            this.currentGame = this.maxGames;
+            await this.chartEngine.jumpToGame(this.maxGames);
+          }
+          
+          await this.chartEngine.filterByGames(games);
+        }
+        
+        this.updateCurrentMap();
+      }
+    },
+
+    handleExportRequested(selectedMatchup) {
+      if (this.chartEngine) {
+        const csvContent = this.chartEngine.exportData(selectedMatchup);
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${selectedMatchup}_export.csv`;
+        a.click();
+        
+        URL.revokeObjectURL(url);
+      }
     },
 
     /**
@@ -1010,28 +764,11 @@ export default {
       };
     },
     
-    async selectMatchup(matchupId) {
-      console.log('🎯 Selected matchup:', matchupId);
-      console.log('🏆 Tournament Info:', this.getTournamentInfo());
-      this.selectedMatchup = matchupId;
-      await this.loadMatchup();
-    },
-    
-    getStatusClass(matchupId) {
-      if (this.loadedMatchups.has(matchupId)) return 'loaded';
-      if (this.loadingMatchups.has(matchupId)) return 'loading';
-      return 'available';
-    },
-    
-    getStatusText(matchupId) {
-      if (this.loadedMatchups.has(matchupId)) return 'Loaded';
-      if (this.loadingMatchups.has(matchupId)) return 'Loading...';
-      return 'Available';
-    },
-    
     getMatchupTitle(matchupId) {
-      const matchup = this.tournamentDays.flatMap(day => day.matchups).find(m => m.id === matchupId);
-      return matchup ? matchup.title : 'Unknown Matchup';
+      if (!this.$refs.tournamentSelector) return 'Unknown Matchup';
+      
+      const matchupInfo = this.$refs.tournamentSelector.getMatchupInfo(matchupId);
+      return matchupInfo ? matchupInfo.title : 'Unknown Matchup';
     },
     
     async loadMatchup() {
@@ -1079,13 +816,6 @@ export default {
         
         // Verify chart rendered
         await this.verifyChartRender();
-        
-        // Initialize draggable after chart is loaded and ready
-        this.$nextTick(() => {
-          setTimeout(() => {
-            this.initGSAPDraggable();
-          }, 200);
-        });
         
       } catch (error) {
         console.error('❌ Error loading matchup:', error);
@@ -1175,85 +905,7 @@ export default {
         `;
       }
     },
-    
-    togglePanel() {
-      this.panelExpanded = !this.panelExpanded;
-      
-      // Animate panel expansion
-      if (typeof gsap !== 'undefined') {
-        if (this.panelExpanded) {
-          gsap.to(this.$refs.actionPanel, {
-            duration: 0.3,
-            ease: 'power2.out'
-          });
-        }
-      }
-    },
-    
-    initGSAPDraggable() {
-      console.log('🎯 Attempting to initialize GSAP draggable...');
-      
-      if (!this.$refs.actionPanel) {
-        console.warn('⚠️ Action panel ref not available');
-        return;
-      }
-      
-      if (!GSAPDraggableManager) {
-        console.warn('⚠️ GSAPDraggableManager not available');
-        return;
-      }
-      
-      const panelElement = this.$refs.actionPanel;
-      const panelId = panelElement.id || `action-panel-${Date.now()}`;
-      
-      // Ensure panel has ID
-      if (!panelElement.id) {
-      panelElement.id = panelId;
-      }
-      
-      console.log('🚀 Initializing draggable for panel:', panelId);
-      console.log('📦 Panel element:', panelElement);
-      console.log('🔧 GSAP available:', typeof window !== 'undefined' && !!window.gsap);
-      console.log('🎯 Draggable available:', typeof window !== 'undefined' && !!window.Draggable);
-      
-      // Initialize ultra-performant draggable with new system
-      this.draggableInstance = GSAPDraggableManager.initializeDraggable(panelElement);
-      
-      if (this.draggableInstance) {
-        console.log('✅ Controls draggable initialized successfully');
-        console.log('📊 Draggable instance:', this.draggableInstance);
-      } else {
-        console.warn('⚠️ Controls draggable initialization failed');
-      }
-      
-      // Debug: Show all instances
-      GSAPDraggableManager.debugInstances();
-    },
-    
-    async updateGameFromSlider() {
-      if (this.chartEngine) {
-        await this.chartEngine.jumpToGame(this.currentGame);
-        this.updateCurrentMap();
-        
-        // Reset filters when dragging back to initial state (game 0)
-        if (this.currentGame === 0 && this.selectedGames.length > 0) {
-          console.log('🔄 Progress bar dragged to 0, resetting filters');
-          this.selectedGames = [];
-          await this.chartEngine.clearFilter();
-        }
-      }
-    },
-    
-    startSliderControl() {
-      this.manualSliderControl = true;
-    },
-    
-    endSliderControl() {
-      setTimeout(() => {
-        this.manualSliderControl = false;
-      }, 100);
-    },
-    
+
     async playAnimation() {
       if (this.chartEngine) {
         this.isPlaying = true;
@@ -1278,45 +930,6 @@ export default {
         }
       }
     },
-
-    async togglePlayback() {
-      if (this.chartEngine) {
-        if (this.isPlaying) {
-          // True pause - stop animation and remember current position
-          this.chartEngine.stopAnimation();
-          this.isPlaying = false;
-          this.currentGame = this.chartEngine.getCurrentGameIndex();
-          console.log(`⏸️ Paused at game ${this.currentGame}`);
-          
-          // Clear sync interval when paused
-          if (this.syncInterval) {
-            clearInterval(this.syncInterval);
-            this.syncInterval = null;
-          }
-        } else {
-          // Resume from current position
-          await this.playAnimation();
-        }
-      }
-    },
-    
-    async restart() {
-      if (this.chartEngine) {
-        this.chartEngine.stopAnimation();
-        await this.chartEngine.jumpToGame(0);  // Reset to initial state
-        this.currentGame = 0;
-        this.isPlaying = false;
-        this.updateCurrentMap();
-      }
-    },
-
-    async jumpToInitialState() {
-      if (this.chartEngine) {
-        await this.chartEngine.jumpToGame(0);
-        this.currentGame = 0;
-        this.updateCurrentMap();
-      }
-    },
     
     updateCurrentMap() {
       if (this.chartEngine && this.chartEngine.dataManager) {
@@ -1324,235 +937,7 @@ export default {
         const currentGameIndex = this.chartEngine.currentGameIndex;
         this.currentMap = this.chartEngine.dataManager.getMapForGame(currentGameIndex);
       }
-    },
-    
-    updateGameState() {
-      // maxGames is now handled by computed property
-      // No manual assignment needed
-    },
-    
-    async toggleGameFilter(gameNum) {
-      const wasSelected = this.selectedGames.includes(gameNum);
-      
-      if (wasSelected) {
-        // If already selected, toggle it off
-        this.selectedGames.splice(this.selectedGames.indexOf(gameNum), 1);
-        console.log(`🎮 Removed game ${gameNum} from filter. Selected: [${this.selectedGames.join(', ')}]`);
-      } else {
-        // If not selected, add it to the selection (allow multiple)
-        this.selectedGames.push(gameNum);
-        console.log(`🎮 Added game ${gameNum} to filter. Selected: [${this.selectedGames.join(', ')}]`);
-        
-        // Auto-progress to max level when any filter is selected
-        if (this.currentGame < this.maxGames) {
-          console.log(`🎯 Auto-progressing to game ${this.maxGames} for filtering`);
-          this.currentGame = this.maxGames;
-          if (this.chartEngine) {
-            await this.chartEngine.jumpToGame(this.maxGames);
-          }
-        }
-        
-        // Removed auto-expansion - filters work independently of panel state
-      }
-      
-      // Apply filter with visual feedback
-      await this.applyGameFilter();
-      
-      // If no filters are selected, allow going back to initial state
-      if (this.selectedGames.length === 0) {
-        console.log('🔄 No filters selected, allowing normal game progression');
-      }
-    },
-    
-    async resetGameFilter() {
-      console.log('🔄 Resetting game filter and returning to initial state');
-      this.selectedGames = [];
-      
-      // Reset to initial state when clearing filters
-      this.currentGame = 0;
-      if (this.chartEngine) {
-        await this.chartEngine.jumpToGame(0);
-      }
-      
-      await this.applyGameFilter();
-      this.updateCurrentMap();
-    },
-    
-    async applyGameFilter() {
-      if (this.chartEngine) {
-        if (this.selectedGames.length > 0) {
-          console.log(`🎮 Applying filter for games: ${this.selectedGames.join(', ')}`);
-          
-          // Ensure we're at max game level for filtering
-          if (this.currentGame < this.maxGames) {
-            this.currentGame = this.maxGames;
-            await this.chartEngine.jumpToGame(this.maxGames);
-          }
-          
-          await this.chartEngine.filterByGames(this.selectedGames);
-          
-          // Update UI feedback
-          this.updateCurrentMap();
-          
-          // Visual feedback for active filtering
-          console.log(`✅ Filter applied successfully for ${this.selectedGames.length} games`);
-        } else {
-          console.log('🔄 Clearing game filter');
-          await this.chartEngine.clearFilter();
-        }
-      }
-    },
-    
-    getGameButtonStyle(gameNum) {
-      // Add proper guards to prevent calling DataManager before data is loaded
-      if (!this.chartEngine || !this.chartEngine.dataManager || !this.chartEngine.dataManager.data) {
-        return {
-          background: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
-          border: '2px solid #6b7280',
-          color: '#ffffff'
-        };
-      }
-      
-      const mapName = this.chartEngine.dataManager.getMapForGame(gameNum);
-      const mapColor = this.chartEngine.dataManager.getMapColor(mapName, gameNum);
-      
-      const isActive = this.selectedGames.includes(gameNum);
-      const isCurrent = gameNum === this.currentGame;
-      
-      // Base style: all buttons are colored with map colors by default
-      const baseStyle = {
-        background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, -10)} 100%)`,
-          border: `2px solid ${mapColor}`,
-        color: '#ffffff'
-        };
-      
-      // Add subtle glow effect only for current game during progress
-      if (isCurrent) {
-        return {
-          ...baseStyle,
-          boxShadow: `0 0 8px ${mapColor}60, 0 2px 4px rgba(0,0,0,0.3)`
-        };
-      } else if (isActive) {
-        // Keep enhanced styling for selected filters
-        return {
-          ...baseStyle,
-          boxShadow: `0 0 12px ${mapColor}60, 0 0 20px ${mapColor}40`,
-          transform: 'scale(1.15)'
-        };
-      } else {
-        // Default colored buttons
-        return baseStyle;
-      }
-    },
-    
-    getGameTooltip(gameNum) {
-      // Add proper guards to prevent calling DataManager before data is loaded
-      if (!this.chartEngine || !this.chartEngine.dataManager || !this.chartEngine.dataManager.data) {
-        return `Game ${gameNum}`;
-      }
-      
-      const mapName = this.chartEngine.dataManager.getMapForGame(gameNum);
-      return `Game ${gameNum}: ${mapName}`;
-    },
-    
-    adjustColor(hexColor, percent) {
-      // Simple color adjustment utility with null check
-      if (!hexColor || typeof hexColor !== 'string' || !hexColor.startsWith('#')) {
-        return hexColor || '#dc2626'; // Return original or fallback color
-      }
-      
-      const num = parseInt(hexColor.slice(1), 16);
-      const amt = Math.round(2.55 * percent);
-      const R = (num >> 16) + amt;
-      const G = (num >> 8 & 0x00FF) + amt;
-      const B = (num & 0x0000FF) + amt;
-      
-      return `#${(0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
-        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
-        (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1)}`;
-    },
-    
-    getCurrentMapStyle() {
-      // Add proper guards to prevent calling DataManager before data is loaded
-      if (!this.chartEngine || !this.chartEngine.dataManager || !this.chartEngine.dataManager.data) {
-        return {
-          background: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
-          border: '2px solid #6b7280',
-          color: '#ffffff'
-        };
-      }
-      
-      const mapColor = this.chartEngine.dataManager.getMapColor(this.currentMap, this.currentGame);
-      
-      return {
-        background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, -20)} 100%)`,
-        border: `2px solid ${mapColor}`,
-        color: '#ffffff',
-        boxShadow: `0 0 15px ${mapColor}60, 0 4px 8px rgba(0,0,0,0.3)`
-      };
-    },
-    
-    exportData() {
-      if (this.chartEngine) {
-        const csvContent = this.chartEngine.exportData(this.selectedMatchup);
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${this.selectedMatchup}_export.csv`;
-        a.click();
-        
-        URL.revokeObjectURL(url);
-      }
-    },
-    
-    // Mobile detection utility
-    isMobileDevice() {
-      return window.innerWidth <= 768
-    },
-    
-    // Initialize enhanced draggable system
-    initializeDraggableSystem() {
-      const panel = this.$refs.actionPanel
-      if (!panel) return
-      
-      // Skip draggable initialization on mobile
-      if (this.isMobileDevice()) {
-        console.log('📱 Mobile device detected - skipping draggable initialization')
-        return
-      }
-      
-      // Only initialize draggable on desktop
-      this.draggableManager = GSAPDraggableManager.initializeDraggable(panel, {
-        onDragStart: () => {
-          console.log('🎯 Drag started')
-        },
-        onDragEnd: () => {
-          console.log('🎯 Drag ended')
-        }
-      })
-      
-      console.log('✅ Enhanced draggable system initialized')
-    },
-    
-    // Handle window resize for mobile optimization
-    handleResize() {
-      // Re-initialize draggable system based on screen size
-      this.$nextTick(() => {
-        if (this.draggableManager && this.isMobileDevice()) {
-          // Destroy draggable on mobile
-          if (this.draggableManager.cleanup) {
-            this.draggableManager.cleanup()
-          }
-          this.draggableManager = null
-          console.log('📱 Destroyed draggable system for mobile')
-        } else if (!this.draggableManager && !this.isMobileDevice()) {
-          // Initialize draggable on desktop
-          this.initializeDraggableSystem()
-        }
-      })
-    },
+    }
   },
   
   beforeUnmount() {
@@ -1570,16 +955,6 @@ export default {
     if (this.syncInterval) {
       clearInterval(this.syncInterval);
     }
-    
-    // Cleanup GSAP draggable
-    if (this.draggableManager && GSAPDraggableManager) {
-      if (this.draggableManager.cleanup) {
-        this.draggableManager.cleanup();
-      }
-    }
-
-    // Remove window resize listener
-    window.removeEventListener('resize', this.handleResize);
   }
 }
 </script>

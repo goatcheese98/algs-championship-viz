@@ -174,6 +174,13 @@ export class ChartEngine {
         const startTime = performance.now()
         
         try {
+            // CRITICAL FIX: If currentGameIndex is 0, render initial state instead
+            if (this.currentGameIndex === 0) {
+                console.log('🔄 Rendering initial state (currentGameIndex = 0)')
+                await this.renderInitialState()
+                return
+            }
+
             // Process data
             const processedData = this.dataManager.processData(this.currentGameIndex)
             
@@ -211,7 +218,7 @@ export class ChartEngine {
             console.log(`✅ Chart rendered in ${(endTime - startTime).toFixed(2)}ms`)
             
         } catch (error) {
-            console.error('❌ Chart rendering error:', error)
+            console.error('❌ Error rendering chart:', error)
             throw error
         }
     }
