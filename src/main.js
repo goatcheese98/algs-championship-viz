@@ -39,7 +39,10 @@ const loadApp = async () => {
         currentPath.includes('year_5_open.html') || 
         currentPath.includes('championship') ||
         currentPath.includes('year5') ||
-        currentPath.includes('year_5')) {
+        currentPath.includes('year_5') ||
+        currentPath.includes('ewc_2025.html') || 
+        currentPath.includes('ewc2025') ||
+        currentPath.includes('ewc_2025')) {
         console.log('📊 Lazy loading Championship App for tournament...')
         const { default: ChampionshipApp } = await import('./components/ChampionshipApp.vue')
         createApp(ChampionshipApp).mount('#app')

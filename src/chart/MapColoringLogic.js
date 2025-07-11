@@ -9,7 +9,7 @@
  */
 export const MAP_COLOR_PALETTE = {
     'E-DISTRICT': {
-        hue: 198,        // Blue
+        hue: 240,        // Blue
         name: 'E-District',
         variations: [
             { saturation: 40, lightness: 50 },  // 1st occurrence
@@ -18,7 +18,7 @@ export const MAP_COLOR_PALETTE = {
         ]
     },
     'STORM POINT': {
-        hue: 28,         // Orange
+        hue: 20,         // Orange
         name: 'Storm Point',
         variations: [
             { saturation: 40, lightness: 50 },  // 1st occurrence
@@ -34,6 +34,15 @@ export const MAP_COLOR_PALETTE = {
             { saturation: 50, lightness: 50 },  // 2nd occurrence
             { saturation: 60, lightness: 50 }   // 3rd+ occurrence
         ]
+    },
+    'BROKEN MOON': {
+        hue: 188,         // Yellow-green
+        name: 'Broken Moon',
+        variations: [
+            { saturation: 40, lightness: 50 },  // 1st occurrence
+            { saturation: 50, lightness: 50 },  // 2nd occurrence
+            { saturation: 60, lightness: 50 }   // 3rd+ occurrence
+        ]
     }
 };
 
@@ -42,7 +51,7 @@ export const MAP_COLOR_PALETTE = {
  */
 export const SPECIAL_STATE_COLORS = {
     UNKNOWN: '#6b7280',     // Gray for unknown maps
-    PRE_GAME: '#8b5cf6',    // Purple for pre-game state
+    PRE_GAME: '#008000',    // Green for pre-game state
     LOADING: '#9ca3af',     // Light gray for loading states
     ERROR: '#ef4444'        // Red for error states
 };

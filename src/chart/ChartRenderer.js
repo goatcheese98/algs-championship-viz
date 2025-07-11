@@ -86,6 +86,15 @@ export class ChartRenderer {
     }
     
     setupSVG() {
+        // Check if container exists and is valid
+        if (!this.container || this.container.empty()) {
+            console.warn('⚠️ ChartRenderer: Container not found or empty, skipping SVG setup')
+            return
+        }
+        
+        // Remove any existing SVG to prevent conflicts
+        this.container.selectAll('svg').remove()
+        
         this.svg = this.container.append('svg')
             .style('width', '100%')
             .style('height', '100%')
@@ -93,6 +102,12 @@ export class ChartRenderer {
             .style('position', 'relative')
             .style('z-index', '1')
             .style('overflow', 'visible')
+        
+        // Check if SVG was created successfully
+        if (!this.svg || this.svg.empty()) {
+            console.warn('⚠️ ChartRenderer: Failed to create SVG element')
+            return
+        }
         
         this.mainGroup = this.svg.append('g')
             .attr('class', 'main-group')
@@ -109,6 +124,12 @@ export class ChartRenderer {
     }
     
     updateDimensions(width, height) {
+        // Check if SVG and required elements exist
+        if (!this.svg || this.svg.empty()) {
+            console.warn('⚠️ ChartRenderer: SVG not available for dimension update')
+            return
+        }
+        
         const totalWidth = width + this.margin.left + this.margin.right
         const totalHeight = height + this.margin.top + this.margin.bottom
         
@@ -133,15 +154,21 @@ export class ChartRenderer {
             .style('max-height', '100%')
             .style('overflow', 'visible')
         
-        // Update main group transform with responsive margins
-        this.mainGroup.attr('transform', `translate(${this.margin.left},${this.margin.top})`)
+        // Update main group transform with responsive margins (with safety check)
+        if (this.mainGroup && !this.mainGroup.empty()) {
+            this.mainGroup.attr('transform', `translate(${this.margin.left},${this.margin.top})`)
+        }
         
         // Position x-axis at the bottom of the chart area (always visible)
-        this.xAxisGroup.attr('transform', `translate(0,${height})`)
+        if (this.xAxisGroup && !this.xAxisGroup.empty()) {
+            this.xAxisGroup.attr('transform', `translate(0,${height})`)
+        }
         
         // Update scales with responsive ranges
-        this.xScale.range([0, width])
-        this.yScale.range([0, height])
+        if (this.xScale && this.yScale) {
+            this.xScale.range([0, width])
+            this.yScale.range([0, height])
+        }
         
         // Remove mobile scaling that might cause overflow
         this.svg.style('transform', 'scale(1)')
@@ -151,8 +178,14 @@ export class ChartRenderer {
     renderStackedBars(data, config = {}) {
         const { transitionDuration = 1500, currentGameIndex = 1, isFiltered = false, filteredGameIndices = [] } = config
         
+        // Check if mainGroup exists and is valid
+        if (!this.mainGroup || this.mainGroup.empty()) {
+            console.warn('⚠️ ChartRenderer: Main group not available for rendering, skipping')
+            return
+        }
+        
         // Validate that scales have valid domains
-        if (!this.yScale.domain().length || !this.xScale.domain().length) {
+        if (!this.yScale || !this.xScale || !this.yScale.domain().length || !this.xScale.domain().length) {
             console.warn('⚠️ Scales not properly initialized, skipping render')
             return
         }
@@ -162,7 +195,7 @@ export class ChartRenderer {
             console.warn('⚠️ Y scale bandwidth is NaN, skipping render')
             return
         }
-
+        
         // CRITICAL FIX: If currentGameIndex is 0, render initial state instead of clearing
         if (currentGameIndex === 0) {
             console.log('🔄 Returning to initial state (game 0), rendering initial layout')
@@ -462,6 +495,18 @@ export class ChartRenderer {
     }
     
     updateCustomYAxis(data, transitionDuration = 1500) {
+        // Check if customYAxisGroup exists and is valid
+        if (!this.customYAxisGroup || this.customYAxisGroup.empty()) {
+            console.warn('⚠️ ChartRenderer: Custom Y-axis group not available, skipping update')
+            return
+        }
+        
+        // Check if yScale is valid
+        if (!this.yScale || !this.yScale.domain() || this.yScale.domain().length === 0) {
+            console.warn('⚠️ ChartRenderer: Y-scale not properly initialized, skipping update')
+            return
+        }
+        
         // CRITICAL FIX: Always allow updates during progressive gameplay
         // The blocking logic was preventing team names from rendering during slider movements
         console.log('🎯 Updating y-axis with team names and logos - synchronized with bar animation')
@@ -995,9 +1040,194 @@ export class ChartRenderer {
             .remove()
     }
 
+    /**
+     * Render or hide the game sequence legend
+     * @param {boolean} visible - Whether to show or hide the legend
+     * @param {Object} dataManager - DataManager instance for game data
+     */
+    renderLegend(visible, dataManager) {
+        // Remove existing legend
+        this.svg.selectAll('.chart-legend').remove()
+        
+        if (!visible || !dataManager) return
+        
+        // Get the chart container dimensions
+        const svgRect = this.svg.node().getBoundingClientRect()
+        const chartWidth = svgRect.width
+        const chartHeight = svgRect.height
+        
+        // Enhanced responsive sizing calculations - made more compact
+        const baseWidth = 200  // Reduced from 260
+        const baseHeight = 320  // Reduced from 350 since single line items
+        const minWidth = 160   // Reduced from 200
+        const minHeight = 220  // Reduced from 250 since single line items
+        const maxWidth = 240   // Reduced from 320
+        const maxHeight = Math.min(480, chartHeight * 0.7)  // Reduced from 500
+        
+        // Calculate responsive dimensions based on viewport
+        const legendWidth = Math.min(maxWidth, Math.max(minWidth, baseWidth + (chartWidth - 800) * 0.05))
+        const legendHeight = Math.min(maxHeight, Math.max(minHeight, baseHeight + (chartHeight - 600) * 0.1))
+        
+        // Position legend higher to avoid covering x-axis
+        const legendX = chartWidth - legendWidth - 20
+        const legendY = chartHeight - legendHeight - 80  // Moved up by 60px from original
+        
+        // Create legend group
+        const legendGroup = this.svg.append('g')
+            .attr('class', 'chart-legend')
+            .attr('transform', `translate(${legendX}, ${legendY})`)
+        
+        // Add legend background
+        legendGroup.append('rect')
+            .attr('class', 'legend-background')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', legendWidth)
+            .attr('height', legendHeight)
+            .style('fill', 'rgba(0, 0, 0, 0.85)')
+            .style('stroke', 'rgba(255, 255, 255, 0.2)')
+            .style('stroke-width', '1px')
+            .style('rx', '8px')
+            .style('ry', '8px')
+            .style('backdrop-filter', 'blur(10px)')
+        
+        // Add legend title
+        legendGroup.append('text')
+            .attr('class', 'legend-title')
+            .attr('x', legendWidth / 2)
+            .attr('y', 22)  // Slightly reduced from 25
+            .style('text-anchor', 'middle')
+            .style('font-size', `${getResponsiveFontSize(15)}px`)  // Reduced from 16
+            .style('font-weight', '700')
+            .style('fill', '#ffffff')
+            .style('text-shadow', '0 1px 2px rgba(0,0,0,0.5)')
+            .text('Game Sequence')
+        
+        // Get max games from data manager
+        const maxGames = dataManager.getMaxGames ? dataManager.getMaxGames() : 10
+        
+        // Calculate responsive item height and spacing - more compact since single line
+        const baseItemHeight = 24  // Reduced from 28 since we're using single line
+        const itemHeight = Math.max(20, Math.min(28, baseItemHeight + (legendHeight - 300) * 0.05))
+        const startY = 42  // Reduced from 45 to account for smaller title
+        const itemSpacing = 1  // Reduced from 2
+        
+        // Create legend items for each game
+        for (let gameNum = 1; gameNum <= maxGames; gameNum++) {
+            const itemY = startY + (gameNum - 1) * (itemHeight + itemSpacing)
+            
+            // Get map name and color for this game
+            const mapName = dataManager.getMapForGame(gameNum)
+            const mapColor = dataManager.getMapColor(mapName, gameNum)
+            
+            // Create item group
+            const itemGroup = legendGroup.append('g')
+                .attr('class', 'legend-item')
+                .attr('transform', `translate(0, ${itemY})`)
+            
+            // Add color indicator (rounded square instead of circle)
+            const squareSize = Math.min(14, itemHeight * 0.55)
+            itemGroup.append('rect')
+                .attr('class', 'legend-color-indicator')
+                .attr('x', 20 - squareSize/2)
+                .attr('y', itemHeight / 2 - squareSize/2)
+                .attr('width', squareSize)
+                .attr('height', squareSize)
+                .attr('rx', 3)
+                .attr('ry', 3)
+                .style('fill', mapColor)
+                .style('stroke', '#ffffff')
+                .style('stroke-width', '2px')
+                .style('filter', 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))')
+            
+            // Add game number and map name on the same line
+            itemGroup.append('text')
+                .attr('class', 'legend-game-text')
+                .attr('x', 35)
+                .attr('y', itemHeight / 2)
+                .attr('dy', '0.35em')
+                .style('text-anchor', 'start')
+                .style('font-size', `${getResponsiveFontSize(13)}px`)
+                .style('font-weight', '600')
+                .style('fill', '#ffffff')
+                .style('text-shadow', '0 1px 2px rgba(0,0,0,0.5)')
+                .text(`${gameNum} : ${mapName || 'Unknown Map'}`)
+            
+            // Add hover effect
+            itemGroup
+                .style('cursor', 'pointer')
+                .style('opacity', 0.9)
+                .on('mouseenter', function() {
+                    d3.select(this).style('opacity', 1)
+                    d3.select(this).select('.legend-color-indicator')
+                        .style('stroke-width', '3px')
+                        .style('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))')
+                })
+                .on('mouseleave', function() {
+                    d3.select(this).style('opacity', 0.9)
+                    d3.select(this).select('.legend-color-indicator')
+                        .style('stroke-width', '2px')
+                        .style('filter', 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))')
+                })
+        }
+        
+        // Add fade-in animation
+        legendGroup
+            .style('opacity', 0)
+            .transition()
+            .duration(300)
+            .ease(d3.easeQuadOut)
+            .style('opacity', 1)
+        
+        // Add window resize handler for responsive behavior
+        const resizeHandler = () => {
+            // Only re-render if legend is currently visible
+            if (this.svg.selectAll('.chart-legend').size() > 0) {
+                this.renderLegend(true, dataManager)
+            }
+        }
+        
+        // Store resize handler for proper cleanup
+        if (!this.resizeHandlers) this.resizeHandlers = []
+        this.resizeHandlers.push(resizeHandler)
+        
+        // Add resize listener
+        window.addEventListener('resize', resizeHandler)
+        
+        console.log('📊 Chart legend rendered with', maxGames, 'games')
+    }
+
     cleanup() {
-        if (this.svg) {
-            this.svg.remove()
+        console.log('🧹 ChartRenderer: Starting cleanup...')
+        
+        try {
+            // Remove resize handlers
+            if (this.resizeHandlers) {
+                this.resizeHandlers.forEach(handler => {
+                    window.removeEventListener('resize', handler)
+                })
+                this.resizeHandlers = []
+            }
+            
+            // Clear all chart elements safely
+            if (this.mainGroup && !this.mainGroup.empty()) {
+                this.mainGroup.selectAll('*').remove()
+            }
+            
+            if (this.svg && !this.svg.empty()) {
+                this.svg.remove()
+            }
+            
+            // Clear references to prevent memory leaks
+            this.svg = null
+            this.mainGroup = null
+            this.xAxisGroup = null
+            this.yAxisGroup = null
+            this.customYAxisGroup = null
+            
+            console.log('✅ ChartRenderer: Cleanup completed successfully')
+        } catch (error) {
+            console.warn('⚠️ ChartRenderer: Error during cleanup:', error)
         }
     }
 } 

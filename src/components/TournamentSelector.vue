@@ -62,9 +62,17 @@ export default {
       type: Boolean,
       default: false
     },
+    isEwc2025Tournament: {
+      type: Boolean,
+      default: false
+    },
     selectedMatchup: {
       type: String,
       default: ''
+    },
+    selectedDay: {
+      type: String,
+      default: 'day1'
     },
     loadedMatchups: {
       type: Set,
@@ -80,10 +88,42 @@ export default {
   
   data() {
     return {
-      selectedDay: 'day1',
-      
       // Tournament structure data
-      tournamentDays: this.isYear5Tournament ? [
+      tournamentDays: this.isEwc2025Tournament ? [
+        // ========================================
+        // EWC 2025 TOURNAMENT STRUCTURE
+        // ========================================
+        {
+          id: 'day1',
+          name: 'Day 1 - Group A',
+          description: 'EWC 2025 Day 1 Group A featuring 20 elite teams competing across 10 games with diverse maps and strategic legend bans.',
+          matchups: [
+            {
+              id: 'Day1-A',
+              title: 'Group A',
+              description: 'Complete Day 1 Group A tournament featuring all 10 games across World\'s Edge, E-District, Storm Point, and Broken Moon.',
+              teams: 20,
+              games: 10,
+              maps: 'World\'s Edge → E-District → Storm Point → Broken Moon'
+            }
+          ]
+        },
+        {
+          id: 'day2',
+          name: 'Day 2 - Group B',
+          description: 'EWC 2025 Day 2 Group B featuring 20 elite teams competing across 7 games with strategic map rotations and legend bans.',
+          matchups: [
+            {
+              id: 'Day2-B',
+              title: 'Group B',
+              description: 'Complete Day 2 Group B tournament featuring all 7 games across World\'s Edge, E-District, and Storm Point.',
+              teams: 20,
+              games: 7,
+              maps: 'World\'s Edge → E-District → Storm Point'
+            }
+          ]
+        }
+      ] : this.isYear5Tournament ? [
         // ========================================
         // YEAR 5 OPEN TOURNAMENT STRUCTURE
         // ========================================
@@ -261,11 +301,25 @@ export default {
     }
   },
   
+  watch: {
+    selectedDay(newDay, oldDay) {
+      if (newDay !== oldDay) {
+        console.log('📅 TournamentSelector: Day changed from', oldDay, 'to', newDay);
+        // Force reactivity update
+        this.$forceUpdate();
+      }
+    }
+  },
+  
   methods: {
     selectDay(dayId) {
       console.log('📅 Selected day:', dayId);
-      this.selectedDay = dayId;
+      
+      // Immediately emit the change to parent for responsive UI
       this.$emit('day-changed', dayId);
+      
+      // Force immediate re-render to update UI
+      this.$forceUpdate();
     },
     
     selectMatchup(matchupId) {

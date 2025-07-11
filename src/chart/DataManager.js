@@ -57,14 +57,14 @@ export class DataManager {
 
         try {
             const loadedData = await d3.csv(csvPath)
-            
+
             if (!loadedData || loadedData.length === 0) {
                 throw new Error(`No data loaded from ${csvPath}`)
             }
-            
+
             this.data = loadedData
             this.setupDataProperties(csvPath)
-            
+
             // Cache the data
             this.cache.set(cacheKey, this.data)
             
@@ -73,7 +73,7 @@ export class DataManager {
                 columns: Object.keys(this.data[0]).length,
                 maxGames: this.maxGames
             })
-            
+
             return Promise.resolve()
         } catch (error) {
             console.error('❌ Error loading data:', error)
@@ -87,12 +87,12 @@ export class DataManager {
      */
     setupDataProperties(csvPath) {
         if (!this.data || this.data.length === 0) return
-
+        
         // Extract game columns (assuming they start with 'Game')
         const firstRow = this.data[0]
         this.gameColumns = Object.keys(firstRow).filter(key => key.startsWith('Game'))
         this.maxGames = this.gameColumns.length
-
+        
         // Setup matchup info from CSV path
         const matchupId = this.extractMatchupFromPath(csvPath)
         this.matchupInfo = getMapSequence(matchupId) // Use imported function
@@ -126,8 +126,14 @@ export class DataManager {
      * @returns {Array} Processed data for visualization
      */
     processData(currentGameIndex = 0) {
-        if (!this.preComputedGameData || !this.teamsList) {
-            console.warn('⚠️ Pre-computed data not available, falling back to empty array')
+        // Enhanced validation with null/undefined checks
+        if (!this.data || !this.preComputedGameData || !this.teamsList || this.teamsList.length === 0) {
+            console.warn('⚠️ Data not available for processing:', {
+                hasData: !!this.data,
+                hasPreComputedData: !!this.preComputedGameData,
+                hasTeamsList: !!this.teamsList,
+                teamsCount: this.teamsList?.length || 0
+            })
             return []
         }
 
@@ -136,7 +142,7 @@ export class DataManager {
         // Handle game filtering if active
         let teamsData = []
         
-        if (this.isFiltered && this.filteredGameIndices.length > 0) {
+            if (this.isFiltered && this.filteredGameIndices.length > 0) {
             // Handle filtered games - need to reconstruct with only selected games
             teamsData = this.teamsList.map(team => {
                 const teamPrecomputed = this.preComputedGameData[team]
@@ -227,7 +233,7 @@ export class DataManager {
 
         // Use matchup info if available
         if (this.matchupInfo && this.matchupInfo.maps) {
-            return this.matchupInfo.maps[gameNumber] || 'Unknown'
+        return this.matchupInfo.maps[gameNumber] || 'Unknown'
         }
 
         // Fallback to unknown
@@ -318,11 +324,11 @@ export class DataManager {
     getAllTeamsData() {
         if (!this.preComputedGameData || !this.teamsList) {
             // Fallback to basic structure if pre-computed data isn't available
-            if (!this.data) return []
-            
-            return this.data.map(d => ({
-                team: d.Team,
-                games: [],
+        if (!this.data) return []
+
+        return this.data.map(d => ({
+            team: d.Team,
+            games: [],
                 cumulativeScore: 0,
                 totalScore: parseInt(d.Total) || 0
             })).sort((a, b) => a.team.localeCompare(b.team))
@@ -416,17 +422,17 @@ export class DataManager {
         if (!this.data || !this.gameColumns) return
 
         console.log('📊 Pre-calculating scales for performance...')
-        
+
         this.preCalculatedScales = {}
-        
+
         // Calculate for initial state (game 0)
         this.preCalculatedScales[0] = 12
-        
+
         // Calculate for each game
         for (let gameIndex = 1; gameIndex <= this.maxGames; gameIndex++) {
             this.preCalculatedScales[gameIndex] = this.calculateMaxScoreAtGame(gameIndex)
         }
-        
+
         console.log('📊 Pre-calculated scales:', this.preCalculatedScales)
     }
 

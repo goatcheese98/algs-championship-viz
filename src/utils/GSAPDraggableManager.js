@@ -113,7 +113,7 @@ export const GSAPDraggableManager = {
                     if (constrainedX !== x || constrainedY !== y) {
                         gsap.to(this.target, {
                             duration: 0.2,
-                            ease: 'power2.out',
+                        ease: 'power2.out',
                             x: constrainedX,
                             y: constrainedY
                         });
@@ -392,6 +392,19 @@ export const GSAPDraggableManager = {
     debugInstances() {
         console.log('🔍 Debug: Active draggable instances:');
         console.table(this.getStatus());
+    },
+    
+    // Add cleanup method for backward compatibility
+    cleanup(instanceOrId) {
+        if (typeof instanceOrId === 'string') {
+            // If it's a string, treat it as an ID
+            this.destroyDraggable(instanceOrId);
+        } else if (instanceOrId && instanceOrId.cleanup) {
+            // If it's an instance with cleanup method, call it
+            instanceOrId.cleanup();
+        } else {
+            console.warn('⚠️ Invalid cleanup parameter:', instanceOrId);
+        }
     }
 };
 

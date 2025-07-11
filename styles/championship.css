@@ -1641,6 +1641,24 @@ body {
     cursor: not-allowed;
 }
 
+.legend-toggle-btn {
+    width: 100%;
+    background: rgba(168, 85, 247, 0.6);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.legend-toggle-btn:hover {
+    background: rgba(168, 85, 247, 0.8);
+    transform: translateY(-1px);
+}
+
 .slide-down-enter-active, .slide-down-leave-active {
     transition: all 0.3s ease;
     overflow: hidden;
@@ -1816,7 +1834,7 @@ body {
         transform: none !important;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
-
+    
     .enhanced-action-panel:active {
         cursor: default;
     }
@@ -1901,6 +1919,13 @@ body {
     
     /* Mobile Export Button */
     .export-btn {
+        padding: 16px;
+        font-size: 1rem;
+        margin-top: 12px;
+    }
+    
+    /* Mobile Legend Toggle Button */
+    .legend-toggle-btn {
         padding: 16px;
         font-size: 1rem;
         margin-top: 12px;

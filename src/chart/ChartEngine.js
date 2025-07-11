@@ -75,11 +75,20 @@ export class ChartEngine {
             
             console.log('🚀 Initializing ChartEngine...')
             
+            // Cleanup any existing state first
+            if (this.initialized) {
+                console.log('🧹 Cleaning up existing chart before re-initialization...')
+                this.cleanup()
+            }
+            
             // Setup container
             this.container = d3.select(`#${this.containerId}`)
             if (this.container.empty()) {
                 throw new Error(`Container #${this.containerId} not found`)
             }
+            
+            // Clear container to prevent conflicts
+            this.container.selectAll('*').remove()
             
             // Load data
             await this.dataManager.loadData(csvPath)
@@ -653,32 +662,52 @@ export class ChartEngine {
     cleanup() {
         console.log('🧹 Cleaning up ChartEngine...')
         
-        // Stop animations
-        this.stopAnimation()
-        
-        // Remove event listeners
-        if (this.resizeHandler) {
-            window.removeEventListener('resize', this.resizeHandler)
+        try {
+            // Stop animations
+            this.stopAnimation()
+            
+            // Remove event listeners
+            if (this.resizeHandler) {
+                window.removeEventListener('resize', this.resizeHandler)
+                this.resizeHandler = null
+            }
+            
+            if (this.visibilityHandler) {
+                document.removeEventListener('visibilitychange', this.visibilityHandler)
+                this.visibilityHandler = null
+            }
+            
+            // Cleanup renderer first to prevent DOM access errors
+            if (this.renderer) {
+                this.renderer.cleanup()
+                this.renderer = null
+            }
+            
+            // Clear container safely
+            if (this.container && !this.container.empty()) {
+                this.container.selectAll('*').remove()
+            }
+            
+            // Reset data manager
+            if (this.dataManager) {
+                this.dataManager.reset()
+            }
+            
+            // Reset state
+            this.initialized = false
+            this.isPlaying = false
+            this.currentGameIndex = 0
+            this.container = null
+            this.scales = { x: null, y: null }
+            
+            console.log('✅ ChartEngine cleanup complete')
+        } catch (error) {
+            console.warn('⚠️ ChartEngine: Error during cleanup:', error)
+            // Force cleanup even if there's an error
+            this.initialized = false
+            this.renderer = null
+            this.container = null
         }
-        
-        if (this.visibilityHandler) {
-            document.removeEventListener('visibilitychange', this.visibilityHandler)
-        }
-        
-        // Cleanup renderer
-        if (this.renderer) {
-            this.renderer.cleanup()
-        }
-        
-        // Reset data manager
-        this.dataManager.reset()
-        
-        // Reset state
-        this.initialized = false
-        this.isPlaying = false
-        this.currentGameIndex = 1
-        
-        console.log('✅ ChartEngine cleanup complete')
     }
 }
 

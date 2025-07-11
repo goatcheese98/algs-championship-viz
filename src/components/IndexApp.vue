@@ -16,6 +16,41 @@
       </div>
     </header>
 
+    <!-- EWC 2025 Banner -->
+    <section class="ewc-banner">
+      <div class="ewc-banner-content">
+        <div class="ewc-banner-background">
+          <div class="ewc-glow-orb ewc-glow-orb-1"></div>
+          <div class="ewc-glow-orb ewc-glow-orb-2"></div>
+          <div class="ewc-glow-orb ewc-glow-orb-3"></div>
+        </div>
+        
+        <div class="ewc-banner-info">
+          <div class="ewc-banner-logo">
+            <span class="ewc-banner-icon">🏆</span>
+            <div class="ewc-banner-particles"></div>
+          </div>
+          
+          <div class="ewc-banner-text">
+            <h2 class="ewc-banner-title">EWC 2025 - NOW LIVE!</h2>
+            <p class="ewc-banner-subtitle">Experience the Esports World Cup 2025 featuring 20 elite teams</p>
+            <div class="ewc-banner-stats">
+              <span class="ewc-stat">🌍 Global Event</span>
+              <span class="ewc-stat">👥 20 Teams</span>
+              <span class="ewc-stat">🎮 10 Games</span>
+            </div>
+          </div>
+          
+          <div class="ewc-banner-action">
+            <a href="ewc_2025.html" class="ewc-banner-button">
+              <span class="ewc-button-text">View EWC 2025</span>
+              <span class="ewc-button-arrow">→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Tournament Dashboard -->
     <main class="dashboard-container">
       <div class="dashboard-title">
@@ -91,6 +126,40 @@
             Enter Tournament
           </a>
         </div>
+
+        <!-- EWC 2025 -->
+        <div class="tournament-card" @click="goToTournament('ewc_2025.html')">
+          <div class="tournament-icon">🏆</div>
+          <h3>EWC 2025</h3>
+          <div class="tournament-status">Available Now</div>
+          
+          <p class="tournament-description">
+            Experience the prestigious Esports World Cup 2025 featuring 20 elite teams competing in Group A across 10 intense games with diverse maps and strategic legend bans.
+          </p>
+
+          <div class="tournament-details">
+            <div class="detail-item">
+              <div class="detail-label">Event</div>
+              <div class="detail-value">Esports World Cup</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Date</div>
+              <div class="detail-value">July 2025</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Teams</div>
+              <div class="detail-value">20 Elite Teams</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Format</div>
+              <div class="detail-value">Group A - 10 Games</div>
+            </div>
+          </div>
+
+          <a href="ewc_2025.html" class="enter-button">
+            Enter EWC 2025
+          </a>
+        </div>
       </div>
     </main>
 
@@ -117,6 +186,16 @@
             <h3>Year 5 Open</h3>
             <p>Explore all 12 rounds of Year 5 tournament data</p>
             <a href="year_5_open.html" class="nav-button">
+              View Analytics
+            </a>
+          </div>
+          
+          <!-- EWC 2025 Card -->
+          <div class="nav-card" @click="goToTournament('ewc_2025.html')">
+            <div class="nav-icon">🏆</div>
+            <h3>EWC 2025</h3>
+            <p>Analyze the Esports World Cup 2025 Group A tournament data</p>
+            <a href="ewc_2025.html" class="nav-button">
               View Analytics
             </a>
           </div>

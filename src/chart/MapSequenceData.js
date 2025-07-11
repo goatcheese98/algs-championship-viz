@@ -450,6 +450,41 @@ export const MAP_SEQUENCES = {
             5: 'WORLD\'S EDGE',
             6: 'WORLD\'S EDGE'
         }
+    },
+
+    // ========================================
+    // EWC 2025 TOURNAMENT MAP SEQUENCES
+    // ========================================
+    
+    'Day1-A': {
+        name: 'EWC 2025 Day 1 - Group A',
+        gameCount: 10,
+        maps: {
+            1: 'WORLD\'S EDGE',
+            2: 'E-DISTRICT',
+            3: 'STORM POINT',
+            4: 'BROKEN MOON',
+            5: 'WORLD\'S EDGE',
+            6: 'E-DISTRICT',
+            7: 'STORM POINT',
+            8: 'BROKEN MOON',
+            9: 'WORLD\'S EDGE',
+            10: 'E-DISTRICT'
+        }
+    },
+
+    'Day2-B': {
+        name: 'EWC 2025 Day 2 - Group B',
+        gameCount: 7,
+        maps: {
+            1: 'WORLD\'S EDGE',
+            2: 'WORLD\'S EDGE',
+            3: 'E-DISTRICT',
+            4: 'E-DISTRICT',
+            5: 'E-DISTRICT',
+            6: 'STORM POINT',
+            7: 'STORM POINT'
+        }
     }
 }
 
@@ -481,18 +516,20 @@ export function isValidMatchup(matchupId) {
 
 /**
  * Get matchups by tournament type
- * @param {string} tournamentType - 'year4' or 'year5'
+ * @param {string} tournamentType - 'year4', 'year5', or 'ewc2025'
  * @returns {Object} Filtered map sequences
  */
 export function getMatchupsByTournament(tournamentType) {
     const filtered = {};
     
     Object.keys(MAP_SEQUENCES).forEach(matchupId => {
-        const isYear5 = matchupId.startsWith('Day');
-        const isYear4 = !isYear5;
+        const isEwc2025 = matchupId.startsWith('Day1-A') || matchupId.startsWith('Day2-B');
+        const isYear5 = matchupId.startsWith('Day') && !isEwc2025;
+        const isYear4 = !matchupId.startsWith('Day') && !isEwc2025;
         
         if ((tournamentType === 'year5' && isYear5) || 
-            (tournamentType === 'year4' && isYear4)) {
+            (tournamentType === 'year4' && isYear4) ||
+            (tournamentType === 'ewc2025' && isEwc2025)) {
             filtered[matchupId] = MAP_SEQUENCES[matchupId];
         }
     });

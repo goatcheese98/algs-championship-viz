@@ -17,24 +17,34 @@
         
         <!-- Main Title -->
         <div ref="championshipTitle" class="championship-title">
-          <h1 ref="titleMain" class="title-main">{{ isYear5Tournament ? 'ALGS Year 5 Open' : 'ALGS Year 4 Championship' }}</h1>
+          <h1 ref="titleMain" class="title-main">
+            {{ isEwc2025Tournament ? 'EWC 2025' : (isYear5Tournament ? 'ALGS Year 5 Open' : 'ALGS Year 4 Championship') }}
+          </h1>
         </div>
         
         <!-- Tournament Details (Horizontal) -->
         <div ref="tournamentInfo" class="tournament-info-horizontal">
           <div ref="infoItem1" class="info-item">
-            <span ref="infoIcon1" class="info-icon">{{ isYear5Tournament ? '🌍' : '📍' }}</span>
-            <span ref="infoText1" class="info-text">{{ isYear5Tournament ? 'Global Tournament' : 'Sapporo, Japan' }}</span>
+            <span ref="infoIcon1" class="info-icon">
+              {{ isEwc2025Tournament ? '🏆' : (isYear5Tournament ? '🌍' : '📍') }}
+            </span>
+            <span ref="infoText1" class="info-text">
+              {{ isEwc2025Tournament ? 'Esports World Cup' : (isYear5Tournament ? 'Global Tournament' : 'Sapporo, Japan') }}
+            </span>
           </div>
           <div ref="infoSeparator1" class="info-separator">•</div>
           <div ref="infoItem2" class="info-item">
             <span ref="infoIcon2" class="info-icon">📅</span>
-            <span ref="infoText2" class="info-text">{{ isYear5Tournament ? 'Split 1 - 2025' : 'Jan 29 - Feb 2, 2025' }}</span>
+            <span ref="infoText2" class="info-text">
+              {{ isEwc2025Tournament ? 'Day 1 - Group A' : (isYear5Tournament ? 'Split 1 - 2025' : 'Jan 29 - Feb 2, 2025') }}
+            </span>
           </div>
           <div ref="infoSeparator2" class="info-separator">•</div>
           <div ref="infoItem3" class="info-item">
             <span ref="infoIcon3" class="info-icon">⚔️</span>
-            <span ref="infoText3" class="info-text">{{ isYear5Tournament ? '6 Tournament Rounds' : '40 Teams' }}</span>
+            <span ref="infoText3" class="info-text">
+              {{ isEwc2025Tournament ? '20 Teams' : (isYear5Tournament ? '6 Tournament Rounds' : '40 Teams') }}
+            </span>
           </div>
         </div>
         
@@ -42,6 +52,8 @@
         <div class="nav-links">
           <a href="index.html" class="nav-link">🏠 ALGS Dashboard</a>
           <a v-if="isYear5Tournament" href="year_4_championship.html" class="nav-link">🏆 Year 4 Champions</a>
+          <a v-if="isEwc2025Tournament" href="year_4_championship.html" class="nav-link">🏆 Year 4 Championship</a>
+          <a v-if="isEwc2025Tournament" href="year_5_open.html" class="nav-link">🌍 Year 5 Open</a>
         </div>
       </div>
     </div>
@@ -51,7 +63,9 @@
       <TournamentSelector
         ref="tournamentSelector"
         :is-year5-tournament="isYear5Tournament"
+        :is-ewc2025-tournament="isEwc2025Tournament"
         :selected-matchup="selectedMatchup"
+        :selected-day="selectedDay"
         :loaded-matchups="loadedMatchups"
         :loading-matchups="loadingMatchups"
         @matchup-selected="handleMatchupSelected"
@@ -60,9 +74,10 @@
 
       <!-- Chart Section -->
       <div class="chart-section">
-        <div v-if="!selectedMatchup" class="no-selection">
-          <!-- Optimized Vue.js + GSAP Chart Loading Animation -->
-          <div ref="chartLoadingContainer" class="chart-loading-container">
+        <transition name="fade" mode="out-in">
+          <div v-if="!selectedMatchup" key="loading" class="no-selection">
+            <!-- Optimized Vue.js + GSAP Chart Loading Animation -->
+            <div ref="chartLoadingContainer" class="chart-loading-container">
             
             <!-- Central Glow Effect -->
             <div ref="centralGlow" class="central-glow"></div>
@@ -129,10 +144,9 @@
             <div ref="floatingDot4" class="floating-dot floating-dot-4"></div>
             
           </div>
-        </div>
+          </div>
 
-        <template v-else>
-          <div class="chart-display">
+          <div v-else key="chart" class="chart-display">
             <!-- Chart Container with proper ID for ChartEngine -->
             <div class="chart-header">
               <h3 class="chart-title">{{ getMatchupTitle(selectedMatchup) }}</h3>
@@ -150,9 +164,10 @@
                 </div>
               </transition>
             </div>
-            
+
             <!-- Action Panel Component - Moved outside chart-area for full page dragging -->
             <ActionPanel
+              :key="`action-panel-${selectedDay}-${selectedMatchup}`"
               :chart-engine="chartEngine"
               :selected-matchup="selectedMatchup"
               :max-games="maxGames"
@@ -162,9 +177,10 @@
               @restart-requested="handleRestartRequested"
               @game-filter-changed="handleGameFilterChanged"
               @export-requested="handleExportRequested"
+              @legend-toggled="handleLegendToggled"
             />
           </div>
-        </template>
+        </transition>
       </div>
     </div>
   </div>
@@ -200,19 +216,23 @@ export default {
     // Detect tournament type from URL
     const currentPath = window.location.pathname;
     const isYear5 = currentPath.includes('year_5_open') || currentPath.includes('year5');
+    const isEwc2025 = currentPath.includes('ewc_2025') || currentPath.includes('ewc2025');
     
     console.log('🎯 Tournament Detection:', {
       currentPath,
       isYear5: isYear5,
-      tournamentType: isYear5 ? 'Year 5 Open' : 'Year 4 Championship'
+      isEwc2025: isEwc2025,
+      tournamentType: isEwc2025 ? 'EWC 2025' : (isYear5 ? 'Year 5 Open' : 'Year 4 Championship')
     });
     
     return {
       // Tournament detection
       isYear5Tournament: isYear5,
-      
+      isEwc2025Tournament: isEwc2025,
+
       // Chart state
       selectedMatchup: '',
+      selectedDay: 'day1', // Track current day for proper state management
       chartEngine: null,
       isLoading: false,
       isPlaying: false,
@@ -233,24 +253,60 @@ export default {
   
   computed: {
     /**
-     * Dynamic maxGames based on selected matchup
+     * Dynamic maxGames based on selected matchup and current day
      * Year 4: 6 or 8 games depending on tournament round
      * Year 5: 6 games for all rounds
+     * EWC 2025: 10 games for Group A (Day 1), 7 games for Group B (Day 2)
      */
     maxGames() {
-      if (!this.selectedMatchup || !this.$refs.tournamentSelector) {
-        return this.isYear5Tournament ? 6 : 6; // Default to 6 for both when no matchup selected
+      console.log('🎮 Computing maxGames:', {
+        selectedMatchup: this.selectedMatchup,
+        selectedDay: this.selectedDay,
+        isEwc2025Tournament: this.isEwc2025Tournament,
+        hasSelector: !!this.$refs.tournamentSelector
+      });
+      
+      // If we have a selected matchup, get its specific game count
+      if (this.selectedMatchup && this.$refs.tournamentSelector) {
+        const matchupInfo = this.$refs.tournamentSelector.getMatchupInfo(this.selectedMatchup);
+        if (matchupInfo) {
+          console.log(`🎮 Matchup ${this.selectedMatchup} has ${matchupInfo.games} games`);
+          return matchupInfo.games;
+        }
       }
       
-      // Get matchup info from tournament selector
-      const matchupInfo = this.$refs.tournamentSelector.getMatchupInfo(this.selectedMatchup);
-      if (matchupInfo) {
-        console.log(`🎮 Matchup ${this.selectedMatchup} has ${matchupInfo.games} games`);
-        return matchupInfo.games;
+      // For EWC 2025, provide day-specific defaults even when no matchup is selected
+      if (this.isEwc2025Tournament) {
+        if (this.selectedDay === 'day1') {
+          console.log('🎮 EWC 2025 Day 1 - returning 10 games');
+          return 10; // Day 1 Group A has 10 games
+        } else if (this.selectedDay === 'day2') {
+          console.log('🎮 EWC 2025 Day 2 - returning 7 games');
+          return 7;  // Day 2 Group B has 7 games
+        }
+        console.log('🎮 EWC 2025 fallback - returning 10 games');
+        return 10; // Default fallback
       }
       
-      // Fallback based on tournament type
-      return this.isYear5Tournament ? 6 : 8;
+      // For Year 5 and Year 4, return consistent defaults
+      const result = this.isYear5Tournament ? 6 : 8;
+      console.log(`🎮 Tournament default - returning ${result} games`);
+      return result;
+    }
+  },
+  
+  watch: {
+    selectedDay(newDay, oldDay) {
+      if (newDay !== oldDay) {
+        console.log('📅 ChampionshipApp: selectedDay changed from', oldDay, 'to', newDay);
+        console.log('🎮 New computed maxGames:', this.maxGames);
+      }
+    },
+    
+    maxGames(newMaxGames, oldMaxGames) {
+      if (newMaxGames !== oldMaxGames) {
+        console.log('🎮 ChampionshipApp: maxGames changed from', oldMaxGames, 'to', newMaxGames);
+      }
     }
   },
   
@@ -276,6 +332,18 @@ export default {
         this.updateCurrentMap();
       }
     }, 300);
+    
+    // Add debug method to global scope for troubleshooting
+    window.debugChampionshipApp = () => {
+      console.log('🔍 Championship App Debug Info:', {
+        selectedDay: this.selectedDay,
+        selectedMatchup: this.selectedMatchup,
+        computedMaxGames: this.maxGames,
+        isEwc2025Tournament: this.isEwc2025Tournament,
+        chartEngine: !!this.chartEngine,
+        tournamentSelector: !!this.$refs.tournamentSelector
+      });
+    };
   },
   
   methods: {
@@ -638,15 +706,8 @@ export default {
         console.log('✨ Chart loading animations initialized successfully!');
       });
     },
-
-    // Event handlers for child components
-    handleDayChanged(dayId) {
-      console.log('📅 Day changed:', dayId);
-      
-      // Clear selection when switching days
-      this.selectedMatchup = '';
-      this.chartEngine = null;
-    },
+    
+    // Event handlers for child components - REMOVED DUPLICATE, see comprehensive version below
 
     async handleMatchupSelected(matchupId) {
       console.log('🎯 Matchup selected:', matchupId);
@@ -738,13 +799,143 @@ export default {
       }
     },
 
+    handleLegendToggled(visible) {
+      if (this.chartEngine && this.chartEngine.renderer) {
+        console.log('🎨 Toggling chart legend:', visible ? 'ON' : 'OFF');
+        this.chartEngine.renderer.renderLegend(visible, this.chartEngine.dataManager);
+      }
+    },
+
+    /**
+     * Enhanced cleanup method with error handling and race condition prevention
+     */
+    async cleanupChart() {
+      console.log('🧹 Starting enhanced chart cleanup...');
+      
+      try {
+        // Stop any ongoing animations
+        if (this.chartEngine) {
+          this.chartEngine.stopAnimation();
+        }
+        
+        // Clear sync interval
+        if (this.syncInterval) {
+          clearInterval(this.syncInterval);
+          this.syncInterval = null;
+        }
+        
+        // Clear game state interval
+        if (this.gameStateInterval) {
+          clearInterval(this.gameStateInterval);
+          this.gameStateInterval = null;
+        }
+        
+        // Cleanup chart engine with proper error handling
+        if (this.chartEngine) {
+          await this.chartEngine.cleanup();
+          this.chartEngine = null;
+        }
+        
+        // COMPLETELY clear chart container to prevent DOM conflicts
+        const container = document.getElementById('vue-chart-container');
+        if (container && container.parentNode) {
+          container.innerHTML = '';
+          // Remove any remaining event listeners
+          container.removeAttribute('style');
+        }
+        
+        // Reset all state variables
+        this.currentGame = 0;
+        this.currentMap = '';
+        this.isPlaying = false;
+        this.errorMessage = '';
+        this.isLoading = false;
+        
+        console.log('✅ Enhanced chart cleanup completed');
+        
+        // Ensure DOM is clean before proceeding
+        await this.$nextTick();
+        
+      } catch (error) {
+        console.warn('⚠️ Error during chart cleanup:', error);
+        // Force cleanup even if there's an error
+        this.chartEngine = null;
+        this.currentGame = 0;
+        this.isPlaying = false;
+        this.isLoading = false;
+        this.errorMessage = '';
+        
+        // Force clear container even on error
+        const container = document.getElementById('vue-chart-container');
+        if (container && container.parentNode) {
+          container.innerHTML = '';
+          container.removeAttribute('style');
+        }
+      }
+    },
+
+        /**
+     * Handle day changes with proper cleanup
+     */
+    async handleDayChanged(dayId) {
+      console.log('📅 Day changed to:', dayId);
+      
+      try {
+        // IMMEDIATELY clear the selected matchup to show loading animation
+        this.selectedMatchup = '';
+        
+        // Update selected day for proper state management
+        this.selectedDay = dayId;
+        
+        // Log the expected maxGames for debugging
+        const expectedMaxGames = this.isEwc2025Tournament ? 
+          (dayId === 'day1' ? 10 : 7) : 
+          (this.isYear5Tournament ? 6 : 8);
+        console.log('🎮 Expected maxGames for', dayId, ':', expectedMaxGames);
+        
+        // Force Vue to re-render immediately
+        await this.$nextTick();
+        
+        // Clean up chart and reset all states
+        await this.cleanupChart();
+        
+        // Reset all chart-related state
+        this.currentGame = 0;
+        this.currentMap = '';
+        this.isPlaying = false;
+        this.errorMessage = '';
+        
+        // Clear loading/loaded states for a fresh start
+        this.loadingMatchups.clear();
+        this.loadedMatchups.clear();
+        
+        console.log('✅ Day change handled successfully - back to loading animation');
+        
+      } catch (error) {
+        console.warn('⚠️ Error handling day change:', error);
+        // Force reset state even on error
+        this.selectedMatchup = '';
+        this.selectedDay = dayId;
+        this.chartEngine = null;
+        this.currentGame = 0;
+        this.isPlaying = false;
+        this.errorMessage = '';
+        this.loadingMatchups.clear();
+        this.loadedMatchups.clear();
+      }
+    },
+
     /**
      * Build CSV path based on tournament type and matchup ID
      * Year 4: year4champions/{matchupId}_points.csv
      * Year 5: year5champions/processed/{matchupId}-simple.csv
+     * EWC 2025: ewc2025/processed/{matchupId}-simple.csv
      */
     buildCsvPath(matchupId) {
-      if (this.isYear5Tournament) {
+      if (this.isEwc2025Tournament) {
+        // EWC 2025 tournament paths
+        return `ewc2025/processed/${matchupId}-simple.csv`;
+      } else if (this.isYear5Tournament) {
         // Year 5 Open tournament paths
         return `year5champions/processed/${matchupId}-simple.csv`;
       } else {
@@ -758,9 +949,9 @@ export default {
      */
     getTournamentInfo() {
       return {
-        type: this.isYear5Tournament ? 'Year 5 Open' : 'Year 4 Championship',
-        dataPath: this.isYear5Tournament ? 'year5champions/processed/' : 'year4champions/',
-        fileFormat: this.isYear5Tournament ? '{matchupId}-simple.csv' : '{matchupId}_points.csv'
+        type: this.isEwc2025Tournament ? 'EWC 2025' : (this.isYear5Tournament ? 'Year 5 Open' : 'Year 4 Championship'),
+        dataPath: this.isEwc2025Tournament ? 'ewc2025/processed/' : (this.isYear5Tournament ? 'year5champions/processed/' : 'year4champions/'),
+        fileFormat: this.isEwc2025Tournament ? '{matchupId}-simple.csv' : (this.isYear5Tournament ? '{matchupId}-simple.csv' : '{matchupId}_points.csv')
       };
     },
     
@@ -780,10 +971,8 @@ export default {
       try {
         console.log('📊 Loading matchup:', this.selectedMatchup);
         
-        // Cleanup existing chart engine
-        if (this.chartEngine) {
-          this.chartEngine.cleanup();
-        }
+        // Enhanced cleanup with error handling
+        await this.cleanupChart();
         
         // Wait for DOM to be ready
         await this.$nextTick();
@@ -793,7 +982,7 @@ export default {
         
         // Initialize chart engine using new modular ChartEngine
         this.chartEngine = new ChartEngine('vue-chart-container', {
-          debugMode: false,  // Optimized for production
+          debugMode: true,  // Enable debug mode to help identify issues
           transitionDuration: 2500,  // Slower, more elegant animations
           enableAnimation: true,
           teamConfig: this.teamConfig  // Pass Vue composable to chart engine
@@ -801,7 +990,8 @@ export default {
         
         // Initialize chart engine with tournament-specific matchup data
         const csvPath = this.buildCsvPath(this.selectedMatchup);
-        console.log(`📂 Loading CSV for ${this.isYear5Tournament ? 'Year 5' : 'Year 4'}:`, csvPath);
+        console.log(`📂 Loading CSV for ${this.isEwc2025Tournament ? 'EWC 2025' : (this.isYear5Tournament ? 'Year 5' : 'Year 4')}:`, csvPath);
+        console.log('🎯 Full CSV path:', `public/${csvPath}`);
         await this.chartEngine.initialize(csvPath);
         
         // Update game state  
@@ -905,7 +1095,7 @@ export default {
         `;
       }
     },
-
+    
     async playAnimation() {
       if (this.chartEngine) {
         this.isPlaying = true;

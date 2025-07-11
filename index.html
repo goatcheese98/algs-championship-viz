@@ -165,6 +165,194 @@
             line-height: 1.6;
         }
 
+        /* EWC 2025 Banner */
+        .ewc-banner {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 25%, #2d4a5f 50%, #1b263b 75%, #0d1b2a 100%);
+            border-bottom: 3px solid #00b4d8;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .ewc-banner-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .ewc-banner-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .ewc-glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 180, 216, 0.4) 0%, transparent 70%);
+            animation: ewcGlow 6s ease-in-out infinite alternate;
+        }
+
+        .ewc-glow-orb-1 {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            left: -150px;
+            animation-delay: 0s;
+        }
+
+        .ewc-glow-orb-2 {
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            right: -100px;
+            animation-delay: 2s;
+        }
+
+        .ewc-glow-orb-3 {
+            width: 150px;
+            height: 150px;
+            bottom: -75px;
+            left: 50%;
+            animation-delay: 4s;
+        }
+
+        @keyframes ewcGlow {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.3; }
+            100% { transform: scale(1.2) rotate(45deg); opacity: 0.6; }
+        }
+
+        .ewc-banner-info {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .ewc-banner-logo {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .ewc-banner-icon {
+            font-size: 4rem;
+            filter: drop-shadow(0 0 20px rgba(0, 180, 216, 0.8));
+            animation: ewcIconPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes ewcIconPulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(0, 180, 216, 0.8)); }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 30px rgba(0, 180, 216, 1)); }
+        }
+
+        .ewc-banner-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .ewc-banner-text {
+            flex: 1;
+        }
+
+        .ewc-banner-title {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00b4d8, #0077b6, #023e8a, #0077b6, #00b4d8);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: ewcTitleFlow 4s ease-in-out infinite;
+            margin: 0 0 15px 0;
+            letter-spacing: -2px;
+        }
+
+        @keyframes ewcTitleFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .ewc-banner-subtitle {
+            font-size: 1.3rem;
+            color: #caf0f8;
+            margin: 0 0 20px 0;
+            opacity: 0.9;
+        }
+
+        .ewc-banner-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .ewc-stat {
+            background: rgba(0, 180, 216, 0.1);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #caf0f8;
+            font-weight: 600;
+        }
+
+        .ewc-banner-action {
+            flex-shrink: 0;
+        }
+
+        .ewc-banner-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 180, 216, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ewc-banner-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .ewc-banner-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(0, 180, 216, 0.6);
+        }
+
+        .ewc-banner-button:hover::before {
+            left: 100%;
+        }
+
+        .ewc-button-arrow {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .ewc-banner-button:hover .ewc-button-arrow {
+            transform: translateX(5px);
+        }
+
         /* Tournament Grid */
         .tournaments-grid {
             display: grid;
@@ -524,6 +712,41 @@
             .tournament-details {
                 grid-template-columns: 1fr;
             }
+            
+            /* EWC Banner Mobile */
+            .ewc-banner-content {
+                padding: 40px 20px;
+            }
+            
+            .ewc-banner-info {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .ewc-banner-title {
+                font-size: 2rem;
+                letter-spacing: -1px;
+            }
+            
+            .ewc-banner-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .ewc-banner-stats {
+                justify-content: center;
+                gap: 15px;
+            }
+            
+            .ewc-stat {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .ewc-banner-button {
+                padding: 15px 30px;
+                font-size: 1.1rem;
+            }
         }
     </style>
 </head>
@@ -544,6 +767,41 @@
                 </div>
             </div>
         </header>
+
+        <!-- EWC 2025 Banner -->
+        <section class="ewc-banner">
+            <div class="ewc-banner-content">
+                <div class="ewc-banner-background">
+                    <div class="ewc-glow-orb ewc-glow-orb-1"></div>
+                    <div class="ewc-glow-orb ewc-glow-orb-2"></div>
+                    <div class="ewc-glow-orb ewc-glow-orb-3"></div>
+                </div>
+                
+                <div class="ewc-banner-info">
+                    <div class="ewc-banner-logo">
+                        <span class="ewc-banner-icon">🏆</span>
+                        <div class="ewc-banner-particles"></div>
+                    </div>
+                    
+                    <div class="ewc-banner-text">
+                        <h2 class="ewc-banner-title">EWC 2025 - NOW LIVE!</h2>
+                        <p class="ewc-banner-subtitle">Experience the Esports World Cup 2025 featuring 20 elite teams</p>
+                        <div class="ewc-banner-stats">
+                            <span class="ewc-stat">🌍 Global Event</span>
+                            <span class="ewc-stat">👥 20 Teams</span>
+                            <span class="ewc-stat">🎮 10 Games</span>
+                        </div>
+                    </div>
+                    
+                    <div class="ewc-banner-action">
+                        <a href="ewc_2025.html" class="ewc-banner-button">
+                            <span class="ewc-button-text">View EWC 2025</span>
+                            <span class="ewc-button-arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- Tournament Dashboard -->
         <main class="dashboard-container">
@@ -620,6 +878,40 @@
                         Enter Tournament
                     </a>
                 </div>
+
+                <!-- EWC 2025 -->
+                <div class="tournament-card" @click="goToTournament('ewc_2025.html')">
+                    <div class="tournament-icon">🏆</div>
+                    <h3>EWC 2025</h3>
+                    <div class="tournament-status">Available Now</div>
+                    
+                    <p class="tournament-description">
+                        Experience the prestigious Esports World Cup 2025 featuring 20 elite teams competing in Group A across 10 intense games with diverse maps and strategic legend bans.
+                    </p>
+
+                    <div class="tournament-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Event</div>
+                            <div class="detail-value">Esports World Cup</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Date</div>
+                            <div class="detail-value">July 2025</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Teams</div>
+                            <div class="detail-value">20 Elite Teams</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Format</div>
+                            <div class="detail-value">Group A - 10 Games</div>
+                        </div>
+                    </div>
+
+                    <a href="ewc_2025.html" class="enter-button">
+                        Enter EWC 2025
+                    </a>
+                </div>
             </div>
         </main>
 
@@ -646,6 +938,16 @@
                         <h3>Year 5 Open</h3>
                         <p>Explore all 12 rounds of Year 5 tournament data</p>
                         <a href="year_5_open.html" class="nav-button">
+                            View Analytics
+                        </a>
+                    </div>
+                    
+                    <!-- EWC 2025 Card -->
+                    <div class="nav-card" @click="goToTournament('ewc_2025.html')">
+                        <div class="nav-icon">🏆</div>
+                        <h3>EWC 2025</h3>
+                        <p>Analyze the Esports World Cup 2025 Group A tournament data</p>
+                        <a href="ewc_2025.html" class="nav-button">
                             View Analytics
                         </a>
                     </div>

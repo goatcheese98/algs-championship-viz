@@ -1,5 +1,5 @@
 <template>
-  <div v-if="chartEngine" 
+  <div v-if="chartEngine || maxGames > 0" 
        ref="actionPanel"
        class="enhanced-action-panel tournament-controls"
        :class="{ expanded: panelExpanded }">
@@ -41,7 +41,7 @@
         <div class="filter-row">
           <div class="game-filter-buttons">
             <button v-for="game in maxGames" 
-                    :key="game"
+                    :key="`game-${game}-${maxGames}`"
                     @click="toggleGameFilter(game)"
                     class="game-filter-btn"
                     :class="{ 
@@ -89,6 +89,13 @@
             📊 Export CSV
           </button>
         </div>
+        <!-- Legend Toggle -->
+        <div class="control-section">
+          <label class="section-label">Chart Legend</label>
+          <button @click="toggleLegend" class="legend-toggle-btn">
+            {{ legendVisible ? 'Hide Legend' : 'Show Legend' }}
+          </button>
+        </div>
       </div>
     </transition>
   </div>
@@ -124,7 +131,8 @@ export default {
     'play-toggled', 
     'restart-requested',
     'game-filter-changed',
-    'export-requested'
+    'export-requested',
+    'legend-toggled'
   ],
   
   data() {
@@ -140,6 +148,9 @@ export default {
       // Filter state
       selectedGames: [],
       
+      // Legend state
+      legendVisible: false,
+      
       // GSAP draggable instance
       draggableInstance: null
     }
@@ -148,7 +159,13 @@ export default {
   computed: {
     displayedProgress() {
       // Ensure progress is always within valid range (0 to maxGames)
-      return Math.min(Math.max(0, this.currentGame), this.maxGames);
+      const progress = Math.min(Math.max(0, this.currentGame), this.maxGames);
+      console.log(`🎯 ActionPanel: displayedProgress computed:`, {
+        currentGame: this.currentGame,
+        maxGames: this.maxGames,
+        progress: progress
+      });
+      return progress;
     }
   },
   
@@ -159,6 +176,37 @@ export default {
           this.initDraggable();
           this.updateCurrentMap();
         });
+      }
+    },
+    
+    // Watch for changes in maxGames to update controls
+    maxGames(newMaxGames, oldMaxGames) {
+      console.log(`🎮 ActionPanel: maxGames watcher triggered - from ${oldMaxGames} to ${newMaxGames}`);
+      console.log(`🎮 ActionPanel: Component state:`, {
+        selectedMatchup: this.selectedMatchup,
+        chartEngine: !!this.chartEngine,
+        currentGame: this.currentGame
+      });
+      
+      if (newMaxGames !== oldMaxGames) {
+        console.log(`🎮 ActionPanel: maxGames changed from ${oldMaxGames} to ${newMaxGames}`);
+        
+        // Reset current game if it exceeds the new max
+        if (this.currentGame > newMaxGames) {
+          console.log(`🎮 ActionPanel: Resetting currentGame from ${this.currentGame} to 0`);
+          this.currentGame = 0;
+          this.$emit('game-changed', this.currentGame);
+        }
+        
+        // Force update the component to reflect new maxGames
+        this.$forceUpdate();
+        
+        // Update draggable constraints if it exists
+        if (this.draggableInstance) {
+          this.$nextTick(() => {
+            this.updateDraggableConstraints();
+          });
+        }
       }
     },
     
@@ -200,9 +248,15 @@ export default {
       clearInterval(this.syncInterval);
     }
     
-    // Cleanup draggable
-    if (this.draggableInstance && GSAPDraggableManager) {
-      GSAPDraggableManager.cleanup(this.draggableInstance);
+    // Cleanup draggable - Use correct cleanup method
+    if (this.draggableInstance) {
+      if (this.draggableInstance.cleanup) {
+        // Use instance's own cleanup method
+        this.draggableInstance.cleanup();
+      } else if (GSAPDraggableManager && this.$refs.actionPanel && this.$refs.actionPanel.id) {
+        // Use manager's destroy method with panel ID
+        GSAPDraggableManager.destroyDraggable(this.$refs.actionPanel.id);
+      }
     }
   },
   
@@ -258,6 +312,13 @@ export default {
       } else {
         console.warn('⚠️ ActionPanel draggable initialization failed');
       }
+    },
+    
+    updateDraggableConstraints() {
+      // For this implementation, we don't need to update constraints
+      // since the draggable is for the panel, not the game controls
+      // The game controls are handled through Vue reactivity
+      console.log('🎮 Draggable constraints updated for maxGames:', this.maxGames);
     },
     
     async updateGameFromSlider() {
@@ -432,6 +493,11 @@ export default {
     
     exportData() {
       this.$emit('export-requested', this.selectedMatchup);
+    },
+
+    toggleLegend() {
+      this.legendVisible = !this.legendVisible;
+      this.$emit('legend-toggled', this.legendVisible);
     },
     
     // Mobile detection utility
