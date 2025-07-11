@@ -458,24 +458,7 @@ export const MAP_SEQUENCES = {
     
     'Day1-A': {
         name: 'EWC 2025 Day 1 - Group A',
-        gameCount: 10,
-        maps: {
-            1: 'WORLD\'S EDGE',
-            2: 'E-DISTRICT',
-            3: 'STORM POINT',
-            4: 'BROKEN MOON',
-            5: 'WORLD\'S EDGE',
-            6: 'E-DISTRICT',
-            7: 'STORM POINT',
-            8: 'BROKEN MOON',
-            9: 'WORLD\'S EDGE',
-            10: 'E-DISTRICT'
-        }
-    },
-
-    'Day2-B': {
-        name: 'EWC 2025 Day 2 - Group B',
-        gameCount: 7,
+        gameCount: 'auto', // Dynamic based on CSV data
         maps: {
             1: 'WORLD\'S EDGE',
             2: 'WORLD\'S EDGE',
@@ -483,7 +466,27 @@ export const MAP_SEQUENCES = {
             4: 'E-DISTRICT',
             5: 'E-DISTRICT',
             6: 'STORM POINT',
-            7: 'STORM POINT'
+            7: 'STORM POINT',
+            8: 'STORM POINT',
+            9: 'BROKEN MOON',
+            10: 'BROKEN MOON'
+        }
+    },
+
+    'Day2-B': {
+        name: 'EWC 2025 Day 2 - Group B',
+        gameCount: 'auto', // Dynamic based on CSV data
+        maps: {
+            1: 'WORLD\'S EDGE',
+            2: 'WORLD\'S EDGE',
+            3: 'E-DISTRICT',
+            4: 'E-DISTRICT',
+            5: 'E-DISTRICT',
+            6: 'STORM POINT',
+            7: 'STORM POINT',
+            8: 'STORM POINT',
+            9: 'BROKEN MOON',
+            10: 'BROKEN MOON'
         }
     }
 }

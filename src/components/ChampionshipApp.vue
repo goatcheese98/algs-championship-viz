@@ -76,8 +76,8 @@
       <div class="chart-section">
         <transition name="fade" mode="out-in">
           <div v-if="!selectedMatchup" key="loading" class="no-selection">
-            <!-- Optimized Vue.js + GSAP Chart Loading Animation -->
-            <div ref="chartLoadingContainer" class="chart-loading-container">
+          <!-- Optimized Vue.js + GSAP Chart Loading Animation -->
+          <div ref="chartLoadingContainer" class="chart-loading-container">
             
             <!-- Central Glow Effect -->
             <div ref="centralGlow" class="central-glow"></div>
@@ -144,7 +144,7 @@
             <div ref="floatingDot4" class="floating-dot floating-dot-4"></div>
             
           </div>
-          </div>
+        </div>
 
           <div v-else key="chart" class="chart-display">
             <!-- Chart Container with proper ID for ChartEngine -->
@@ -163,7 +163,7 @@
                   <div class="loading-spinner"></div>
                 </div>
               </transition>
-            </div>
+                </div>
 
             <!-- Action Panel Component - Moved outside chart-area for full page dragging -->
             <ActionPanel
@@ -179,8 +179,8 @@
               @export-requested="handleExportRequested"
               @legend-toggled="handleLegendToggled"
             />
-          </div>
-        </transition>
+                  </div>
+                </transition>
       </div>
     </div>
   </div>
@@ -253,44 +253,43 @@ export default {
   
   computed: {
     /**
-     * Dynamic maxGames based on selected matchup and current day
-     * Year 4: 6 or 8 games depending on tournament round
-     * Year 5: 6 games for all rounds
-     * EWC 2025: 10 games for Group A (Day 1), 7 games for Group B (Day 2)
+     * Dynamic maxGames based on actual CSV data
+     * This automatically detects game count from CSV headers, making it data-driven
      */
     maxGames() {
-      console.log('🎮 Computing maxGames:', {
+      console.log('🎮 Computing maxGames dynamically:', {
         selectedMatchup: this.selectedMatchup,
         selectedDay: this.selectedDay,
-        isEwc2025Tournament: this.isEwc2025Tournament,
-        hasSelector: !!this.$refs.tournamentSelector
+        hasChartEngine: !!this.chartEngine,
+        hasDataManager: !!this.chartEngine?.dataManager
       });
       
-      // If we have a selected matchup, get its specific game count
+      // If we have a ChartEngine with loaded data, use the dynamic game count
+      if (this.chartEngine && this.chartEngine.dataManager && this.chartEngine.dataManager.maxGames > 0) {
+        const dynamicGameCount = this.chartEngine.dataManager.maxGames;
+        console.log(`🎮 Using dynamic game count from CSV data: ${dynamicGameCount} games`);
+        return dynamicGameCount;
+      }
+      
+      // If we have a selected matchup but no chart engine yet, try to get from selector
       if (this.selectedMatchup && this.$refs.tournamentSelector) {
         const matchupInfo = this.$refs.tournamentSelector.getMatchupInfo(this.selectedMatchup);
-        if (matchupInfo) {
-          console.log(`🎮 Matchup ${this.selectedMatchup} has ${matchupInfo.games} games`);
+        if (matchupInfo && matchupInfo.games !== 'auto') {
+          console.log(`🎮 Fallback: Matchup ${this.selectedMatchup} has ${matchupInfo.games} games`);
           return matchupInfo.games;
         }
       }
       
-      // For EWC 2025, provide day-specific defaults even when no matchup is selected
+      // Fallback defaults only when no data is available
       if (this.isEwc2025Tournament) {
-        if (this.selectedDay === 'day1') {
-          console.log('🎮 EWC 2025 Day 1 - returning 10 games');
-          return 10; // Day 1 Group A has 10 games
-        } else if (this.selectedDay === 'day2') {
-          console.log('🎮 EWC 2025 Day 2 - returning 7 games');
-          return 7;  // Day 2 Group B has 7 games
-        }
-        console.log('🎮 EWC 2025 fallback - returning 10 games');
-        return 10; // Default fallback
+        const fallbackCount = this.selectedDay === 'day1' ? 10 : 9;
+        console.log(`🎮 EWC 2025 fallback - returning ${fallbackCount} games`);
+        return fallbackCount;
       }
       
-      // For Year 5 and Year 4, return consistent defaults
+      // Other tournament defaults
       const result = this.isYear5Tournament ? 6 : 8;
-      console.log(`🎮 Tournament default - returning ${result} games`);
+      console.log(`🎮 Tournament fallback - returning ${result} games`);
       return result;
     }
   },
@@ -306,7 +305,19 @@ export default {
     maxGames(newMaxGames, oldMaxGames) {
       if (newMaxGames !== oldMaxGames) {
         console.log('🎮 ChampionshipApp: maxGames changed from', oldMaxGames, 'to', newMaxGames);
-      }
+        }
+    },
+    
+    // Watch for ChartEngine changes to trigger maxGames recalculation
+    chartEngine: {
+      handler(newChartEngine, oldChartEngine) {
+        if (newChartEngine && newChartEngine.dataManager && newChartEngine.dataManager.maxGames > 0) {
+          console.log('🎮 ChartEngine loaded with dynamic maxGames:', newChartEngine.dataManager.maxGames);
+          // Force reactivity update for maxGames
+          this.$forceUpdate();
+        }
+      },
+      immediate: true
     }
   },
   
@@ -885,13 +896,13 @@ export default {
         this.selectedMatchup = '';
         
         // Update selected day for proper state management
-        this.selectedDay = dayId;
-        
-        // Log the expected maxGames for debugging
+      this.selectedDay = dayId;
+      
+        // Log the expected maxGames for debugging (fallback values only)
         const expectedMaxGames = this.isEwc2025Tournament ? 
-          (dayId === 'day1' ? 10 : 7) : 
+          (dayId === 'day1' ? 10 : 9) : 
           (this.isYear5Tournament ? 6 : 8);
-        console.log('🎮 Expected maxGames for', dayId, ':', expectedMaxGames);
+        console.log('🎮 Expected maxGames for', dayId, ':', expectedMaxGames, '(fallback - actual will be dynamic from CSV)');
         
         // Force Vue to re-render immediately
         await this.$nextTick();
@@ -914,9 +925,9 @@ export default {
       } catch (error) {
         console.warn('⚠️ Error handling day change:', error);
         // Force reset state even on error
-        this.selectedMatchup = '';
+      this.selectedMatchup = '';
         this.selectedDay = dayId;
-        this.chartEngine = null;
+      this.chartEngine = null;
         this.currentGame = 0;
         this.isPlaying = false;
         this.errorMessage = '';

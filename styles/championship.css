@@ -1097,7 +1097,7 @@ body {
 /* Enhanced GSAP-Powered Draggable Action Panel */
 .enhanced-action-panel {
     position: absolute;
-    top: 120px;
+    top: 55vh;
     right: 20px;
     background: linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(31, 41, 55, 0.95) 100%);
     backdrop-filter: blur(24px);
@@ -1123,7 +1123,7 @@ body {
 /* Tournament Controls - Specific styling for tournament action panels */
 .tournament-controls {
     position: fixed !important;  /* Use fixed instead of absolute for viewport-relative positioning */
-    top: 120px;
+    top: 55vh;
     right: 20px;
     z-index: 1000;
     cursor: grab;

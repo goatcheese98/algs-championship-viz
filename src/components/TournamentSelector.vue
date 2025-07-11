@@ -98,29 +98,29 @@ export default {
           name: 'Day 1 - Group A',
           description: 'EWC 2025 Day 1 Group A featuring 20 elite teams competing across 10 games with diverse maps and strategic legend bans.',
           matchups: [
-            {
-              id: 'Day1-A',
-              title: 'Group A',
-              description: 'Complete Day 1 Group A tournament featuring all 10 games across World\'s Edge, E-District, Storm Point, and Broken Moon.',
-              teams: 20,
-              games: 10,
-              maps: 'World\'s Edge → E-District → Storm Point → Broken Moon'
-            }
+                          {
+                id: 'Day1-A',
+                title: 'Group A',
+                description: 'Complete Day 1 Group A tournament featuring dynamic game count based on actual data across World\'s Edge, E-District, Storm Point, and Broken Moon.',
+                teams: 20,
+                games: 'auto', // Dynamic based on CSV data
+                maps: 'World\'s Edge → E-District → Storm Point → Broken Moon'
+              }
           ]
         },
         {
           id: 'day2',
           name: 'Day 2 - Group B',
-          description: 'EWC 2025 Day 2 Group B featuring 20 elite teams competing across 7 games with strategic map rotations and legend bans.',
+                        description: 'EWC 2025 Day 2 Group B featuring 20 elite teams competing across 9 games with strategic map rotations and legend bans.',
           matchups: [
-            {
-              id: 'Day2-B',
-              title: 'Group B',
-              description: 'Complete Day 2 Group B tournament featuring all 7 games across World\'s Edge, E-District, and Storm Point.',
-              teams: 20,
-              games: 7,
-              maps: 'World\'s Edge → E-District → Storm Point'
-            }
+                          {
+                id: 'Day2-B',
+                title: 'Group B',
+                description: 'Complete Day 2 Group B tournament featuring dynamic game count based on actual data across World\'s Edge, E-District, and Storm Point.',
+                teams: 20,
+                games: 'auto', // Dynamic based on CSV data
+                maps: 'World\'s Edge → E-District → Storm Point'
+              }
           ]
         }
       ] : this.isYear5Tournament ? [
