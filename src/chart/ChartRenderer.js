@@ -1056,13 +1056,13 @@ export class ChartRenderer {
         const chartWidth = svgRect.width
         const chartHeight = svgRect.height
         
-        // Enhanced responsive sizing calculations - made more compact
-        const baseWidth = 200  // Reduced from 260
-        const baseHeight = 320  // Reduced from 350 since single line items
-        const minWidth = 160   // Reduced from 200
-        const minHeight = 220  // Reduced from 250 since single line items
-        const maxWidth = 240   // Reduced from 320
-        const maxHeight = Math.min(480, chartHeight * 0.7)  // Reduced from 500
+        // Enhanced responsive sizing calculations - 50% larger than previous compact version
+        const baseWidth = 300  // Increased by 50% from 200
+        const baseHeight = 480  // Increased by 50% from 320
+        const minWidth = 240   // Increased by 50% from 160
+        const minHeight = 330  // Increased by 50% from 220
+        const maxWidth = 360   // Increased by 50% from 240
+        const maxHeight = Math.min(720, chartHeight * 0.7)  // Increased by 50% from 480
         
         // Calculate responsive dimensions based on viewport
         const legendWidth = Math.min(maxWidth, Math.max(minWidth, baseWidth + (chartWidth - 800) * 0.05))
@@ -1095,9 +1095,9 @@ export class ChartRenderer {
         legendGroup.append('text')
             .attr('class', 'legend-title')
             .attr('x', legendWidth / 2)
-            .attr('y', 22)  // Slightly reduced from 25
+            .attr('y', 32)  // Increased from 22 to account for larger legend
             .style('text-anchor', 'middle')
-            .style('font-size', `${getResponsiveFontSize(15)}px`)  // Reduced from 16
+            .style('font-size', `${getResponsiveFontSize(22)}px`)  // Increased by 50% from 15 to 22
             .style('font-weight', '700')
             .style('fill', '#ffffff')
             .style('text-shadow', '0 1px 2px rgba(0,0,0,0.5)')
@@ -1106,11 +1106,11 @@ export class ChartRenderer {
         // Get max games from data manager
         const maxGames = dataManager.getMaxGames ? dataManager.getMaxGames() : 10
         
-        // Calculate responsive item height and spacing - more compact since single line
-        const baseItemHeight = 24  // Reduced from 28 since we're using single line
-        const itemHeight = Math.max(20, Math.min(28, baseItemHeight + (legendHeight - 300) * 0.05))
-        const startY = 42  // Reduced from 45 to account for smaller title
-        const itemSpacing = 1  // Reduced from 2
+        // Calculate responsive item height and spacing - increased for 50% larger legend
+        const baseItemHeight = 36  // Increased by 50% from 24 to accommodate larger fonts
+        const itemHeight = Math.max(30, Math.min(42, baseItemHeight + (legendHeight - 300) * 0.05))
+        const startY = 60  // Increased from 42 to account for larger title
+        const itemSpacing = 2  // Increased from 1 for better spacing
         
         // Create legend items for each game
         for (let gameNum = 1; gameNum <= maxGames; gameNum++) {
@@ -1126,15 +1126,15 @@ export class ChartRenderer {
                 .attr('transform', `translate(0, ${itemY})`)
             
             // Add color indicator (rounded square instead of circle)
-            const squareSize = Math.min(14, itemHeight * 0.55)
+            const squareSize = Math.min(20, itemHeight * 0.55)  // Increased from 14 to 20 (43% increase)
             itemGroup.append('rect')
                 .attr('class', 'legend-color-indicator')
-                .attr('x', 20 - squareSize/2)
+                .attr('x', 30 - squareSize/2)  // Increased from 20 to 30 for better positioning
                 .attr('y', itemHeight / 2 - squareSize/2)
                 .attr('width', squareSize)
                 .attr('height', squareSize)
-                .attr('rx', 3)
-                .attr('ry', 3)
+                .attr('rx', 4)  // Increased from 3 to 4 for proportional corner radius
+                .attr('ry', 4)
                 .style('fill', mapColor)
                 .style('stroke', '#ffffff')
                 .style('stroke-width', '2px')
@@ -1143,11 +1143,11 @@ export class ChartRenderer {
             // Add game number and map name on the same line
             itemGroup.append('text')
                 .attr('class', 'legend-game-text')
-                .attr('x', 35)
+                .attr('x', 50)  // Increased from 35 to account for larger color indicators
                 .attr('y', itemHeight / 2)
                 .attr('dy', '0.35em')
                 .style('text-anchor', 'start')
-                .style('font-size', `${getResponsiveFontSize(13)}px`)
+                .style('font-size', `${getResponsiveFontSize(19)}px`)  // Increased by 50% from 13 to 19
                 .style('font-weight', '600')
                 .style('fill', '#ffffff')
                 .style('text-shadow', '0 1px 2px rgba(0,0,0,0.5)')

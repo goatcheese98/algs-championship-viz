@@ -1516,20 +1516,38 @@ body {
     position: relative;
 }
 
-.game-filter-btn[title]:hover::after {
-    content: attr(title);
+.game-filter-btn[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
     position: absolute;
-    bottom: -28px;
+    top: -35px;
     left: 50%;
     transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.9);
     color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.7rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
     white-space: nowrap;
-    z-index: 1000;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    animation: tooltip-appear 0.3s ease-in-out 0.5s both;
+    pointer-events: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Tooltip arrow */
+.game-filter-btn[data-tooltip]:hover::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid rgba(0, 0, 0, 0.9);
+    z-index: 1001;
     animation: tooltip-appear 0.3s ease-in-out 0.5s both;
     pointer-events: none;
 }
@@ -1552,10 +1570,15 @@ body {
     color: #f1f5f9;
 }
 
+.game-filter-btn.active:hover {
+    color: black !important;
+}
+
 .game-filter-btn.active {
     background: rgba(217, 119, 6, 0.4);
     border-color: rgba(217, 119, 6, 0.6);
-    color: white;
+    color: black !important;
+    font-weight: bold;
     box-shadow: 0 0 12px rgba(217, 119, 6, 0.6), 0 0 20px rgba(217, 119, 6, 0.4);
     transform: scale(1.15);
 }
@@ -1571,6 +1594,8 @@ body {
 .game-filter-btn.active.current {
     background: linear-gradient(135deg, rgba(217, 119, 6, 0.5) 0%, rgba(79, 192, 141, 0.5) 100%);
     border-color: rgba(217, 119, 6, 0.6);
+    color: black !important;
+    font-weight: bold;
     box-shadow: 0 0 15px rgba(217, 119, 6, 0.7), 0 0 25px rgba(79, 192, 141, 0.5);
     transform: scale(1.15);
 }

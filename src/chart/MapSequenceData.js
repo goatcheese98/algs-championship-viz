@@ -488,6 +488,23 @@ export const MAP_SEQUENCES = {
             9: 'BROKEN MOON',
             10: 'BROKEN MOON'
         }
+    },
+
+    'Day3-LastChance': {
+        name: 'EWC 2025 Day 3 - Last Chance',
+        gameCount: 'auto', // Dynamic based on CSV data
+        maps: {
+            1: 'BROKEN MOON',
+            2: 'BROKEN MOON',
+            3: 'BROKEN MOON',
+            4: 'E-DISTRICT',
+            5: 'E-DISTRICT',
+            6: 'E-DISTRICT',
+            7: 'STORM POINT',
+            8: 'STORM POINT',
+            9: 'STORM POINT',
+            10: 'STORM POINT'
+        }
     }
 }
 

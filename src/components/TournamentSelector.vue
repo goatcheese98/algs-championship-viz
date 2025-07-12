@@ -122,6 +122,21 @@ export default {
                 maps: 'World\'s Edge → E-District → Storm Point'
               }
           ]
+        },
+        {
+          id: 'day3',
+          name: 'Day 3 - Last Chance',
+          description: 'EWC 2025 Day 3 Last Chance featuring 20 elite teams competing across 4 games with the same map rotation as Day 2.',
+          matchups: [
+            {
+              id: 'Day3-LastChance',
+              title: 'Last Chance',
+              description: 'Final Day 3 Last Chance tournament featuring 4 games with the same map sequence as Day 2: World\'s Edge, E-District, and Storm Point.',
+              teams: 20,
+              games: 'auto', // Dynamic based on CSV data
+              maps: 'World\'s Edge → E-District → Storm Point'
+            }
+          ]
         }
       ] : this.isYear5Tournament ? [
         // ========================================
