@@ -154,9 +154,7 @@
             
             <div class="chart-area">
                           <InteractiveRaceChart
-              :data="processedChartData"
               :teamConfig="teamConfig"
-              :maxGames="maxGames"
             />
               <transition name="fade">
                 <div v-if="isLoading" class="loading-overlay">
@@ -168,10 +166,7 @@
             <!-- Action Panel Component - Moved outside chart-area for full page dragging -->
             <ActionPanel
               :key="`action-panel-${selectedDay}-${selectedMatchup}`"
-              :selected-matchup="selectedMatchup"
-              :max-games="maxGames"
               :current-map="currentMap"
-              :chart-data="processedChartData"
               @export-requested="handleExportRequested"
             />
                   </div>

@@ -16,22 +16,14 @@ import { GSAPDraggableManager } from '../utils/GSAPDraggableManager.js';
 // 1. DEFINE PROPS (The component's public API)
 // ============================================================================
 const props = defineProps({
-  data: {
-    type: Array,
-    required: true,
-    default: () => []
-  },
+  // data prop removed - now comes from store via processedChartData
   // currentGame prop removed - now comes from store
   teamConfig: {
     type: Object,
     required: true,
     default: () => ({})
   },
-  maxGames: {
-    type: Number,
-    required: true,
-    default: 10
-  },
+  // maxGames prop removed - now comes from store
   // REMOVE isFiltered and filteredGameIndices props
   // isLegendVisible prop is no longer needed
   // The animationSpeed prop is no longer needed
@@ -46,6 +38,8 @@ const animationSpeed = computed(() => store.animationSpeed);
 const currentGame = computed(() => store.currentGame);
 const isFiltered = computed(() => store.isFiltered); // ADD THIS
 const filteredGameIndices = computed(() => store.filteredGameIndices); // ADD THIS
+const processedChartData = computed(() => store.processedChartData); // ADD THIS
+const maxGames = computed(() => store.maxGames); // ADD THIS
 
 // ============================================================================
 // 2. COMPUTED PROPERTIES FOR ANIMATION SPEED
@@ -619,7 +613,7 @@ const renderLegend = (visible) => {
     }
     
     // Get map sequence for current matchup
-    const mapSequence = props.data?.[0]?.games || [];
+    const mapSequence = processedChartData.value?.[0]?.games || [];
     if (mapSequence.length === 0) {
         console.warn('⚠️ No games data for legend');
         return;
@@ -1340,8 +1334,8 @@ onMounted(async () => {
             }
             
             // Re-render with current data
-            if (props.data && props.data.length > 0) {
-                const currentData = extractGameData(props.data, currentGame.value);
+            if (processedChartData.value && processedChartData.value.length > 0) {
+                const currentData = extractGameData(processedChartData.value, currentGame.value);
                 updateScales(currentData);
                 updateAxes(currentData);
                 
@@ -1357,14 +1351,14 @@ onMounted(async () => {
     
     // Trigger initial render if data is already available
     console.log('🎯 InteractiveRaceChart: Checking for initial data:', {
-        hasData: !!(props.data && props.data.length > 0),
-        dataLength: props.data?.length || 0,
+        hasData: !!(processedChartData.value && processedChartData.value.length > 0),
+        dataLength: processedChartData.value?.length || 0,
         currentGame: currentGame.value
     });
     
-    if (props.data && props.data.length > 0) {
+    if (processedChartData.value && processedChartData.value.length > 0) {
         console.log('📊 InteractiveRaceChart: Initial data available, triggering first render');
-        const initialData = extractGameData(props.data, currentGame.value);
+        const initialData = extractGameData(processedChartData.value, currentGame.value);
         updateScales(initialData);
         updateAxes(initialData, 0); // No transition for initial render
         
@@ -1553,7 +1547,7 @@ const extractGameData = (data, gameIndex) => {
 // ============================================================================
 
 // Watch for data changes (new matchup loaded)
-watch(() => props.data, (newData) => {
+  watch(() => processedChartData.value, (newData) => {
     console.log('📊 InteractiveRaceChart: Data changed, re-rendering chart');
     console.log('🔍 Data details:', {
         hasData: !!(newData && newData.length > 0),
@@ -1598,7 +1592,7 @@ watch(() => props.data, (newData) => {
 const debouncedGameUpdate = debounce((newGame, oldGame) => {
     console.log('🎮 InteractiveRaceChart: Processing debounced game change from', oldGame, 'to', newGame);
     
-    if (!props.data || props.data.length === 0) {
+    if (!processedChartData.value || processedChartData.value.length === 0) {
         console.warn('⚠️ No data available for game change');
         return;
     }
@@ -1606,7 +1600,7 @@ const debouncedGameUpdate = debounce((newGame, oldGame) => {
     // Cancel any ongoing transitions
     cancelAllTransitions();
     
-    const gameData = extractGameData(props.data, newGame);
+    const gameData = extractGameData(processedChartData.value, newGame);
     
     // Use safe rendering for game changes
     safeRender(() => {
@@ -1627,12 +1621,12 @@ const debouncedGameUpdate = debounce((newGame, oldGame) => {
 const immediateGameUpdate = throttle((newGame, oldGame) => {
     console.log('🎮 InteractiveRaceChart: Immediate game update from', oldGame, 'to', newGame);
     
-    if (!props.data || props.data.length === 0) {
+    if (!processedChartData.value || processedChartData.value.length === 0) {
         console.warn('⚠️ No data available for game change');
         return;
     }
     
-    const gameData = extractGameData(props.data, newGame);
+    const gameData = extractGameData(processedChartData.value, newGame);
     
     // Only do immediate update if no render is in progress
     if (!isRenderingInProgress) {
@@ -1669,14 +1663,14 @@ const debouncedFilterUpdate = debounce((newIsFiltered, newFilteredIndices) => {
         newIndices: newFilteredIndices
     });
     
-    if (!props.data || props.data.length === 0) {
+    if (!processedChartData.value || processedChartData.value.length === 0) {
         console.warn('⚠️ No data available for filter change');
         return;
     }
     
     cancelAllTransitions();
     
-    const gameData = extractGameData(props.data, currentGame.value);
+    const gameData = extractGameData(processedChartData.value, currentGame.value);
     
     safeRender(() => {
         if (!validateDOMState()) return;
@@ -1705,7 +1699,7 @@ const debouncedFilterUpdate = debounce((newIsFiltered, newFilteredIndices) => {
 }, { deep: true });
 
 // Watch for maxGames changes
-watch(() => props.maxGames, (newMaxGames) => {
+watch(() => maxGames.value, (newMaxGames) => {
     console.log('🎯 InteractiveRaceChart: MaxGames changed to', newMaxGames);
     // Scales will be updated in the next render cycle
 });

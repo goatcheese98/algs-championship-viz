@@ -135,24 +135,15 @@ export default {
   name: 'ActionPanel',
   
   props: {
-    selectedMatchup: {
-      type: String,
-      default: ''
-    },
-    maxGames: {
-      type: Number,
-      default: 6
-    },
+    // selectedMatchup prop is no longer needed - now comes from store
+    // maxGames prop is no longer needed - now comes from store
     // isPlaying prop is no longer needed - now comes from store
     // currentGame prop is no longer needed - now comes from store
     currentMap: {
       type: String,
       default: ''
-    },
-    chartData: {
-      type: Array,
-      default: () => []
     }
+    // chartData prop is no longer needed - now comes from store
   },
   
   emits: [
@@ -188,7 +179,10 @@ export default {
         'isLegendVisible', 
         'animationSpeed',
         'isPlaying',
-        'currentGame' // ADD currentGame to mapped state
+        'currentGame', // ADD currentGame to mapped state
+        'maxGames', // ADD maxGames from store
+        'processedChartData', // ADD processedChartData from store
+        'selectedMatchup' // ADD selectedMatchup from store
     ]),
     displayedProgress() {
       // Ensure progress is always within valid range (0 to maxGames)
@@ -385,9 +379,9 @@ export default {
       // Get map color for this game from chart data
       let gameColor = '#6366f1'; // default fallback
       
-      if (this.chartData && this.chartData.length > 0) {
+      if (this.processedChartData && this.processedChartData.length > 0) {
         // Find the game data from the first team (all teams have same game sequence)
-        const firstTeam = this.chartData[0];
+        const firstTeam = this.processedChartData[0];
         if (firstTeam && firstTeam.games) {
           const gameData = firstTeam.games.find(game => game.gameNumber === gameNum);
           if (gameData && gameData.color) {
@@ -425,8 +419,8 @@ export default {
       // Get map name from chart data if available
       let mapName = '';
       
-      if (this.chartData && this.chartData.length > 0) {
-        const firstTeam = this.chartData[0];
+      if (this.processedChartData && this.processedChartData.length > 0) {
+        const firstTeam = this.processedChartData[0];
         if (firstTeam && firstTeam.games) {
           const gameData = firstTeam.games.find(game => game.gameNumber === gameNum);
           if (gameData && gameData.map) {
@@ -460,8 +454,8 @@ export default {
       let mapName = this.currentMap || 'Loading...';
       
       // Get map color for current game from chart data
-      if (this.chartData && this.chartData.length > 0 && this.currentGame > 0) {
-        const firstTeam = this.chartData[0];
+      if (this.processedChartData && this.processedChartData.length > 0 && this.currentGame > 0) {
+        const firstTeam = this.processedChartData[0];
         if (firstTeam && firstTeam.games) {
           const currentGameData = firstTeam.games.find(game => game.gameNumber === this.currentGame);
           if (currentGameData && currentGameData.color) {
