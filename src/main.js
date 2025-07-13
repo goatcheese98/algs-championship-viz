@@ -1,5 +1,6 @@
 // src/main.js
 import { createApp } from 'vue';
+import { createPinia } from 'pinia'; // Import Pinia
 import App from './App.vue'; // The new root component
 import router from './router'; // The new router configuration
 import './utils/GSAPDraggableManager.js';
@@ -42,7 +43,9 @@ routerLinkStyles.textContent = `
 document.head.appendChild(routerLinkStyles);
 
 const app = createApp(App);
+const pinia = createPinia(); // Create Pinia instance
 
+app.use(pinia); // Tell the Vue app to use Pinia
 app.use(router); // Tell the Vue app to use the router
 
 app.mount('#app'); 

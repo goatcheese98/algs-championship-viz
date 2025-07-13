@@ -64,12 +64,8 @@
         ref="tournamentSelector"
         :is-year5-tournament="isYear5Tournament"
         :is-ewc2025-tournament="isEwc2025Tournament"
-        :selected-matchup="selectedMatchup"
-        :selected-day="selectedDay"
         :loaded-matchups="loadedMatchups"
         :loading-matchups="loadingMatchups"
-        @matchup-selected="handleMatchupSelected"
-        @day-changed="handleDayChanged"
       />
 
       <!-- Chart Section -->
@@ -157,41 +153,28 @@
             </div>
             
             <div class="chart-area">
-              <InteractiveRaceChart
-                :data="processedChartData"
-                :currentGame="currentGame"
-                :teamConfig="teamConfig"
-                :maxGames="maxGames"
-                :isFiltered="isFiltered"
-                :filteredGameIndices="filteredGameIndices"
-                :isLegendVisible="isLegendVisible"
-                :animationSpeed="animationSpeed"
-              />
+                          <InteractiveRaceChart
+              :data="processedChartData"
+              :teamConfig="teamConfig"
+              :maxGames="maxGames"
+            />
               <transition name="fade">
                 <div v-if="isLoading" class="loading-overlay">
                   <div class="loading-spinner"></div>
                 </div>
               </transition>
-            </div>
+                </div>
 
             <!-- Action Panel Component - Moved outside chart-area for full page dragging -->
             <ActionPanel
               :key="`action-panel-${selectedDay}-${selectedMatchup}`"
               :selected-matchup="selectedMatchup"
               :max-games="maxGames"
-              :is-playing="isPlaying"
-              :current-game="currentGame"
               :current-map="currentMap"
               :chart-data="processedChartData"
-              @game-changed="handleGameChanged"
-              @play-toggled="handlePlayToggled"
-              @restart-requested="handleRestartRequested"
-              @game-filter-changed="handleGameFilterChanged"
               @export-requested="handleExportRequested"
-              @legend-toggled="handleLegendToggled"
-              @animation-speed-changed="handleAnimationSpeedChanged"
             />
-          </div>
+                  </div>
                 </transition>
       </div>
     </div>
@@ -199,17 +182,15 @@
 </template>
 
 <script>
-import * as d3 from 'd3'
 import { useTeamConfig } from '../composables/useTeamConfig.js'
 import TournamentSelector from './TournamentSelector.vue'
 import ActionPanel from './ActionPanel.vue'
 import InteractiveRaceChart from './InteractiveRaceChart.vue'
-// Import map coloring logic for proper color assignment
-import { getMapColorByOccurrence, calculateMapOccurrence } from '../chart/MapColoringLogic.js'
-import { getMapSequence } from '../chart/MapSequenceData.js'
+import { useTournamentStore } from '../stores/tournament.js'
+import { mapActions, mapState } from 'pinia'
 
 export default {
-  name: 'ChampionshipApp',
+  name: 'TournamentView',
   
   components: {
     TournamentSelector,
@@ -235,7 +216,7 @@ export default {
   },
   
   data() {
-    console.log('📋 ChampionshipApp data() called - Vue is initializing');
+    console.log('📋 TournamentView data() called - Vue is initializing');
     
     // Detect tournament type from route parameter
     const tournamentId = this.id;
@@ -254,33 +235,16 @@ export default {
       isYear5Tournament: isYear5,
       isEwc2025Tournament: isEwc2025,
 
-      // Chart state
-      selectedMatchup: '',
-      selectedDay: 'day1', // Track current day for proper state management
-      processedChartData: [],
-      isLoading: false,
-      isPlaying: false,
-      errorMessage: '',
-      
-      // Game state for enhanced panel
-      currentGame: 0,  // Start at 0 to show initial state
+      // Simple UI state (non-data related)
       currentMap: '',
       
-      // Filtering state
-      isFiltered: false,
-      filteredGameIndices: [],
-      isLegendVisible: false,
-      
-      // Status tracking
+      // Status tracking for UI
       loadedMatchups: new Set(),
       loadingMatchups: new Set(),
       
       // Animation intervals
       playInterval: null,
       gameStateInterval: null,
-
-              // Animation speed state
-        animationSpeed: 'medium' // Default to medium speed
     }
   },
   
@@ -299,56 +263,55 @@ export default {
       immediate: false
     },
     
-    selectedDay(newDay, oldDay) {
-      if (newDay !== oldDay) {
-        console.log('📅 ChampionshipApp: selectedDay changed from', oldDay, 'to', newDay);
-        console.log('🎮 New computed maxGames:', this.maxGames);
+    // Watch for matchup changes and fetch data from store
+    selectedMatchup(newMatchup, oldMatchup) {
+      console.log('📊 TournamentView: selectedMatchup changed:', { from: oldMatchup, to: newMatchup });
+      if (newMatchup) {
+        this.fetchDataForMatchup();
+        this.updateCurrentMap();
       }
+    },
+    
+    selectedDay() {
+      this.cleanupChart();
     },
     
     maxGames(newMaxGames, oldMaxGames) {
       if (newMaxGames !== oldMaxGames) {
-        console.log('🎮 ChampionshipApp: maxGames changed from', oldMaxGames, 'to', newMaxGames);
-        }
+        console.log('🎮 TournamentView: maxGames changed from', oldMaxGames, 'to', newMaxGames);
+      }
+    },
+
+    // Watch for data changes to update current map
+    processedChartData() {
+      this.updateCurrentMap();
+    },
+
+    currentGame() {
+      this.updateCurrentMap();
     }
   },
   
   computed: {
-    /**
-     * Dynamic maxGames based on actual CSV data
-     * This automatically detects game count from CSV headers, making it data-driven
-     */
-    maxGames() {
-      console.log('�� Computing maxGames:', {
-        hasProcessedData: !!(this.processedChartData && this.processedChartData.length > 0),
-        dataLength: this.processedChartData?.length || 0,
-        sampleTeamGames: this.processedChartData?.[0]?.games?.length || 0
-      });
-      
-      // If we have processed chart data, get the actual game count from the data
-      if (this.processedChartData && this.processedChartData.length > 0) {
-        const firstTeam = this.processedChartData[0];
-        if (firstTeam && firstTeam.games && firstTeam.games.length > 0) {
-          const dynamicGameCount = firstTeam.games.length;
-          console.log('🎯 Using dynamic game count from chart data:', dynamicGameCount);
-          return dynamicGameCount;
-        }
-      }
-      
-      // Fallback to static values based on tournament type and day
-      const fallbackGameCount = this.isEwc2025Tournament ? 
-        (this.selectedDay === 'day1' ? 10 : 
-         this.selectedDay === 'day2' ? 9 : 
-         this.selectedDay === 'day3' ? 6 : 6) :
-        (this.isYear5Tournament ? 6 : 8);
-      
-      console.log('🎯 Using fallback game count:', fallbackGameCount, 'for', this.selectedDay);
-      return fallbackGameCount;
-    }
+    ...mapState(useTournamentStore, [
+      'selectedMatchup',
+      'selectedDay',
+      'isPlaying',
+      'currentGame',
+      'processedChartData',
+      'isLoading',
+      'errorMessage',
+      'maxGames'
+    ]),
   },
   
   mounted() {
-    console.log('🎯 ChampionshipApp mounted() called - Vue component is ready');
+    console.log('🎯 TournamentView mounted() called - Vue component is ready');
+    
+    // Set tournament type in store based on route
+    const tournamentType = this.isEwc2025Tournament ? 'ewc2025' : 
+                           (this.isYear5Tournament ? 'year5' : 'year4');
+    this.setTournamentType(tournamentType);
     
     // Initialize professional header animations with GSAP
     this.initializeHeaderAnimations();
@@ -363,18 +326,27 @@ export default {
     }, 300);
     
     // Add debug method to global scope for troubleshooting
-    window.debugChampionshipApp = () => {
-      console.log('🔍 Championship App Debug Info:', {
+    window.debugTournamentView = () => {
+      console.log('🔍 Tournament View Debug Info:', {
         selectedDay: this.selectedDay,
         selectedMatchup: this.selectedMatchup,
         computedMaxGames: this.maxGames,
         isEwc2025Tournament: this.isEwc2025Tournament,
-        tournamentSelector: !!this.$refs.tournamentSelector
+        tournamentSelector: !!this.$refs.tournamentSelector,
+        processedChartData: this.processedChartData?.length || 0
       });
     };
   },
   
   methods: {
+    ...mapActions(useTournamentStore, [
+      'selectMatchup',
+      'setPlaying',
+      'setCurrentGame',
+      'setDay',
+      'setTournamentType',
+      'fetchDataForMatchup'
+    ]),
     // Professional Championship Header Animations
     initializeHeaderAnimations() {
       console.log('🎭 Initializing sophisticated header animations...');
@@ -737,69 +709,35 @@ export default {
     
     // Event handlers for child components - REMOVED DUPLICATE, see comprehensive version below
 
-    async handleMatchupSelected(matchupId) {
-      console.log('🎯 Matchup selected:', matchupId);
-      console.log('🏆 Tournament Info:', this.getTournamentInfo());
-      this.selectedMatchup = matchupId;
-      await this.loadMatchup();
-    },
+    // REMOVE the handleMatchupSelected method - now handled by watcher
 
-    handleGameChanged(gameIndex) {
-      console.log('🎮 Game changed to:', gameIndex);
-      
-      // Stop any ongoing animation when user manually changes game
-      if (this.isPlaying) {
-        this.isPlaying = false; // This will trigger the watcher to stop animation
-      }
-      
-      this.currentGame = gameIndex;
-      this.updateCurrentMap();
-      
-      // Reset filters when dragging back to initial state (game 0)
-      if (gameIndex === 0) {
-        this.isFiltered = false;
-        this.filteredGameIndices = [];
-      }
-    },
-
-    handlePlayToggled() {
-      this.isPlaying = !this.isPlaying;
-      console.log(this.isPlaying ? '▶️ Playing' : '⏸️ Paused');
-    },
-
-    handleRestartRequested() {
-      this.currentGame = 0;
-      this.isPlaying = false;
-      this.isFiltered = false;
-      this.filteredGameIndices = [];
-      this.updateCurrentMap();
-      console.log('🔄 Restarted to initial state');
-    },
+    // REMOVE handleGameChanged and handleRestartRequested methods
+    // These are now handled directly by the store actions
 
     startAnimation() {
       console.log('🎬 Starting animation from game', this.currentGame);
       
       // Clear any existing animation
       this.stopAnimation();
-      
+        
       // If we're at the end, restart from game 1
       if (this.currentGame >= this.maxGames) {
-        this.currentGame = 1;
+        this.setCurrentGame(1);
       } else if (this.currentGame === 0) {
         // If at initial state, start from game 1
-        this.currentGame = 1;
+        this.setCurrentGame(1);
       }
       
       // Start the animation interval
       this.playInterval = setInterval(() => {
         if (this.currentGame < this.maxGames) {
-          this.currentGame++;
-          this.updateCurrentMap();
+          this.setCurrentGame(this.currentGame + 1);
+        this.updateCurrentMap();
           console.log('🎮 Animation progressed to game', this.currentGame);
         } else {
           // Reached the end, stop playing
           console.log('🏁 Animation completed');
-          this.isPlaying = false;
+          this.setPlaying(false); // Use the action to update the store
         }
       }, 3000); // 3 seconds per game - adjust speed as needed
     },
@@ -809,36 +747,10 @@ export default {
         clearInterval(this.playInterval);
         this.playInterval = null;
         console.log('⏸️ Animation stopped');
-      }
+          }
     },
 
-    handleGameFilterChanged(filterData) {
-      const { games, action } = filterData;
-      
-      if (action === 'clear' || games.length === 0) {
-        this.isFiltered = false;
-        this.filteredGameIndices = [];
-        console.log('🔄 Clearing game filter');
-      } else {
-        this.isFiltered = true;
-        this.filteredGameIndices = [...games].sort((a, b) => a - b);
-        console.log(`🎮 Applying filter for games: ${games.join(', ')}`);
-        
-        // Ensure we're at max game level for filtering
-        if (this.currentGame < this.maxGames) {
-          this.currentGame = this.maxGames;
-        }
-      }
-      
-      console.log('🎯 Game filter changed:', {
-        action,
-        games,
-        isFiltered: this.isFiltered,
-        filteredGameIndices: this.filteredGameIndices
-      });
-      
-      this.updateCurrentMap();
-    },
+    // REMOVE the handleGameFilterChanged method entirely
 
     handleExportRequested(selectedMatchup) {
       console.log('📤 Export requested for:', selectedMatchup);
@@ -868,8 +780,8 @@ export default {
       const headers = ['Team', 'Total Points'];
       for (let i = 1; i <= maxGames; i++) {
         headers.push(`Game ${i} Points`, `Game ${i} Map`);
-      }
-      
+        }
+        
       // Create CSV rows
       const rows = [headers.join(',')];
       
@@ -893,96 +805,22 @@ export default {
       return rows.join('\n');
     },
 
-    handleLegendToggled(visible) {
-      console.log('🎨 Toggling chart legend:', visible ? 'ON' : 'OFF');
-      this.isLegendVisible = visible;
-    },
+    // REMOVE the handleLegendToggled method entirely
+    // handleLegendToggled(visible) {
+    //   console.log('🎨 Toggling chart legend:', visible ? 'ON' : 'OFF');
+    //   this.isLegendVisible = visible;
+    // },
 
-    handleAnimationSpeedChanged(speed) {
-      console.log('🎬 Animation speed changed to:', speed);
-      this.animationSpeed = speed;
-      // You might want to update the animation interval based on the new speed
-      // For now, we'll just log the change.
-    },
+    // REMOVE the handleAnimationSpeedChanged method entirely
 
     /**
      * Enhanced cleanup method with error handling and race condition prevention
      */
 
 
-        /**
-     * Handle day changes with proper cleanup
-     */
-    async handleDayChanged(dayId) {
-      console.log('📅 Day changed to:', dayId);
-      
-      try {
-        // IMMEDIATELY clear the selected matchup to show loading animation
-        this.selectedMatchup = '';
-        
-        // Update selected day for proper state management
-      this.selectedDay = dayId;
-      
-        // Log the expected maxGames for debugging (fallback values only)
-        const expectedMaxGames = this.isEwc2025Tournament ? 
-          (dayId === 'day1' ? 10 : 9) : 
-          (this.isYear5Tournament ? 6 : 8);
-        console.log('🎮 Expected maxGames for', dayId, ':', expectedMaxGames, '(fallback - actual will be dynamic from CSV)');
-        
-        // Force Vue to re-render immediately
-        await this.$nextTick();
-        
-        // Clean up chart and reset all states
-        await this.cleanupChart();
-        
-        // Reset all chart-related state
-        this.currentGame = 0;
-        this.currentMap = '';
-        this.isPlaying = false;
-        this.errorMessage = '';
-        
-        // Clear loading/loaded states for a fresh start
-        this.loadingMatchups.clear();
-        this.loadedMatchups.clear();
-        
-        console.log('✅ Day change handled successfully - back to loading animation');
-        
-      } catch (error) {
-        console.warn('⚠️ Error handling day change:', error);
-        // Force reset state even on error
-        this.selectedMatchup = '';
-        this.selectedDay = dayId;
-        this.currentGame = 0;
-        this.isPlaying = false;
-        this.errorMessage = '';
-        this.loadingMatchups.clear();
-        this.loadedMatchups.clear();
-      }
-    },
+    // REMOVE the handleDayChanged method - now handled by watcher
 
-    /**
-     * Build CSV path based on tournament type
-     */
-    buildCsvPath(matchupId) {
-      if (this.isEwc2025Tournament) {
-        return `/ewc2025/raw/${matchupId}.csv`;
-      } else if (this.isYear5Tournament) {
-        return `/year5champions/raw/${matchupId}.csv`;
-      } else {
-        return `/year4champions/raw/${matchupId}.csv`;
-      }
-    },
 
-    /**
-     * Get tournament-specific file format information
-     */
-    getTournamentInfo() {
-      return {
-        type: this.isEwc2025Tournament ? 'EWC 2025' : (this.isYear5Tournament ? 'Year 5 Open' : 'Year 4 Championship'),
-        dataPath: this.isEwc2025Tournament ? 'ewc2025/raw/' : (this.isYear5Tournament ? 'year5champions/raw/' : 'year4champions/raw/'),
-        fileFormat: '{matchupId}.csv'
-      };
-    },
     
     getMatchupTitle(matchupId) {
       if (!this.$refs.tournamentSelector) return 'Unknown Matchup';
@@ -990,210 +828,9 @@ export default {
       const matchupInfo = this.$refs.tournamentSelector.getMatchupInfo(matchupId);
       return matchupInfo ? matchupInfo.title : 'Unknown Matchup';
     },
-    
-    async loadMatchup() {
-      if (!this.selectedMatchup) return;
-      
-      this.isLoading = true;
-      this.loadingMatchups.add(this.selectedMatchup);
-      
-      try {
-        console.log('📊 Loading matchup:', this.selectedMatchup);
-        
-        // Build CSV path for the selected matchup
-        const csvPath = this.buildCsvPath(this.selectedMatchup);
-        console.log(`📂 Loading CSV for ${this.isEwc2025Tournament ? 'EWC 2025' : (this.isYear5Tournament ? 'Year 5' : 'Year 4')}:`, csvPath);
-        
-        // Load and process raw CSV data
-        const rawData = await this.loadCsvData(csvPath);
-        this.processedChartData = await this.processRawDataForChart(rawData);
-        
-        console.log('🎯 ChampionshipApp: Processed chart data ready:', {
-          teams: this.processedChartData.length,
-          maxGames: this.maxGames,
-          sampleTeam: this.processedChartData[0],
-          currentGame: this.currentGame
-        });
-        
-        // Reset game state  
-        this.currentGame = 0;
-        this.updateCurrentMap();
-        
-        // Mark as loaded
-        this.loadedMatchups.add(this.selectedMatchup);
-        this.loadingMatchups.delete(this.selectedMatchup);
-        
-        console.log('✅ Matchup loaded successfully', {
-          dataLength: this.processedChartData.length,
-          maxGames: this.maxGames
-        });
-        
-      } catch (error) {
-        console.error('❌ Error loading matchup:', error);
-        this.showChartError(error);
-        this.loadingMatchups.delete(this.selectedMatchup);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    
-    async loadCsvData(csvPath) {
-      console.log('📂 Loading CSV data from:', csvPath);
-      
-      const response = await fetch(csvPath);
-      if (!response.ok) {
-        throw new Error(`Failed to load CSV: ${response.status} ${response.statusText}`);
-      }
-      
-      const csvText = await response.text();
-      const rawData = d3.csvParse(csvText);
-      
-      console.log('✅ CSV loaded:', {
-        path: csvPath,
-        rows: rawData.length,
-        columns: rawData.columns
-      });
-      
-      return rawData;
-    },
-    
-    async processRawDataForChart(rawData) {
-      console.log('🔄 Processing raw data for chart...');
-      
-      // Transform raw data to bifurcated format if needed
-      const processedData = this.transformRawDataToWide(rawData);
-      
-      // Extract game columns and determine max games
-      this.extractGameColumns(processedData);
-      
-      // Pre-compute game-by-game data for all teams
-      const chartData = this.preComputeGameData(processedData);
-      
-      console.log('✅ Data processed for chart:', {
-        teams: chartData.length,
-        maxGames: this.maxGames,
-        sampleTeam: chartData[0]
-      });
-      
-      return chartData;
-    },
-    
-    transformRawDataToWide(rawData) {
-      console.log('🔄 Transforming raw data to wide format...');
-      
-      // ALGS placement-to-points conversion map
-      const placementPointsMap = {
-        '1': 12, '2': 9, '3': 7, '4': 5, '5': 4,
-        '6': 3, '7': 3, '8': 2, '9': 2, '10': 2,
-        '11': 1, '12': 1, '13': 1, '14': 1, '15': 1,
-        '16': 0, '17': 0, '18': 0, '19': 0, '20': 0
-      };
-      
-      const teamsData = {};
-      
-      // Process each row from raw data
-      rawData.forEach(row => {
-        const teamName = row.Team;
-        const gameNumber = parseInt(row.Game);
-        const placement = row.Placement;
-        const kills = parseInt(row.Kills) || 0;
-        
-        // Initialize team if not exists
-        if (!teamsData[teamName]) {
-          teamsData[teamName] = {
-            Team: teamName,
-            'Overall Points': 0
-          };
-        }
-        
-        // Get placement points from lookup table
-        const placementPoints = placementPointsMap[placement] || 0;
-        
-        // Create property names for this game
-        const placementProp = `Game ${gameNumber} P`;
-        const killsProp = `Game ${gameNumber} K`;
-        
-        // Assign the points
-        teamsData[teamName][placementProp] = placementPoints;
-        teamsData[teamName][killsProp] = kills;
-        
-        // Update overall points
-        teamsData[teamName]['Overall Points'] += placementPoints + kills;
-      });
-      
-      // Convert to array and sort by overall points (descending)
-      const transformedData = Object.values(teamsData).sort((a, b) => b['Overall Points'] - a['Overall Points']);
-      
-      console.log('✅ Raw data transformed:', {
-        originalRows: rawData.length,
-        transformedTeams: transformedData.length
-      });
-      
-      return transformedData;
-    },
-    
-    extractGameColumns(data) {
-      if (!data || data.length === 0) return;
-      
-      const firstTeam = data[0];
-      this.gameColumns = Object.keys(firstTeam).filter(col => 
-        col.startsWith('Game ') && col.endsWith(' P')
-      );
-      
-      this.maxGames = this.gameColumns.length;
-      console.log('🎮 Extracted game columns:', this.gameColumns, 'Max games:', this.maxGames);
-    },
-    
-    preComputeGameData(data) {
-      console.log('⚡ Pre-computing game-by-game data...');
-      
-      // Get map sequence for the current matchup
-      const mapSequence = getMapSequence(this.selectedMatchup);
-      console.log('🗺️ Using map sequence for', this.selectedMatchup, ':', mapSequence);
-      
-      const chartData = data.map(team => {
-        const games = [];
-        let cumulativeScore = 0;
-        
-        for (let gameNum = 1; gameNum <= this.maxGames; gameNum++) {
-          const placementPoints = team[`Game ${gameNum} P`] || 0;
-          const kills = team[`Game ${gameNum} K`] || 0;
-          const gamePoints = placementPoints + kills;
-          
-          // Get map name and color for this game
-          const mapName = mapSequence?.maps?.[gameNum] || 'Unknown';
-          const occurrenceCount = calculateMapOccurrence(mapName, gameNum, mapSequence);
-          const gameColor = getMapColorByOccurrence(mapName, occurrenceCount);
-          
-          games.push({
-            gameNumber: gameNum,
-            placementPoints,
-            kills,
-            points: gamePoints,
-            startX: cumulativeScore,
-            map: mapName,
-            color: gameColor
-          });
-          
-          cumulativeScore += gamePoints;
-        }
-        
-        return {
-          team: team.Team,
-          games,
-          totalScore: cumulativeScore,
-          cumulativeScore: cumulativeScore
-        };
-      });
-      
-      // Sort by total score descending
-      chartData.sort((a, b) => b.totalScore - a.totalScore);
-      
-      return chartData;
-    },
-    
 
     
+
     showChartError(error) {
       this.errorMessage = error.message;
       console.error('Chart error:', error);
@@ -1243,24 +880,20 @@ export default {
           }
         } else {
           this.currentMap = `Game ${this.currentGame}`;
-        }
+          }
       } else {
         this.currentMap = `Game ${this.currentGame}`;
       }
     },
 
     async cleanupChart() {
-      console.log('🧹 ChampionshipApp: Cleaning up chart resources');
+      console.log('🧹 TournamentView: Cleaning up chart resources');
       
       try {
-        // Clear chart data
-        this.processedChartData = [];
-        this.currentGame = 0;
+        // Reset UI state (data clearing is handled by the store)
+        this.setCurrentGame(0);
         this.currentMap = '';
-        this.isPlaying = false;
-        this.isFiltered = false;
-        this.filteredGameIndices = [];
-        this.isLegendVisible = false;
+        this.setPlaying(false);
         
         // Stop any ongoing animation
         this.stopAnimation();
@@ -1273,7 +906,7 @@ export default {
   },
   
   beforeUnmount() {
-    console.log('🧹 ChampionshipApp beforeUnmount() called - cleaning up');
+    console.log('🧹 TournamentView beforeUnmount() called - cleaning up');
     
     // Stop any ongoing animation
     this.stopAnimation();

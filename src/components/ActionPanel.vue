@@ -93,7 +93,7 @@
         <div class="control-section">
           <label class="section-label">Chart Legend</label>
           <button @click="toggleLegend" class="legend-toggle-btn">
-            {{ legendVisible ? 'Hide Legend' : 'Show Legend' }}
+                            {{ isLegendVisible ? 'Hide Legend' : 'Show Legend' }}
           </button>
         </div>
         
@@ -127,6 +127,8 @@
 </template>
 
 <script>
+import { useTournamentStore } from '../stores/tournament.js' // Import the store
+import { mapState, mapActions } from 'pinia' // Import Pinia helpers
 import { GSAPDraggableManager } from '../utils/GSAPDraggableManager.js'
 
 export default {
@@ -141,14 +143,8 @@ export default {
       type: Number,
       default: 6
     },
-    isPlaying: {
-      type: Boolean,
-      default: false
-    },
-    currentGame: {
-      type: Number,
-      default: 0
-    },
+    // isPlaying prop is no longer needed - now comes from store
+    // currentGame prop is no longer needed - now comes from store
     currentMap: {
       type: String,
       default: ''
@@ -160,13 +156,13 @@ export default {
   },
   
   emits: [
-    'game-changed',
-    'play-toggled', 
-    'restart-requested',
-    'game-filter-changed',
+    // 'game-changed', // REMOVE THIS EMIT
+    // 'play-toggled', // REMOVE THIS EMIT
+    // 'restart-requested', // REMOVE THIS EMIT
+    // 'game-filter-changed', // REMOVE THIS EMIT
     'export-requested',
-    'legend-toggled',
-    'animation-speed-changed'
+    // 'legend-toggled', // We no longer need to emit this
+    // 'animation-speed-changed' // We no longer need to emit this
   ],
   
   data() {
@@ -180,18 +176,20 @@ export default {
       // Filter state
       selectedGames: [],
       
-      // Legend state
-      legendVisible: false,
-      
       // GSAP draggable instance
       draggableInstance: null,
 
-      // Animation speed state
-      animationSpeed: 'medium' // 'slow', 'medium', 'fast'
+      // animationSpeed: 'medium' // REMOVE THIS local state
     }
   },
   
   computed: {
+    ...mapState(useTournamentStore, [
+        'isLegendVisible', 
+        'animationSpeed',
+        'isPlaying',
+        'currentGame' // ADD currentGame to mapped state
+    ]),
     displayedProgress() {
       // Ensure progress is always within valid range (0 to maxGames)
       const progress = Math.min(Math.max(0, this.currentGame), this.maxGames);
@@ -242,6 +240,14 @@ export default {
   },
   
   methods: {
+    ...mapActions(useTournamentStore, [
+        'toggleLegend', 
+        'setAnimationSpeed',
+        'togglePlayback',
+        'setCurrentGame',
+        'resetPlayback',
+        'setGameFilter' // ADD THIS mapped action
+    ]),
     togglePanel() {
       this.panelExpanded = !this.panelExpanded;
       
@@ -305,8 +311,8 @@ export default {
     updateGameFromSlider(event) {
       const gameValue = Math.min(Math.max(0, parseInt(event.target.value)), this.maxGames);
       
-      // Emit immediately for responsive UI feedback
-      this.$emit('game-changed', gameValue);
+      // Update store directly for responsive UI feedback
+      this.setCurrentGame(gameValue);
       
       // Reset filters when dragging back to initial state (game 0)
       if (gameValue === 0 && this.selectedGames.length > 0) {
@@ -326,12 +332,12 @@ export default {
       }, 100);
     },
     
-    togglePlayback() {
-      this.$emit('play-toggled');
-    },
+    // REMOVE the old togglePlayback method that emitted an event.
+    // The new one is mapped from the store and will be called directly
+    // by the @click handler in the template.
     
     restart() {
-      this.$emit('restart-requested');
+      this.resetPlayback(); // CHANGE to call store action
     },
     
 
@@ -351,15 +357,16 @@ export default {
         // Auto-progress to max level when any filter is selected
         if (this.currentGame < this.maxGames) {
           console.log(`🎯 Auto-progressing to game ${this.maxGames} for filtering`);
-          this.$emit('game-changed', this.maxGames);
+          this.setCurrentGame(this.maxGames);
         }
       }
       
-      // Emit filter change event
-      this.$emit('game-filter-changed', { 
+      // CHANGE: Call the store action directly instead of emitting
+      this.setGameFilter({ 
         games: this.selectedGames, 
         action: wasSelected ? 'remove' : 'add',
-        gameNum 
+        gameNum,
+        maxGames: this.maxGames
       });
     },
     
@@ -367,8 +374,8 @@ export default {
       console.log('🔄 Resetting game filter and returning to initial state');
       this.selectedGames = [];
       
-      this.$emit('game-filter-changed', { games: [], action: 'clear' });
-      this.$emit('game-changed', 0);
+      this.setGameFilter({ games: [], action: 'clear', maxGames: this.maxGames }); // CHANGE to call store action
+      this.setCurrentGame(0); // Also reset game progress
     },
     
     getGameButtonStyle(gameNum) {
@@ -475,16 +482,13 @@ export default {
       this.$emit('export-requested', this.selectedMatchup);
     },
 
-    toggleLegend() {
-      this.legendVisible = !this.legendVisible;
-      this.$emit('legend-toggled', this.legendVisible);
-    },
+    // REMOVE the old toggleLegend method that emitted an event.
+    // The new one is mapped from the store and will be called directly
+    // by the @click handler in the template.
 
-    setAnimationSpeed(speed) {
-      this.animationSpeed = speed;
-      this.$emit('animation-speed-changed', speed);
-      console.log(`🎮 Animation speed set to: ${speed}`);
-    },
+    // REMOVE the old setAnimationSpeed method that emitted an event.
+    // The new one is mapped from the store and will be called directly
+    // by the @click handler in the template.
     
     // Mobile detection utility
     isMobileDevice() {

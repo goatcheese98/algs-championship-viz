@@ -9,6 +9,7 @@
 <script setup>
 import { ref, watch, onMounted, onUnmounted, defineProps, nextTick, computed } from 'vue';
 import * as d3 from 'd3';
+import { useTournamentStore } from '../stores/tournament.js'; // Import the store
 import { GSAPDraggableManager } from '../utils/GSAPDraggableManager.js';
 
 // ============================================================================
@@ -20,11 +21,7 @@ const props = defineProps({
     required: true,
     default: () => []
   },
-  currentGame: {
-    type: Number,
-    required: true,
-    default: 0
-  },
+  // currentGame prop removed - now comes from store
   teamConfig: {
     type: Object,
     required: true,
@@ -35,24 +32,20 @@ const props = defineProps({
     required: true,
     default: 10
   },
-  isFiltered: {
-    type: Boolean,
-    default: false
-  },
-  filteredGameIndices: {
-    type: Array,
-    default: () => []
-  },
-  isLegendVisible: {
-    type: Boolean,
-    default: false
-  },
-  animationSpeed: {
-    type: String,
-    default: 'medium',
-    validator: (value) => ['slow', 'medium', 'fast'].includes(value)
-  }
+  // REMOVE isFiltered and filteredGameIndices props
+  // isLegendVisible prop is no longer needed
+  // The animationSpeed prop is no longer needed
 });
+
+// Use the store
+const store = useTournamentStore();
+
+// Create computed properties to read from the store
+const isLegendVisible = computed(() => store.isLegendVisible);
+const animationSpeed = computed(() => store.animationSpeed);
+const currentGame = computed(() => store.currentGame);
+const isFiltered = computed(() => store.isFiltered); // ADD THIS
+const filteredGameIndices = computed(() => store.filteredGameIndices); // ADD THIS
 
 // ============================================================================
 // 2. COMPUTED PROPERTIES FOR ANIMATION SPEED
@@ -69,26 +62,26 @@ const getTeamMovementEasing = () => d3.easeQuadInOut;
 
 const getTransitionDuration = computed(() => {
   const baseTransitionDuration = 2500;
-  const multiplier = speedMultipliers[props.animationSpeed] || 1.0;
+  const multiplier = speedMultipliers[animationSpeed.value] || 1.0;
   return baseTransitionDuration * multiplier;
 });
 
 const getAxisTransitionDuration = computed(() => {
   const baseAxisDuration = 300;
-  const multiplier = speedMultipliers[props.animationSpeed] || 1.0;
+  const multiplier = speedMultipliers[animationSpeed.value] || 1.0;
   return Math.max(100, baseAxisDuration * multiplier); // Minimum 100ms for responsiveness
 });
 
 const getSegmentTransitionDuration = computed(() => {
   const baseSegmentDuration = 200;
-  const multiplier = speedMultipliers[props.animationSpeed] || 1.0;
+  const multiplier = speedMultipliers[animationSpeed.value] || 1.0;
   return Math.max(50, baseSegmentDuration * multiplier); // Minimum 50ms for responsiveness
 });
 
 // Synchronized team movement duration - ensures names and bars move together
 const getTeamMovementDuration = computed(() => {
   const baseTeamDuration = 600;
-  const multiplier = speedMultipliers[props.animationSpeed] || 1.0;
+  const multiplier = speedMultipliers[animationSpeed.value] || 1.0;
   return Math.max(200, baseTeamDuration * multiplier); // Minimum 200ms for smooth movement
 });
 
@@ -282,7 +275,7 @@ const updateDimensions = () => {
     console.log('📐 InteractiveRaceChart: Dimensions updated:', { width: newWidth, height: newHeight });
 };
 
-const updateScales = (data, currentGameIndex = props.currentGame) => {
+const updateScales = (data, currentGameIndex = currentGame.value) => {
     if (!data || data.length === 0) {
         console.warn('⚠️ No data for scale update');
         return;
@@ -304,9 +297,9 @@ const updateScales = (data, currentGameIndex = props.currentGame) => {
             relevantGames = relevantGames.filter(game => game.gameNumber <= currentGameIndex);
             
             // Then apply user filters if active
-            if (props.isFiltered && props.filteredGameIndices && props.filteredGameIndices.length > 0) {
+            if (isFiltered.value && filteredGameIndices.value && filteredGameIndices.value.length > 0) {
                 relevantGames = relevantGames.filter(game => 
-                    props.filteredGameIndices.includes(game.gameNumber)
+                    filteredGameIndices.value.includes(game.gameNumber)
                 );
             }
             
@@ -319,7 +312,7 @@ const updateScales = (data, currentGameIndex = props.currentGame) => {
     // Add some padding to maxScore (10% padding, minimum 20)
     maxScore = Math.max(maxScore * 1.1, 20);
     
-    console.log('📏 Scale update: maxScore =', maxScore, 'for game', currentGameIndex, 'filtered:', props.isFiltered);
+    console.log('📏 Scale update: maxScore =', maxScore, 'for game', currentGameIndex, 'filtered:', isFiltered.value);
     
     // Update X scale (score domain)
     if (scales.value.x) {
@@ -373,7 +366,7 @@ const updateCustomYAxis = (data, duration = getTransitionDuration.value) => {
     if (!customYAxisGroup.value || !scales.value.y) return;
     
     // Sort teams by cumulative score for proper ranking display
-    const currentGameIndex = props.currentGame;
+    const currentGameIndex = currentGame.value;
     const sortedData = currentGameIndex === 0 
         ? [...data].sort((a, b) => a.team.localeCompare(b.team)) // Alphabetical for initial state
         : [...data].sort((a, b) => {
@@ -862,21 +855,24 @@ const renderStackedBars = (data, config = {}) => {
     
     const { 
         transitionDuration: duration = getTransitionDuration.value,
-        currentGameIndex = props.currentGame,
-        isFiltered = props.isFiltered 
+        currentGameIndex = currentGame.value,
+        isFiltered: configIsFiltered = false 
     } = config;
     
+    // Use the computed property from the store
+    const currentIsFiltered = isFiltered.value;
+    
     console.log('🎨 Rendering stacked bars for', data.length, 'teams at game index', currentGameIndex);
-    console.log('🔍 Filtering:', isFiltered, 'Filtered games:', props.filteredGameIndices);
+    console.log('🔍 Filtering:', currentIsFiltered, 'Filtered games:', filteredGameIndices.value);
     
     // Filter and process the data based on selected games
     let processedData = data;
-    if (isFiltered && props.filteredGameIndices && props.filteredGameIndices.length > 0) {
+    if (currentIsFiltered && filteredGameIndices.value && filteredGameIndices.value.length > 0) {
         // Filter each team's games to only include selected game indices
         processedData = data.map(teamData => {
             // Filter games
             const filteredGames = teamData.games.filter(game => 
-                props.filteredGameIndices.includes(game.gameNumber) && 
+                filteredGameIndices.value.includes(game.gameNumber) && 
                 game.gameNumber <= currentGameIndex
             );
             
@@ -893,7 +889,7 @@ const renderStackedBars = (data, config = {}) => {
                 games: recalculatedGames
             };
         });
-        console.log('🔍 Filtered and recalculated data for games:', props.filteredGameIndices);
+        console.log('🔍 Filtered and recalculated data for games:', filteredGameIndices.value);
     } else {
         // Normal filtering - just limit by current game and recalculate positions
         processedData = data.map(teamData => {
@@ -1058,7 +1054,7 @@ const renderTeamSegments = (teamGroup, teamData, config) => {
 };
 
 const updateSegments = (segments, teamData, config) => {
-    const { transitionDuration: duration = getTransitionDuration.value, currentGameIndex = props.currentGame, isFiltered = false } = config;
+    const { transitionDuration: duration = getTransitionDuration.value, currentGameIndex = currentGame.value, isFiltered = false } = config;
     
     // Get bandwidth for consistent sizing
     const bandwidth = scales.value.y.bandwidth();
@@ -1151,7 +1147,7 @@ const renderCumulativeLabel = (teamGroup, teamData, duration = getTransitionDura
     }
     
     // Calculate cumulative score up to current game
-    const currentGameIndex = props.currentGame;
+    const currentGameIndex = currentGame.value;
     let cumulativeScore = 0;
     
     for (let i = 0; i < teamData.games.length && teamData.games[i].gameNumber <= currentGameIndex; i++) {
@@ -1345,11 +1341,11 @@ onMounted(async () => {
             
             // Re-render with current data
             if (props.data && props.data.length > 0) {
-                const currentData = extractGameData(props.data, props.currentGame);
+                const currentData = extractGameData(props.data, currentGame.value);
                 updateScales(currentData);
                 updateAxes(currentData);
                 
-                if (props.currentGame === 0) {
+                if (currentGame.value === 0) {
                     renderInitialState(currentData);
                 } else {
                     renderStackedBars(currentData);
@@ -1363,16 +1359,16 @@ onMounted(async () => {
     console.log('🎯 InteractiveRaceChart: Checking for initial data:', {
         hasData: !!(props.data && props.data.length > 0),
         dataLength: props.data?.length || 0,
-        currentGame: props.currentGame
+        currentGame: currentGame.value
     });
     
     if (props.data && props.data.length > 0) {
         console.log('📊 InteractiveRaceChart: Initial data available, triggering first render');
-        const initialData = extractGameData(props.data, props.currentGame);
+        const initialData = extractGameData(props.data, currentGame.value);
         updateScales(initialData);
         updateAxes(initialData, 0); // No transition for initial render
         
-        if (props.currentGame === 0) {
+        if (currentGame.value === 0) {
             renderInitialState(initialData);
         } else {
             renderStackedBars(initialData, { transitionDuration: 0 });
@@ -1574,11 +1570,11 @@ watch(() => props.data, (newData) => {
     // Cancel any ongoing transitions before rendering new data
     cancelAllTransitions();
     
-    const gameData = extractGameData(newData, props.currentGame);
+    const gameData = extractGameData(newData, currentGame.value);
     console.log('🎮 Extracted game data:', {
         teams: gameData.length,
         sampleTeam: gameData[0],
-        currentGame: props.currentGame
+        currentGame: currentGame.value
     });
     
     // Use safe rendering for data changes
@@ -1588,7 +1584,7 @@ watch(() => props.data, (newData) => {
         updateScales(gameData);
         updateAxes(gameData);
         
-        if (props.currentGame === 0) {
+        if (currentGame.value === 0) {
             console.log('🎬 Rendering initial state');
             renderInitialState(gameData);
         } else {
@@ -1658,7 +1654,7 @@ const immediateGameUpdate = throttle((newGame, oldGame) => {
 }, 16); // ~60fps throttling for immediate updates
 
 // Watch for currentGame changes with both immediate and debounced handling
-watch(() => props.currentGame, (newGame, oldGame) => {
+watch(() => currentGame.value, (newGame, oldGame) => {
     // Try immediate update first (for single changes)
     immediateGameUpdate(newGame, oldGame);
     
@@ -1680,23 +1676,23 @@ const debouncedFilterUpdate = debounce((newIsFiltered, newFilteredIndices) => {
     
     cancelAllTransitions();
     
-    const gameData = extractGameData(props.data, props.currentGame);
+    const gameData = extractGameData(props.data, currentGame.value);
     
     safeRender(() => {
         if (!validateDOMState()) return;
         
-        if (props.currentGame === 0) {
+        if (currentGame.value === 0) {
             renderInitialState(gameData);
         } else {
             renderStackedBars(gameData, { 
-                currentGameIndex: props.currentGame,
+                currentGameIndex: currentGame.value,
                 isFiltered: newIsFiltered 
             });
         }
     });
 }, 150); // 150ms debounce for smooth performance
 
-watch(() => [props.isFiltered, props.filteredGameIndices], ([newIsFiltered, newFilteredIndices], [oldIsFiltered, oldFilteredIndices]) => {
+  watch(() => [isFiltered.value, filteredGameIndices.value], ([newIsFiltered, newFilteredIndices], [oldIsFiltered, oldFilteredIndices]) => {
     console.log('🔍 InteractiveRaceChart: Filter change detected', { 
         wasFiltered: oldIsFiltered, 
         nowFiltered: newIsFiltered,
@@ -1714,8 +1710,8 @@ watch(() => props.maxGames, (newMaxGames) => {
     // Scales will be updated in the next render cycle
 });
 
-// Watch for legend visibility changes
-watch(() => props.isLegendVisible, (newVisible) => {
+// Watch the computed property from the store
+watch(isLegendVisible, (newVisible) => {
     console.log('🏷️ InteractiveRaceChart: Legend visibility changed to', newVisible);
     renderLegend(newVisible);
 });

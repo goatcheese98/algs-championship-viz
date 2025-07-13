@@ -1,7 +1,7 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 import IndexApp from '../components/IndexApp.vue';
-import ChampionshipApp from '../components/ChampionshipApp.vue';
+import TournamentView from '../components/TournamentView.vue';
 
 const routes = [
   {
@@ -13,10 +13,10 @@ const routes = [
     // A dynamic route to handle all tournament pages
     // Examples: /tournament/year-4-championship, /tournament/ewc-2025
     path: '/tournament/:id',
-    name: 'Championship',
-    component: ChampionshipApp,
+    name: 'Tournament',
+    component: TournamentView,
     // 'props: true' allows the URL parameter (e.g., 'year-4-championship')
-    // to be passed as a prop to the ChampionshipApp component.
+    // to be passed as a prop to the TournamentView component.
     props: true
   }
 ];

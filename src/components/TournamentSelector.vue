@@ -7,7 +7,7 @@
           v-for="day in tournamentDays" 
           :key="day.id"
           :class="['day-tab', { active: selectedDay === day.id }]"
-          @click="selectDay(day.id)"
+          @click="setDay(day.id)"
         >
           {{ day.name }}
         </button>
@@ -54,6 +54,9 @@
 </template>
 
 <script>
+import { useTournamentStore } from '../stores/tournament.js' // Import the store
+import { mapState, mapActions } from 'pinia' // Import Pinia helpers
+
 export default {
   name: 'TournamentSelector',
   
@@ -66,14 +69,7 @@ export default {
       type: Boolean,
       default: false
     },
-    selectedMatchup: {
-      type: String,
-      default: ''
-    },
-    selectedDay: {
-      type: String,
-      default: 'day1'
-    },
+    // REMOVE selectedMatchup and selectedDay props
     loadedMatchups: {
       type: Set,
       default: () => new Set()
@@ -84,7 +80,8 @@ export default {
     }
   },
   
-  emits: ['matchup-selected', 'day-changed'],
+  // REMOVE emits for matchup-selected and day-changed
+  emits: [],
   
   data() {
     return {
@@ -306,6 +303,7 @@ export default {
   },
   
   computed: {
+    ...mapState(useTournamentStore, ['selectedDay', 'selectedMatchup']), // Map state from store
     currentDayMatchups() {
       const currentDay = this.tournamentDays.find(day => day.id === this.selectedDay);
       return currentDay ? currentDay.matchups : [];
@@ -327,20 +325,10 @@ export default {
   },
   
   methods: {
-    selectDay(dayId) {
-      console.log('📅 Selected day:', dayId);
-      
-      // Immediately emit the change to parent for responsive UI
-      this.$emit('day-changed', dayId);
-      
-      // Force immediate re-render to update UI
-      this.$forceUpdate();
-    },
+    ...mapActions(useTournamentStore, ['setDay', 'selectMatchup']), // Map actions
     
-    selectMatchup(matchupId) {
-      console.log('🎯 Selected matchup:', matchupId);
-      this.$emit('matchup-selected', matchupId);
-    },
+    // REMOVE selectDay and selectMatchup methods that emitted events.
+    // The @click handlers in the template will now call the mapped store actions directly.
     
     getStatusClass(matchupId) {
       if (this.loadedMatchups.has(matchupId)) return 'loaded';
