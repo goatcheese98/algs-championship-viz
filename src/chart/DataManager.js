@@ -4,6 +4,7 @@
  */
 
 // Import separate modules for better organization
+import * as d3 from 'd3';
 import { MAP_SEQUENCES, getMapSequence } from './MapSequenceData.js';
 import { 
     getBaseMapColor, 
@@ -12,12 +13,6 @@ import {
     getMapColorInfo,
     SPECIAL_STATE_COLORS 
 } from './MapColoringLogic.js';
-
-// Ensure D3 is available
-const d3 = window.d3
-if (!d3) {
-    throw new Error('D3.js is not available. Please ensure d3.v7.min.js is loaded.')
-}
 
 export class DataManager {
     constructor() {

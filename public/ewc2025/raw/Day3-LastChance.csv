@@ -1,81 +1,201 @@
 Team,Rank,Game,Placement,Kills,Points
-Sentinels,1,1,2,12,21
-Sentinels,1,2,3,8,15
-Sentinels,1,3,6,3,6
-Sentinels,1,4,16,1,1
-AlQadsiahEsports,2,1,16,0,0
-AlQadsiahEsports,2,2,2,4,13
-AlQadsiahEsports,2,3,2,10,19
-AlQadsiahEsports,2,4,5,4,8
-Team Nemesis,3,1,8,3,5
-Team Nemesis,3,2,5,4,8
-Team Nemesis,3,3,5,3,7
-Team Nemesis,3,4,3,12,19
-AG.AL,4,1,6,2,5
-AG.AL,4,2,1,16,28
-AG.AL,4,3,17,1,1
-AG.AL,4,4,18,1,1
-Twisted Minds,5,1,18,0,0
-Twisted Minds,5,2,4,6,11
-Twisted Minds,5,3,1,11,23
-Twisted Minds,5,4,20,0,0
-Gen.G Esports,6,1,4,2,7
-Gen.G Esports,6,2,6,9,12
-Gen.G Esports,6,3,18,3,3
-Gen.G Esports,6,4,2,3,12
+Gen.G Esports,1,1,4,2,7
+Gen.G Esports,1,2,6,9,12
+Gen.G Esports,1,3,18,3,3
+Gen.G Esports,1,4,2,3,12
+Gen.G Esports,1,5,4,0,5
+Gen.G Esports,1,6,5,6,10
+Gen.G Esports,1,7,14,1,2
+Gen.G Esports,1,8,2,12,21
+Gen.G Esports,1,9,2,11,20
+Gen.G Esports,1,10,10,1,3
+Team Liquid,2,1,3,10,17
+Team Liquid,2,2,9,1,3
+Team Liquid,2,3,20,2,2
+Team Liquid,2,4,12,3,4
+Team Liquid,2,5,17,1,1
+Team Liquid,2,6,16,0,0
+Team Liquid,2,7,2,3,12
+Team Liquid,2,8,1,13,25
+Team Liquid,2,9,12,0,1
+Team Liquid,2,10,1,10,22
+Sentinels,3,1,2,12,21
+Sentinels,3,2,3,8,15
+Sentinels,3,3,6,3,6
+Sentinels,3,4,16,1,1
+Sentinels,3,5,7,3,6
+Sentinels,3,6,14,0,1
+Sentinels,3,7,1,9,21
+Sentinels,3,8,17,0,0
+Sentinels,3,9,3,5,12
+Sentinels,3,10,5,0,4
+FURIA,4,1,17,2,2
+FURIA,4,2,10,1,3
+FURIA,4,3,19,1,1
+FURIA,4,4,13,0,1
+FURIA,4,5,1,17,29
+FURIA,4,6,2,7,16
+FURIA,4,7,10,8,10
+FURIA,4,8,8,1,3
+FURIA,4,9,17,0,0
+FURIA,4,10,2,6,15
+Team Nemesis,5,1,8,3,5
+Team Nemesis,5,2,5,4,8
+Team Nemesis,5,3,5,3,7
+Team Nemesis,5,4,3,12,19
+Team Nemesis,5,5,9,5,7
+Team Nemesis,5,6,8,2,4
+Team Nemesis,5,7,12,6,7
+Team Nemesis,5,8,10,0,2
+Team Nemesis,5,9,7,5,8
+Team Nemesis,5,10,4,7,12
+ENTER FORCE.36,6,1,1,8,20
+ENTER FORCE.36,6,2,18,0,0
+ENTER FORCE.36,6,3,8,1,3
+ENTER FORCE.36,6,4,10,2,4
+ENTER FORCE.36,6,5,11,0,1
+ENTER FORCE.36,6,6,6,3,6
+ENTER FORCE.36,6,7,9,2,4
+ENTER FORCE.36,6,8,14,6,7
+ENTER FORCE.36,6,9,1,10,22
+ENTER FORCE.36,6,10,11,5,6
 NRG,7,1,19,0,0
 NRG,7,2,16,1,1
 NRG,7,3,10,3,5
 NRG,7,4,1,10,22
-ENTER FORCE.36,8,1,1,8,20
-ENTER FORCE.36,8,2,18,0,0
-ENTER FORCE.36,8,3,8,1,3
-ENTER FORCE.36,8,4,10,2,4
-Team Liquid,9,1,3,10,17
-Team Liquid,9,2,9,1,3
-Team Liquid,9,3,20,2,2
-Team Liquid,9,4,12,3,4
+NRG,7,5,12,1,2
+NRG,7,6,1,11,23
+NRG,7,7,17,0,0
+NRG,7,8,4,4,9
+NRG,7,9,4,2,7
+NRG,7,10,9,1,3
+Twisted Minds,8,1,18,0,0
+Twisted Minds,8,2,4,6,11
+Twisted Minds,8,3,1,11,23
+Twisted Minds,8,4,20,0,0
+Twisted Minds,8,5,2,4,13
+Twisted Minds,8,6,10,0,2
+Twisted Minds,8,7,18,0,0
+Twisted Minds,8,8,5,9,13
+Twisted Minds,8,9,11,2,3
+Twisted Minds,8,10,8,1,3
+AlQadsiahEsports,9,1,16,0,0
+AlQadsiahEsports,9,2,2,4,13
+AlQadsiahEsports,9,3,2,10,19
+AlQadsiahEsports,9,4,5,4,8
+AlQadsiahEsports,9,5,6,1,4
+AlQadsiahEsports,9,6,19,0,0
+AlQadsiahEsports,9,7,5,5,9
+AlQadsiahEsports,9,8,16,0,0
+AlQadsiahEsports,9,9,6,6,9
+AlQadsiahEsports,9,10,17,2,2
 GoNext,10,1,9,4,6
 GoNext,10,2,7,1,4
 GoNext,10,3,16,4,4
 GoNext,10,4,4,4,9
-JD GAMING,11,1,5,5,9
-JD GAMING,11,2,13,0,1
-JD GAMING,11,3,13,6,7
-JD GAMING,11,4,11,3,4
-RRX,12,1,7,2,5
-RRX,12,2,8,3,5
-RRX,12,3,4,3,8
-RRX,12,4,8,0,2
-GaiminGladiators,13,1,10,0,2
-GaiminGladiators,13,2,11,0,1
-GaiminGladiators,13,3,3,6,13
-GaiminGladiators,13,4,9,1,3
-EVOS,14,1,14,3,4
-EVOS,14,2,17,1,1
-EVOS,14,3,14,2,3
-EVOS,14,4,14,9,10
-CrazyRaccoon,15,1,15,5,6
-CrazyRaccoon,15,2,19,3,3
-CrazyRaccoon,15,3,7,0,3
-CrazyRaccoon,15,4,6,2,5
-MOUZ,16,1,20,0,0
-MOUZ,16,2,15,0,1
-MOUZ,16,3,15,3,4
-MOUZ,16,4,7,5,8
-Team Orchid,17,1,11,4,5
-Team Orchid,17,2,14,0,1
-Team Orchid,17,3,11,2,3
-Team Orchid,17,4,15,0,1
-FURIA,18,1,17,2,2
-FURIA,18,2,10,1,3
-FURIA,18,3,19,1,1
-FURIA,18,4,13,0,1
-ShopifyRebellion,19,1,13,0,1
-ShopifyRebellion,19,2,12,1,2
-ShopifyRebellion,19,3,9,0,2
-ShopifyRebellion,19,4,19,2,2
-NOEZ FOXX,20,1,12,2,3
-NOEZ FOXX,20,2,20,0,0
-NOEZ FOXX,20,3,12,2,3
-NOEZ FOXX,20,4,17,0,0
+GoNext,10,5,18,0,0
+GoNext,10,6,3,10,17
+GoNext,10,7,6,3,6
+GoNext,10,8,15,1,2
+GoNext,10,9,16,0,0
+GoNext,10,10,3,7,14
+AG.AL,11,1,6,2,5
+AG.AL,11,2,1,16,28
+AG.AL,11,3,17,1,1
+AG.AL,11,4,18,1,1
+AG.AL,11,5,5,5,9
+AG.AL,11,6,15,0,1
+AG.AL,11,7,11,3,4
+AG.AL,11,8,6,0,3
+AG.AL,11,9,19,0,0
+AG.AL,11,10,7,5,8
+GaiminGladiators,12,1,10,0,2
+GaiminGladiators,12,2,11,0,1
+GaiminGladiators,12,3,3,6,13
+GaiminGladiators,12,4,9,1,3
+GaiminGladiators,12,5,13,3,4
+GaiminGladiators,12,6,4,7,12
+GaiminGladiators,12,7,8,0,2
+GaiminGladiators,12,8,3,5,12
+GaiminGladiators,12,9,9,2,4
+GaiminGladiators,12,10,14,2,3
+EVOS,13,1,14,3,4
+EVOS,13,2,17,1,1
+EVOS,13,3,14,2,3
+EVOS,13,4,14,9,10
+EVOS,13,5,19,0,0
+EVOS,13,6,7,9,12
+EVOS,13,7,3,3,10
+EVOS,13,8,11,2,3
+EVOS,13,9,18,1,1
+EVOS,13,10,13,3,4
+ShopifyRebellion,14,1,13,0,1
+ShopifyRebellion,14,2,12,1,2
+ShopifyRebellion,14,3,9,0,2
+ShopifyRebellion,14,4,19,2,2
+ShopifyRebellion,14,5,3,3,10
+ShopifyRebellion,14,6,13,0,1
+ShopifyRebellion,14,7,16,3,3
+ShopifyRebellion,14,8,13,7,8
+ShopifyRebellion,14,9,8,6,8
+ShopifyRebellion,14,10,15,2,3
+Team Orchid,15,1,11,4,5
+Team Orchid,15,2,14,0,1
+Team Orchid,15,3,11,2,3
+Team Orchid,15,4,15,0,1
+Team Orchid,15,5,14,5,6
+Team Orchid,15,6,11,2,3
+Team Orchid,15,7,4,9,14
+Team Orchid,15,8,7,0,3
+Team Orchid,15,9,10,1,3
+Team Orchid,15,10,19,0,0
+JD GAMING,16,1,5,5,9
+JD GAMING,16,2,13,0,1
+JD GAMING,16,3,13,6,7
+JD GAMING,16,4,11,3,4
+JD GAMING,16,5,8,5,7
+JD GAMING,16,6,9,1,3
+JD GAMING,16,7,13,1,2
+JD GAMING,16,8,12,1,2
+JD GAMING,16,9,14,0,1
+JD GAMING,16,10,16,2,2
+RRX,17,1,7,2,5
+RRX,17,2,8,3,5
+RRX,17,3,4,3,8
+RRX,17,4,8,0,2
+RRX,17,5,10,0,2
+RRX,17,6,20,1,1
+RRX,17,7,20,0,0
+RRX,17,8,9,2,4
+RRX,17,9,13,1,2
+RRX,17,10,20,0,0
+CrazyRaccoon,18,1,15,5,6
+CrazyRaccoon,18,2,19,3,3
+CrazyRaccoon,18,3,7,0,3
+CrazyRaccoon,18,4,6,2,5
+CrazyRaccoon,18,5,16,0,0
+CrazyRaccoon,18,6,18,0,0
+CrazyRaccoon,18,7,19,3,3
+CrazyRaccoon,18,8,18,0,0
+CrazyRaccoon,18,9,20,1,1
+CrazyRaccoon,18,10,12,6,7
+NOEZ FOXX,19,1,12,2,3
+NOEZ FOXX,19,2,20,0,0
+NOEZ FOXX,19,3,12,2,3
+NOEZ FOXX,19,4,17,0,0
+NOEZ FOXX,19,5,20,0,0
+NOEZ FOXX,19,6,17,0,0
+NOEZ FOXX,19,7,7,1,4
+NOEZ FOXX,19,8,20,0,0
+NOEZ FOXX,19,9,5,5,9
+NOEZ FOXX,19,10,6,3,6
+MOUZ,20,1,20,0,0
+MOUZ,20,2,15,0,1
+MOUZ,20,3,15,3,4
+MOUZ,20,4,7,5,8
+MOUZ,20,5,15,0,1
+MOUZ,20,6,12,1,2
+MOUZ,20,7,15,0,1
+MOUZ,20,8,19,0,0
+MOUZ,20,9,15,0,1
+MOUZ,20,10,18,2,2

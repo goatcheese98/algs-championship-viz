@@ -14,7 +14,8 @@ export default defineConfig({
       input: {
         main: './index.html',
         year4: './year_4_championship.html',
-        year5: './year_5_open.html'
+        year5: './year_5_open.html',
+        ewc2025: './ewc_2025.html'
       }
     }
   },

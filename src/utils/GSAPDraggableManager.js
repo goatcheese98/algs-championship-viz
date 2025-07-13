@@ -4,6 +4,9 @@
  * Optimized for maximum performance and snappy feel
  */
 
+import { gsap } from 'gsap';
+import { Draggable } from 'gsap/Draggable';
+
 export const GSAPDraggableManager = {
     instances: new Map(),
     
@@ -27,7 +30,7 @@ export const GSAPDraggableManager = {
         }
         
         // Check GSAP availability
-        if (typeof window !== 'undefined' && window.gsap && window.Draggable) {
+        if (typeof gsap !== 'undefined' && typeof Draggable !== 'undefined') {
             console.log(`⚡ Initializing ULTRA-FAST GSAP draggable: ${panelId}`);
             return this.initializeGSAPDraggable(panelElement, options);
         } else {

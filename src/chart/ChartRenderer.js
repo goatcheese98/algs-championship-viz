@@ -3,11 +3,7 @@
  * Extracted from ChartEngine.js for better modularity and performance
  */
 
-// Ensure D3 is available
-const d3 = window.d3
-if (!d3) {
-    throw new Error('D3.js is not available. Please ensure d3.v7.min.js is loaded.')
-}
+import * as d3 from 'd3';
 
 // Mobile detection utility
 function isMobileDevice() {

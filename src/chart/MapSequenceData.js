@@ -499,11 +499,11 @@ export const MAP_SEQUENCES = {
             3: 'BROKEN MOON',
             4: 'E-DISTRICT',
             5: 'E-DISTRICT',
-            6: 'E-DISTRICT',
+            6: 'STORM POINT',
             7: 'STORM POINT',
-            8: 'STORM POINT',
-            9: 'STORM POINT',
-            10: 'STORM POINT'
+            8: 'WORLD\'S EDGE',
+            9: 'WORLD\'S EDGE',
+            10: 'WORLD\'S EDGE'
         }
     }
 }
