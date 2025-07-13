@@ -1,5 +1,5 @@
 <template>
-  <div v-if="chartEngine || maxGames > 0" 
+  <div v-if="maxGames > 0" 
        ref="actionPanel"
        class="enhanced-action-panel tournament-controls"
        :class="{ expanded: panelExpanded }">
@@ -24,7 +24,7 @@
           <input type="range" 
                  :min="0" 
                  :max="maxGames" 
-                 v-model.number="currentGame"
+                 :value="currentGame"
                  @input="updateGameFromSlider"
                  @change="updateGameFromSlider"
                  @mousedown="startSliderControl"
@@ -85,7 +85,7 @@
         <!-- Export Controls -->
         <div class="control-section">
           <label class="section-label">Export Data</label>
-          <button @click="exportData" :disabled="!chartEngine" class="export-btn">
+          <button @click="exportData" class="export-btn">
             📊 Export CSV
           </button>
         </div>
@@ -95,6 +95,31 @@
           <button @click="toggleLegend" class="legend-toggle-btn">
             {{ legendVisible ? 'Hide Legend' : 'Show Legend' }}
           </button>
+        </div>
+        
+        <!-- Animation Speed Controls -->
+        <div class="control-section">
+          <label class="section-label">Animation Speed</label>
+          <div class="speed-controls">
+            <button 
+              @click="setAnimationSpeed('slow')" 
+              :class="['speed-btn', { active: animationSpeed === 'slow' }]"
+            >
+              Slow
+            </button>
+            <button 
+              @click="setAnimationSpeed('medium')" 
+              :class="['speed-btn', { active: animationSpeed === 'medium' }]"
+            >
+              Medium
+            </button>
+            <button 
+              @click="setAnimationSpeed('fast')" 
+              :class="['speed-btn', { active: animationSpeed === 'fast' }]"
+            >
+              Fast
+            </button>
+          </div>
         </div>
       </div>
     </transition>
@@ -108,10 +133,6 @@ export default {
   name: 'ActionPanel',
   
   props: {
-    chartEngine: {
-      type: Object,
-      default: null
-    },
     selectedMatchup: {
       type: String,
       default: ''
@@ -123,6 +144,18 @@ export default {
     isPlaying: {
       type: Boolean,
       default: false
+    },
+    currentGame: {
+      type: Number,
+      default: 0
+    },
+    currentMap: {
+      type: String,
+      default: ''
+    },
+    chartData: {
+      type: Array,
+      default: () => []
     }
   },
   
@@ -132,7 +165,8 @@ export default {
     'restart-requested',
     'game-filter-changed',
     'export-requested',
-    'legend-toggled'
+    'legend-toggled',
+    'animation-speed-changed'
   ],
   
   data() {
@@ -141,8 +175,6 @@ export default {
       panelExpanded: false,
       
       // Game state
-      currentGame: 0,
-      currentMap: '',
       manualSliderControl: false,
       
       // Filter state
@@ -152,7 +184,10 @@ export default {
       legendVisible: false,
       
       // GSAP draggable instance
-      draggableInstance: null
+      draggableInstance: null,
+
+      // Animation speed state
+      animationSpeed: 'medium' // 'slow', 'medium', 'fast'
     }
   },
   
@@ -170,54 +205,20 @@ export default {
   },
   
   watch: {
-    chartEngine(newEngine, oldEngine) {
-      if (newEngine && newEngine !== oldEngine) {
-        this.$nextTick(() => {
-          this.initDraggable();
-          this.updateCurrentMap();
-        });
-      }
-    },
+
     
     // Watch for changes in maxGames to update controls
     maxGames(newMaxGames, oldMaxGames) {
       console.log(`🎮 ActionPanel: maxGames watcher triggered - from ${oldMaxGames} to ${newMaxGames}`);
-      console.log(`🎮 ActionPanel: Component state:`, {
-        selectedMatchup: this.selectedMatchup,
-        chartEngine: !!this.chartEngine,
-        currentGame: this.currentGame
-      });
       
       if (newMaxGames !== oldMaxGames) {
         console.log(`🎮 ActionPanel: maxGames changed from ${oldMaxGames} to ${newMaxGames}`);
         
-        // CRITICAL FIX: Only reset current game if it exceeds the new max AND we're not in the middle of slider control
-        if (this.currentGame > newMaxGames && !this.manualSliderControl) {
-          console.log(`🎮 ActionPanel: Resetting currentGame from ${this.currentGame} to 0`);
-          this.currentGame = 0;
-          this.$emit('game-changed', this.currentGame);
-        } else {
-          console.log(`🎮 ActionPanel: Keeping currentGame at ${this.currentGame} (within bounds or manual control)`);
-        }
-        
         // Clear any selected games that are out of bounds
         this.selectedGames = this.selectedGames.filter(game => game <= newMaxGames);
-        
-        // Update current map
-        this.updateCurrentMap();
       }
     },
-    
-    // Watch for external game changes
-    'chartEngine.currentGameIndex'() {
-      if (this.chartEngine && !this.manualSliderControl) {
-        const engineGameIndex = this.chartEngine.currentGameIndex !== undefined ? this.chartEngine.currentGameIndex : 0;
-        if (Math.abs(this.currentGame - engineGameIndex) > 0) {
-          this.currentGame = engineGameIndex;
-          this.updateCurrentMap();
-        }
-      }
-    }
+
   },
   
   mounted() {
@@ -225,27 +226,9 @@ export default {
     this.$nextTick(() => {
       this.initDraggable();
     });
-    
-    // Set up periodic sync with chart engine
-    this.syncInterval = setInterval(() => {
-      if (this.chartEngine) {
-        const engineGameIndex = this.chartEngine.currentGameIndex !== undefined ? this.chartEngine.currentGameIndex : 0;
-        
-        if (Math.abs(this.currentGame - engineGameIndex) > 0 && !this.manualSliderControl) {
-          this.currentGame = engineGameIndex;
-        }
-        
-        this.updateCurrentMap();
-      }
-    }, 300);
   },
   
   beforeUnmount() {
-    // Cleanup sync interval
-    if (this.syncInterval) {
-      clearInterval(this.syncInterval);
-    }
-    
     // Cleanup draggable - Use correct cleanup method
     if (this.draggableInstance) {
       if (this.draggableInstance.cleanup) {
@@ -319,13 +302,14 @@ export default {
       console.log('🎮 Draggable constraints updated for maxGames:', this.maxGames);
     },
     
-    async updateGameFromSlider() {
-      this.currentGame = Math.min(Math.max(0, this.currentGame), this.maxGames);
-      this.$emit('game-changed', this.currentGame);
-      this.updateCurrentMap();
+    updateGameFromSlider(event) {
+      const gameValue = Math.min(Math.max(0, parseInt(event.target.value)), this.maxGames);
+      
+      // Emit immediately for responsive UI feedback
+      this.$emit('game-changed', gameValue);
       
       // Reset filters when dragging back to initial state (game 0)
-      if (this.currentGame === 0 && this.selectedGames.length > 0) {
+      if (gameValue === 0 && this.selectedGames.length > 0) {
         console.log('🔄 Progress bar dragged to 0, resetting filters');
         this.selectedGames = [];
         this.$emit('game-filter-changed', { games: [], action: 'clear' });
@@ -347,18 +331,10 @@ export default {
     },
     
     restart() {
-      this.currentGame = 0;
-      this.updateCurrentMap();
       this.$emit('restart-requested');
     },
     
-    updateCurrentMap() {
-      if (this.chartEngine && this.chartEngine.dataManager) {
-        // Get current map from data manager
-        const currentGameIndex = this.chartEngine.currentGameIndex || this.currentGame;
-        this.currentMap = this.chartEngine.dataManager.getMapForGame(currentGameIndex);
-      }
-    },
+
     
     async toggleGameFilter(gameNum) {
       const wasSelected = this.selectedGames.includes(gameNum);
@@ -375,8 +351,7 @@ export default {
         // Auto-progress to max level when any filter is selected
         if (this.currentGame < this.maxGames) {
           console.log(`🎯 Auto-progressing to game ${this.maxGames} for filtering`);
-          this.currentGame = this.maxGames;
-          this.$emit('game-changed', this.currentGame);
+          this.$emit('game-changed', this.maxGames);
         }
       }
       
@@ -388,38 +363,35 @@ export default {
       });
     },
     
-    async resetGameFilter() {
+    resetGameFilter() {
       console.log('🔄 Resetting game filter and returning to initial state');
       this.selectedGames = [];
-      
-      // Reset to initial state when clearing filters
-      this.currentGame = 0;
-      this.updateCurrentMap();
       
       this.$emit('game-filter-changed', { games: [], action: 'clear' });
       this.$emit('game-changed', 0);
     },
     
     getGameButtonStyle(gameNum) {
-      // Add proper guards to prevent calling DataManager before data is loaded
-      if (!this.chartEngine || !this.chartEngine.dataManager || !this.chartEngine.dataManager.data) {
-        return {
-          background: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
-          border: '2px solid #6b7280',
-          color: '#ffffff'
-        };
-      }
-      
-      const mapName = this.chartEngine.dataManager.getMapForGame(gameNum);
-      const mapColor = this.chartEngine.dataManager.getMapColor(mapName, gameNum);
-      
       const isActive = this.selectedGames.includes(gameNum);
       const isCurrent = gameNum === this.currentGame;
       
-      // Base style: all buttons are colored with map colors by default
+      // Get map color for this game from chart data
+      let gameColor = '#6366f1'; // default fallback
+      
+      if (this.chartData && this.chartData.length > 0) {
+        // Find the game data from the first team (all teams have same game sequence)
+        const firstTeam = this.chartData[0];
+        if (firstTeam && firstTeam.games) {
+          const gameData = firstTeam.games.find(game => game.gameNumber === gameNum);
+          if (gameData && gameData.color) {
+            gameColor = gameData.color;
+          }
+        }
+      }
+      
       const baseStyle = {
-        background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, -10)} 100%)`,
-        border: `2px solid ${mapColor}`,
+        background: `linear-gradient(135deg, ${gameColor} 0%, ${this.adjustColor(gameColor, -10)} 100%)`,
+        border: `2px solid ${gameColor}`,
         color: '#ffffff'
       };
       
@@ -427,29 +399,36 @@ export default {
       if (isCurrent) {
         return {
           ...baseStyle,
-          boxShadow: `0 0 8px ${mapColor}60, 0 2px 4px rgba(0,0,0,0.3)`
+          boxShadow: `0 0 8px ${gameColor}60, 0 2px 4px rgba(0,0,0,0.3)`
         };
       } else if (isActive) {
         // Keep enhanced styling for selected filters
         return {
           ...baseStyle,
-          boxShadow: `0 0 12px ${mapColor}60, 0 0 20px ${mapColor}40`,
+          boxShadow: `0 0 12px ${gameColor}60, 0 0 20px ${gameColor}40`,
           transform: 'scale(1.15)'
         };
       } else {
-        // Default colored buttons
+        // Default colored buttons with map colors
         return baseStyle;
       }
     },
     
     getGameTooltip(gameNum) {
-      // Add proper guards to prevent calling DataManager before data is loaded
-      if (!this.chartEngine || !this.chartEngine.dataManager || !this.chartEngine.dataManager.data) {
-        return `Game ${gameNum}`;
+      // Get map name from chart data if available
+      let mapName = '';
+      
+      if (this.chartData && this.chartData.length > 0) {
+        const firstTeam = this.chartData[0];
+        if (firstTeam && firstTeam.games) {
+          const gameData = firstTeam.games.find(game => game.gameNumber === gameNum);
+          if (gameData && gameData.map) {
+            mapName = ` - ${gameData.map}`;
+          }
+        }
       }
       
-      const mapName = this.chartEngine.dataManager.getMapForGame(gameNum);
-      return `Game ${gameNum}: ${mapName}`;
+      return `Game ${gameNum}${mapName}`;
     },
     
     adjustColor(hexColor, percent) {
@@ -470,16 +449,19 @@ export default {
     },
     
     getCurrentMapStyle() {
-      // Add proper guards to prevent calling DataManager before data is loaded
-      if (!this.chartEngine || !this.chartEngine.dataManager || !this.chartEngine.dataManager.data) {
-        return {
-          background: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
-          border: '2px solid #6b7280',
-          color: '#ffffff'
-        };
-      }
+      let mapColor = '#10b981'; // default fallback
+      let mapName = this.currentMap || 'Loading...';
       
-      const mapColor = this.chartEngine.dataManager.getMapColor(this.currentMap, this.currentGame);
+      // Get map color for current game from chart data
+      if (this.chartData && this.chartData.length > 0 && this.currentGame > 0) {
+        const firstTeam = this.chartData[0];
+        if (firstTeam && firstTeam.games) {
+          const currentGameData = firstTeam.games.find(game => game.gameNumber === this.currentGame);
+          if (currentGameData && currentGameData.color) {
+            mapColor = currentGameData.color;
+          }
+        }
+      }
       
       return {
         background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, -20)} 100%)`,
@@ -496,6 +478,12 @@ export default {
     toggleLegend() {
       this.legendVisible = !this.legendVisible;
       this.$emit('legend-toggled', this.legendVisible);
+    },
+
+    setAnimationSpeed(speed) {
+      this.animationSpeed = speed;
+      this.$emit('animation-speed-changed', speed);
+      console.log(`🎮 Animation speed set to: ${speed}`);
     },
     
     // Mobile detection utility

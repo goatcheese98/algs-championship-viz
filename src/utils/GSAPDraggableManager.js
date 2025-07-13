@@ -55,10 +55,10 @@ export const GSAPDraggableManager = {
                 return {
                     windowWidth: window.innerWidth,
                     windowHeight: window.innerHeight,
-                    minX: -window.innerWidth,
-                    maxX: window.innerWidth,
-                    minY: -100,
-                    maxY: window.innerHeight - 50
+                    minX: -window.innerWidth + 100, // Allow some movement off-screen but keep accessible
+                    maxX: window.innerWidth - 100,
+                    minY: -window.innerHeight + 100, // FIXED: Allow full vertical movement
+                    maxY: window.innerHeight - 100  // FIXED: Keep some margin from edges
                 };
             };
             
@@ -81,50 +81,39 @@ export const GSAPDraggableManager = {
                 // MAXIMUM PERFORMANCE SETTINGS
                 force3D: true,
                 allowEventDefault: false,
-                inertia: false,
-                dragResistance: 0,
-                edgeResistance: 0,
+                inertia: false,  // Disable inertia for instant stopping
+                dragResistance: 0,  // Zero resistance for instant movement
+                edgeResistance: 0,  // No edge resistance
                 allowNativeTouchScrolling: false,
+                lockAxis: false,
+                
+                // Efficient bounds (applied only at end)
+                bounds: cachedProps,
                 
                 // INSTANT RESPONSE CALLBACKS
                 onPress: function() {
-                    // Minimal feedback - pre-calculated
-                    this.target.style.cursor = 'grabbing';
-                    this.target.style.zIndex = '9999';
+                    // Minimal feedback - instant
+                    gsap.set(this.target, { cursor: 'grabbing', zIndex: 9999 });
                     // Update cached properties for current drag
                     cachedProps = preCalculateProperties();
+                    this.applyBounds(cachedProps); // Update bounds
                 },
                 
                 onDragStart: function() {
-                    console.log('🚀 INSTANT dragging started:', panelId);
+                    console.log('🚀 INSTANT GSAP dragging started:', panelId);
                 },
                 
-                // REMOVED: All onDrag processing - ZERO calculations during drag for maximum speed
+                // NO onDrag callback - maximum performance
                 
                 onDragEnd: function() {
-                    console.log('✅ INSTANT drag ended:', panelId);
-                    
-                    // Use cached properties for bounds checking
-                    const x = this.x;
-                    const y = this.y;
-                    
-                    // Calculate constrained position using cached values
-                    const constrainedX = Math.max(cachedProps.minX, Math.min(cachedProps.maxX, x));
-                    const constrainedY = Math.max(cachedProps.minY, Math.min(cachedProps.maxY, y));
-                    
-                    // Apply bounds only if position changed
-                    if (constrainedX !== x || constrainedY !== y) {
-                        gsap.to(this.target, {
-                            duration: 0.2,
-                        ease: 'power2.out',
-                            x: constrainedX,
-                            y: constrainedY
-                        });
-                    }
-                    
-                    // Reset visual state
-                    this.target.style.cursor = 'grab';
-                    this.target.style.zIndex = '1000';
+                    console.log('✅ INSTANT GSAP drag ended:', panelId);
+                    // Reset cursor
+                    gsap.set(this.target, { cursor: 'grab', zIndex: 1000 });
+                },
+                
+                onRelease: function() {
+                    // Reset styles
+                    gsap.set(this.target, { cursor: 'grab', zIndex: 1000 });
                 }
             })[0];
             
@@ -153,53 +142,53 @@ export const GSAPDraggableManager = {
         }
     },
     
-    // ULTRA-HIGH-PERFORMANCE Fallback System - INSTANT RESPONSE
+    // Fallback dragging system - ULTRA-HIGH PERFORMANCE
     initializeFallbackDraggable(panelElement, options = {}) {
         const panelId = panelElement.id;
         
-        console.log(`🔄 Initializing ULTRA-FAST fallback draggable: ${panelId}`);
-        
-        // Find drag handle
+        // Find drag handle - look for .panel-header or use whole element
         const dragHandle = panelElement.querySelector('.panel-header') || panelElement;
         
-        // PERFORMANCE VARIABLES - Pre-allocated to avoid garbage collection
+        // PERFORMANCE VARIABLES - Pre-allocated for zero GC pressure
         let isDragging = false;
-        let startX = 0;
-        let startY = 0;
-        let initialX = 0;
-        let initialY = 0;
-        let currentX = 0;
-        let currentY = 0;
-        let animationId = null;
+        let startX = 0, startY = 0, currentX = 0, currentY = 0, initialX = 0, initialY = 0;
+        let lastMoveTime = 0;
+        const THROTTLE_MS = 8; // ~120fps throttling for ultra smooth movement
         
-        // PRE-CALCULATE BOUNDS - Zero calculations during drag
-        let cachedBounds = {
-            minX: -window.innerWidth,
-            maxX: window.innerWidth,
-            minY: -100,
-            maxY: window.innerHeight - 50
+        // PRE-CALCULATE BOUNDS - No calculations during drag
+        let bounds = {
+            maxX: window.innerWidth - 100,
+            maxY: window.innerHeight - 100,
+            minX: -window.innerWidth + 100,
+            minY: -window.innerHeight + 100
         };
         
-        // Update cached bounds
-        const updateBounds = () => {
-            cachedBounds.minX = -window.innerWidth;
-            cachedBounds.maxX = window.innerWidth;
-            cachedBounds.minY = -100;
-            cachedBounds.maxY = window.innerHeight - 50;
+        // Update bounds on window resize (debounced)
+        let resizeTimeout;
+        const updateBoundsOnResize = () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                bounds = {
+                    maxX: window.innerWidth - 100,
+                    maxY: window.innerHeight - 100,
+                    minX: -window.innerWidth + 100,
+                    minY: -window.innerHeight + 100
+                };
+            }, 100);
         };
+        window.addEventListener('resize', updateBoundsOnResize);
         
-        // ULTRA-FAST RENDER FUNCTION - RequestAnimationFrame for 60fps smoothness
-        const renderTransform = () => {
-            if (!isDragging) return;
+        // ULTRA-FAST position update - Direct DOM manipulation
+        const updatePosition = (x, y) => {
+            // Constrain to bounds
+            const constrainedX = Math.max(bounds.minX, Math.min(bounds.maxX, x));
+            const constrainedY = Math.max(bounds.minY, Math.min(bounds.maxY, y));
             
-            // Direct transform manipulation - fastest possible method
-            panelElement.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-            
-            // Continue animation loop
-            animationId = requestAnimationFrame(renderTransform);
+            // Direct transform update - fastest method
+            panelElement.style.transform = `translate3d(${constrainedX}px, ${constrainedY}px, 0)`;
         };
         
-        // INSTANT START Handler
+        // INSTANT START Handler - Minimal calculations
         const handleStart = (e) => {
             // Prevent dragging on interactive elements
             if (e.target.closest('button, input, select, textarea, .expand-btn')) {
@@ -215,23 +204,20 @@ export const GSAPDraggableManager = {
             startX = clientX;
             startY = clientY;
             
-            // Update bounds cache
-            updateBounds();
+                         // Get current position efficiently - parse transform directly
+             const transform = panelElement.style.transform;
+             if (transform && transform.includes('translate3d')) {
+                 // Parse translate3d(x, y, z) values directly
+                 const match = transform.match(/translate3d\(([^,]+)px,\s*([^,]+)px/);
+                 if (match) {
+                     initialX = parseFloat(match[1]) || 0;
+                     initialY = parseFloat(match[2]) || 0;
+                 }
+             } else {
+                 initialX = 0;
+                 initialY = 0;
+             }
             
-            // Get current transform - optimized
-            const style = window.getComputedStyle(panelElement);
-            const transform = style.transform;
-            
-            if (transform && transform !== 'none') {
-                const matrix = new DOMMatrix(transform);
-                initialX = matrix.m41;
-                initialY = matrix.m42;
-            } else {
-                initialX = 0;
-                initialY = 0;
-            }
-            
-            // Set initial position
             currentX = initialX;
             currentY = initialY;
             
@@ -239,36 +225,38 @@ export const GSAPDraggableManager = {
             panelElement.style.cursor = 'grabbing';
             panelElement.style.zIndex = '9999';
             
-            // Start render loop
-            animationId = requestAnimationFrame(renderTransform);
+            // Add event listeners - NOT passive for instant response
+            document.addEventListener('mousemove', handleMove, { passive: false });
+            document.addEventListener('mouseup', handleEnd, { passive: false });
+            document.addEventListener('touchmove', handleMove, { passive: false });
+            document.addEventListener('touchend', handleEnd, { passive: false });
             
-            // Add event listeners with passive optimization
-            document.addEventListener('mousemove', handleMove, { passive: true });
-            document.addEventListener('mouseup', handleEnd, { passive: true });
-            document.addEventListener('touchmove', handleMove, { passive: true });
-            document.addEventListener('touchend', handleEnd, { passive: true });
-            
-            // Prevent default
             e.preventDefault();
-            
             console.log('🎯 ULTRA-FAST drag started:', panelId);
         };
         
-        // INSTANT MOVE Handler - Zero calculations, maximum speed
+        // INSTANT MOVE Handler - Throttled for optimal performance
         const handleMove = (e) => {
             if (!isDragging) return;
+            
+            // Throttle for optimal performance (120fps max)
+            const now = performance.now();
+            if (now - lastMoveTime < THROTTLE_MS) return;
+            lastMoveTime = now;
             
             const clientX = e.clientX || (e.touches && e.touches[0].clientX);
             const clientY = e.clientY || (e.touches && e.touches[0].clientY);
             
             if (!clientX || !clientY) return;
             
-            // ULTRA-FAST position calculation - minimal operations
+            // ULTRA-FAST position calculation
             currentX = initialX + (clientX - startX);
             currentY = initialY + (clientY - startY);
             
-            // Note: Transform update happens in renderTransform via requestAnimationFrame
-            // This ensures 60fps smooth updates without blocking the main thread
+            // Immediate position update - no RAF needed
+            updatePosition(currentX, currentY);
+            
+            e.preventDefault();
         };
         
         // INSTANT END Handler
@@ -277,18 +265,8 @@ export const GSAPDraggableManager = {
             
             isDragging = false;
             
-            // Cancel animation loop
-            if (animationId) {
-                cancelAnimationFrame(animationId);
-                animationId = null;
-            }
-            
-            // Apply final bounds check using cached values
-            const constrainedX = Math.max(cachedBounds.minX, Math.min(cachedBounds.maxX, currentX));
-            const constrainedY = Math.max(cachedBounds.minY, Math.min(cachedBounds.maxY, currentY));
-            
-            // Set final position
-            panelElement.style.transform = `translate3d(${constrainedX}px, ${constrainedY}px, 0)`;
+            // Final position update
+            updatePosition(currentX, currentY);
             
             // Reset visual state
             panelElement.style.cursor = 'grab';
@@ -323,11 +301,8 @@ export const GSAPDraggableManager = {
             cleanup: () => {
                 console.log(`🧹 Cleaning up ULTRA-FAST fallback draggable: ${panelId}`);
                 
-                // Cancel any active animation
-                if (animationId) {
-                    cancelAnimationFrame(animationId);
-                    animationId = null;
-                }
+                // Remove resize listener
+                window.removeEventListener('resize', updateBoundsOnResize);
                 
                 // Remove event listeners
                 dragHandle.removeEventListener('mousedown', handleStart);

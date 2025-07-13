@@ -157,29 +157,41 @@
             </div>
             
             <div class="chart-area">
-              <div id="vue-chart-container"></div>
+              <InteractiveRaceChart
+                :data="processedChartData"
+                :currentGame="currentGame"
+                :teamConfig="teamConfig"
+                :maxGames="maxGames"
+                :isFiltered="isFiltered"
+                :filteredGameIndices="filteredGameIndices"
+                :isLegendVisible="isLegendVisible"
+                :animationSpeed="animationSpeed"
+              />
               <transition name="fade">
                 <div v-if="isLoading" class="loading-overlay">
                   <div class="loading-spinner"></div>
                 </div>
               </transition>
-                </div>
+            </div>
 
             <!-- Action Panel Component - Moved outside chart-area for full page dragging -->
             <ActionPanel
               :key="`action-panel-${selectedDay}-${selectedMatchup}`"
-              :chart-engine="chartEngine"
               :selected-matchup="selectedMatchup"
               :max-games="maxGames"
               :is-playing="isPlaying"
+              :current-game="currentGame"
+              :current-map="currentMap"
+              :chart-data="processedChartData"
               @game-changed="handleGameChanged"
               @play-toggled="handlePlayToggled"
               @restart-requested="handleRestartRequested"
               @game-filter-changed="handleGameFilterChanged"
               @export-requested="handleExportRequested"
               @legend-toggled="handleLegendToggled"
+              @animation-speed-changed="handleAnimationSpeedChanged"
             />
-                  </div>
+          </div>
                 </transition>
       </div>
     </div>
@@ -187,17 +199,22 @@
 </template>
 
 <script>
-import { ChartEngine } from '../chart/ChartEngine.js'
+import * as d3 from 'd3'
 import { useTeamConfig } from '../composables/useTeamConfig.js'
 import TournamentSelector from './TournamentSelector.vue'
 import ActionPanel from './ActionPanel.vue'
+import InteractiveRaceChart from './InteractiveRaceChart.vue'
+// Import map coloring logic for proper color assignment
+import { getMapColorByOccurrence, calculateMapOccurrence } from '../chart/MapColoringLogic.js'
+import { getMapSequence } from '../chart/MapSequenceData.js'
 
 export default {
   name: 'ChampionshipApp',
   
   components: {
     TournamentSelector,
-    ActionPanel
+    ActionPanel,
+    InteractiveRaceChart
   },
   
   props: {
@@ -240,7 +257,7 @@ export default {
       // Chart state
       selectedMatchup: '',
       selectedDay: 'day1', // Track current day for proper state management
-      chartEngine: null,
+      processedChartData: [],
       isLoading: false,
       isPlaying: false,
       errorMessage: '',
@@ -249,59 +266,39 @@ export default {
       currentGame: 0,  // Start at 0 to show initial state
       currentMap: '',
       
+      // Filtering state
+      isFiltered: false,
+      filteredGameIndices: [],
+      isLegendVisible: false,
+      
       // Status tracking
       loadedMatchups: new Set(),
       loadingMatchups: new Set(),
       
-      // Sync interval for animation
-      syncInterval: null
-    }
-  },
-  
-  computed: {
-    /**
-     * Dynamic maxGames based on actual CSV data
-     * This automatically detects game count from CSV headers, making it data-driven
-     */
-    maxGames() {
-      console.log('🎮 Computing maxGames dynamically:', {
-        selectedMatchup: this.selectedMatchup,
-        selectedDay: this.selectedDay,
-        hasChartEngine: !!this.chartEngine,
-        hasDataManager: !!this.chartEngine?.dataManager
-      });
-      
-      // If we have a ChartEngine with loaded data, use the dynamic game count
-      if (this.chartEngine && this.chartEngine.dataManager && this.chartEngine.dataManager.maxGames > 0) {
-        const dynamicGameCount = this.chartEngine.dataManager.maxGames;
-        console.log(`🎮 Using dynamic game count from CSV data: ${dynamicGameCount} games`);
-        return dynamicGameCount;
-      }
-      
-      // If we have a selected matchup but no chart engine yet, try to get from selector
-      if (this.selectedMatchup && this.$refs.tournamentSelector) {
-        const matchupInfo = this.$refs.tournamentSelector.getMatchupInfo(this.selectedMatchup);
-        if (matchupInfo && matchupInfo.games !== 'auto') {
-          console.log(`🎮 Fallback: Matchup ${this.selectedMatchup} has ${matchupInfo.games} games`);
-          return matchupInfo.games;
-        }
-      }
-      
-      // Fallback defaults only when no data is available
-      if (this.isEwc2025Tournament) {
-        const fallbackCount = this.selectedDay === 'day1' ? 10 : 9;
-        console.log(`🎮 EWC 2025 fallback - returning ${fallbackCount} games`);
-        return fallbackCount;
-      }
-      
-      // Other tournament defaults
-      const result = this.isYear5Tournament ? 6 : 8;
-      console.log(`🎮 Tournament fallback - returning ${result} games`);
-      return result;
+      // Animation intervals
+      playInterval: null,
+      gameStateInterval: null,
+
+              // Animation speed state
+        animationSpeed: 'medium' // Default to medium speed
     }
   },
   
   watch: {
+    // Watch for play/pause state changes to handle animation
+    isPlaying: {
+      handler(newIsPlaying, oldIsPlaying) {
+        console.log('🎮 Play state changed:', { from: oldIsPlaying, to: newIsPlaying });
+        
+        if (newIsPlaying) {
+          this.startAnimation();
+        } else {
+          this.stopAnimation();
+        }
+      },
+      immediate: false
+    },
+    
     selectedDay(newDay, oldDay) {
       if (newDay !== oldDay) {
         console.log('📅 ChampionshipApp: selectedDay changed from', oldDay, 'to', newDay);
@@ -313,18 +310,40 @@ export default {
       if (newMaxGames !== oldMaxGames) {
         console.log('🎮 ChampionshipApp: maxGames changed from', oldMaxGames, 'to', newMaxGames);
         }
-    },
-    
-    // Watch for ChartEngine changes to trigger maxGames recalculation
-    chartEngine: {
-      handler(newChartEngine, oldChartEngine) {
-        if (newChartEngine && newChartEngine.dataManager && newChartEngine.dataManager.maxGames > 0) {
-          console.log('🎮 ChartEngine loaded with dynamic maxGames:', newChartEngine.dataManager.maxGames);
-          // Force reactivity update for maxGames
-          this.$forceUpdate();
+    }
+  },
+  
+  computed: {
+    /**
+     * Dynamic maxGames based on actual CSV data
+     * This automatically detects game count from CSV headers, making it data-driven
+     */
+    maxGames() {
+      console.log('�� Computing maxGames:', {
+        hasProcessedData: !!(this.processedChartData && this.processedChartData.length > 0),
+        dataLength: this.processedChartData?.length || 0,
+        sampleTeamGames: this.processedChartData?.[0]?.games?.length || 0
+      });
+      
+      // If we have processed chart data, get the actual game count from the data
+      if (this.processedChartData && this.processedChartData.length > 0) {
+        const firstTeam = this.processedChartData[0];
+        if (firstTeam && firstTeam.games && firstTeam.games.length > 0) {
+          const dynamicGameCount = firstTeam.games.length;
+          console.log('🎯 Using dynamic game count from chart data:', dynamicGameCount);
+          return dynamicGameCount;
         }
-      },
-      immediate: true
+      }
+      
+      // Fallback to static values based on tournament type and day
+      const fallbackGameCount = this.isEwc2025Tournament ? 
+        (this.selectedDay === 'day1' ? 10 : 
+         this.selectedDay === 'day2' ? 9 : 
+         this.selectedDay === 'day3' ? 6 : 6) :
+        (this.isYear5Tournament ? 6 : 8);
+      
+      console.log('🎯 Using fallback game count:', fallbackGameCount, 'for', this.selectedDay);
+      return fallbackGameCount;
     }
   },
   
@@ -339,16 +358,8 @@ export default {
     
     // Set up periodic updates for game state
     this.gameStateInterval = setInterval(() => {
-      if (this.chartEngine) {
-        const engineGameIndex = this.chartEngine.currentGameIndex !== undefined ? this.chartEngine.currentGameIndex : 1;
-        
-        if (Math.abs(this.currentGame - engineGameIndex) > 0) {
-          this.currentGame = engineGameIndex;
-        }
-        
-        this.isPlaying = this.chartEngine.isPlaying || false;
-        this.updateCurrentMap();
-      }
+      // Remove chartEngine dependency since we're handling state directly in Vue
+      // The new animation system is handled via watchers and intervals
     }, 300);
     
     // Add debug method to global scope for troubleshooting
@@ -358,7 +369,6 @@ export default {
         selectedMatchup: this.selectedMatchup,
         computedMaxGames: this.maxGames,
         isEwc2025Tournament: this.isEwc2025Tournament,
-        chartEngine: !!this.chartEngine,
         tournamentSelector: !!this.$refs.tournamentSelector
       });
     };
@@ -734,77 +744,108 @@ export default {
       await this.loadMatchup();
     },
 
-    async handleGameChanged(gameIndex) {
+    handleGameChanged(gameIndex) {
       console.log('🎮 Game changed to:', gameIndex);
+      
+      // Stop any ongoing animation when user manually changes game
+      if (this.isPlaying) {
+        this.isPlaying = false; // This will trigger the watcher to stop animation
+      }
+      
       this.currentGame = gameIndex;
-      if (this.chartEngine) {
-        await this.chartEngine.jumpToGame(gameIndex);
-        this.updateCurrentMap();
-        
-        // Reset filters when dragging back to initial state (game 0)
-        if (gameIndex === 0) {
-          await this.chartEngine.clearFilter();
-        }
+      this.updateCurrentMap();
+      
+      // Reset filters when dragging back to initial state (game 0)
+      if (gameIndex === 0) {
+        this.isFiltered = false;
+        this.filteredGameIndices = [];
       }
     },
 
-    async handlePlayToggled() {
-      if (this.chartEngine) {
-        if (this.isPlaying) {
-          // True pause - stop animation and remember current position
-          this.chartEngine.stopAnimation();
+    handlePlayToggled() {
+      this.isPlaying = !this.isPlaying;
+      console.log(this.isPlaying ? '▶️ Playing' : '⏸️ Paused');
+    },
+
+    handleRestartRequested() {
+      this.currentGame = 0;
+      this.isPlaying = false;
+      this.isFiltered = false;
+      this.filteredGameIndices = [];
+      this.updateCurrentMap();
+      console.log('🔄 Restarted to initial state');
+    },
+
+    startAnimation() {
+      console.log('🎬 Starting animation from game', this.currentGame);
+      
+      // Clear any existing animation
+      this.stopAnimation();
+      
+      // If we're at the end, restart from game 1
+      if (this.currentGame >= this.maxGames) {
+        this.currentGame = 1;
+      } else if (this.currentGame === 0) {
+        // If at initial state, start from game 1
+        this.currentGame = 1;
+      }
+      
+      // Start the animation interval
+      this.playInterval = setInterval(() => {
+        if (this.currentGame < this.maxGames) {
+          this.currentGame++;
+          this.updateCurrentMap();
+          console.log('🎮 Animation progressed to game', this.currentGame);
+        } else {
+          // Reached the end, stop playing
+          console.log('🏁 Animation completed');
           this.isPlaying = false;
-          this.currentGame = this.chartEngine.getCurrentGameIndex();
-          console.log(`⏸️ Paused at game ${this.currentGame}`);
-          
-          // Clear sync interval when paused
-          if (this.syncInterval) {
-            clearInterval(this.syncInterval);
-            this.syncInterval = null;
-          }
-        } else {
-          // Resume from current position
-          await this.playAnimation();
         }
+      }, 3000); // 3 seconds per game - adjust speed as needed
+    },
+
+    stopAnimation() {
+      if (this.playInterval) {
+        clearInterval(this.playInterval);
+        this.playInterval = null;
+        console.log('⏸️ Animation stopped');
       }
     },
 
-    async handleRestartRequested() {
-      if (this.chartEngine) {
-        this.chartEngine.stopAnimation();
-        await this.chartEngine.jumpToGame(0);  // Reset to initial state
-        this.currentGame = 0;
-        this.isPlaying = false;
-        this.updateCurrentMap();
-      }
-    },
-
-    async handleGameFilterChanged(filterData) {
-      if (this.chartEngine) {
-        const { games, action } = filterData;
+    handleGameFilterChanged(filterData) {
+      const { games, action } = filterData;
+      
+      if (action === 'clear' || games.length === 0) {
+        this.isFiltered = false;
+        this.filteredGameIndices = [];
+        console.log('🔄 Clearing game filter');
+      } else {
+        this.isFiltered = true;
+        this.filteredGameIndices = [...games].sort((a, b) => a - b);
+        console.log(`🎮 Applying filter for games: ${games.join(', ')}`);
         
-        if (action === 'clear' || games.length === 0) {
-          console.log('🔄 Clearing game filter');
-          await this.chartEngine.clearFilter();
-        } else {
-          console.log(`🎮 Applying filter for games: ${games.join(', ')}`);
-          
-          // Ensure we're at max game level for filtering
-          if (this.currentGame < this.maxGames) {
-            this.currentGame = this.maxGames;
-            await this.chartEngine.jumpToGame(this.maxGames);
-          }
-          
-          await this.chartEngine.filterByGames(games);
+        // Ensure we're at max game level for filtering
+        if (this.currentGame < this.maxGames) {
+          this.currentGame = this.maxGames;
         }
-        
-        this.updateCurrentMap();
       }
+      
+      console.log('🎯 Game filter changed:', {
+        action,
+        games,
+        isFiltered: this.isFiltered,
+        filteredGameIndices: this.filteredGameIndices
+      });
+      
+      this.updateCurrentMap();
     },
 
     handleExportRequested(selectedMatchup) {
-      if (this.chartEngine) {
-        const csvContent = this.chartEngine.exportData(selectedMatchup);
+      console.log('📤 Export requested for:', selectedMatchup);
+      
+      if (this.processedChartData && this.processedChartData.length > 0) {
+        // Generate CSV content from processed chart data
+        const csvContent = this.generateCSVContent(this.processedChartData, selectedMatchup);
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
         
@@ -814,83 +855,60 @@ export default {
         a.click();
         
         URL.revokeObjectURL(url);
+      } else {
+        console.warn('⚠️ No chart data available for export');
       }
     },
 
-    handleLegendToggled(visible) {
-      if (this.chartEngine && this.chartEngine.renderer) {
-        console.log('🎨 Toggling chart legend:', visible ? 'ON' : 'OFF');
-        this.chartEngine.renderer.renderLegend(visible, this.chartEngine.dataManager);
+    generateCSVContent(data, matchupName) {
+      if (!data || data.length === 0) return '';
+      
+      // Create CSV header
+      const maxGames = Math.max(...data.map(team => team.games?.length || 0));
+      const headers = ['Team', 'Total Points'];
+      for (let i = 1; i <= maxGames; i++) {
+        headers.push(`Game ${i} Points`, `Game ${i} Map`);
       }
+      
+      // Create CSV rows
+      const rows = [headers.join(',')];
+      
+      data.forEach(team => {
+        const row = [team.team];
+        
+        // Calculate total points
+        const totalPoints = team.games?.reduce((sum, game) => sum + (game.points || 0), 0) || 0;
+        row.push(totalPoints);
+        
+        // Add game-by-game data
+        for (let i = 1; i <= maxGames; i++) {
+          const game = team.games?.find(g => g.gameNumber === i);
+          row.push(game?.points || 0);
+          row.push(game?.map || '');
+        }
+        
+        rows.push(row.join(','));
+      });
+      
+      return rows.join('\n');
+    },
+
+    handleLegendToggled(visible) {
+      console.log('🎨 Toggling chart legend:', visible ? 'ON' : 'OFF');
+      this.isLegendVisible = visible;
+    },
+
+    handleAnimationSpeedChanged(speed) {
+      console.log('🎬 Animation speed changed to:', speed);
+      this.animationSpeed = speed;
+      // You might want to update the animation interval based on the new speed
+      // For now, we'll just log the change.
     },
 
     /**
      * Enhanced cleanup method with error handling and race condition prevention
      */
-    async cleanupChart() {
-      console.log('🧹 Starting enhanced chart cleanup...');
-      
-      try {
-        // Stop any ongoing animations
-        if (this.chartEngine) {
-          this.chartEngine.stopAnimation();
-        }
-        
-        // Clear sync interval
-        if (this.syncInterval) {
-          clearInterval(this.syncInterval);
-          this.syncInterval = null;
-        }
-        
-        // Clear game state interval
-        if (this.gameStateInterval) {
-          clearInterval(this.gameStateInterval);
-          this.gameStateInterval = null;
-        }
-        
-        // Cleanup chart engine with proper error handling
-        if (this.chartEngine) {
-          await this.chartEngine.cleanup();
-          this.chartEngine = null;
-        }
-        
-        // COMPLETELY clear chart container to prevent DOM conflicts
-        const container = document.getElementById('vue-chart-container');
-        if (container && container.parentNode) {
-          container.innerHTML = '';
-          // Remove any remaining event listeners
-          container.removeAttribute('style');
-        }
-        
-        // Reset all state variables
-        this.currentGame = 0;
-        this.currentMap = '';
-        this.isPlaying = false;
-        this.errorMessage = '';
-        this.isLoading = false;
-        
-        console.log('✅ Enhanced chart cleanup completed');
-        
-        // Ensure DOM is clean before proceeding
-        await this.$nextTick();
-        
-      } catch (error) {
-        console.warn('⚠️ Error during chart cleanup:', error);
-        // Force cleanup even if there's an error
-        this.chartEngine = null;
-        this.currentGame = 0;
-        this.isPlaying = false;
-        this.isLoading = false;
-        this.errorMessage = '';
-        
-        // Force clear container even on error
-        const container = document.getElementById('vue-chart-container');
-        if (container && container.parentNode) {
-          container.innerHTML = '';
-          container.removeAttribute('style');
-        }
-      }
-    },
+
 
         /**
      * Handle day changes with proper cleanup
@@ -932,9 +950,8 @@ export default {
       } catch (error) {
         console.warn('⚠️ Error handling day change:', error);
         // Force reset state even on error
-      this.selectedMatchup = '';
+        this.selectedMatchup = '';
         this.selectedDay = dayId;
-      this.chartEngine = null;
         this.currentGame = 0;
         this.isPlaying = false;
         this.errorMessage = '';
@@ -983,50 +1000,33 @@ export default {
       try {
         console.log('📊 Loading matchup:', this.selectedMatchup);
         
-        // Enhanced cleanup with error handling
-        await this.cleanupChart();
-        
-        // Wait for DOM to be ready
-        await this.$nextTick();
-        
-        // Additional safety check - ensure container exists
-        await this.waitForContainer();
-        
-        // CRITICAL FIX: Clear the container before initializing
-        const container = document.getElementById('vue-chart-container');
-        if (container) {
-          container.innerHTML = '';
-          console.log('🧹 Cleared chart container');
-        }
-        
-        // Initialize chart engine using new modular ChartEngine
-        this.chartEngine = new ChartEngine('vue-chart-container', {
-          debugMode: true,  // Enable debug mode to help identify issues
-          transitionDuration: 2500,  // Slower, more elegant animations
-          enableAnimation: true,
-          teamConfig: this.teamConfig  // Pass Vue composable to chart engine
-        });
-        
-        // Initialize chart engine with tournament-specific matchup data
+        // Build CSV path for the selected matchup
         const csvPath = this.buildCsvPath(this.selectedMatchup);
         console.log(`📂 Loading CSV for ${this.isEwc2025Tournament ? 'EWC 2025' : (this.isYear5Tournament ? 'Year 5' : 'Year 4')}:`, csvPath);
-        console.log('🎯 Full CSV path:', `public/${csvPath}`);
         
-        // CRITICAL FIX: Wait for chart initialization to complete
-        await this.chartEngine.initialize(csvPath);
+        // Load and process raw CSV data
+        const rawData = await this.loadCsvData(csvPath);
+        this.processedChartData = await this.processRawDataForChart(rawData);
         
-        // Update game state  
-        this.currentGame = this.chartEngine.currentGameIndex; // Should be 0 for initial state
+        console.log('🎯 ChampionshipApp: Processed chart data ready:', {
+          teams: this.processedChartData.length,
+          maxGames: this.maxGames,
+          sampleTeam: this.processedChartData[0],
+          currentGame: this.currentGame
+        });
+        
+        // Reset game state  
+        this.currentGame = 0;
         this.updateCurrentMap();
         
         // Mark as loaded
         this.loadedMatchups.add(this.selectedMatchup);
         this.loadingMatchups.delete(this.selectedMatchup);
         
-        console.log('✅ Matchup loaded successfully');
-        
-        // Verify chart rendered
-        await this.verifyChartRender();
+        console.log('✅ Matchup loaded successfully', {
+          dataLength: this.processedChartData.length,
+          maxGames: this.maxGames
+        });
         
       } catch (error) {
         console.error('❌ Error loading matchup:', error);
@@ -1037,51 +1037,162 @@ export default {
       }
     },
     
-    async waitForContainer() {
-      // Wait for the container to be available in the DOM
-      return new Promise((resolve, reject) => {
-        const maxWait = 5000; // 5 seconds max wait
-        const checkInterval = 50; // Check every 50ms
-        let elapsed = 0;
-        
-        const checkContainer = () => {
-          const container = document.getElementById('vue-chart-container');
-          
-          if (container) {
-            console.log('✅ Container ready for ChartEngine');
-            resolve();
-            return;
-          }
-          
-          elapsed += checkInterval;
-          if (elapsed >= maxWait) {
-            reject(new Error('Container not found after 5 seconds'));
-            return;
-          }
-          
-          setTimeout(checkContainer, checkInterval);
-        };
-        
-        checkContainer();
+    async loadCsvData(csvPath) {
+      console.log('📂 Loading CSV data from:', csvPath);
+      
+      const response = await fetch(csvPath);
+      if (!response.ok) {
+        throw new Error(`Failed to load CSV: ${response.status} ${response.statusText}`);
+      }
+      
+      const csvText = await response.text();
+      const rawData = d3.csvParse(csvText);
+      
+      console.log('✅ CSV loaded:', {
+        path: csvPath,
+        rows: rawData.length,
+        columns: rawData.columns
       });
+      
+      return rawData;
     },
     
-    async verifyChartRender() {
-      // Add a small delay to ensure chart is fully rendered
-      return new Promise(resolve => {
-        const checkRender = () => {
-          const container = document.getElementById('vue-chart-container');
-          if (container && container.children.length > 0) {
-            console.log('✅ Chart render verified');
-            resolve();
-          } else {
-            console.log('⏳ Waiting for chart render...');
-            setTimeout(checkRender, 100);
-          }
-        };
-        checkRender();
+    async processRawDataForChart(rawData) {
+      console.log('🔄 Processing raw data for chart...');
+      
+      // Transform raw data to bifurcated format if needed
+      const processedData = this.transformRawDataToWide(rawData);
+      
+      // Extract game columns and determine max games
+      this.extractGameColumns(processedData);
+      
+      // Pre-compute game-by-game data for all teams
+      const chartData = this.preComputeGameData(processedData);
+      
+      console.log('✅ Data processed for chart:', {
+        teams: chartData.length,
+        maxGames: this.maxGames,
+        sampleTeam: chartData[0]
       });
+      
+      return chartData;
     },
+    
+    transformRawDataToWide(rawData) {
+      console.log('🔄 Transforming raw data to wide format...');
+      
+      // ALGS placement-to-points conversion map
+      const placementPointsMap = {
+        '1': 12, '2': 9, '3': 7, '4': 5, '5': 4,
+        '6': 3, '7': 3, '8': 2, '9': 2, '10': 2,
+        '11': 1, '12': 1, '13': 1, '14': 1, '15': 1,
+        '16': 0, '17': 0, '18': 0, '19': 0, '20': 0
+      };
+      
+      const teamsData = {};
+      
+      // Process each row from raw data
+      rawData.forEach(row => {
+        const teamName = row.Team;
+        const gameNumber = parseInt(row.Game);
+        const placement = row.Placement;
+        const kills = parseInt(row.Kills) || 0;
+        
+        // Initialize team if not exists
+        if (!teamsData[teamName]) {
+          teamsData[teamName] = {
+            Team: teamName,
+            'Overall Points': 0
+          };
+        }
+        
+        // Get placement points from lookup table
+        const placementPoints = placementPointsMap[placement] || 0;
+        
+        // Create property names for this game
+        const placementProp = `Game ${gameNumber} P`;
+        const killsProp = `Game ${gameNumber} K`;
+        
+        // Assign the points
+        teamsData[teamName][placementProp] = placementPoints;
+        teamsData[teamName][killsProp] = kills;
+        
+        // Update overall points
+        teamsData[teamName]['Overall Points'] += placementPoints + kills;
+      });
+      
+      // Convert to array and sort by overall points (descending)
+      const transformedData = Object.values(teamsData).sort((a, b) => b['Overall Points'] - a['Overall Points']);
+      
+      console.log('✅ Raw data transformed:', {
+        originalRows: rawData.length,
+        transformedTeams: transformedData.length
+      });
+      
+      return transformedData;
+    },
+    
+    extractGameColumns(data) {
+      if (!data || data.length === 0) return;
+      
+      const firstTeam = data[0];
+      this.gameColumns = Object.keys(firstTeam).filter(col => 
+        col.startsWith('Game ') && col.endsWith(' P')
+      );
+      
+      this.maxGames = this.gameColumns.length;
+      console.log('🎮 Extracted game columns:', this.gameColumns, 'Max games:', this.maxGames);
+    },
+    
+    preComputeGameData(data) {
+      console.log('⚡ Pre-computing game-by-game data...');
+      
+      // Get map sequence for the current matchup
+      const mapSequence = getMapSequence(this.selectedMatchup);
+      console.log('🗺️ Using map sequence for', this.selectedMatchup, ':', mapSequence);
+      
+      const chartData = data.map(team => {
+        const games = [];
+        let cumulativeScore = 0;
+        
+        for (let gameNum = 1; gameNum <= this.maxGames; gameNum++) {
+          const placementPoints = team[`Game ${gameNum} P`] || 0;
+          const kills = team[`Game ${gameNum} K`] || 0;
+          const gamePoints = placementPoints + kills;
+          
+          // Get map name and color for this game
+          const mapName = mapSequence?.maps?.[gameNum] || 'Unknown';
+          const occurrenceCount = calculateMapOccurrence(mapName, gameNum, mapSequence);
+          const gameColor = getMapColorByOccurrence(mapName, occurrenceCount);
+          
+          games.push({
+            gameNumber: gameNum,
+            placementPoints,
+            kills,
+            points: gamePoints,
+            startX: cumulativeScore,
+            map: mapName,
+            color: gameColor
+          });
+          
+          cumulativeScore += gamePoints;
+        }
+        
+        return {
+          team: team.Team,
+          games,
+          totalScore: cumulativeScore,
+          cumulativeScore: cumulativeScore
+        };
+      });
+      
+      // Sort by total score descending
+      chartData.sort((a, b) => b.totalScore - a.totalScore);
+      
+      return chartData;
+    },
+    
+
     
     showChartError(error) {
       this.errorMessage = error.message;
@@ -1117,55 +1228,70 @@ export default {
       }
     },
     
-    async playAnimation() {
-      if (this.chartEngine) {
-        this.isPlaying = true;
-        // Resume from current position, not always from game 1
-        const startGame = Math.max(1, this.currentGame || 1);
-        console.log(`🎬 Starting animation from game ${startGame} (current: ${this.currentGame})`);
-        
-        // Set up sync interval to keep Vue component in sync with chart engine
-        this.syncInterval = setInterval(() => {
-          if (this.chartEngine && this.isPlaying) {
-            this.currentGame = this.chartEngine.getCurrentGameIndex();
+    updateCurrentMap() {
+      // Get map name from chart data based on current game
+      if (this.currentGame === 0) {
+        this.currentMap = 'Initial State';
+      } else if (this.processedChartData && this.processedChartData.length > 0) {
+        const firstTeam = this.processedChartData[0];
+        if (firstTeam && firstTeam.games) {
+          const currentGameData = firstTeam.games.find(game => game.gameNumber === this.currentGame);
+          if (currentGameData && currentGameData.map) {
+            this.currentMap = `Game ${this.currentGame} - ${currentGameData.map}`;
+          } else {
+            this.currentMap = `Game ${this.currentGame}`;
           }
-        }, 100); // Sync every 100ms
-        
-        await this.chartEngine.playAnimation(startGame, this.maxGames, 3000);  // Slower playback: 3 seconds between games
-        this.isPlaying = false;
-        
-        // Clear sync interval when animation ends
-        if (this.syncInterval) {
-          clearInterval(this.syncInterval);
-          this.syncInterval = null;
+        } else {
+          this.currentMap = `Game ${this.currentGame}`;
         }
+      } else {
+        this.currentMap = `Game ${this.currentGame}`;
       }
     },
-    
-    updateCurrentMap() {
-      if (this.chartEngine && this.chartEngine.dataManager) {
-        // Get current map from data manager
-        const currentGameIndex = this.chartEngine.currentGameIndex;
-        this.currentMap = this.chartEngine.dataManager.getMapForGame(currentGameIndex);
+
+    async cleanupChart() {
+      console.log('🧹 ChampionshipApp: Cleaning up chart resources');
+      
+      try {
+        // Clear chart data
+        this.processedChartData = [];
+        this.currentGame = 0;
+        this.currentMap = '';
+        this.isPlaying = false;
+        this.isFiltered = false;
+        this.filteredGameIndices = [];
+        this.isLegendVisible = false;
+        
+        // Stop any ongoing animation
+        this.stopAnimation();
+        
+        console.log('✅ Chart cleanup completed successfully');
+      } catch (error) {
+        console.warn('⚠️ Error during chart cleanup:', error);
       }
     }
   },
   
   beforeUnmount() {
-    // Cleanup chart engine
-    if (this.chartEngine) {
-      this.chartEngine.cleanup();
-    }
+    console.log('🧹 ChampionshipApp beforeUnmount() called - cleaning up');
     
-    // Cleanup game state interval
+    // Stop any ongoing animation
+    this.stopAnimation();
+    
+    // Clear game state interval
     if (this.gameStateInterval) {
       clearInterval(this.gameStateInterval);
+      this.gameStateInterval = null;
     }
     
-    // Cleanup sync interval
+    // Clear any sync intervals if they exist
     if (this.syncInterval) {
       clearInterval(this.syncInterval);
+      this.syncInterval = null;
     }
+    
+    // Clean up chart
+    this.cleanupChart();
   }
 }
 </script>
