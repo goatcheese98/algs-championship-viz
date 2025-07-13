@@ -105,7 +105,7 @@ export class ChartEngine {
             // Setup event listeners
             this.setupEventListeners()
             
-            // Render initial state
+            // CRITICAL FIX: Only render initial state here, not in loadMatchup
             await this.renderInitialState()
             
             this.initialized = true

@@ -1,70 +1,48 @@
-import { createApp } from 'vue'
+// src/main.js
+import { createApp } from 'vue';
+import App from './App.vue'; // The new root component
+import router from './router'; // The new router configuration
+import './utils/GSAPDraggableManager.js';
+import '../styles/championship.css'; // Import championship styling
 
-// Import utilities (make them available globally)
-import './utils/GSAPDraggableManager.js'
+// Add router-link styling to match original anchor tags
+const routerLinkStyles = document.createElement('style');
+routerLinkStyles.textContent = `
+  /* Router-link styling to match original anchor tags */
+  a, router-link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    display: inline-block;
+  }
+  
+  /* Ensure router-link inherits all styling from championship.css */
+  router-link.nav-link,
+  router-link.ewc-banner-button,
+  router-link.enter-button {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    display: inherit;
+    border: inherit;
+    background: inherit;
+    padding: inherit;
+    margin: inherit;
+    border-radius: inherit;
+    box-shadow: inherit;
+    transition: inherit;
+  }
+  
+  /* Ensure hover states work properly */
+  router-link:hover {
+    color: inherit;
+    text-decoration: none;
+  }
+`;
+document.head.appendChild(routerLinkStyles);
 
-// Import TeamConfig and make it globally available
+const app = createApp(App);
 
-// Wait for DOM to be ready
-const waitForDOM = () => {
-    return new Promise((resolve) => {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', resolve)
-        } else {
-            resolve()
-        }
-    })
-}
+app.use(router); // Tell the Vue app to use the router
 
-// Determine which app to mount based on current page
-const currentPath = window.location.pathname
-
-console.log('🚀 Starting Vue application for:', currentPath)
-
-// Lazy load components for better performance
-const loadApp = async () => {
-    // Wait for DOM to be ready
-    await waitForDOM()
-    
-    // Double-check app element exists
-    const appElement = document.getElementById('app')
-    if (!appElement) {
-        console.error('❌ Cannot find #app element in DOM')
-        return
-    }
-    
-    console.log('✅ DOM ready, mounting Vue app...')
-    
-    if (currentPath.includes('year_4_championship.html') || 
-        currentPath.includes('year_5_open.html') || 
-        currentPath.includes('championship') ||
-        currentPath.includes('year5') ||
-        currentPath.includes('year_5') ||
-        currentPath.includes('ewc_2025.html') || 
-        currentPath.includes('ewc2025') ||
-        currentPath.includes('ewc_2025')) {
-        console.log('📊 Lazy loading Championship App for tournament...')
-        const { default: ChampionshipApp } = await import('./components/ChampionshipApp.vue')
-        createApp(ChampionshipApp).mount('#app')
-    } else {
-        console.log('🏠 Lazy loading Index App...')
-        const { default: IndexApp } = await import('./components/IndexApp.vue')
-        createApp(IndexApp).mount('#app')
-    }
-}
-
-// Initialize app with error handling
-loadApp().catch(error => {
-    console.error('❌ Failed to load application:', error)
-    // Fallback for critical errors
-    const appElement = document.getElementById('app')
-    if (appElement) {
-        appElement.innerHTML = `
-            <div style="color: red; text-align: center; padding: 20px;">
-                <h2>Application Load Error</h2>
-                <p>Please refresh the page or contact support.</p>
-                <p>Error: ${error.message}</p>
-            </div>
-        `
-    }
-}) 
+app.mount('#app'); 

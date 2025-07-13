@@ -45,10 +45,10 @@
           </div>
           
           <div class="ewc-banner-action">
-            <a href="ewc_2025.html" class="ewc-banner-button">
+            <router-link to="/tournament/ewc-2025" class="ewc-banner-button">
               <span class="ewc-button-text">View EWC 2025</span>
               <span class="ewc-button-arrow">→</span>
-            </a>
+            </router-link>
           </div>
         </div>
       </div>
@@ -66,7 +66,7 @@
         <div class="carousel-wrapper">
           <div class="tournaments-carousel" ref="carousel">
             <!-- ALGS Year 4 Championship -->
-            <div class="tournament-card" @click="goToTournament('year_4_championship.html')">
+            <div class="tournament-card" @click="goToTournament('year-4-championship')">
               <div class="tournament-icon">🏆</div>
               <h3>ALGS Year 4 Championship</h3>
               <div class="tournament-status">Available Now</div>
@@ -86,13 +86,13 @@
                 </div>
               </div>
 
-              <a href="year_4_championship.html" class="enter-button">
+              <router-link to="/tournament/year-4-championship" class="enter-button">
                 Enter Championship
-              </a>
+              </router-link>
             </div>
 
             <!-- ALGS Year 5 Open -->
-            <div class="tournament-card" @click="goToTournament('year_5_open.html')">
+            <div class="tournament-card" @click="goToTournament('year-5-open')">
               <div class="tournament-icon">🌍</div>
               <h3>ALGS Year 5 Open</h3>
               <div class="tournament-status">Available Now</div>
@@ -112,13 +112,13 @@
                 </div>
               </div>
 
-              <a href="year_5_open.html" class="enter-button">
+              <router-link to="/tournament/year-5-open" class="enter-button">
                 Enter Tournament
-              </a>
+              </router-link>
             </div>
 
             <!-- EWC 2025 -->
-            <div class="tournament-card" @click="goToTournament('ewc_2025.html')">
+            <div class="tournament-card" @click="goToTournament('ewc-2025')">
               <div class="tournament-icon">🏆</div>
               <h3>EWC 2025</h3>
               <div class="tournament-status">Available Now</div>
@@ -138,9 +138,9 @@
                 </div>
               </div>
 
-              <a href="ewc_2025.html" class="enter-button">
+              <router-link to="/tournament/ewc-2025" class="enter-button">
                 Enter EWC 2025
-              </a>
+              </router-link>
             </div>
           </div>
         </div>
@@ -181,9 +181,9 @@ export default {
       message: 'Welcome to ALGS Tournament Dashboard',
       currentSlide: 0,
       tournaments: [
-        { name: 'ALGS Year 4 Championship', url: 'year_4_championship.html' },
-        { name: 'ALGS Year 5 Open', url: 'year_5_open.html' },
-        { name: 'EWC 2025', url: 'ewc_2025.html' }
+        { name: 'ALGS Year 4 Championship', url: 'year-4-championship' },
+        { name: 'ALGS Year 5 Open', url: 'year-5-open' },
+        { name: 'EWC 2025', url: 'ewc-2025' }
       ]
     }
   },
@@ -235,8 +235,8 @@ export default {
       }, 8000)
     },
     
-    goToTournament(url) {
-      window.location.href = url
+    goToTournament(tournamentId) {
+      this.$router.push(`/tournament/${tournamentId}`)
     },
     
     nextSlide() {

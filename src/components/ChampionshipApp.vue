@@ -50,10 +50,10 @@
         
         <!-- Navigation Links -->
         <div class="nav-links">
-          <a href="index.html" class="nav-link">🏠 ALGS Dashboard</a>
-          <a v-if="isYear5Tournament" href="year_4_championship.html" class="nav-link">🏆 Year 4 Champions</a>
-          <a v-if="isEwc2025Tournament" href="year_4_championship.html" class="nav-link">🏆 Year 4 Championship</a>
-          <a v-if="isEwc2025Tournament" href="year_5_open.html" class="nav-link">🌍 Year 5 Open</a>
+          <router-link to="/" class="nav-link">🏠 ALGS Dashboard</router-link>
+          <router-link v-if="isYear5Tournament" to="/tournament/year-4-championship" class="nav-link">🏆 Year 4 Champions</router-link>
+          <router-link v-if="isEwc2025Tournament" to="/tournament/year-4-championship" class="nav-link">🏆 Year 4 Championship</router-link>
+          <router-link v-if="isEwc2025Tournament" to="/tournament/year-5-open" class="nav-link">🌍 Year 5 Open</router-link>
         </div>
       </div>
     </div>
@@ -200,6 +200,13 @@ export default {
     ActionPanel
   },
   
+  props: {
+    id: {
+      type: String,
+      required: true
+    }
+  },
+  
   setup() {
     // Initialize team configuration composable
     const teamConfig = useTeamConfig();
@@ -213,13 +220,13 @@ export default {
   data() {
     console.log('📋 ChampionshipApp data() called - Vue is initializing');
     
-    // Detect tournament type from URL
-    const currentPath = window.location.pathname;
-    const isYear5 = currentPath.includes('year_5_open') || currentPath.includes('year5');
-    const isEwc2025 = currentPath.includes('ewc_2025') || currentPath.includes('ewc2025');
+    // Detect tournament type from route parameter
+    const tournamentId = this.id;
+    const isYear5 = tournamentId === 'year-5-open';
+    const isEwc2025 = tournamentId === 'ewc-2025';
     
     console.log('🎯 Tournament Detection:', {
-      currentPath,
+      tournamentId,
       isYear5: isYear5,
       isEwc2025: isEwc2025,
       tournamentType: isEwc2025 ? 'EWC 2025' : (isYear5 ? 'Year 5 Open' : 'Year 4 Championship')
@@ -937,19 +944,15 @@ export default {
     },
 
     /**
-     * Build CSV path based on tournament type and matchup ID
-     * All tournaments now use raw data format from their respective raw folders
-     * Year 4: year4champions/raw/{matchupId}.csv
-     * Year 5: year5champions/raw/{matchupId}.csv
-     * EWC 2025: ewc2025/raw/{matchupId}.csv
+     * Build CSV path based on tournament type
      */
     buildCsvPath(matchupId) {
       if (this.isEwc2025Tournament) {
-        return `ewc2025/raw/${matchupId}.csv`;
+        return `/ewc2025/raw/${matchupId}.csv`;
       } else if (this.isYear5Tournament) {
-        return `year5champions/raw/${matchupId}.csv`;
+        return `/year5champions/raw/${matchupId}.csv`;
       } else {
-        return `year4champions/raw/${matchupId}.csv`;
+        return `/year4champions/raw/${matchupId}.csv`;
       }
     },
 
@@ -989,6 +992,13 @@ export default {
         // Additional safety check - ensure container exists
         await this.waitForContainer();
         
+        // CRITICAL FIX: Clear the container before initializing
+        const container = document.getElementById('vue-chart-container');
+        if (container) {
+          container.innerHTML = '';
+          console.log('🧹 Cleared chart container');
+        }
+        
         // Initialize chart engine using new modular ChartEngine
         this.chartEngine = new ChartEngine('vue-chart-container', {
           debugMode: true,  // Enable debug mode to help identify issues
@@ -1001,6 +1011,8 @@ export default {
         const csvPath = this.buildCsvPath(this.selectedMatchup);
         console.log(`📂 Loading CSV for ${this.isEwc2025Tournament ? 'EWC 2025' : (this.isYear5Tournament ? 'Year 5' : 'Year 4')}:`, csvPath);
         console.log('🎯 Full CSV path:', `public/${csvPath}`);
+        
+        // CRITICAL FIX: Wait for chart initialization to complete
         await this.chartEngine.initialize(csvPath);
         
         // Update game state  

@@ -12,10 +12,7 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       input: {
-        main: './index.html',
-        year4: './year_4_championship.html',
-        year5: './year_5_open.html',
-        ewc2025: './ewc_2025.html'
+        main: './index.html'
       }
     }
   },

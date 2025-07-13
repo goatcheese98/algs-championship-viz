@@ -121,8 +121,18 @@ export class DataManager {
                 throw new Error(`No data loaded from ${csvPath}`)
             }
 
+            console.log('📊 Raw data loaded successfully:', {
+                rows: rawData.length,
+                columns: Object.keys(rawData[0] || {}),
+                firstRow: rawData[0]
+            })
+
             // Transform raw data to bifurcated format
             const transformedData = this.transformRawDataToWide(rawData)
+            
+            if (!transformedData || transformedData.length === 0) {
+                throw new Error(`Data transformation failed for ${csvPath}`)
+            }
             
             this.data = transformedData
             this.setupDataProperties(csvPath)
@@ -134,7 +144,9 @@ export class DataManager {
                 originalRows: rawData.length,
                 transformedRows: this.data.length,
                 columns: Object.keys(this.data[0]).length,
-                maxGames: this.maxGames
+                maxGames: this.maxGames,
+                firstTeam: this.data[0]?.Team,
+                firstTeamTotal: this.data[0]?.Total
             })
 
             return Promise.resolve()
@@ -166,6 +178,10 @@ export class DataManager {
         this.data.forEach(row => {
             if (!row.Total && row['Overall Points']) {
                 row.Total = row['Overall Points']
+            }
+            // Also ensure numeric conversion
+            if (typeof row.Total === 'string') {
+                row.Total = parseInt(row.Total) || 0
             }
         })
         
@@ -216,6 +232,12 @@ export class DataManager {
 
         console.log('📊 Processing data for game index:', currentGameIndex, 'using pre-computed data')
 
+        // Validate currentGameIndex is within bounds
+        if (currentGameIndex > this.maxGames) {
+            console.warn('⚠️ currentGameIndex out of bounds:', currentGameIndex, 'max games:', this.maxGames)
+            currentGameIndex = this.maxGames
+        }
+
         // Handle game filtering if active
         let teamsData = []
         
@@ -252,12 +274,26 @@ export class DataManager {
         } else {
             // Normal processing - use pre-computed data directly
             teamsData = this.teamsList.map(team => {
-                const teamData = this.preComputedGameData[team].gameByGame[currentGameIndex]
+                const teamPrecomputed = this.preComputedGameData[team]
+                const teamData = teamPrecomputed?.gameByGame?.[currentGameIndex]
+                
+                // Add defensive check for undefined teamData
+                if (!teamData) {
+                    console.warn('⚠️ No data found for team:', team, 'at game index:', currentGameIndex)
+                    console.warn('Available game indices:', Object.keys(teamPrecomputed?.gameByGame || {}))
+                    return {
+                        team: team,
+                        games: [],
+                        cumulativeScore: 0,
+                        totalScore: teamPrecomputed?.totalScore || 0
+                    }
+                }
+                
                 return {
                     team: teamData.team,
                     games: teamData.games,
                     cumulativeScore: teamData.cumulativeScore,
-                    totalScore: this.preComputedGameData[team].totalScore
+                    totalScore: teamPrecomputed.totalScore
                 }
             })
         }
@@ -529,9 +565,14 @@ export class DataManager {
      * This eliminates on-the-fly calculations and prevents timing issues
      */
     preComputeGameData() {
-        if (!this.data || !this.gameColumns) return
+        if (!this.data || !this.gameColumns) {
+            console.warn('⚠️ Cannot pre-compute game data: missing data or gameColumns')
+            return
+        }
 
         console.log('📊 Pre-computing all game data for better performance...')
+        console.log('📊 Data sample:', this.data[0])
+        console.log('📊 Max games:', this.maxGames)
         
         this.preComputedGameData = {}
         this.teamsList = []
@@ -597,6 +638,19 @@ export class DataManager {
         })
 
         console.log('✅ Pre-computed game data for', this.teamsList.length, 'teams and', this.maxGames, 'games')
+        
+        // Debug: Check if data was created correctly
+        const firstTeam = this.teamsList[0]
+        if (firstTeam && this.preComputedGameData[firstTeam]) {
+            const firstTeamData = this.preComputedGameData[firstTeam]
+            console.log('📊 First team data structure:', {
+                team: firstTeam,
+                totalScore: firstTeamData.totalScore,
+                gameByGameLength: firstTeamData.gameByGame.length,
+                gameByGameIndices: Object.keys(firstTeamData.gameByGame),
+                gamesLength: firstTeamData.games.length
+            })
+        }
     }
 
     /**

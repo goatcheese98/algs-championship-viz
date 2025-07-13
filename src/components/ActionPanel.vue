@@ -191,22 +191,20 @@ export default {
       if (newMaxGames !== oldMaxGames) {
         console.log(`🎮 ActionPanel: maxGames changed from ${oldMaxGames} to ${newMaxGames}`);
         
-        // Reset current game if it exceeds the new max
-        if (this.currentGame > newMaxGames) {
+        // CRITICAL FIX: Only reset current game if it exceeds the new max AND we're not in the middle of slider control
+        if (this.currentGame > newMaxGames && !this.manualSliderControl) {
           console.log(`🎮 ActionPanel: Resetting currentGame from ${this.currentGame} to 0`);
           this.currentGame = 0;
           this.$emit('game-changed', this.currentGame);
+        } else {
+          console.log(`🎮 ActionPanel: Keeping currentGame at ${this.currentGame} (within bounds or manual control)`);
         }
         
-        // Force update the component to reflect new maxGames
-        this.$forceUpdate();
+        // Clear any selected games that are out of bounds
+        this.selectedGames = this.selectedGames.filter(game => game <= newMaxGames);
         
-        // Update draggable constraints if it exists
-        if (this.draggableInstance) {
-          this.$nextTick(() => {
-            this.updateDraggableConstraints();
-          });
-        }
+        // Update current map
+        this.updateCurrentMap();
       }
     },
     

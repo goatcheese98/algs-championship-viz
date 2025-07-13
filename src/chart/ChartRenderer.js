@@ -91,32 +91,47 @@ export class ChartRenderer {
         // Remove any existing SVG to prevent conflicts
         this.container.selectAll('svg').remove()
         
-        this.svg = this.container.append('svg')
-            .style('width', '100%')
-            .style('height', '100%')
-            .style('display', 'block')
-            .style('position', 'relative')
-            .style('z-index', '1')
-            .style('overflow', 'visible')
-        
-        // Check if SVG was created successfully
-        if (!this.svg || this.svg.empty()) {
-            console.warn('⚠️ ChartRenderer: Failed to create SVG element')
-            return
+        try {
+            this.svg = this.container.append('svg')
+                .style('width', '100%')
+                .style('height', '100%')
+                .style('display', 'block')
+                .style('position', 'relative')
+                .style('z-index', '1')
+                .style('overflow', 'visible')
+                .style('background', 'transparent')
+                .attr('preserveAspectRatio', 'xMidYMid meet')
+                .classed('algs-chart-svg', true)
+                
+            // Main group for chart elements
+            this.mainGroup = this.svg.append('g')
+                .attr('class', 'main-chart-group')
+                .style('pointer-events', 'all')
+                
+            // X-axis group
+            this.xAxisGroup = this.mainGroup.append('g')
+                .attr('class', 'x-axis')
+                .style('color', '#94a3b8')
+                .style('font-size', '12px')
+                .style('font-family', 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif')
+                
+            // Y-axis group (hidden by default)
+            this.yAxisGroup = this.mainGroup.append('g')
+                .attr('class', 'y-axis')
+                .style('opacity', '0')
+                .style('pointer-events', 'none')
+                
+            // Custom Y-axis for team names and positions
+            this.customYAxisGroup = this.mainGroup.append('g')
+                .attr('class', 'custom-y-axis')
+                .style('pointer-events', 'none')
+                
+            console.log('✅ ChartRenderer: SVG setup completed successfully')
+            
+        } catch (error) {
+            console.error('❌ ChartRenderer: Error setting up SVG:', error)
+            throw error
         }
-        
-        this.mainGroup = this.svg.append('g')
-            .attr('class', 'main-group')
-            .attr('transform', `translate(${this.margin.left},${this.margin.top})`)
-        
-        this.xAxisGroup = this.mainGroup.append('g')
-            .attr('class', 'x-axis axis x-axis-large-font')
-        
-        this.yAxisGroup = this.mainGroup.append('g')
-            .attr('class', 'y-axis')
-        
-        this.customYAxisGroup = this.mainGroup.append('g')
-            .attr('class', 'custom-y-axis')
     }
     
     updateDimensions(width, height) {
@@ -760,6 +775,26 @@ export class ChartRenderer {
     renderInitialTeamLayout(data, config = {}) {
         const { transitionDuration = 2500 } = config
         
+        console.log('🎬 renderInitialTeamLayout called with:', {
+            dataLength: data?.length,
+            firstTeam: data?.[0]?.team,
+            hasMainGroup: !!this.mainGroup,
+            hasXScale: !!this.xScale,
+            hasYScale: !!this.yScale,
+            xScaleDomain: this.xScale?.domain(),
+            yScaleDomain: this.yScale?.domain()
+        })
+        
+        if (!data || data.length === 0) {
+            console.warn('⚠️ renderInitialTeamLayout: No data provided')
+            return
+        }
+        
+        if (!this.mainGroup || this.mainGroup.empty()) {
+            console.warn('⚠️ renderInitialTeamLayout: mainGroup not available')
+            return
+        }
+        
         // CRITICAL: Clear ALL existing elements from both systems
         this.mainGroup.selectAll('.team-group').remove()
         this.mainGroup.selectAll('.game-segment').remove()
@@ -774,12 +809,18 @@ export class ChartRenderer {
         // Update axes with initial state - USE PROPER DYNAMIC SCALING
         // Don't override with hardcoded [0, 1] domain!
         console.log('🔍 renderInitialTeamLayout - Using current xScale domain:', this.xScale.domain())
-        this.xAxisGroup.call(d3.axisBottom(this.xScale)
-            .tickFormat(d3.format('.0f'))  // Force integer format
-            .tickValues(this.xScale.domain()[1] <= 12 ? 
-                [0, 2, 4, 6, 8, 10, 12] : 
-                this.xScale.ticks().filter(tick => tick % 1 === 0))
-        )
+        
+        try {
+            this.xAxisGroup.call(d3.axisBottom(this.xScale)
+                .tickFormat(d3.format('.0f'))  // Force integer format
+                .tickValues(this.xScale.domain()[1] <= 12 ? 
+                    [0, 2, 4, 6, 8, 10, 12] : 
+                    this.xScale.ticks().filter(tick => tick % 1 === 0))
+            )
+            console.log('✅ X-axis updated successfully')
+        } catch (error) {
+            console.error('❌ Error updating X-axis:', error)
+        }
         
         // Create team groups for initial state - NO BARS, only team info
         const teamGroups = this.mainGroup.selectAll('.team-group')
@@ -788,6 +829,8 @@ export class ChartRenderer {
         const teamGroupsEnter = teamGroups.enter()
             .append('g')
             .attr('class', 'team-group initial-state')
+        
+        console.log('📊 Created team groups for', teamGroupsEnter.size(), 'teams')
         
         // Position team groups immediately (no transition needed for initial state)
         teamGroupsEnter.attr('transform', d => {
