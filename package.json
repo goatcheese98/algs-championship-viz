@@ -5,15 +5,9 @@
   "main": "index.html",
   "scripts": {
     "dev": "vite",
-    "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "serve": "vite preview --port=8080",
-    "championship": "vite --open=/year_4_championship.html",
-    "automation-server": "node start-automation-server.js",
-    "test": "echo 'No tests specified'",
-    "lint": "echo 'No linting configured'",
-    "pages": "npm run build && echo 'Build complete for GitHub Pages'"
+    "automation-server": "node start-automation-server.js"
   },
   "keywords": [
     "algs",
@@ -34,7 +28,6 @@
   "license": "MIT",
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.0",
-    "live-server": "^1.2.2",
     "vite": "^7.0.2"
   },
   "dependencies": {

@@ -60,9 +60,9 @@ This will open the application at `http://localhost:3000`. Navigate to the **"AL
 - Clean, professional two-page architecture
 
 ### **Core Engine**
-- `src/chart/ChartEngine.js` - Modular chart rendering with GSAP integration
-- `src/chart/DataManager.js` - Integrated tournament configuration and map sequences
-- `src/chart/ChartRenderer.js` - Optimized chart rendering and visual effects
+- `src/components/InteractiveRaceChart.vue` - Modern Vue 3 chart component with D3.js integration
+- `src/chart/MapSequenceData.js` - Tournament configuration and map sequences
+- `src/chart/MapColoringLogic.js` - Map-based color assignments and visual theming
 
 ### **Tournament Data**
 - `*_points.csv` - All tournament matchup data files

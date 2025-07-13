@@ -33,7 +33,7 @@ export default defineConfig({
 // Module organization reference for better maintainability
 const moduleStructure = {
   components: ['src/components/ChampionshipApp.vue', 'src/components/TournamentSelector.vue', 'src/components/ActionPanel.vue', 'src/components/IndexApp.vue'],
-  chart: ['src/chart/ChartEngine.js', 'src/chart/ChartRenderer.js', 'src/chart/DataManager.js', 'src/chart/MapSequenceData.js', 'src/chart/MapColoringLogic.js'],
+  chart: ['src/chart/MapSequenceData.js', 'src/chart/MapColoringLogic.js'],
   utils: ['src/utils/GSAPDraggableManager.js'],
   composables: ['src/composables/useTeamConfig.js']
 } 
