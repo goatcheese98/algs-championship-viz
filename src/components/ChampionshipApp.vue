@@ -938,20 +938,18 @@ export default {
 
     /**
      * Build CSV path based on tournament type and matchup ID
-     * Year 4: year4champions/{matchupId}_points.csv
-     * Year 5: year5champions/processed/{matchupId}-simple.csv
-     * EWC 2025: ewc2025/processed/{matchupId}-simple.csv
+     * All tournaments now use raw data format from their respective raw folders
+     * Year 4: year4champions/raw/{matchupId}.csv
+     * Year 5: year5champions/raw/{matchupId}.csv
+     * EWC 2025: ewc2025/raw/{matchupId}.csv
      */
     buildCsvPath(matchupId) {
       if (this.isEwc2025Tournament) {
-        // EWC 2025 tournament paths
-        return `ewc2025/processed/${matchupId}-simple.csv`;
+        return `ewc2025/raw/${matchupId}.csv`;
       } else if (this.isYear5Tournament) {
-        // Year 5 Open tournament paths
-        return `year5champions/processed/${matchupId}-simple.csv`;
+        return `year5champions/raw/${matchupId}.csv`;
       } else {
-        // Year 4 Championship paths (original format)
-        return `year4champions/${matchupId}_points.csv`;
+        return `year4champions/raw/${matchupId}.csv`;
       }
     },
 
@@ -961,8 +959,8 @@ export default {
     getTournamentInfo() {
       return {
         type: this.isEwc2025Tournament ? 'EWC 2025' : (this.isYear5Tournament ? 'Year 5 Open' : 'Year 4 Championship'),
-        dataPath: this.isEwc2025Tournament ? 'ewc2025/processed/' : (this.isYear5Tournament ? 'year5champions/processed/' : 'year4champions/'),
-        fileFormat: this.isEwc2025Tournament ? '{matchupId}-simple.csv' : (this.isYear5Tournament ? '{matchupId}-simple.csv' : '{matchupId}_points.csv')
+        dataPath: this.isEwc2025Tournament ? 'ewc2025/raw/' : (this.isYear5Tournament ? 'year5champions/raw/' : 'year4champions/raw/'),
+        fileFormat: '{matchupId}.csv'
       };
     },
     

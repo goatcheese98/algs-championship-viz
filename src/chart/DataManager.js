@@ -34,6 +34,70 @@ export class DataManager {
     }
 
     /**
+     * Transform raw data from long format to wide (bifurcated) format
+     * @param {Array} rawData - Array of raw data objects
+     * @returns {Array} Array of transformed data objects in bifurcated format
+     */
+    transformRawDataToWide(rawData) {
+        console.log('🔄 Transforming raw data to wide format...')
+        
+        // ALGS placement-to-points conversion map
+        const placementPointsMap = {
+            '1': 12, '2': 9, '3': 7, '4': 5, '5': 4,
+            '6': 3, '7': 3, '8': 2, '9': 2, '10': 2,
+            '11': 1, '12': 1, '13': 1, '14': 1, '15': 1,
+            '16': 0, '17': 0, '18': 0, '19': 0, '20': 0
+        }
+        
+        const teamsData = {}
+        
+        // Process each row from raw data
+        rawData.forEach(row => {
+            const teamName = row.Team
+            const gameNumber = parseInt(row.Game)
+            const placement = row.Placement
+            const kills = parseInt(row.Kills) || 0
+            
+            // Initialize team if not exists
+            if (!teamsData[teamName]) {
+                teamsData[teamName] = {
+                    Team: teamName,
+                    'Overall Points': 0
+                }
+            }
+            
+            // Get placement points from lookup table
+            const placementPoints = placementPointsMap[placement] || 0
+            
+            // Create property names for this game
+            const placementProp = `Game ${gameNumber} P`
+            const killsProp = `Game ${gameNumber} K`
+            
+            // Assign the points
+            teamsData[teamName][placementProp] = placementPoints
+            teamsData[teamName][killsProp] = kills
+            
+            // Update overall points
+            teamsData[teamName]['Overall Points'] += placementPoints + kills
+        })
+        
+        // Convert to array and sort by overall points (descending)
+        const transformedData = Object.values(teamsData).sort((a, b) => b['Overall Points'] - a['Overall Points'])
+        
+        console.log('✅ Raw data transformed:', {
+            originalRows: rawData.length,
+            transformedTeams: transformedData.length,
+            sampleTeam: transformedData[0]
+        })
+        
+        return transformedData
+    }
+
+
+
+
+
+    /**
      * Load data from CSV file
      * @param {string} csvPath - Path to CSV file
      * @returns {Promise} Promise that resolves when data is loaded
@@ -51,20 +115,24 @@ export class DataManager {
         }
 
         try {
-            const loadedData = await d3.csv(csvPath)
+            const rawData = await d3.csv(csvPath)
 
-            if (!loadedData || loadedData.length === 0) {
+            if (!rawData || rawData.length === 0) {
                 throw new Error(`No data loaded from ${csvPath}`)
             }
 
-            this.data = loadedData
+            // Transform raw data to bifurcated format
+            const transformedData = this.transformRawDataToWide(rawData)
+            
+            this.data = transformedData
             this.setupDataProperties(csvPath)
 
-            // Cache the data
+            // Cache the transformed data
             this.cache.set(cacheKey, this.data)
             
-            console.log('📊 Data loaded successfully:', {
-                rows: this.data.length,
+            console.log('📊 Data loaded and processed successfully:', {
+                originalRows: rawData.length,
+                transformedRows: this.data.length,
                 columns: Object.keys(this.data[0]).length,
                 maxGames: this.maxGames
             })
@@ -86,7 +154,20 @@ export class DataManager {
         // Extract game columns (assuming they start with 'Game')
         const firstRow = this.data[0]
         this.gameColumns = Object.keys(firstRow).filter(key => key.startsWith('Game'))
-        this.maxGames = this.gameColumns.length
+        
+        // Calculate maxGames from P and K columns (each game has 2 columns)
+        const gameNumbers = this.gameColumns.map(col => {
+            const match = col.match(/Game (\d+) [PK]/)
+            return match ? parseInt(match[1]) : 0
+        })
+        this.maxGames = Math.max(...gameNumbers)
+        
+        // Ensure 'Total' property exists for compatibility with existing code
+        this.data.forEach(row => {
+            if (!row.Total && row['Overall Points']) {
+                row.Total = row['Overall Points']
+            }
+        })
         
         // Setup matchup info from CSV path
         const matchupId = this.extractMatchupFromPath(csvPath)
@@ -112,7 +193,8 @@ export class DataManager {
     extractMatchupFromPath(csvPath) {
         const pathParts = csvPath.split('/')
         const fileName = pathParts[pathParts.length - 1]
-        return fileName.replace(/[-_]?points\.csv$|[-_]?simple\.csv$/, '')
+        // Remove .csv extension to get matchup ID
+        return fileName.replace(/\.csv$/, '')
     }
 
     /**
@@ -278,8 +360,8 @@ export class DataManager {
         const headers = ['Team', ...this.gameColumns, 'Total']
         const rows = this.data.map(d => [
             d.Team,
-            ...this.gameColumns.map(col => d[col]),
-            d.Total
+            ...this.gameColumns.map(col => d[col] || 0),
+            d.Total || d['Overall Points'] || 0
         ])
 
         const csvContent = [headers, ...rows]
@@ -398,8 +480,11 @@ export class DataManager {
         this.data.forEach(d => {
             let cumulativeScore = 0
             for (let i = 1; i <= gameIndex; i++) {
-                const gameColumn = `Game ${i}`
-                const gameScore = parseInt(d[gameColumn]) || 0
+                const placementColumn = `Game ${i} P`
+                const killsColumn = `Game ${i} K`
+                const placementPoints = parseInt(d[placementColumn]) || 0
+                const killPoints = parseInt(d[killsColumn]) || 0
+                const gameScore = placementPoints + killPoints
                 cumulativeScore += gameScore
             }
             maxScore = Math.max(maxScore, cumulativeScore)
@@ -475,8 +560,11 @@ export class DataManager {
 
             // Games 1 to maxGames
             for (let gameIndex = 1; gameIndex <= this.maxGames; gameIndex++) {
-                const gameColumn = `Game ${gameIndex}`
-                const gameScore = parseInt(d[gameColumn]) || 0
+                const placementColumn = `Game ${gameIndex} P`
+                const killsColumn = `Game ${gameIndex} K`
+                const placementPoints = parseInt(d[placementColumn]) || 0
+                const killPoints = parseInt(d[killsColumn]) || 0
+                const gameScore = placementPoints + killPoints
                 const mapForGame = this.getMapForGame(gameIndex)
                 const gameColor = this.getMapColor(mapForGame, gameIndex)
 
@@ -486,6 +574,8 @@ export class DataManager {
                     game: gameIndex,
                     points: gameScore,
                     score: gameScore,
+                    placementPoints: placementPoints,
+                    killPoints: killPoints,
                     color: gameColor,
                     map: mapForGame,
                     startX: cumulativeScore,

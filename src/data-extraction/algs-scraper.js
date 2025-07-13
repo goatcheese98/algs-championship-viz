@@ -293,10 +293,8 @@ class ALGSScraper {
             const section = urlParts[urlParts.length - 1].split('#')[0] || 'A';
             const filename = `${day}-${section}`;
             
-            // Save the data in all three formats
+            // Save only the raw data
             await this.saveRawData(extractedData, filename);
-            await this.saveSimpleData(extractedData, filename);
-            await this.saveBifurcatedData(extractedData, filename);
             
             console.log(`✅ Successfully processed ${extractedData.length} teams`);
             return {
@@ -356,101 +354,9 @@ class ALGSScraper {
         console.log(`📝 Raw data saved to: ${csvPath}`);
     }
 
-    async saveSimpleData(data, filename) {
-        const publicPath = path.join(process.cwd(), '../../public', this.selectedFolder);
-        const processedPath = path.join(publicPath, 'processed');
-        await fs.ensureDir(processedPath);
-        
-        const csvPath = path.join(processedPath, `${filename}-simple.csv`);
-        
-        // Determine the maximum number of games
-        const maxGames = Math.max(...data.map(team => team.games.length));
-        
-        // Create header
-        const header = [{ id: 'team', title: 'Team' }];
-        for (let i = 1; i <= maxGames; i++) {
-            header.push({ id: `game${i}`, title: `Game ${i}` });
-        }
-        header.push({ id: 'overallPoints', title: 'Overall Points' });
-        
-        const csvWriter = createCsvWriter({
-            path: csvPath,
-            header: header
-        });
-        
-        const records = [];
-        for (const team of data) {
-            const record = { team: team.team };
-            let totalPoints = 0;
-            
-            for (let gameIndex = 0; gameIndex < maxGames; gameIndex++) {
-                const game = team.games[gameIndex];
-                if (game) {
-                    const placementPoints = this.getPlacementPoints(game.placement);
-                    const gamePoints = placementPoints + game.kills;
-                    record[`game${gameIndex + 1}`] = gamePoints;
-                    totalPoints += gamePoints;
-                } else {
-                    record[`game${gameIndex + 1}`] = 0;
-                }
-            }
-            
-            record.overallPoints = totalPoints;
-            records.push(record);
-        }
-        
-        await csvWriter.writeRecords(records);
-        console.log(`📝 Simple data saved to: ${csvPath}`);
-    }
 
-    async saveBifurcatedData(data, filename) {
-        const publicPath = path.join(process.cwd(), '../../public', this.selectedFolder);
-        const processedPath = path.join(publicPath, 'processed');
-        await fs.ensureDir(processedPath);
-        
-        const csvPath = path.join(processedPath, `${filename}-bifurcated.csv`);
-        
-        // Determine the maximum number of games
-        const maxGames = Math.max(...data.map(team => team.games.length));
-        
-        // Create header
-        const header = [{ id: 'team', title: 'Team' }];
-        for (let i = 1; i <= maxGames; i++) {
-            header.push({ id: `game${i}P`, title: `Game ${i} P` });
-            header.push({ id: `game${i}K`, title: `Game ${i} K` });
-        }
-        header.push({ id: 'overallPoints', title: 'Overall Points' });
-        
-        const csvWriter = createCsvWriter({
-            path: csvPath,
-            header: header
-        });
-        
-        const records = [];
-        for (const team of data) {
-            const record = { team: team.team };
-            let totalPoints = 0;
-            
-            for (let gameIndex = 0; gameIndex < maxGames; gameIndex++) {
-                const game = team.games[gameIndex];
-                if (game) {
-                    const placementPoints = this.getPlacementPoints(game.placement);
-                    record[`game${gameIndex + 1}P`] = placementPoints;
-                    record[`game${gameIndex + 1}K`] = game.kills;
-                    totalPoints += placementPoints + game.kills;
-                } else {
-                    record[`game${gameIndex + 1}P`] = 0;
-                    record[`game${gameIndex + 1}K`] = 0;
-                }
-            }
-            
-            record.overallPoints = totalPoints;
-            records.push(record);
-        }
-        
-        await csvWriter.writeRecords(records);
-        console.log(`📝 Bifurcated data saved to: ${csvPath}`);
-    }
+
+
 
     async extractSingleMetadata(url) {
         if (!this.initialized) {
