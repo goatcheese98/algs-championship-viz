@@ -62,84 +62,28 @@
       </div>
 
       <!-- Tournament Carousel -->
-      <div class="carousel-container">
+      <div class="carousel-container" @mouseenter="pauseAutoplay" @mouseleave="resumeAutoplay">
         <div class="carousel-wrapper">
           <div class="tournaments-carousel" ref="carousel">
-            <!-- ALGS Year 4 Championship -->
-            <div class="tournament-card" @click="goToTournament('year-4-championship')">
-              <div class="tournament-icon">🏆</div>
-              <h3>ALGS Year 4 Championship</h3>
+            <!-- Loop through tournaments -->
+            <div class="tournament-card" v-for="tournament in tournaments" :key="tournament.url" @click="goToTournament(tournament.url)">
+              <div class="tournament-icon">{{ tournament.icon }}</div>
+              <h3>{{ tournament.name }}</h3>
               <div class="tournament-status">Available Now</div>
               
               <p class="tournament-description">
-                Experience the ultimate championship with 40 professional teams competing across 4 days of intense competition in Sapporo, Japan.
+                {{ tournament.description }}
               </p>
 
               <div class="tournament-details">
-                <div class="detail-item">
-                  <div class="detail-label">Location</div>
-                  <div class="detail-value">Sapporo, Japan</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">Teams</div>
-                  <div class="detail-value">40 Professionals</div>
+                <div class="detail-item" v-for="detail in tournament.details" :key="detail.label">
+                  <div class="detail-label">{{ detail.label }}</div>
+                  <div class="detail-value">{{ detail.value }}</div>
                 </div>
               </div>
 
-              <router-link to="/tournament/year-4-championship" class="enter-button">
-                Enter Championship
-              </router-link>
-            </div>
-
-            <!-- ALGS Year 5 Open -->
-            <div class="tournament-card" @click="goToTournament('year-5-open')">
-              <div class="tournament-icon">🌍</div>
-              <h3>ALGS Year 5 Open</h3>
-              <div class="tournament-status">Available Now</div>
-              
-              <p class="tournament-description">
-                Explore the global Year 5 Open tournament featuring 12 intense rounds across Winners Round 1, Winners Round 2, and Elimination Round 1.
-              </p>
-
-              <div class="tournament-details">
-                <div class="detail-item">
-                  <div class="detail-label">Format</div>
-                  <div class="detail-value">Global Open</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">Rounds</div>
-                  <div class="detail-value">12 Total Matches</div>
-                </div>
-              </div>
-
-              <router-link to="/tournament/year-5-open" class="enter-button">
-                Enter Tournament
-              </router-link>
-            </div>
-
-            <!-- EWC 2025 -->
-            <div class="tournament-card" @click="goToTournament('ewc-2025')">
-              <div class="tournament-icon">🏆</div>
-              <h3>EWC 2025</h3>
-              <div class="tournament-status">Available Now</div>
-              
-              <p class="tournament-description">
-                Experience the prestigious Esports World Cup 2025 featuring 20 elite teams competing in Group A across 10 intense games with diverse maps and strategic legend bans.
-              </p>
-
-              <div class="tournament-details">
-                <div class="detail-item">
-                  <div class="detail-label">Event</div>
-                  <div class="detail-value">Esports World Cup</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">Teams</div>
-                  <div class="detail-value">20 Elite Teams</div>
-                </div>
-              </div>
-
-              <router-link to="/tournament/ewc-2025" class="enter-button">
-                Enter EWC 2025
+              <router-link :to="'/tournament/' + tournament.url" class="enter-button">
+                {{ tournament.buttonText }}
               </router-link>
             </div>
           </div>
@@ -181,10 +125,42 @@ export default {
       message: 'Welcome to ALGS Tournament Dashboard',
       currentSlide: 0,
       tournaments: [
-        { name: 'ALGS Year 4 Championship', url: 'year-4-championship' },
-        { name: 'ALGS Year 5 Open', url: 'year-5-open' },
-        { name: 'EWC 2025', url: 'ewc-2025' }
-      ]
+        { 
+          name: 'ALGS Year 4 Championship', 
+          url: 'year-4-championship',
+          icon: '🏆',
+          description: 'Experience the ultimate championship with 40 professional teams competing across 4 days of intense competition in Sapporo, Japan.',
+          details: [
+            { label: 'Location', value: 'Sapporo, Japan' },
+            { label: 'Teams', value: '40 Professionals' }
+          ],
+          buttonText: 'Enter Championship'
+        },
+        { 
+          name: 'ALGS Year 5 Open', 
+          url: 'year-5-open',
+          icon: '🌍',
+          description: 'Explore the global Year 5 Open tournament featuring 12 intense rounds across Winners Round 1, Winners Round 2, and Elimination Round 1.',
+          details: [
+            { label: 'Format', value: 'Global Open' },
+            { label: 'Rounds', value: '12 Total Matches' }
+          ],
+          buttonText: 'Enter Tournament'
+        },
+        { 
+          name: 'EWC 2025', 
+          url: 'ewc-2025',
+          icon: '🏆',
+          description: 'Experience the prestigious Esports World Cup 2025 featuring 20 elite teams competing in Group A across 10 intense games with diverse maps and strategic legend bans.',
+          details: [
+            { label: 'Event', value: 'Esports World Cup' },
+            { label: 'Teams', value: '20 Elite Teams' }
+          ],
+          buttonText: 'Enter EWC 2025'
+        }
+      ],
+      autoplayInterval: null,
+      isAutoplaying: true
     }
   },
   
@@ -192,6 +168,11 @@ export default {
     console.log('🎯 IndexApp mounted() called - Vue component is ready')
     this.initializeAnimations()
     this.initializeCarousel()
+  },
+
+  beforeUnmount() {
+    // Clear the interval when the component is destroyed
+    clearInterval(this.autoplayInterval)
   },
   
   methods: {
@@ -229,10 +210,19 @@ export default {
     },
     
     initializeCarousel() {
-      // Auto-advance carousel every 8 seconds
-      setInterval(() => {
-        this.nextSlide()
-      }, 8000)
+      this.resumeAutoplay();
+    },
+
+    pauseAutoplay() {
+      this.isAutoplaying = false;
+      clearInterval(this.autoplayInterval);
+    },
+
+    resumeAutoplay() {
+      this.isAutoplaying = true;
+      this.autoplayInterval = setInterval(() => {
+        this.nextSlide();
+      }, 8000);
     },
     
     goToTournament(tournamentId) {
@@ -255,10 +245,18 @@ export default {
     },
     
     updateCarousel() {
-      const carousel = this.$refs.carousel
-      if (carousel) {
-        const translateX = -this.currentSlide * 100
-        carousel.style.transform = `translateX(${translateX}%)`
+      const carousel = this.$refs.carousel;
+      if (!carousel) return;
+
+      if (typeof gsap !== 'undefined') {
+        gsap.to(carousel, {
+          xPercent: -this.currentSlide * 100,
+          duration: 0.8,
+          ease: 'power3.inOut'
+        });
+      } else {
+        const translateX = -this.currentSlide * 100;
+        carousel.style.transform = `translateX(${translateX}%)`;
       }
     },
     
