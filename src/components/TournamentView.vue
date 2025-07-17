@@ -58,16 +58,259 @@
       </div>
     </div>
 
-    <div class="mega-container">
-      <!-- Tournament Selector Component -->
+    <div class="main-layout">
+      <!-- Hidden Tournament Selector for routing and functionality -->
       <TournamentSelector
         ref="tournamentSelector"
         :is-year5-tournament="isYear5Tournament"
         :is-ewc2025-tournament="isEwc2025Tournament"
         :loaded-matchups="loadedMatchups"
         :loading-matchups="loadingMatchups"
+        style="display: none;"
       />
+      
+      <!-- Dashboard Side Panel -->
+      <div ref="dashboardPanel" class="dashboard-panel" 
+           :class="{ expanded: panelExpanded, 'force-expanded': !isSmallWindow }"
+           @mouseenter="expandPanel"
+           @mouseleave="collapsePanel">
+        
+        <!-- Panel Header -->
+        <div class="dashboard-header">
+          <div class="dashboard-main">
+            <div class="dashboard-icon" :title="panelExpanded ? 'Tournament Dashboard' : 'Dashboard'">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3v18h18"/>
+                <path d="m19 9-5 5-4-4-3 3"/>
+              </svg>
+            </div>
+            <div class="dashboard-title" v-show="panelExpanded">
+              <span>Tournament Dashboard</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Tournament Selection -->
+        <div class="dashboard-section">
+          <div class="section-header">
+            <div class="section-main">
+              <div class="section-icon" :title="panelExpanded ? 'Tournament Days' : 'Select Tournament Day'">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </div>
+              <span class="section-title" v-show="panelExpanded">Tournament Days</span>
+            </div>
+            <div class="tournament-display" v-show="!panelExpanded && selectedMatchup">
+              {{ getCurrentTournamentText() }}
+            </div>
+          </div>
+          <div class="section-content" v-show="panelExpanded">
+            <div class="day-tabs">
+              <button v-for="day in tournamentDays" 
+                      :key="day.id"
+                      :class="['day-tab', { active: selectedDay === day.id }]"
+                      @click="setDay(day.id)"
+                      :title="day.name">
+                {{ day.name.replace('Day ', 'D') }}
+              </button>
+            </div>
+          </div>
+        </div>
 
+        <!-- Matchup Selection -->
+        <div class="dashboard-section">
+          <div class="section-header">
+            <div class="section-icon" :title="panelExpanded ? 'Matchups' : 'Select Matchup'">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+            </div>
+            <span class="section-title" v-show="panelExpanded">Matchups</span>
+          </div>
+          <div class="section-content" v-show="panelExpanded">
+            <div class="matchup-list">
+              <button v-for="matchup in currentDayMatchups" 
+                      :key="matchup.id"
+                      :class="['matchup-item', { active: selectedMatchup === matchup.id }]"
+                      @click="handleMatchupSelect(matchup.id)"
+                      :title="matchup.description">
+                <span class="matchup-name">{{ matchup.title }}</span>
+                <span class="matchup-games">{{ matchup.games === 'auto' ? 'Auto' : matchup.games + 'G' }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Game Controls & Filters Section -->
+        <div v-if="selectedMatchup" class="dashboard-section">
+          <div class="section-header">
+            <div class="section-icon" :title="panelExpanded ? 'Game Controls & Filters' : 'Game Progress'">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polygon points="10,8 16,12 10,16 10,8"/>
+              </svg>
+            </div>
+            <span class="section-title" v-show="panelExpanded">Game Controls & Filters</span>
+          </div>
+          <div class="section-content" v-show="panelExpanded">
+            <!-- Game Progress Info -->
+            <div class="progress-section">
+              <div class="progress-info">
+                <span class="progress-label">Game {{ currentGame || 0 }}/{{ maxGames || 0 }}</span>
+                <div class="map-indicator" :title="currentMap || 'No map selected'">
+                  <svg class="map-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="1,6 1,22 8,18 16,22 23,18 23,2 16,6 8,2 1,6"/>
+                    <line x1="8" y1="2" x2="8" y2="18"/>
+                    <line x1="16" y1="6" x2="16" y2="22"/>
+                  </svg>
+                </div>
+              </div>
+              <input type="range" 
+                     :min="0" 
+                     :max="maxGames || 0" 
+                     :value="currentGame || 0"
+                     @input="updateGameFromSlider"
+                     class="game-slider"
+                     :title="`Game ${currentGame || 0} of ${maxGames || 0}`">
+              <div class="game-actions-label">Click to jump to game | Double-click to filter</div>
+            </div>
+
+            <!-- Combined Game Controls Grid -->
+            <div class="game-controls-grid">
+              <div class="game-circles-container smart-grid" :style="getGridStyle()">
+                <button v-for="game in (maxGames || 0)" 
+                        :key="`game-${game}`"
+                        @click="handleGameClick(game, $event)"
+                        @dblclick="toggleGameFilter(game)"
+                        :class="['game-circle', { 
+                          active: currentGame === game && !selectedGames.includes(game),
+                          filtered: selectedGames.includes(game),
+                          passed: game < currentGame && !selectedGames.includes(game)
+                        }]"
+                        :style="getCircularGameStyle(game)"
+                        :title="getGameTooltip(game)">
+                  {{ game }}
+                </button>
+              </div>
+              <div class="game-controls-actions">
+                <button @click="resetGameFilter" class="reset-filter-btn" title="Clear all filters">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Current Map Display -->
+            <div class="current-map-display">
+              <div class="map-badge" :style="getCurrentMapStyle()">
+                <span class="map-name">{{ currentMap || 'Loading...' }}</span>
+              </div>
+            </div>
+
+            <!-- Playback Controls -->
+            <div class="playback-section">
+              <button @click="togglePlayback" 
+                      class="control-button play-button"
+                      :title="isPlaying ? 'Pause playback' : 'Start playback'">
+                <svg class="control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon v-if="!isPlaying" points="5,3 19,12 5,21 5,3"/>
+                  <rect v-else x="6" y="4" width="4" height="16"/>
+                  <rect v-else x="14" y="4" width="4" height="16"/>
+                </svg>
+              </button>
+              <button @click="restart" 
+                      class="control-button reset-button"
+                      title="Reset to beginning">
+                <svg class="control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="1,4 1,10 7,10"/>
+                  <path d="M3.51,15A9,9 0 0,0 12,21A9,9 0 0,0 21,12A9,9 0 0,0 12,3A9,9 0 0,0 4.5,4.5l0,0L1,4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Advanced Controls Section -->
+        <div v-if="selectedMatchup" class="dashboard-section">
+          <div class="section-header">
+            <div class="section-main">
+              <div class="section-icon" :title="panelExpanded ? 'Advanced Controls' : 'Advanced'">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+                </svg>
+              </div>
+              <span class="section-title" v-show="panelExpanded">Advanced Controls</span>
+            </div>
+            <button @click="toggleAdvancedControls" class="expand-btn" v-show="panelExpanded" :title="advancedControlsExpanded ? 'Collapse advanced controls' : 'Expand advanced controls'">
+              {{ advancedControlsExpanded ? '−' : '+' }}
+            </button>
+          </div>
+          <div class="section-content" v-show="panelExpanded">
+            <transition name="slide-down">
+              <div v-if="advancedControlsExpanded" class="advanced-controls">
+                <!-- Export Controls -->
+                <div class="control-group">
+                  <label class="control-label">Export Data</label>
+                  <button @click="exportData" class="export-btn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7,10 12,15 17,10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Export CSV
+                  </button>
+                </div>
+                
+                <!-- Legend Toggle -->
+                <div class="control-group">
+                  <label class="control-label">Chart Legend</label>
+                  <button @click="toggleLegend" class="legend-toggle-btn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M9 2v20l3-2 3 2V2z"/>
+                    </svg>
+                    {{ isLegendVisible ? 'Hide' : 'Show' }} Legend
+                  </button>
+                </div>
+                
+                <!-- Animation Speed Controls -->
+                <div class="control-group">
+                  <label class="control-label">Animation Speed</label>
+                  <div class="speed-controls">
+                    <button 
+                      @click="setAnimationSpeed('slow')" 
+                      :class="['speed-btn', { active: animationSpeed === 'slow' }]"
+                    >
+                      Slow
+                    </button>
+                    <button 
+                      @click="setAnimationSpeed('medium')" 
+                      :class="['speed-btn', { active: animationSpeed === 'medium' }]"
+                    >
+                      Medium
+                    </button>
+                    <button 
+                      @click="setAnimationSpeed('fast')" 
+                      :class="['speed-btn', { active: animationSpeed === 'fast' }]"
+                    >
+                      Fast
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </transition>
+          </div>
+        </div>
+      </div>
+      
       <!-- Chart Section -->
       <div class="chart-section">
         <transition name="fade" mode="out-in">
@@ -119,7 +362,7 @@
               </h3>
               <div class="loading-text-container">
                 <p ref="subText1" class="loading-text">
-                  Choose from the tournament matchups above to see detailed race charts with game-by-game progression.
+                  Choose from the tournament matchups in the side panel to see detailed race charts with game-by-game progression.
                 </p>
               </div>
             </div>
@@ -144,24 +387,16 @@
 
           <div v-else key="chart" class="chart-display">
             <!-- Chart Container with proper ID for ChartEngine -->
-            <div class="chart-header">
-              <h3 class="chart-title">{{ getMatchupTitle(selectedMatchup) }}</h3>
-              <div class="chart-info">
-                <span v-if="currentMap">Map: {{ currentMap }}</span>
-                <span v-if="maxGames">Games: {{ maxGames }}</span>
-              </div>
-            </div>
-            
             <div class="chart-area">
-                          <InteractiveRaceChart
-              :teamConfig="teamConfig"
-            />
+              <InteractiveRaceChart
+                :teamConfig="teamConfig"
+              />
               <transition name="fade">
                 <div v-if="isLoading" class="loading-overlay">
                   <div class="loading-spinner"></div>
                 </div>
               </transition>
-                </div>
+            </div>
 
             <!-- Action Panel Component - Moved outside chart-area for full page dragging -->
             <ActionPanel
@@ -169,8 +404,8 @@
               :current-map="currentMap"
               @export-requested="handleExportRequested"
             />
-                  </div>
-                </transition>
+          </div>
+        </transition>
       </div>
     </div>
   </div>
@@ -240,10 +475,51 @@ export default {
       // Animation intervals
       playInterval: null,
       gameStateInterval: null,
+      
+      // Game selection state
+      selectedGames: [],
+      
+      // Dashboard panel state
+      panelExpanded: false,
+      isSmallWindow: false,
+      
+      // Advanced controls state
+      advancedControlsExpanded: false,
+      
+      // Tournament days data
+      tournamentDays: []
     }
   },
   
   watch: {
+    // Watch for route changes to update tournament type
+    '$route'(newRoute, oldRoute) {
+      console.log('🔄 Route changed:', { from: oldRoute.params.id, to: newRoute.params.id });
+      
+      if (newRoute.params.id !== oldRoute.params.id) {
+        // Update tournament detection flags
+        this.isYear5Tournament = newRoute.params.id === 'year-5-open';
+        this.isEwc2025Tournament = newRoute.params.id === 'ewc-2025';
+        
+        // Set tournament type in store
+        const tournamentType = this.isEwc2025Tournament ? 'ewc2025' : 
+                               (this.isYear5Tournament ? 'year5' : 'year4');
+        this.setTournamentType(tournamentType);
+        
+        // Re-initialize tournament days data
+        this.initializeTournamentDays();
+        
+        // Clear existing selections
+        this.cleanupChart();
+        
+        console.log('✅ Tournament type updated:', {
+          tournamentType,
+          isYear5: this.isYear5Tournament,
+          isEwc2025: this.isEwc2025Tournament
+        });
+      }
+    },
+    
     // Watch for play/pause state changes to handle animation
     isPlaying: {
       handler(newIsPlaying, oldIsPlaying) {
@@ -296,8 +572,15 @@ export default {
       'processedChartData',
       'isLoading',
       'errorMessage',
-      'maxGames'
+      'maxGames',
+      'isLegendVisible',
+      'animationSpeed'
     ]),
+    
+    currentDayMatchups() {
+      const currentDay = this.tournamentDays.find(day => day.id === this.selectedDay);
+      return currentDay ? currentDay.matchups : [];
+    }
   },
   
   mounted() {
@@ -307,6 +590,16 @@ export default {
     const tournamentType = this.isEwc2025Tournament ? 'ewc2025' : 
                            (this.isYear5Tournament ? 'year5' : 'year4');
     this.setTournamentType(tournamentType);
+    
+    // Initialize tournament days data
+    this.initializeTournamentDays();
+    
+    // Initialize window resize handling
+    this.handleResize();
+    window.addEventListener('resize', this.handleResize);
+    
+    // Set initial panel state - always expanded unless small window
+    this.panelExpanded = !this.isSmallWindow;
     
     // Initialize professional header animations with GSAP
     this.initializeHeaderAnimations();
@@ -340,8 +633,151 @@ export default {
       'setCurrentGame',
       'setDay',
       'setTournamentType',
-      'fetchDataForMatchup'
+      'fetchDataForMatchup',
+      'resetPlayback',
+      'toggleLegend',
+      'setAnimationSpeed',
+      'setGameFilter'
     ]),
+    
+    // Initialize tournament days data
+    initializeTournamentDays() {
+      this.tournamentDays = this.isEwc2025Tournament ? [
+        {
+          id: 'day1',
+          name: 'Day 1 - Group A',
+          matchups: [{
+            id: 'Day1-A',
+            title: 'Group A',
+            description: 'EWC 2025 Day 1 Group A featuring 20 elite teams',
+            games: 'auto'
+          }]
+        },
+        {
+          id: 'day2',
+          name: 'Day 2 - Group B',
+          matchups: [{
+            id: 'Day2-B',
+            title: 'Group B',
+            description: 'EWC 2025 Day 2 Group B featuring 20 elite teams',
+            games: 'auto'
+          }]
+        },
+        {
+          id: 'day3',
+          name: 'Day 3 - Last Chance',
+          matchups: [{
+            id: 'Day3-LastChance',
+            title: 'Last Chance',
+            description: 'EWC 2025 Day 3 Last Chance featuring 20 elite teams',
+            games: 'auto'
+          }]
+        }
+      ] : this.isYear5Tournament ? [
+        {
+          id: 'day1',
+          name: 'Day 1 - Winners R1',
+          matchups: [
+            { id: 'Day1-WinnersRound1-1', title: 'Winners R1 #1', description: 'Year 5 Winners Round 1 #1', games: 6 },
+            { id: 'Day1-WinnersRound1-2', title: 'Winners R1 #2', description: 'Year 5 Winners Round 1 #2', games: 6 },
+            { id: 'Day1-WinnersRound1-3', title: 'Winners R1 #3', description: 'Year 5 Winners Round 1 #3', games: 6 },
+            { id: 'Day1-WinnersRound1-4', title: 'Winners R1 #4', description: 'Year 5 Winners Round 1 #4', games: 6 },
+            { id: 'Day1-WinnersRound1-5', title: 'Winners R1 #5', description: 'Year 5 Winners Round 1 #5', games: 6 },
+            { id: 'Day1-WinnersRound1-6', title: 'Winners R1 #6', description: 'Year 5 Winners Round 1 #6', games: 6 }
+          ]
+        }
+      ] : [
+        {
+          id: 'day1',
+          name: 'Day 1 - Groups',
+          matchups: [
+            { id: 'AvsB', title: 'A vs B', description: 'Group A vs Group B matchup', games: 6 },
+            { id: 'CvsD', title: 'C vs D', description: 'Group C vs Group D matchup', games: 6 },
+            { id: 'BvsD', title: 'B vs D', description: 'Group B vs Group D matchup', games: 6 }
+          ]
+        },
+        {
+          id: 'day2',
+          name: 'Day 2 - Cross Groups',
+          matchups: [
+            { id: 'AvsC', title: 'A vs C', description: 'Group A vs Group C matchup', games: 6 },
+            { id: 'BvsC', title: 'B vs C', description: 'Group B vs Group C matchup', games: 6 },
+            { id: 'AvsD', title: 'A vs D', description: 'Group A vs Group D matchup', games: 6 }
+          ]
+        },
+        {
+          id: 'day3',
+          name: 'Day 3 - Elimination',
+          matchups: [
+            { id: 'ER1', title: 'Elimination R1', description: 'First elimination round', games: 8 }
+          ]
+        },
+        {
+          id: 'day4',
+          name: 'Day 4 - Finals',
+          matchups: [
+            { id: 'ER2', title: 'Elimination R2', description: 'Second elimination round', games: 8 },
+            { id: 'WR1', title: 'Winners R1', description: 'Winners bracket final', games: 8 }
+          ]
+        }
+      ];
+    },
+    
+    // Dashboard panel methods
+    expandPanel() {
+      if (this.isSmallWindow) {
+        this.panelExpanded = true;
+      }
+    },
+    
+    collapsePanel() {
+      if (this.isSmallWindow) {
+        this.panelExpanded = false;
+      }
+    },
+    
+    // Window resize handler
+    handleResize() {
+      const wasSmallWindow = this.isSmallWindow;
+      this.isSmallWindow = window.innerWidth < 1200; // Adjust breakpoint as needed
+      
+      // If transitioning from small to large window, ensure panel is expanded
+      if (wasSmallWindow && !this.isSmallWindow) {
+        this.panelExpanded = true;
+      }
+      // If transitioning from large to small window, collapse panel
+      else if (!wasSmallWindow && this.isSmallWindow) {
+        this.panelExpanded = false;
+      }
+    },
+    
+    // Handle matchup selection with proper data fetching
+    async handleMatchupSelect(matchupId) {
+      console.log('🎯 Handling matchup selection:', matchupId);
+      
+      try {
+        // Clear any existing data first
+        this.cleanupChart();
+        
+        // Select the matchup in the store
+        await this.selectMatchup(matchupId);
+        
+        // Add a small delay to ensure store state is updated
+        await this.$nextTick();
+        
+        // Trigger data fetching for the selected matchup
+        await this.fetchDataForMatchup();
+        
+        console.log('✅ Matchup selection completed:', {
+          selectedMatchup: this.selectedMatchup,
+          hasData: !!(this.processedChartData && this.processedChartData.length > 0),
+          maxGames: this.maxGames
+        });
+        
+      } catch (error) {
+        console.error('❌ Error handling matchup selection:', error);
+      }
+    },
     // Professional Championship Header Animations
     initializeHeaderAnimations() {
       console.log('🎭 Initializing sophisticated header animations...');
@@ -897,11 +1333,291 @@ export default {
       } catch (error) {
         console.warn('⚠️ Error during chart cleanup:', error);
       }
+    },
+    
+    // Add new methods for side panel game controls
+    updateGameFromSlider(event) {
+      const gameValue = Math.min(Math.max(0, parseInt(event.target.value)), this.maxGames);
+      this.setCurrentGame(gameValue);
+    },
+    
+    selectGame(gameNum) {
+      // Set the current game to the selected game
+      this.setCurrentGame(gameNum);
+    },
+    
+    // Combined game click handler - jump to game or toggle filter
+    handleGameClick(gameNum, event) {
+      console.log('🎮 Game button clicked:', { gameNum, shiftKey: event?.shiftKey });
+      
+      if (event && event.shiftKey) {
+        // Shift+click to toggle filter
+        console.log('🎯 Toggling filter for game:', gameNum);
+        this.toggleGameFilter(gameNum);
+      } else {
+        // Regular click to jump to game
+        console.log('🎮 Jumping to game:', gameNum);
+        this.selectGame(gameNum);
+      }
+    },
+    
+    togglePlayback() {
+      this.setPlaying(!this.isPlaying);
+    },
+    
+    restart() {
+      this.resetPlayback();
+    },
+    
+    getGameButtonStyle(gameNum) {
+      const isActive = this.currentGame === gameNum;
+      
+      // Get map color for this game from chart data
+      let gameColor = '#6366f1'; // default fallback
+      
+      if (this.processedChartData && this.processedChartData.length > 0) {
+        const firstTeam = this.processedChartData[0];
+        if (firstTeam && firstTeam.games) {
+          const gameData = firstTeam.games.find(game => game.gameNumber === gameNum);
+          if (gameData && gameData.color) {
+            gameColor = gameData.color;
+          }
+        }
+      }
+      
+      return {
+        background: `linear-gradient(135deg, ${gameColor} 0%, ${this.adjustColor(gameColor, -10)} 100%)`,
+        border: `2px solid ${gameColor}`,
+        color: '#ffffff',
+        boxShadow: isActive ? `0 0 8px ${gameColor}60, 0 2px 4px rgba(0,0,0,0.3)` : 'none',
+        transform: isActive ? 'scale(1.05)' : 'scale(1)'
+      };
+    },
+    
+    // Circular game style with highlighting for current, filtered, and passed games
+    getCircularGameStyle(gameNum) {
+      const isCurrent = this.currentGame === gameNum;
+      const isFiltered = this.selectedGames.includes(gameNum);
+      const isPassed = gameNum < this.currentGame;
+      
+      // Get map color for this game from chart data
+      let gameColor = '#6366f1'; // default fallback
+      
+      if (this.processedChartData && this.processedChartData.length > 0) {
+        const firstTeam = this.processedChartData[0];
+        if (firstTeam && firstTeam.games) {
+          const gameData = firstTeam.games.find(game => game.gameNumber === gameNum);
+          if (gameData && gameData.color) {
+            gameColor = gameData.color;
+          }
+        }
+      }
+      
+      // Base styles
+      let baseStyles = {
+        background: `linear-gradient(135deg, ${gameColor} 0%, ${this.adjustColor(gameColor, -10)} 100%)`,
+        border: `2px solid ${gameColor}`,
+        color: '#ffffff'
+      };
+      
+      // Filtered games - unique visual style with inner glow
+      if (isFiltered) {
+        baseStyles.background = `radial-gradient(circle at center, ${gameColor} 0%, ${this.adjustColor(gameColor, -20)} 70%, ${this.adjustColor(gameColor, -40)} 100%)`;
+        baseStyles.border = `3px solid ${gameColor}`;
+        baseStyles.boxShadow = `inset 0 0 12px ${this.adjustColor(gameColor, 30)}, 0 0 16px ${gameColor}60`;
+        baseStyles.transform = 'scale(1.05)';
+        baseStyles.position = 'relative';
+      }
+      // Current game highlighting (only if not filtered)
+      else if (isCurrent) {
+        baseStyles.boxShadow = `0 0 12px ${gameColor}80, 0 0 24px ${gameColor}40`;
+        baseStyles.transform = 'scale(1.15)';
+        baseStyles.zIndex = '10';
+      }
+      // Passed games highlighting
+      else if (isPassed) {
+        baseStyles.opacity = '0.7';
+        baseStyles.background = `linear-gradient(135deg, ${this.adjustColor(gameColor, -20)} 0%, ${this.adjustColor(gameColor, -30)} 100%)`;
+        baseStyles.border = `2px solid ${this.adjustColor(gameColor, -15)}`;
+      }
+      // Future games (default state)
+      else {
+        baseStyles.opacity = '0.6';
+        baseStyles.background = `linear-gradient(135deg, ${this.adjustColor(gameColor, -40)} 0%, ${this.adjustColor(gameColor, -50)} 100%)`;
+        baseStyles.border = `2px solid ${this.adjustColor(gameColor, -35)}`;
+      }
+      
+      return baseStyles;
+    },
+    
+    adjustColor(hexColor, percent) {
+      // Simple color adjustment utility
+      if (!hexColor || typeof hexColor !== 'string' || !hexColor.startsWith('#')) {
+        return hexColor || '#dc2626';
+      }
+      
+      const num = parseInt(hexColor.slice(1), 16);
+      const amt = Math.round(2.55 * percent);
+      const R = (num >> 16) + amt;
+      const G = (num >> 8 & 0x00FF) + amt;
+      const B = (num & 0x0000FF) + amt;
+      
+      return `#${(0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+        (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1)}`;
+    },
+    
+    // Smart grid layout based on number of games
+    getGridStyle() {
+      const totalGames = this.maxGames || 0;
+      if (totalGames === 0) return {};
+      
+      // Calculate optimal rows and columns
+      const cols = Math.ceil(Math.sqrt(totalGames));
+      const rows = Math.ceil(totalGames / cols);
+      
+      return {
+        gridTemplateColumns: `repeat(${cols}, 1fr)`,
+        gridTemplateRows: `repeat(${rows}, 1fr)`,
+        gap: '6px'
+      };
+    },
+    
+    // Get current tournament display text
+    getCurrentTournamentText() {
+      if (!this.selectedMatchup) return '';
+      
+      // Get matchup info from tournament selector
+      const matchupInfo = this.$refs.tournamentSelector?.getMatchupInfo(this.selectedMatchup);
+      if (!matchupInfo) return '';
+      
+      // Format based on tournament type
+      if (this.isEwc2025Tournament) {
+        if (this.selectedMatchup.includes('Day1')) return 'T1 Group A';
+        if (this.selectedMatchup.includes('Day2')) return 'T2 Group B';
+        if (this.selectedMatchup.includes('Day3')) return 'T3 Last Chance';
+      } else if (this.isYear5Tournament) {
+        return 'T1 Winners R1';
+      } else {
+        // Year 4 tournament
+        if (this.selectedMatchup.includes('ER1')) return 'T3 Elimination R1';
+        if (this.selectedMatchup.includes('ER2')) return 'T4 Elimination R2';
+        if (this.selectedMatchup.includes('WR1')) return 'T4 Winners R1';
+        if (this.selectedDay === 'day1') return 'T1 Group Stage';
+        if (this.selectedDay === 'day2') return 'T2 Cross Groups';
+      }
+      
+      return 'Tournament';
+    },
+    
+    // Game filter methods
+    async toggleGameFilter(gameNum) {
+      const wasSelected = this.selectedGames.includes(gameNum);
+      
+      if (wasSelected) {
+        // If already selected, toggle it off
+        this.selectedGames.splice(this.selectedGames.indexOf(gameNum), 1);
+        console.log(`🎮 Removed game ${gameNum} from filter. Selected: [${this.selectedGames.join(', ')}]`);
+      } else {
+        // If not selected, add it to the selection (allow multiple)
+        this.selectedGames.push(gameNum);
+        console.log(`🎮 Added game ${gameNum} to filter. Selected: [${this.selectedGames.join(', ')}]`);
+        
+        // Auto-progress to max level when any filter is selected
+        if (this.currentGame < this.maxGames) {
+          console.log(`🎯 Auto-progressing to game ${this.maxGames} for filtering`);
+          this.setCurrentGame(this.maxGames);
+        }
+      }
+      
+      // Call the store action
+      this.setGameFilter({ 
+        games: this.selectedGames, 
+        action: wasSelected ? 'remove' : 'add',
+        gameNum,
+        maxGames: this.maxGames
+      });
+    },
+    
+    resetGameFilter() {
+      console.log('🔄 Resetting game filter and returning to initial state');
+      this.selectedGames = [];
+      
+      this.setGameFilter({ games: [], action: 'clear', maxGames: this.maxGames });
+      this.setCurrentGame(0); // Also reset game progress
+    },
+    
+    getGameTooltip(gameNum) {
+      // Get map name from chart data if available
+      let mapName = '';
+      
+      if (this.processedChartData && this.processedChartData.length > 0) {
+        const firstTeam = this.processedChartData[0];
+        if (firstTeam && firstTeam.games) {
+          const gameData = firstTeam.games.find(game => game.gameNumber === gameNum);
+          if (gameData && gameData.map) {
+            mapName = ` - ${gameData.map}`;
+          }
+        }
+      }
+      
+      return `Game ${gameNum}${mapName}`;
+    },
+    
+    getCurrentMapStyle() {
+      let mapColor = '#10b981'; // default fallback
+      
+      // Get map color for current game from chart data
+      if (this.processedChartData && this.processedChartData.length > 0 && this.currentGame > 0) {
+        const firstTeam = this.processedChartData[0];
+        if (firstTeam && firstTeam.games) {
+          const currentGameData = firstTeam.games.find(game => game.gameNumber === this.currentGame);
+          if (currentGameData && currentGameData.color) {
+            mapColor = currentGameData.color;
+          }
+        }
+      }
+      
+      return {
+        background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, -20)} 100%)`,
+        border: `2px solid ${mapColor}`,
+        color: '#ffffff',
+        boxShadow: `0 0 15px ${mapColor}60, 0 4px 8px rgba(0,0,0,0.3)`
+      };
+    },
+    
+    // Advanced controls toggle
+    toggleAdvancedControls() {
+      this.advancedControlsExpanded = !this.advancedControlsExpanded;
+    },
+    
+    // Export data handler
+    exportData() {
+      if (this.processedChartData && this.processedChartData.length > 0) {
+        const selectedMatchup = this.selectedMatchup;
+        
+        // Generate CSV content from processed chart data
+        const csvContent = this.generateCSVContent(this.processedChartData, selectedMatchup);
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${selectedMatchup}_export.csv`;
+        a.click();
+        
+        URL.revokeObjectURL(url);
+      } else {
+        console.warn('⚠️ No chart data available for export');
+      }
     }
   },
   
   beforeUnmount() {
     console.log('🧹 TournamentView beforeUnmount() called - cleaning up');
+    
+    // Remove window resize listener
+    window.removeEventListener('resize', this.handleResize);
     
     // Stop any ongoing animation
     this.stopAnimation();
