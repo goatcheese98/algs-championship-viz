@@ -70,22 +70,14 @@
       />
       
       <!-- Dashboard Side Panel -->
-      <div ref="dashboardPanel" class="dashboard-panel" 
-           :class="{ expanded: panelExpanded, 'force-expanded': !isSmallWindow, 'compressed': isPanelFloating }"
-           @mouseenter="expandPanel"
-           @mouseleave="collapsePanel">
+      <div class="dashboard-panel">
         
         <!-- Panel Header -->
         <div class="dashboard-header">
           <div class="dashboard-main">
-            <div class="dashboard-icon" :title="panelExpanded ? 'Tournament Dashboard' : 'Dashboard'">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 3v18h18"/>
-                <path d="m19 9-5 5-4-4-3 3"/>
-              </svg>
-            </div>
-            <div class="dashboard-title" v-show="panelExpanded">
-              <span>Tournament Dashboard</span>
+            <div ref="dashboardTitle" class="dashboard-title-enhanced">
+              <span ref="dashboardText" class="dashboard-text">Tournament Dashboard</span>
+              <div ref="dashboardGlow" class="dashboard-glow"></div>
             </div>
           </div>
         </div>
@@ -94,7 +86,7 @@
         <div class="dashboard-section">
           <div class="section-header">
             <div class="section-main">
-              <div class="section-icon" :title="panelExpanded ? 'Tournament Days' : 'Select Tournament Day'">
+              <div class="section-icon">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                   <line x1="16" y1="2" x2="16" y2="6"/>
@@ -102,13 +94,10 @@
                   <line x1="3" y1="10" x2="21" y2="10"/>
                 </svg>
               </div>
-              <span class="section-title" v-show="panelExpanded">Tournament Days</span>
-            </div>
-            <div class="tournament-display" v-show="!panelExpanded && selectedMatchup">
-              {{ getCurrentTournamentText() }}
+              <span class="section-title">Tournament Days</span>
             </div>
           </div>
-          <div class="section-content" v-show="panelExpanded">
+          <div class="section-content">
             <div class="day-tabs">
               <button v-for="day in tournamentDays" 
                       :key="day.id"
@@ -124,16 +113,16 @@
         <!-- Matchup Selection -->
         <div class="dashboard-section">
           <div class="section-header">
-            <div class="section-icon" :title="panelExpanded ? 'Matchups' : 'Select Matchup'">
+            <div class="section-icon">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
                 <line x1="3" y1="6" x2="21" y2="6"/>
                 <path d="M16 10a4 4 0 0 1-8 0"/>
               </svg>
             </div>
-            <span class="section-title" v-show="panelExpanded">Matchups</span>
+            <span class="section-title">Matchups</span>
           </div>
-          <div class="section-content" v-show="panelExpanded">
+          <div class="section-content">
             <div class="matchup-list">
               <button v-for="matchup in currentDayMatchups" 
                       :key="matchup.id"
@@ -147,33 +136,18 @@
           </div>
         </div>
         
-        <!-- Game Controls & Filters Section - Only show when not floating -->
-        <ActionPanel
-          v-if="!isPanelFloating"
-          :is-floating="false"
-          :current-map="currentMap"
-          @toggle-floating="toggleFloatingPanel"
-          @export-requested="exportData"
-        />
-        
-        <!-- Compressed State Controls Section - Show only arrow when floating -->
-        <div v-if="isPanelFloating" class="dashboard-section compressed-controls">
-          <div class="section-header">
-            <div class="section-main">
-              <div class="section-icon" :title="'Controls are floating'">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 20h9"/>
-                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-                </svg>
-              </div>
-              <span class="section-title" v-show="panelExpanded">Controls (Floating)</span>
-            </div>
-            <button class="expand-btn" @click="toggleFloatingPanel" :title="'Dock controls back to sidebar'">
-              ←
-            </button>
-          </div>
-        </div>
       </div>
+      
+      <!-- Always-Floating Controls Panel positioned below dashboard panel -->
+      <ActionPanel
+        v-if="selectedMatchup"
+        :current-map="currentMap"
+        @export-requested="exportData"
+        @show-map-tooltip="showMapTooltip"
+        @hide-map-tooltip="hideMapTooltip"
+        :key="`action-panel-${selectedDay}-${selectedMatchup}`"
+        class="standalone-controls"
+      />
       
       <!-- Chart Section -->
       <div class="chart-section">
@@ -262,17 +236,23 @@
               </transition>
             </div>
 
-            <!-- Action Panel Component - Moved outside chart-area for full page dragging -->
-            <ActionPanel
-              v-if="isPanelFloating"
-              :is-floating="true"
-              @toggle-floating="toggleFloatingPanel"
-              @export-requested="exportData"
-              :key="`action-panel-${selectedDay}-${selectedMatchup}`"
-              :current-map="currentMap"
-            />
           </div>
         </transition>
+      </div>
+    </div>
+    
+    <!-- Global Map Tooltip -->
+    <div v-show="mapTooltip.visible" 
+         class="map-tooltip"
+         :style="{ left: mapTooltip.x + 'px', top: mapTooltip.y + 'px', border: '2px solid red', background: 'rgba(255,0,0,0.5)' }">
+      <div class="tooltip-content">
+        <div style="color: white; padding: 10px;">DEBUG: Tooltip is showing!</div>
+        <img :src="mapTooltip.imageUrl" 
+             :alt="mapTooltip.mapName"
+             class="map-image"
+             loading="eager"
+             decoding="async"
+             @error="hideMapTooltip">
       </div>
     </div>
   </div>
@@ -347,16 +327,24 @@ export default {
       // Game selection state
       selectedGames: [],
       
-      // Dashboard panel state
-      panelExpanded: false,
-      isSmallWindow: false,
-      isPanelFloating: false,
       
       // Advanced controls state
       advancedControlsExpanded: false,
       
       // Tournament days data
-      tournamentDays: []
+      tournamentDays: [],
+      
+      // ResizeObserver for dynamic positioning
+      dashboardResizeObserver: null,
+      
+      // Map tooltip state
+      mapTooltip: {
+        visible: false,
+        x: 0,
+        y: 0,
+        mapName: '',
+        imageUrl: ''
+      }
     }
   },
   
@@ -409,6 +397,10 @@ export default {
       if (newMatchup) {
         this.fetchDataForMatchup();
         this.updateCurrentMap();
+        // Reposition controls when matchup changes
+        this.$nextTick(() => {
+          this.positionControlsPanel();
+        });
       }
     },
     
@@ -429,6 +421,13 @@ export default {
 
     currentGame() {
       this.updateCurrentMap();
+    },
+    
+    // Reposition controls when tournament data changes
+    tournamentDays() {
+      this.$nextTick(() => {
+        this.positionControlsPanel();
+      });
     }
   },
   
@@ -463,15 +462,17 @@ export default {
     // Initialize tournament days data
     this.initializeTournamentDays();
     
-    // Initialize window resize handling
-    this.handleResize();
-    window.addEventListener('resize', this.handleResize);
+    // Auto-load first matchup on initial load
+    this.autoLoadFirstMatchup();
     
-    // Set initial panel state - always expanded unless small window
-    this.panelExpanded = !this.isSmallWindow;
+    // Position controls below dashboard
+    this.positionControlsPanel();
     
     // Initialize professional header animations with GSAP
     this.initializeHeaderAnimations();
+    
+    // Initialize dashboard title animations
+    this.initializeDashboardAnimations();
     
     // Initialize chart loading animation
     this.initializeChartLoadingAnimation();
@@ -493,6 +494,25 @@ export default {
         processedChartData: this.processedChartData?.length || 0
       });
     };
+    
+    // Filter out browser extension errors
+    window.addEventListener('error', (event) => {
+      if (event.message.includes('message channel closed') || 
+          event.message.includes('listener indicated an asynchronous response')) {
+        console.debug('🔧 Filtered browser extension error:', event.message);
+        event.preventDefault();
+        return false;
+      }
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+      if (event.reason?.message?.includes('message channel closed') ||
+          event.reason?.message?.includes('listener indicated an asynchronous response')) {
+        console.debug('🔧 Filtered browser extension promise rejection:', event.reason.message);
+        event.preventDefault();
+        return false;
+      }
+    });
   },
   
   methods: {
@@ -592,33 +612,6 @@ export default {
       ];
     },
     
-    // Dashboard panel methods
-    expandPanel() {
-      if (this.isSmallWindow) {
-        this.panelExpanded = true;
-      }
-    },
-    
-    collapsePanel() {
-      if (this.isSmallWindow) {
-        this.panelExpanded = false;
-      }
-    },
-    
-    // Window resize handler
-    handleResize() {
-      const wasSmallWindow = this.isSmallWindow;
-      this.isSmallWindow = window.innerWidth < 1200; // Adjust breakpoint as needed
-      
-      // If transitioning from small to large window, ensure panel is expanded
-      if (wasSmallWindow && !this.isSmallWindow) {
-        this.panelExpanded = true;
-      }
-      // If transitioning from large to small window, collapse panel
-      else if (!wasSmallWindow && this.isSmallWindow) {
-        this.panelExpanded = false;
-      }
-    },
     
     // Handle matchup selection with proper data fetching
     async handleMatchupSelect(matchupId) {
@@ -647,6 +640,115 @@ export default {
         console.error('❌ Error handling matchup selection:', error);
       }
     },
+    
+    // Auto-load first available matchup
+    autoLoadFirstMatchup() {
+      console.log('🚀 Auto-loading first matchup...');
+      
+      // Use nextTick to ensure tournament days are fully initialized
+      this.$nextTick(() => {
+        if (this.tournamentDays && this.tournamentDays.length > 0) {
+          // Get first day
+          const firstDay = this.tournamentDays[0];
+          console.log('📅 First day found:', firstDay.name);
+          
+          // Set the day first
+          this.setDay(firstDay.id);
+          
+          // Wait for day to be set, then select first matchup
+          this.$nextTick(() => {
+            if (firstDay.matchups && firstDay.matchups.length > 0) {
+              const firstMatchup = firstDay.matchups[0];
+              console.log('⚔️ Auto-selecting first matchup:', firstMatchup.title);
+              
+              // Use a slight delay to ensure everything is ready
+              setTimeout(() => {
+                this.handleMatchupSelect(firstMatchup.id);
+                // Position controls after initial load
+                setTimeout(() => {
+                  this.positionControlsPanel();
+                }, 300);
+              }, 100);
+            } else {
+              console.warn('⚠️ No matchups found in first day');
+            }
+          });
+        } else {
+          console.warn('⚠️ No tournament days available for auto-loading');
+        }
+      });
+    },
+    
+    // Position controls panel below dashboard
+    positionControlsPanel() {
+      // Use multiple attempts to ensure DOM is fully rendered and positioned
+      const attemptPositioning = () => {
+        const dashboardPanel = document.querySelector('.dashboard-panel');
+        const controlsPanel = document.querySelector('.standalone-controls');
+        
+        if (dashboardPanel && controlsPanel) {
+          // Get dashboard position and dimensions
+          const dashboardRect = dashboardPanel.getBoundingClientRect();
+          const dashboardHeight = dashboardPanel.offsetHeight;
+          const mainLayout = document.querySelector('.main-layout');
+          const mainLayoutRect = mainLayout ? mainLayout.getBoundingClientRect() : { left: 0, top: 0 };
+          
+          // Calculate position directly below dashboard, centered
+          const topPosition = dashboardHeight + 48; // 40px (main-layout padding) + 8px gap
+          const dashboardLeft = dashboardRect.left - mainLayoutRect.left;
+          
+          // Force positioning immediately - centered with dashboard
+          controlsPanel.style.position = 'absolute';
+          controlsPanel.style.top = `${topPosition}px`;
+          controlsPanel.style.left = `${dashboardLeft}px`; // Align with dashboard left edge
+          controlsPanel.style.width = '280px'; // Match dashboard width exactly
+          controlsPanel.style.zIndex = '1000';
+          
+          console.log('📍 Controls positioned below dashboard (centered):', {
+            dashboardHeight,
+            dashboardLeft,
+            calculatedTop: topPosition,
+            dashboardRect: dashboardRect,
+            mainLayoutRect: mainLayoutRect
+          });
+          
+          // Set up ResizeObserver to handle dynamic resizing
+          if (!this.dashboardResizeObserver) {
+            this.dashboardResizeObserver = new ResizeObserver(() => {
+              const newDashboardRect = dashboardPanel.getBoundingClientRect();
+              const newMainLayoutRect = mainLayout ? mainLayout.getBoundingClientRect() : { left: 0, top: 0 };
+              const newDashboardHeight = dashboardPanel.offsetHeight;
+              const newTopPosition = newDashboardHeight + 48;
+              const newDashboardLeft = newDashboardRect.left - newMainLayoutRect.left;
+              
+              controlsPanel.style.top = `${newTopPosition}px`;
+              controlsPanel.style.left = `${newDashboardLeft}px`;
+              
+              console.log('📍 Controls repositioned on resize:', {
+                top: newTopPosition,
+                left: newDashboardLeft
+              });
+            });
+            this.dashboardResizeObserver.observe(dashboardPanel);
+          }
+          
+          return true; // Successfully positioned
+        }
+        return false; // Failed to position
+      };
+      
+      // Try positioning immediately
+      if (!attemptPositioning()) {
+        // If immediate positioning fails, try again after a short delay
+        setTimeout(() => {
+          if (!attemptPositioning()) {
+            // Final attempt after DOM is definitely ready
+            setTimeout(attemptPositioning, 200);
+          }
+        }, 50);
+      }
+    },
+    
     // Professional Championship Header Animations
     initializeHeaderAnimations() {
       console.log('🎭 Initializing sophisticated header animations...');
@@ -812,6 +914,91 @@ export default {
         opacity: 0.7,
         scale: 1.1,
         duration: 1.5,
+        ease: 'power2.inOut',
+        yoyo: true,
+        repeat: -1
+      });
+    },
+
+    // Dashboard Title Animations
+    initializeDashboardAnimations() {
+      console.log('🎮 Initializing dashboard title animations...');
+      
+      // Check if GSAP is available
+      if (typeof gsap === 'undefined') {
+        console.warn('⚠️ GSAP not available - dashboard animations disabled');
+        return;
+      }
+      
+      // Set initial state for dashboard title
+      gsap.set(this.$refs.dashboardTitle, {
+        opacity: 0,
+        scale: 0.8,
+        rotationX: -15,
+        filter: 'blur(3px)'
+      });
+      
+      gsap.set(this.$refs.dashboardText, {
+        opacity: 0,
+        y: 20,
+        backgroundPosition: '-200% center'
+      });
+      
+      gsap.set(this.$refs.dashboardGlow, {
+        opacity: 0,
+        scale: 0
+      });
+      
+      // Create dashboard animation timeline
+      const dashboardTimeline = gsap.timeline({ delay: 0.8 });
+      
+      // Animate dashboard container
+      dashboardTimeline
+        .to(this.$refs.dashboardTitle, {
+          opacity: 1,
+          scale: 1,
+          rotationX: 0,
+          filter: 'blur(0px)',
+          duration: 1,
+          ease: 'back.out(1.7)'
+        })
+        .to(this.$refs.dashboardText, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power3.out'
+        }, '-=0.5')
+        .to(this.$refs.dashboardText, {
+          backgroundPosition: '200% center',
+          duration: 2,
+          ease: 'power2.inOut'
+        }, '-=0.3')
+        .to(this.$refs.dashboardGlow, {
+          opacity: 0.6,
+          scale: 1,
+          duration: 0.6,
+          ease: 'power2.out'
+        }, '-=1');
+      
+      // Setup continuous dashboard effects
+      this.setupDashboardContinuousEffects();
+    },
+    
+    setupDashboardContinuousEffects() {
+      // Continuous glow pulse
+      gsap.to(this.$refs.dashboardGlow, {
+        opacity: 0.3,
+        scale: 1.1,
+        duration: 2,
+        ease: 'power2.inOut',
+        yoyo: true,
+        repeat: -1
+      });
+      
+      // Subtle text shimmer effect
+      gsap.to(this.$refs.dashboardText, {
+        textShadow: '0 0 10px rgba(220, 38, 38, 0.8), 0 0 20px rgba(245, 158, 11, 0.4)',
+        duration: 3,
         ease: 'power2.inOut',
         yoyo: true,
         repeat: -1
@@ -1304,9 +1491,6 @@ export default {
       this.advancedControlsExpanded = !this.advancedControlsExpanded;
     },
 
-    toggleFloatingPanel() {
-      this.isPanelFloating = !this.isPanelFloating;
-    },
     
     // Export data handler
     exportData() {
@@ -1414,8 +1598,6 @@ export default {
   beforeUnmount() {
     console.log('🧹 TournamentView beforeUnmount() called - cleaning up');
     
-    // Remove window resize listener
-    window.removeEventListener('resize', this.handleResize);
     
     // Stop any ongoing animation
     this.stopAnimation();
@@ -1430,6 +1612,37 @@ export default {
     
     // Clean up chart
     this.cleanupChart();
+    
+    // Clean up ResizeObserver
+    if (this.dashboardResizeObserver) {
+      this.dashboardResizeObserver.disconnect();
+      this.dashboardResizeObserver = null;
+    }
+  },
+  
+  stopAnimation() {
+    if (this.animationInterval) {
+      clearInterval(this.animationInterval);
+      this.animationInterval = null;
+    }
+    this.setPlaying(false);
+  },
+  
+  // Tooltip methods
+  showMapTooltip(tooltipData) {
+    console.log('TournamentView received tooltip data:', tooltipData);
+    this.mapTooltip = {
+      visible: true,
+      x: tooltipData.x,
+      y: tooltipData.y,
+      mapName: tooltipData.mapName,
+      imageUrl: tooltipData.imageUrl
+    };
+    console.log('Tooltip state after update:', this.mapTooltip);
+  },
+  
+  hideMapTooltip() {
+    this.mapTooltip.visible = false;
   }
 }
 </script>

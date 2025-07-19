@@ -1,11 +1,12 @@
 <template>
   <div v-if="maxGames > 0" 
        ref="actionPanel"
-       :class="[isFloating ? 'enhanced-action-panel' : 'integrated-action-panel', { expanded: panelExpanded }]">
+       class="enhanced-action-panel"
+       :class="{ expanded: panelExpanded }">
     
     <div class="panel-header">
       <div class="panel-title">
-        <span v-if="isFloating" class="drag-handle">⋮⋮</span>
+        <span class="drag-handle">⋮⋮</span>
         <div class="section-icon">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 20h9"/>
@@ -15,17 +16,7 @@
         <span class="title-text">Controls</span>
       </div>
       <div class="panel-controls">
-        <button v-if="!isFloating" class="expand-btn toggle-floating-btn" @click="$emit('toggle-floating')" title="Float controls">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12l-6-6v4H9a4 4 0 0 0-4 4v0a4 4 0 0 0 4 4h6v4l6-6z"/>
-          </svg>
-        </button>
-        <button v-if="isFloating" class="expand-btn toggle-floating-btn" @click="$emit('toggle-floating')" title="Dock controls">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 12l6-6v4h6a4 4 0 0 1 4 4v0a4 4 0 0 1-4 4H9v4l-6-6z"/>
-          </svg>
-        </button>
-        <button v-if="isFloating" class="expand-btn" @click="togglePanel" @mousedown.stop" title="Toggle advanced controls">
+        <button class="expand-btn" @click="togglePanel" @mousedown.stop" title="Toggle advanced controls">
           {{ panelExpanded ? '−' : '+' }}
         </button>
       </div>
@@ -78,9 +69,21 @@
         <div class="map-badge" 
              :style="getCurrentMapStyle()"
              @mouseenter="showCurrentMapTooltip"
-             @mouseleave="hideMapTooltip">
-          <span class="map-icon">🗺️</span>
-          <span class="map-name">{{ currentMap || 'Loading...' }}</span>
+             @mouseleave="hideMapTooltip"
+             style="cursor: pointer;">
+          <template v-if="getCurrentMapImageUrl() && currentMap">
+            <img :src="getCurrentMapImageUrl()" 
+                 :alt="currentMap"
+                 class="map-icon-image"
+                 loading="lazy"
+                 decoding="async"
+                 @load="handleMapImageLoad"
+                 @error="handleMapImageError"
+                 @mouseenter="showCurrentMapTooltip"
+                 @mouseleave="hideMapTooltip">
+          </template>
+          <span v-else class="map-icon">🗺️</span>
+          <span class="map-name" @mouseenter="showCurrentMapTooltip" @mouseleave="hideMapTooltip">{{ currentMap || 'Loading...' }}</span>
         </div>
       </div>
 
@@ -148,18 +151,6 @@
       </div>
     </transition>
     
-    <!-- Map Image Tooltip -->
-    <div v-if="mapTooltip.visible" 
-         class="map-tooltip"
-         :style="{ left: mapTooltip.x + 'px', top: mapTooltip.y + 'px' }">
-      <div class="tooltip-content">
-        <img :src="mapTooltip.imageUrl" 
-             :alt="mapTooltip.mapName"
-             class="map-image"
-             @error="handleImageError">
-        <div class="map-name">{{ mapTooltip.mapName }}</div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -175,16 +166,13 @@ export default {
     currentMap: {
       type: String,
       default: ''
-    },
-    isFloating: {
-      type: Boolean,
-      default: false
     }
   },
   
   emits: [
     'export-requested',
-    'toggle-floating'
+    'show-map-tooltip',
+    'hide-map-tooltip'
   ],
   
   data() {
@@ -201,14 +189,6 @@ export default {
       // GSAP draggable instance
       draggableInstance: null,
       
-      // Tooltip state
-      mapTooltip: {
-        visible: false,
-        x: 0,
-        y: 0,
-        mapName: '',
-        imageUrl: ''
-      },
       tooltipTimeout: null,
     }
   },
@@ -263,9 +243,7 @@ export default {
   mounted() {
     // Initialize draggable when component mounts
     this.$nextTick(() => {
-      if (this.isFloating) {
-        this.initDraggable();
-      }
+      this.initDraggable();
     });
   },
   
@@ -484,12 +462,50 @@ export default {
     getMapImageUrl(mapName) {
       const mapImages = {
         "World's Edge": 'https://cdn.mos.cms.futurecdn.net/MCKD8U49KzQ9UQE8X5BrQX-650-80.jpg.webp',
+        "WORLD'S EDGE": 'https://cdn.mos.cms.futurecdn.net/MCKD8U49KzQ9UQE8X5BrQX-650-80.jpg.webp',
         'Storm Point': 'https://www.charlieintel.com/cdn-image/wp-content/uploads/2023/10/25/apex-legends-season-19-storm-point-poi-zeus-station.jpg?width=768&quality=60&format=auto',
+        'STORM POINT': 'https://www.charlieintel.com/cdn-image/wp-content/uploads/2023/10/25/apex-legends-season-19-storm-point-poi-zeus-station.jpg?width=768&quality=60&format=auto',
         'Broken Moon': 'https://alegends.gg/wp-content/uploads/2025/07/apex-legends-broken-moon-bug.webp',
-        'E-District': 'https://images2.minutemediacdn.com/image/upload/c_crop,w_3835,h_2157,x_73,y_0/c_fill,w_1080,ar_16:9,f_auto,q_auto,g_auto/images%2FvoltaxMediaLibrary%2Fmmsport%2Fesports_illustrated%2F01j7vfeyaec7wr6e98w0.jpg'
+        'BROKEN MOON': 'https://alegends.gg/wp-content/uploads/2025/07/apex-legends-broken-moon-bug.webp',
+        'E-district': 'https://images2.minutemediacdn.com/image/upload/c_crop,w_3835,h_2157,x_73,y_0/c_fill,w_1080,ar_16:9,f_auto,q_auto,g_auto/images%2FvoltaxMediaLibrary%2Fmmsport%2Fesports_illustrated%2F01j7vfeyaec7wr6e98w0.jpg',
+        'E-District': 'https://images2.minutemediacdn.com/image/upload/c_crop,w_3835,h_2157,x_73,y_0/c_fill,w_1080,ar_16:9,f_auto,q_auto,g_auto/images%2FvoltaxMediaLibrary%2Fmmsport%2Fesports_illustrated%2F01j7vfeyaec7wr6e98w0.jpg',
+        'E-DISTRICT': 'https://images2.minutemediacdn.com/image/upload/c_crop,w_3835,h_2157,x_73,y_0/c_fill,w_1080,ar_16:9,f_auto,q_auto,g_auto/images%2FvoltaxMediaLibrary%2Fmmsport%2Fesports_illustrated%2F01j7vfeyaec7wr6e98w0.jpg'
       };
       
-      return mapImages[mapName] || '';
+      
+      // Try direct match first, then normalized match
+      let imageUrl = mapImages[mapName];
+      if (!imageUrl && mapName) {
+        // Try case-insensitive and normalized matching
+        const normalizedMapName = mapName.toLowerCase().replace(/[^a-z]/g, '');
+        const normalizedKeys = Object.keys(mapImages).reduce((acc, key) => {
+          acc[key.toLowerCase().replace(/[^a-z]/g, '')] = mapImages[key];
+          return acc;
+        }, {});
+        imageUrl = normalizedKeys[normalizedMapName];
+      }
+      
+      return imageUrl || '';
+    },
+    
+    getCurrentMapImageUrl() {
+      // Extract just the map name from "Game X - MapName" format
+      let mapName = this.currentMap;
+      if (mapName && mapName.includes(' - ')) {
+        mapName = mapName.split(' - ')[1];
+      }
+      
+      const imageUrl = this.getMapImageUrl(mapName);
+      return imageUrl;
+    },
+    
+    handleMapImageLoad(event) {
+      // Map image loaded successfully
+    },
+    
+    handleMapImageError(event) {
+      // Hide the image and show fallback emoji
+      event.target.style.display = 'none';
     },
     
     showMapTooltip(event, gameNum) {
@@ -524,29 +540,54 @@ export default {
       
       // Set a delay before showing tooltip
       this.tooltipTimeout = setTimeout(() => {
-        // Extract map name from current map display
-        let mapName = '';
-        if (this.currentGame > 0 && this.processedChartData && this.processedChartData.length > 0) {
-          const firstTeam = this.processedChartData[0];
-          if (firstTeam && firstTeam.games) {
-            const currentGameData = firstTeam.games.find(game => game.gameNumber === this.currentGame);
-            if (currentGameData && currentGameData.map) {
-              mapName = currentGameData.map;
-            }
-          }
+        // Don't show tooltip for initial state
+        if (this.currentMap === 'Initial State' || !this.currentMap) {
+          return;
+        }
+        
+        // Extract just the map name from "Game X - MapName" format
+        let mapName = this.currentMap;
+        if (mapName && mapName.includes(' - ')) {
+          mapName = mapName.split(' - ')[1];
         }
         
         const imageUrl = this.getMapImageUrl(mapName);
+        console.log('Current map tooltip - mapName:', mapName, 'imageUrl:', imageUrl);
         
         if (imageUrl && mapName) {
           const rect = event.target.getBoundingClientRect();
-          this.mapTooltip = {
-            visible: true,
-            x: rect.left + rect.width / 2 - 80, // Center over badge
-            y: rect.top - 120, // Position above badge
+          
+          // Calculate tooltip position with screen bounds checking
+          let tooltipX = rect.left + rect.width / 2 - 120; // Center tooltip over badge
+          let tooltipY = rect.top - 150; // Position above badge
+          
+          // Ensure tooltip doesn't go off-screen
+          const tooltipWidth = 280; // Match CSS max-width
+          const tooltipHeight = 150; // Approximate tooltip height
+          
+          // Adjust X position if going off right edge
+          if (tooltipX + tooltipWidth > window.innerWidth) {
+            tooltipX = window.innerWidth - tooltipWidth - 10;
+          }
+          // Adjust X position if going off left edge
+          if (tooltipX < 10) {
+            tooltipX = 10;
+          }
+          
+          // Adjust Y position if going off top edge
+          if (tooltipY < 10) {
+            tooltipY = rect.bottom + 10; // Show below badge instead
+          }
+          
+          // Emit tooltip data to parent
+          const tooltipData = {
+            x: tooltipX,
+            y: tooltipY,
             mapName: mapName,
             imageUrl: imageUrl
           };
+          console.log('Emitting map tooltip:', tooltipData);
+          this.$emit('show-map-tooltip', tooltipData);
         }
       }, 200); // 0.2 second delay
     },
@@ -556,12 +597,13 @@ export default {
         clearTimeout(this.tooltipTimeout);
         this.tooltipTimeout = null;
       }
-      this.mapTooltip.visible = false;
+      this.$emit('hide-map-tooltip');
     },
+    
     
     handleImageError() {
       // Hide tooltip if image fails to load
-      this.mapTooltip.visible = false;
+      this.$emit('hide-map-tooltip');
     },
     
     adjustColor(hexColor, percent) {
