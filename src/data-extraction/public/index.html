@@ -478,7 +478,7 @@
         </div>
 
         <div class="content">
-            <!-- Server Status -->
+            
             <div class="section">
                 <h2>🔌 Server Status</h2>
                 <div class="stats">
@@ -508,7 +508,7 @@
                 </div>
             </div>
 
-            <!-- Folder Management Section -->
+            
             <div class="section">
                 <h2>📁 Folder Management</h2>
                 <p>Select or create folders for organizing tournament data in /public directory</p>
@@ -546,7 +546,7 @@
                 <div id="folderResults" style="margin-top: 15px;"></div>
             </div>
 
-            <!-- Single URL Processing -->
+            
             <div class="section">
                 <h2>📊 Single URL Processing</h2>
                 <p>Process a single tournament URL to extract leaderboard data</p>
@@ -574,7 +574,7 @@
                 <div id="singleUrlResult" style="margin-top: 20px;"></div>
             </div>
 
-            <!-- Batch Processing -->
+            
             <div class="section">
                 <h2>🚀 Batch Processing</h2>
                 <p>Process multiple tournament URLs simultaneously with configurable concurrency</p>
@@ -608,9 +608,9 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
                 </div>
             </div>
 
-            <!-- File Management Section -->
+            
             <div class="section">
-                <h2>📁 File Management</h2>
+                
                 <p>Rename processed CSV files with day prefixes (Day1, Day2, etc.)</p>
                 
                 <div class="input-group">
@@ -644,7 +644,7 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
                 <h2>🎮 Metadata Extraction</h2>
                 <p>Extract map rotations and legend ban information from ALGS Replays & Bans pages</p>
                 
-                <!-- Single URL Extraction -->
+                
                 <div class="subsection">
                     <h3>📄 Single URL Extraction</h3>
                     <div class="input-group">
@@ -659,7 +659,7 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
                     <div id="singleMetadataResults" style="margin-top: 15px;"></div>
                 </div>
 
-                <!-- Batch URL Extraction -->
+                
                 <div class="subsection">
                     <h3>📊 Batch URL Extraction</h3>
                     <div class="input-group">
@@ -674,7 +674,7 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
                     <div id="batchMetadataResults" style="margin-top: 15px;"></div>
                 </div>
 
-                <!-- View Existing Metadata -->
+                
                 <div class="subsection">
                     <h3>📋 View Existing Metadata</h3>
                     <div class="input-group">
@@ -686,7 +686,7 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
                 </div>
             </div>
 
-            <!-- Queue Section -->
+            
             <div class="section">
                 <h2>📋 Processing Queue</h2>
                 <p>Monitor the current processing queue and individual item status</p>
@@ -713,7 +713,7 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
         let processedFiles = [];
         let selectedFiles = new Set();
 
-        // Initialize WebSocket connection
+        function connectWebSocket() {
         function connectWebSocket() {
             socket = io();
             
@@ -752,7 +752,7 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             });
         }
 
-        // Update connection status display
+        function updateConnectionStatus() {
         function updateConnectionStatus() {
             const statusIndicator = document.getElementById('connectionStatus');
             const statusText = document.getElementById('statusText');
@@ -766,7 +766,6 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             }
         }
 
-        // Update server status display
         function updateServerStatus(data) {
             document.getElementById('queueLength').textContent = data.queueLength || 0;
             document.getElementById('scraperStatus').textContent = data.scraperInitialized ? 'Ready' : 'Not Ready';
@@ -792,12 +791,10 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             }
         }
 
-        // Update selected folder display
         function updateSelectedFolderDisplay(folderName) {
             document.getElementById('selectedFolderDisplay').textContent = folderName || 'None';
         }
 
-        // Show notification
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
@@ -809,7 +806,6 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             }, 5000);
         }
 
-        // Process single URL
         async function processSingleUrl() {
             const url = document.getElementById('singleUrl').value.trim();
             const resultDiv = document.getElementById('singleUrlResult');
@@ -856,7 +852,6 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             }
         }
 
-        // Start batch processing
         async function startBatchProcessing() {
             const urls = document.getElementById('batchUrls').value
                 .split('\n')
@@ -891,7 +886,6 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             }
         }
 
-        // Stop batch processing
         async function stopBatchProcessing() {
             try {
                 const response = await fetch('/api/stop-batch', {
@@ -913,7 +907,6 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             }
         }
 
-        // Update batch progress
         function updateBatchProgress(data) {
             const progressFill = document.getElementById('progressFill');
             const progressText = document.getElementById('progressText');
@@ -924,7 +917,6 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             progressText.textContent = `${data.completed}/${data.total} completed (${data.failed} failed)`;
         }
 
-        // Handle batch completion
         function handleBatchComplete(data) {
             document.getElementById('batchProgress').style.display = 'none';
             
@@ -937,7 +929,6 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             refreshQueue();
         }
 
-        // Refresh queue display
         async function refreshQueue() {
             try {
                 const response = await fetch('/api/queue');
@@ -952,7 +943,6 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             }
         }
 
-        // Update queue display
         function updateQueueDisplay(data) {
             const container = document.getElementById('queueContainer');
             const queue = data.queue || processingQueue;
@@ -984,7 +974,7 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             container.innerHTML = html;
         }
 
-        // File Management Functions
+        
         let fileManagementProcessedFiles = [];
         let fileManagementSelectedFiles = new Set();
 
@@ -1634,10 +1624,9 @@ https://apexlegendsstatus.com/algs/Y5-Split1/ALGS-Open/Global/Day1/WinnersRound1
             }
         }
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             connectWebSocket();
-            loadFolders(); // Load folders on page load
+            loadFolders();
         });
     </script>
 </body>

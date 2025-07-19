@@ -1,14 +1,6 @@
-/**
- * MapSequenceData - Central repository for all tournament map sequences
- * Contains map rotations for both Year 4 Championship and Year 5 Open tournaments
- */
+
 
 export const MAP_SEQUENCES = {
-    // ========================================
-    // YEAR 4 CHAMPIONSHIP TOURNAMENT MAP SEQUENCES
-    // ========================================
-    
-    // Group Stage Matchups (6 games each)
     'AvsB': {
         name: 'Groups A vs B',
         gameCount: 6,
@@ -87,7 +79,7 @@ export const MAP_SEQUENCES = {
         }
     },
 
-    // Bracket Stage Matchups (8 games each)
+    
     'ER1': {
         name: 'Elimination Round 1',
         gameCount: 8,
@@ -133,11 +125,7 @@ export const MAP_SEQUENCES = {
         }
     },
 
-    // ========================================
-    // YEAR 5 OPEN TOURNAMENT MAP SEQUENCES
-    // ========================================
-    // All Year 5 rounds use consistent rotation pattern (6 games)
-    // E-District (2) → Storm Point (2) → World's Edge (2)
+    
     
     'Day1-WinnersRound1-1': {
         name: 'Day 1 - Winners Round 1 #1',
@@ -295,7 +283,7 @@ export const MAP_SEQUENCES = {
         }
     },
 
-    // Day 2 Sequences
+    
     'Day2-WinnersRound2-1': {
         name: 'Day 2 - Winners Round 2 #1',
         gameCount: 6,
@@ -452,13 +440,11 @@ export const MAP_SEQUENCES = {
         }
     },
 
-    // ========================================
-    // EWC 2025 TOURNAMENT MAP SEQUENCES
-    // ========================================
+    
     
     'Day1-A': {
         name: 'EWC 2025 Day 1 - Group A',
-        gameCount: 'auto', // Dynamic based on CSV data
+        gameCount: 'auto', 
         maps: {
             1: 'WORLD\'S EDGE',
             2: 'WORLD\'S EDGE',
@@ -475,7 +461,7 @@ export const MAP_SEQUENCES = {
 
     'Day2-B': {
         name: 'EWC 2025 Day 2 - Group B',
-        gameCount: 'auto', // Dynamic based on CSV data
+        gameCount: 'auto', 
         maps: {
             1: 'WORLD\'S EDGE',
             2: 'WORLD\'S EDGE',
@@ -492,7 +478,7 @@ export const MAP_SEQUENCES = {
 
     'Day3-LastChance': {
         name: 'EWC 2025 Day 3 - Last Chance',
-        gameCount: 'auto', // Dynamic based on CSV data
+        gameCount: 'auto', 
         maps: {
             1: 'BROKEN MOON',
             2: 'BROKEN MOON',
@@ -508,37 +494,18 @@ export const MAP_SEQUENCES = {
     }
 }
 
-/**
- * Get map sequence information for a specific matchup
- * @param {string} matchupId - The matchup identifier
- * @returns {Object|null} Map sequence data or null if not found
- */
 export function getMapSequence(matchupId) {
     return MAP_SEQUENCES[matchupId] || null;
 }
 
-/**
- * Get all available matchup IDs
- * @returns {string[]} Array of matchup IDs
- */
 export function getAllMatchupIds() {
     return Object.keys(MAP_SEQUENCES);
 }
 
-/**
- * Check if a matchup ID is valid
- * @param {string} matchupId - The matchup identifier
- * @returns {boolean} True if valid, false otherwise
- */
 export function isValidMatchup(matchupId) {
     return MAP_SEQUENCES.hasOwnProperty(matchupId);
 }
 
-/**
- * Get matchups by tournament type
- * @param {string} tournamentType - 'year4', 'year5', or 'ewc2025'
- * @returns {Object} Filtered map sequences
- */
 export function getMatchupsByTournament(tournamentType) {
     const filtered = {};
     

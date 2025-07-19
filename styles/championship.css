@@ -28,7 +28,7 @@ body {
     }
 }
 
-/* Ensure proper scrolling on mobile */
+
 @media (max-width: 768px) {
     html, body {
         overflow-y: auto;
@@ -38,7 +38,7 @@ body {
     }
 }
 
-/* Fluid font scaling using clamp() for better readability */
+
 .title-main {
     font-size: clamp(1.8rem, 4vw, 2.5rem) !important;
 }
@@ -84,7 +84,7 @@ body {
     height: 14px;
 }
 
-/* Map Image Tooltip - Matching Chart Design Language */
+
 .map-tooltip {
     position: fixed;
     z-index: 10000;
@@ -145,8 +145,8 @@ body {
     font-size: clamp(0.8rem, 1.4vw, 0.9rem) !important;
 }
 
-/* Professional ALGS Championship Header */
-.championship-header {
+
+.tournament-header {
     background: 
         linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(10, 10, 15, 0.98) 50%, rgba(0, 0, 0, 0.95) 100%),
         radial-gradient(circle at 25% 25%, rgba(217, 119, 6, 0.1) 0%, transparent 50%),
@@ -159,11 +159,9 @@ body {
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
     border-bottom: 2px solid transparent;
     border-image: linear-gradient(90deg, transparent, #d97706, #dc2626, #d97706, transparent) 1;
-    position: sticky;
-    top: 0;
+    position: relative;
     z-index: 1000;
     overflow: hidden;
-    position: relative;
 }
 
 .header-background {
@@ -217,16 +215,139 @@ body {
 }
 
 .header-content {
-    max-width: 1800px;
+    max-width: 2400px;
     margin: 0 auto;
     padding: 0 40px;
+    position: relative;
+    z-index: 2;
+}
+
+.header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: relative;
-    z-index: 2;
-    gap: 30px;
+    gap: 32px;
 }
+
+.header-branding {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex: 1;
+}
+
+.brand-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.brand-subtitle {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.tournament-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 16px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    backdrop-filter: blur(8px);
+    flex-shrink: 0;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.status-indicator.live {
+    background: #22c55e;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+}
+
+.status-indicator.ended {
+    background: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+.status-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.tournament-status .status-text {
+    color: #ef4444;
+}
+
+.header-nav {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.header-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #f1f5f9;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 0.9rem;
+    border: 1px solid transparent;
+    backdrop-filter: blur(8px);
+}
+
+.header-nav .nav-link:hover {
+    background: rgba(217, 119, 6, 0.15);
+    border-color: rgba(217, 119, 6, 0.4);
+    transform: translateY(-1px);
+    color: #fbbf24;
+}
+
+.header-nav .nav-link.primary {
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), rgba(220, 38, 38, 0.15));
+    border-color: rgba(217, 119, 6, 0.4);
+}
+
+.header-nav .nav-link.primary:hover {
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.3), rgba(220, 38, 38, 0.25));
+    border-color: rgba(217, 119, 6, 0.6);
+}
+
+.nav-icon {
+    font-size: 1rem;
+}
+
+.nav-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
 
 .championship-logo {
     position: relative;
@@ -251,6 +372,24 @@ body {
         filter: drop-shadow(0 0 30px rgba(217, 119, 6, 1)) drop-shadow(0 0 60px rgba(217, 119, 6, 0.6));
         transform: scale(1.05);
     }
+}
+
+.logo-icon.apex-logo {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: inherit;
+}
+
+.logo-icon.apex-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 6px rgba(255, 102, 102, 0.9)) 
+            drop-shadow(0 0 12px rgba(255, 170, 170, 0.7)) 
+            drop-shadow(0 0 20px rgba(255, 221, 221, 0.5))
+            drop-shadow(0 0 30px rgba(204, 68, 68, 0.3));
 }
 
 .logo-particles {
@@ -324,12 +463,11 @@ body {
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 20px rgba(217, 119, 6, 0.5);
-    animation: titleShimmer 4s ease-in-out infinite;
     margin: 0;
     white-space: nowrap;
     background-position: 0% center;
     transition: all 0.5s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 @keyframes titleShimmer {
@@ -337,16 +475,133 @@ body {
     50% { text-shadow: 0 0 30px rgba(217, 119, 6, 0.8), 0 0 40px rgba(220, 38, 38, 0.3); }
 }
 
-/* Tournament Info Horizontal Layout */
-.tournament-info-horizontal {
+
+.tournament-info-enhanced {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.tournament-info-inline {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.info-card {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 8px 16px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 20px;
+    gap: 8px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(15, 15, 20, 0.6));
+    border-radius: 6px;
+    border: 1px solid rgba(217, 119, 6, 0.2);
+    backdrop-filter: blur(6px);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    flex: 0 0 auto;
+    min-width: 140px;
+    white-space: nowrap;
+}
+
+.info-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(217, 119, 6, 0.5), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(217, 119, 6, 0.4);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(217, 119, 6, 0.1);
+}
+
+.info-card:hover::before {
+    opacity: 1;
+}
+
+.info-card.highlight {
+    border-color: rgba(34, 197, 94, 0.4);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(15, 25, 20, 0.7));
+}
+
+.info-card.highlight::before {
+    background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.5), transparent);
+}
+
+.info-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.15), rgba(220, 38, 38, 0.1));
+    border-radius: 4px;
     border: 1px solid rgba(217, 119, 6, 0.3);
     flex-shrink: 0;
+}
+
+.info-card.highlight .info-icon-container {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(16, 185, 129, 0.1));
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.info-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.info-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.info-value {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.info-label {
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.header-grid-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(rgba(217, 119, 6, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(217, 119, 6, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 .info-item {
@@ -411,7 +666,7 @@ body {
 
 .mega-container {
     width: 100%;
-    max-width: 1800px;
+    max-width: 2400px;
     margin: 0 auto;
     padding: 40px 20px;
     display: flex;
@@ -420,23 +675,23 @@ body {
     min-height: calc(100vh - 120px);
 }
 
-/* Bento Grid Layout */
+
 .main-layout.bento-grid {
     width: 100%;
-    max-width: 1800px;
+    max-width: 2400px;
     margin: 0 auto;
     padding: 40px 20px;
     display: grid;
-    grid-template-columns: 320px 1fr;
+    grid-template-columns: 280px 1fr;
     gap: 24px;
     align-items: start;
     min-height: calc(100vh - 120px);
 }
 
-/* Legacy flex layout for non-bento grids */
+
 .main-layout:not(.bento-grid) {
     width: 100%;
-    max-width: 1800px;
+    max-width: 2400px;
     margin: 0 auto;
     padding: 40px 20px;
     display: flex;
@@ -445,16 +700,21 @@ body {
     align-items: flex-start;
 }
 
-/* Left Column - Dashboard + Controls unified */
+
 .left-column {
     display: flex;
     flex-direction: column;
     gap: 12px;
     width: 100%;
-    max-width: 320px;
+    max-width: 280px;
+    transition: gap 0.3s ease;
 }
 
-/* Dashboard Panel - Now part of grid layout */
+.left-column.adjust-controls-layout {
+    gap: 8px;
+}
+
+
 .dashboard-panel {
     width: 100%;
     background: linear-gradient(135deg, rgba(20, 20, 20, 0.97) 0%, rgba(35, 35, 35, 0.97) 100%);
@@ -476,7 +736,7 @@ body {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 12px rgba(251, 191, 36, 0.15);
 }
 
-/* Dashboard Header */
+
 .dashboard-header {
     display: flex;
     align-items: center;
@@ -529,7 +789,7 @@ body {
     white-space: nowrap;
 }
 
-/* Enhanced Dashboard Title with Gaming Effects */
+
 .dashboard-title-enhanced {
     position: relative;
     display: flex;
@@ -582,18 +842,23 @@ body {
     filter: blur(4px);
 }
 
-/* Dashboard Sections */
+
 .dashboard-section {
     flex-shrink: 0;
     margin-bottom: 12px;
     padding: 0 4px;
+    transition: margin-bottom 0.3s ease;
+}
+
+.dashboard-panel.has-collapsed-sections .dashboard-section {
+    margin-bottom: 8px;
 }
 
 
 .section-header {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     padding: 12px 16px;
     cursor: pointer;
     border-radius: 10px;
@@ -655,7 +920,49 @@ body {
     text-align: center;
 }
 
-/* Day Tabs */
+.collapse-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.collapse-icon .icon {
+    width: 16px;
+    height: 16px;
+    color: #f59e0b;
+    transition: transform 0.3s ease;
+}
+
+.collapse-icon:hover {
+    background: rgba(217, 119, 6, 0.1);
+}
+
+/* Slide down transition */
+.slide-down-enter-active,
+.slide-down-leave-active {
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.slide-down-enter-from,
+.slide-down-leave-to {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.slide-down-enter-to,
+.slide-down-leave-from {
+    max-height: 200px;
+    opacity: 1;
+}
+
+
 .day-tabs {
     display: flex;
     flex-wrap: wrap;
@@ -697,7 +1004,7 @@ body {
     transform: scale(1.05);
 }
 
-/* Matchup List */
+
 .matchup-list {
     display: flex;
     flex-direction: column;
@@ -757,7 +1064,7 @@ body {
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
 }
 
-/* Game Controls */
+
 .progress-section {
     margin-bottom: 12px;
 }
@@ -824,7 +1131,7 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-/* Game Grid */
+
 .game-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(28px, 1fr));
@@ -862,7 +1169,7 @@ body {
     box-shadow: 0 2px 4px rgba(217, 119, 6, 0.3);
 }
 
-/* Playback Controls */
+
 .playback-section {
     display: flex;
     gap: 6px;
@@ -915,7 +1222,7 @@ body {
     box-shadow: 0 3px 6px rgba(220, 38, 38, 0.3);
 }
 
-/* Mobile responsive styles for dashboard panel */
+
 @media (max-width: 1199px) {
     .main-layout {
         flex-direction: column;
@@ -1071,8 +1378,8 @@ body {
 }
 
 .matchup-card.selected {
-    border-color: #4fc08d;
-    box-shadow: 0 0 20px rgba(79, 192, 141, 0.4);
+    border-color: #d97706;
+    box-shadow: 0 0 20px rgba(217, 119, 6, 0.4);
 }
 
 .matchup-header {
@@ -1108,9 +1415,9 @@ body {
 }
 
 .status-loaded {
-    background: rgba(79, 192, 141, 0.2);
-    color: #4fc08d;
-    border: 1px solid #4fc08d;
+    background: rgba(217, 119, 6, 0.2);
+    color: #d97706;
+    border: 1px solid #d97706;
 }
 
 .matchup-info {
@@ -1133,7 +1440,7 @@ body {
     gap: 5px;
 }
 
-/* Chart Section - Updated for bento grid */
+
 .chart-section {
     display: flex;
     flex-direction: column;
@@ -1141,17 +1448,25 @@ body {
     overflow: hidden;
     width: 100%;
     height: 100%;
+    min-width: 800px; /* Ensure chart section has minimum width */
     background: linear-gradient(135deg, rgba(20, 20, 20, 0.5) 0%, rgba(35, 35, 35, 0.5) 100%);
     border-radius: 16px;
     border: 1px solid rgba(217, 119, 6, 0.2);
     backdrop-filter: blur(8px);
     gap: 0;
+    position: relative;
 }
 
-/* Dynamic Chart Title Section */
+.chart-container {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+
 .chart-title-section {
     padding: 20px 24px 16px 24px;
-    border-bottom: 2px solid rgba(217, 119, 6, 0.3);
     background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(42, 42, 42, 0.9) 100%);
     border-radius: 16px 16px 0 0;
     position: relative;
@@ -1167,6 +1482,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    text-align: center;
+    align-items: center;
 }
 
 .chart-title {
@@ -1188,7 +1505,6 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: titleShimmer 3s ease-in-out infinite;
 }
 
 .chart-subtitle {
@@ -1223,7 +1539,6 @@ body {
         transparent 70%
     );
     border-radius: 50%;
-    animation: titleGlow 4s ease-in-out infinite;
 }
 
 .title-accent-line {
@@ -1241,10 +1556,9 @@ body {
         transparent 100%
     );
     background-size: 200% 100%;
-    animation: titleAccent 2s ease-in-out infinite;
 }
 
-/* Title Animations */
+
 @keyframes titleShimmer {
     0%, 100% {
         background-position: -200% center;
@@ -1280,17 +1594,6 @@ body {
     margin-bottom: 30px;
 }
 
-.chart-display {
-    flex: 1;
-    min-height: 600px;
-    background: transparent;
-    position: relative;
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    overflow: visible;
-}
 
 .no-selection {
     display: flex;
@@ -1322,7 +1625,7 @@ body {
     line-height: 1.5;
 }
 
-/* Vue.js + GSAP Chart Loading Animation */
+
 .chart-loading-container {
     width: 100%;
     height: 70vh;
@@ -1356,7 +1659,7 @@ body {
         inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-/* Central Glow Effect */
+
 .central-glow {
     position: absolute;
     top: 35%;
@@ -1370,7 +1673,7 @@ body {
     contain: layout style paint;
 }
 
-/* Chart Bars Container */
+
 .chart-bars-container {
     position: absolute;
     top: 35%;
@@ -1421,7 +1724,7 @@ body {
     opacity: 0.8;
 }
 
-/* Connecting Line */
+
 .connecting-line {
     position: absolute;
     top: 35%;
@@ -1435,7 +1738,7 @@ body {
     z-index: 5;
 }
 
-/* Outer Ring */
+
 .outer-ring {
     position: absolute;
     top: 35%;
@@ -1479,7 +1782,7 @@ body {
     transform: translateY(-50%);
 }
 
-/* Inner Ring */
+
 .inner-ring {
     position: absolute;
     top: 35%;
@@ -1514,7 +1817,7 @@ body {
     transform: translateX(-50%);
 }
 
-/* Roaming Circles */
+
 .roaming-circle {
     position: absolute;
     width: 6px;
@@ -1557,7 +1860,7 @@ body {
 
 
 
-/* Scanning Line */
+
 .scanning-line {
     position: absolute;
     top: 0;
@@ -1570,7 +1873,7 @@ body {
     opacity: 0.3;
 }
 
-/* Loading Content */
+
 .loading-content {
     position: absolute;
     top: 50%;
@@ -1615,7 +1918,7 @@ body {
     text-align: center;
 }
 
-/* Accent Line */
+
 .accent-line {
     position: absolute;
     bottom: 15%;
@@ -1628,7 +1931,7 @@ body {
     transform-origin: center;
 }
 
-/* Corner Accents */
+
 .corner-accent {
     position: absolute;
     opacity: 0.3;
@@ -1718,7 +2021,7 @@ body {
     right: 0;
 }
 
-/* Floating Data Points */
+
 .floating-dot {
     position: absolute;
     width: 2px;
@@ -1827,13 +2130,8 @@ body {
     font-weight: 500;
 }
 
-.chart-area {
-    width: 100%;
-    height: 900px;
-    position: relative;
-}
 
-/* Combined Game Controls Grid */
+
 .game-controls-grid {
     display: flex;
     flex-direction: column;
@@ -1885,7 +2183,7 @@ body {
 }
 
 .game-circle.filtered {
-    /* Use static styling instead of animation for filtered games */
+    
 }
 
 .game-circle.passed {
@@ -1920,7 +2218,7 @@ body {
     padding: 4px 0;
 }
 
-/* Tournament Display */
+
 .tournament-display {
     font-size: 0.7rem;
     font-weight: 600;
@@ -1932,7 +2230,7 @@ body {
     white-space: nowrap;
 }
 
-/* Progress Section Improvements */
+
 .progress-section {
     margin-bottom: 12px;
 }
@@ -1945,7 +2243,7 @@ body {
     margin-bottom: 8px;
 }
 
-/* Animations */
+
 @keyframes pulse {
     0%, 100% { 
         transform: scale(1.15);
@@ -1996,7 +2294,7 @@ body {
     opacity: 0.8;
 }
 
-/* Current Map Display */
+
 .current-map-display {
     display: flex;
     align-items: center;
@@ -2152,8 +2450,9 @@ body {
     width: 100%;
     height: 100%;
     min-height: 900px;
+    min-width: 800px; /* Minimum width for proper chart display */
+    max-height: 1080px; /* Keep max height reasonable as requested */
     background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
-    border: 1px solid rgba(255, 140, 66, 0.1);
     border-radius: 8px;
     display: block;
     position: relative;
@@ -2533,10 +2832,10 @@ body {
 
 
 .control-btn {
-    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-    border: 1px solid #dc2626;
+    background: linear-gradient(135deg, rgba(45, 55, 72, 0.8) 0%, rgba(60, 70, 90, 0.8) 100%);
+    border: 2px solid rgba(217, 119, 6, 0.3);
     border-radius: 8px;
-    color: white;
+    color: #f1f5f9;
     padding: 8px 14px;
     cursor: pointer;
     font-size: 0.9rem;
@@ -2544,10 +2843,11 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     position: relative;
     overflow: hidden;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     min-width: 56px;
     flex: 1;
+    backdrop-filter: blur(8px);
 }
 
 .control-btn::before {
@@ -2557,7 +2857,7 @@ body {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    background: linear-gradient(90deg, transparent, rgba(217, 119, 6, 0.2), transparent);
     transition: left 0.4s ease;
 }
 
@@ -2566,10 +2866,11 @@ body {
 }
 
 .control-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.15) 0%, rgba(251, 191, 36, 0.15) 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), 0 0 8px rgba(220, 38, 38, 0.3);
-    border-color: #ef4444;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+    border-color: rgba(217, 119, 6, 0.4);
+    color: #ffffff;
 }
 
 .control-btn:active:not(:disabled) {
@@ -2578,24 +2879,25 @@ body {
 }
 
 .play-btn {
-    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-    border-color: #10b981;
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+    border-color: rgba(217, 119, 6, 0.4);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .play-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-    border-color: #34d399;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), 0 0 8px rgba(16, 185, 129, 0.3);
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.2) 0%, rgba(245, 158, 11, 0.2) 100%);
+    border-color: rgba(217, 119, 6, 0.5);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
 }
 
 .control-btn:disabled {
-    background: #6b7280;
-    border-color: #4b5563;
+    background: rgba(75, 85, 99, 0.3);
+    border-color: rgba(156, 163, 175, 0.2);
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
     opacity: 0.5;
+    color: rgba(241, 245, 249, 0.5);
 }
 
 .current-map-display {
@@ -2704,25 +3006,26 @@ body {
 }
 
 .game-filter-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-bottom: 8px;
-    padding: 8px;
-    justify-items: center;
+    padding: 12px;
+    justify-content: center;
     align-items: center;
 }
 
 .game-filter-btn {
     background: rgba(75, 85, 99, 0.4);
     border: 1px solid rgba(156, 163, 175, 0.25);
-    border-radius: 4px;
+    border-radius: 12px;
     color: #e5e7eb;
-    padding: 4px 7px;
+    padding: 8px 12px;
     cursor: pointer;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 500;
-    min-width: 26px;
+    min-width: 36px;
+    min-height: 36px;
     will-change: transform;
     transition: all 0.2s ease;
     position: relative;
@@ -2800,19 +3103,19 @@ body {
 }
 
 .game-filter-btn.current {
-    background: rgba(79, 192, 141, 0.4);
-    border-color: rgba(79, 192, 141, 0.6);
-    color: white;
-    box-shadow: 0 0 8px rgba(79, 192, 141, 0.4), 0 0 12px rgba(79, 192, 141, 0.2);
+    background: rgba(217, 119, 6, 0.3);
+    border-color: rgba(217, 119, 6, 0.5);
+    color: #f1f5f9;
+    box-shadow: 0 0 8px rgba(217, 119, 6, 0.3), 0 0 12px rgba(217, 119, 6, 0.1);
     transform: scale(1.05);
 }
 
 .game-filter-btn.active.current {
-    background: linear-gradient(135deg, rgba(217, 119, 6, 0.5) 0%, rgba(79, 192, 141, 0.5) 100%);
-    border-color: rgba(217, 119, 6, 0.6);
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.6) 0%, rgba(245, 158, 11, 0.6) 100%);
+    border-color: rgba(217, 119, 6, 0.7);
     color: black !important;
     font-weight: bold;
-    box-shadow: 0 0 15px rgba(217, 119, 6, 0.7), 0 0 25px rgba(79, 192, 141, 0.5);
+    box-shadow: 0 0 15px rgba(217, 119, 6, 0.8), 0 0 25px rgba(245, 158, 11, 0.4);
     transform: scale(1.15);
 }
 
@@ -2917,16 +3220,162 @@ body {
     transform: translateY(0);
 }
 
+/* Large Monitor Optimization - 32-inch displays and above */
+@media (min-width: 2560px) {
+    .header-content {
+        max-width: 3200px;
+        padding: 0 60px;
+    }
+    
+    .mega-container {
+        max-width: 3200px;
+        padding: 60px 30px;
+    }
+    
+    .main-layout.bento-grid {
+        max-width: 3200px;
+        padding: 60px 30px;
+        gap: 32px;
+        grid-template-columns: 280px 1fr; /* Keep original dashboard width */
+    }
+    
+    .main-layout:not(.bento-grid) {
+        max-width: 3200px;
+        padding: 60px 30px;
+        gap: 32px;
+    }
+    
+    .left-column {
+        max-width: 280px; /* Keep original dashboard width */
+    }
+    
+    #vue-chart-container {
+        min-height: 1000px;
+        max-height: 1200px; /* Increase max height for large monitors */
+    }
+}
+
+/* Ultra-wide Monitor Optimization - 49-inch displays and above */
+@media (min-width: 3840px) {
+    .header-content {
+        max-width: 4800px;
+        padding: 0 80px;
+    }
+    
+    .mega-container {
+        max-width: 4800px;
+        padding: 80px 40px;
+    }
+    
+    .main-layout.bento-grid {
+        max-width: 4800px;
+        padding: 80px 40px;
+        gap: 40px;
+        grid-template-columns: 360px 1fr; /* Even larger dashboard for ultra-wide */
+    }
+    
+    .main-layout:not(.bento-grid) {
+        max-width: 4800px;
+        padding: 80px 40px;
+        gap: 40px;
+    }
+    
+    .left-column {
+        max-width: 360px;
+    }
+    
+    #vue-chart-container {
+        min-height: 1100px;
+        max-height: 1400px; /* Maximum height for ultra-wide monitors */
+    }
+}
+
+/* Medium to Large Monitor Range - Standard desktop optimization */
+@media (min-width: 1920px) and (max-width: 2559px) {
+    .main-layout.bento-grid {
+        grid-template-columns: 300px 1fr; /* Slightly larger dashboard */
+    }
+    
+    .left-column {
+        max-width: 300px;
+    }
+    
+    #vue-chart-container {
+        min-height: 950px;
+        max-height: 1080px;
+    }
+}
+
+/* Minimum Width Requirements - Ensure functionality on smaller desktops */
+@media (min-width: 1200px) and (max-width: 1919px) {
+    body {
+        min-width: 1200px; /* Prevent layout breaking on smaller desktops */
+    }
+    
+    .main-layout.bento-grid {
+        min-width: 1200px;
+    }
+    
+    .chart-section {
+        min-width: 900px; /* Ensure chart remains functional */
+    }
+    
+    #vue-chart-container {
+        min-width: 850px;
+        min-height: 900px;
+        max-height: 1000px;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
+    .tournament-header {
+        padding: 16px 0;
+    }
+    
     .header-content {
+        padding: 0 20px;
+        gap: 16px;
+    }
+    
+    .header-top {
         flex-direction: column;
         gap: 20px;
         text-align: center;
     }
     
-    .championship-title {
+    .header-branding {
         justify-content: center;
+        gap: 16px;
+        flex-direction: column;
+    }
+    
+    .brand-info {
+        align-items: center;
+        text-align: center;
+    }
+    
+    .header-actions {
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        align-items: center;
+    }
+    
+    .tournament-info-inline {
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .header-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+    }
+    
+    .header-nav .nav-link {
+        padding: 8px 14px;
+        font-size: 0.85rem;
     }
     
     .title-main {
@@ -2934,23 +3383,32 @@ body {
         text-align: center;
     }
     
-    .tournament-info-horizontal {
-        flex-wrap: wrap;
+    .tournament-info-enhanced {
         justify-content: center;
-        gap: 10px;
-        padding: 6px 12px;
+        gap: 12px;
     }
     
-    .info-item {
-        gap: 4px;
+    .info-card {
+        padding: 5px 10px;
+        min-width: 120px;
+        flex: 0 0 auto;
     }
     
-    .info-text {
+    .info-icon-container {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .info-value {
+        font-size: 0.85rem;
+    }
+    
+    .brand-subtitle {
         font-size: 0.8rem;
     }
     
-    .nav-links {
-        text-align: center;
+    .championship-logo {
+        margin-bottom: 8px;
     }
     
     .matchups-grid {
@@ -2988,23 +3446,7 @@ body {
         overflow: visible !important;
     }
     
-    .chart-display {
-        height: auto !important;
-        min-height: auto !important;
-        max-height: none !important;
-        padding-bottom: 20px;
-        overflow: visible !important;
-        position: relative;
-        flex: none !important;
-        display: block !important;
-    }
     
-    /* Mobile Chart Optimizations - Expanded dimensions for better readability */
-    .chart-area {
-        height: 680px;
-        min-height: 680px;
-        max-height: none; /* Allow expansion */
-    }
     
     #vue-chart-container {
         min-height: 680px;
@@ -3115,10 +3557,11 @@ body {
     }
     
     .game-filter-btn {
-        min-width: 44px;
-        height: 44px;
-        font-size: 0.9rem;
-        margin: 3px;
+        min-width: 40px;
+        min-height: 40px;
+        font-size: 0.85rem;
+        margin: 0;
+        padding: 8px 10px;
     }
     
     .reset-filter-btn {
@@ -3202,11 +3645,6 @@ body {
 
 /* Smaller Mobile Devices */
 @media (max-width: 480px) {
-    .chart-area {
-        height: 620px;
-        min-height: 620px;
-        max-height: none;
-    }
     
     #vue-chart-container {
         min-height: 620px;
@@ -3226,18 +3664,18 @@ body {
     }
     
     .game-filter-grid {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 6px;
-        padding: 0 8px;
-        justify-items: center;
+        gap: 8px;
+        padding: 8px;
+        justify-content: center;
         align-items: center;
     }
     
     .game-filter-btn {
-        min-width: 40px;
-        height: 40px;
+        min-width: 36px;
+        min-height: 36px;
         font-size: 0.8rem;
-        margin: 2px;
+        margin: 0;
+        padding: 6px 8px;
     }
     
     .control-btn {

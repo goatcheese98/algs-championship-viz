@@ -28,12 +28,4 @@ export default defineConfig({
     __VUE_OPTIONS_API__: true,
     __VUE_PROD_DEVTOOLS__: false
   }
-})
-
-// Module organization reference for better maintainability
-const moduleStructure = {
-  components: ['src/components/ChampionshipApp.vue', 'src/components/TournamentSelector.vue', 'src/components/ActionPanel.vue', 'src/components/IndexApp.vue'],
-  chart: ['src/chart/MapSequenceData.js', 'src/chart/MapColoringLogic.js'],
-  utils: ['src/utils/GSAPDraggableManager.js'],
-  composables: ['src/composables/useTeamConfig.js']
-} 
+}) 

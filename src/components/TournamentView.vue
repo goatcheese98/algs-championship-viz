@@ -1,65 +1,293 @@
 <template>
   <div id="app">
-    <!-- Enhanced Professional Championship Header -->
-    <div class="championship-header">
+    
+    <header class="tournament-header">
       <div class="header-background">
         <div class="glow-orb glow-orb-1"></div>
         <div class="glow-orb glow-orb-2"></div>
         <div class="glow-orb glow-orb-3"></div>
+        <div class="header-grid-pattern"></div>
       </div>
       
       <div class="header-content">
-        <!-- Championship Icon -->
-        <div ref="championshipLogo" class="championship-logo">
-          <span ref="logoIcon" class="logo-icon">🏆</span>
-          <div ref="logoParticles" class="logo-particles"></div>
-        </div>
-        
-        <!-- Main Title -->
-        <div ref="championshipTitle" class="championship-title">
-          <h1 ref="titleMain" class="title-main">
-            {{ isEwc2025Tournament ? 'EWC 2025' : (isYear5Tournament ? 'ALGS Year 5 Open' : 'ALGS Year 4 Championship') }}
-          </h1>
-        </div>
-        
-        <!-- Tournament Details (Horizontal) -->
-        <div ref="tournamentInfo" class="tournament-info-horizontal">
-          <div ref="infoItem1" class="info-item">
-            <span ref="infoIcon1" class="info-icon">
-              {{ isEwc2025Tournament ? '🏆' : (isYear5Tournament ? '🌍' : '📍') }}
-            </span>
-            <span ref="infoText1" class="info-text">
-              {{ isEwc2025Tournament ? 'Esports World Cup' : (isYear5Tournament ? 'Global Tournament' : 'Sapporo, Japan') }}
-            </span>
+        <div class="header-top">
+          <div class="header-branding">
+            <div ref="championshipLogo" class="championship-logo">
+              <div ref="logoIcon" class="logo-icon apex-logo">
+                <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <!-- Ultra-detailed skull gradient -->
+                    <radialGradient id="skullMaster" cx="50%" cy="30%" r="50%">
+                      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+                      <stop offset="15%" style="stop-color:#fff5f5;stop-opacity:1" />
+                      <stop offset="35%" style="stop-color:#ffe0e0;stop-opacity:1" />
+                      <stop offset="55%" style="stop-color:#ffb3b3;stop-opacity:1" />
+                      <stop offset="75%" style="stop-color:#cc6666;stop-opacity:1" />
+                      <stop offset="90%" style="stop-color:#993333;stop-opacity:1" />
+                      <stop offset="100%" style="stop-color:#330000;stop-opacity:1" />
+                    </radialGradient>
+                    
+                    <!-- Diamond frame gradients -->
+                    <linearGradient id="diamondFrame" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color:#ffe0e0;stop-opacity:0.98" />
+                      <stop offset="20%" style="stop-color:#ffcccc;stop-opacity:0.92" />
+                      <stop offset="40%" style="stop-color:#ff9999;stop-opacity:0.87" />
+                      <stop offset="60%" style="stop-color:#ff6666;stop-opacity:0.82" />
+                      <stop offset="80%" style="stop-color:#cc4444;stop-opacity:0.77" />
+                      <stop offset="100%" style="stop-color:#992222;stop-opacity:0.72" />
+                    </linearGradient>
+                    
+                    <!-- Enhanced flame gradients -->
+                    <radialGradient id="flameHot" cx="50%" cy="85%" r="70%">
+                      <stop offset="0%" style="stop-color:#ff3333;stop-opacity:0.95" />
+                      <stop offset="25%" style="stop-color:#ff5555;stop-opacity:0.85" />
+                      <stop offset="50%" style="stop-color:#ff7777;stop-opacity:0.65" />
+                      <stop offset="75%" style="stop-color:#ffaaaa;stop-opacity:0.45" />
+                      <stop offset="100%" style="stop-color:#ffdddd;stop-opacity:0.15" />
+                    </radialGradient>
+                    
+                    <!-- Multi-layer eye glow -->
+                    <radialGradient id="eyeCore" cx="50%" cy="45%" r="60%">
+                      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+                      <stop offset="20%" style="stop-color:#ffcccc;stop-opacity:0.95" />
+                      <stop offset="45%" style="stop-color:#ff6666;stop-opacity:0.85" />
+                      <stop offset="70%" style="stop-color:#cc3333;stop-opacity:0.7" />
+                      <stop offset="90%" style="stop-color:#991111;stop-opacity:0.5" />
+                      <stop offset="100%" style="stop-color:#550000;stop-opacity:0.3" />
+                    </radialGradient>
+                    
+                    <!-- Shadow and depth gradients -->
+                    <radialGradient id="shadowDepth" cx="50%" cy="60%" r="80%">
+                      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.1" />
+                      <stop offset="50%" style="stop-color:#330000;stop-opacity:0.4" />
+                      <stop offset="100%" style="stop-color:#110000;stop-opacity:0.8" />
+                    </radialGradient>
+                  </defs>
+                  
+                  <!-- Ultra-complex outer diamond with crystalline structure -->
+                  <path d="M80 5 L130 20 L125 25 L135 30 L128 35 L138 42 L130 47 L140 55 L132 60 L140 68 L130 73 L138 78 L128 85 L135 90 L125 95 L130 100 L115 110 L108 105 L100 115 L92 107 L85 118 L80 110 L75 118 L68 107 L60 115 L52 105 L45 110 L30 100 L35 95 L25 90 L32 85 L22 78 L30 73 L20 68 L28 60 L20 55 L30 47 L22 42 L32 35 L25 30 L35 25 L30 20 L80 5 Z" 
+                        fill="url(#diamondFrame)" 
+                        stroke="#ffb3b3" 
+                        stroke-width="1.8" 
+                        opacity="0.85"/>
+                  
+                  <!-- Secondary crystalline layer -->
+                  <path d="M80 12 L118 25 L113 32 L120 38 L115 45 L122 52 L115 58 L122 65 L115 72 L120 78 L113 85 L118 92 L105 102 L98 97 L90 105 L85 98 L80 108 L75 98 L70 105 L62 97 L55 102 L42 92 L47 85 L40 78 L45 72 L38 65 L45 58 L38 52 L45 45 L40 38 L47 32 L42 25 L80 12 Z" 
+                        fill="none" 
+                        stroke="url(#diamondFrame)" 
+                        stroke-width="1.5" 
+                        opacity="0.7"/>
+                  
+                  <!-- Inner diamond structure -->
+                  <path d="M80 22 L110 52 L80 118 L50 52 Z" 
+                        fill="url(#shadowDepth)" 
+                        stroke="url(#diamondFrame)" 
+                        stroke-width="2.2"/>
+                  
+                  <!-- Tertiary inner diamond -->
+                  <path d="M80 30 L95 55 L80 105 L65 55 Z" 
+                        fill="none" 
+                        stroke="url(#diamondFrame)" 
+                        stroke-width="1.2" 
+                        opacity="0.6"/>
+                  
+                  <!-- Central shadow oval for skull -->
+                  <ellipse cx="80" cy="65" rx="30" ry="40" 
+                           fill="#0d0000" 
+                           opacity="0.95"/>
+                  
+                  <!-- Skull base structure with anatomical accuracy -->
+                  <path d="M55 50 Q55 38 65 34 Q75 31 80 30 Q85 31 95 34 Q105 38 105 50 Q105 58 102 63 Q105 68 105 78 Q102 85 95 88 Q90 90 80 92 Q70 90 65 88 Q58 85 55 78 Q55 68 58 63 Q55 58 55 50 Z" 
+                        fill="url(#skullMaster)"/>
+                  
+                  <!-- Skull temporal bones -->
+                  <path d="M58 45 Q65 42 72 44 Q78 43 88 44 Q95 42 102 45" 
+                        fill="none" 
+                        stroke="rgba(204, 102, 102, 0.7)" 
+                        stroke-width="1.2"/>
+                  
+                  <!-- Forehead structure -->
+                  <path d="M62 40 Q70 38 80 38 Q90 38 98 40" 
+                        fill="none" 
+                        stroke="rgba(255, 204, 204, 0.6)" 
+                        stroke-width="0.8"/>
+                  
+                  <!-- Eye socket complex structure -->
+                  <ellipse cx="68" cy="55" rx="7" ry="9" fill="#000000"/>
+                  <ellipse cx="92" cy="55" rx="7" ry="9" fill="#000000"/>
+                  
+                  <!-- Eye socket depth layers -->
+                  <ellipse cx="68" cy="53" rx="5.5" ry="7.5" fill="rgba(51, 0, 0, 0.9)"/>
+                  <ellipse cx="92" cy="53" rx="5.5" ry="7.5" fill="rgba(51, 0, 0, 0.9)"/>
+                  <ellipse cx="68" cy="52" rx="4" ry="6" fill="rgba(102, 0, 0, 0.8)"/>
+                  <ellipse cx="92" cy="52" rx="4" ry="6" fill="rgba(102, 0, 0, 0.8)"/>
+                  
+                  <!-- Multi-layered glowing eyes -->
+                  <circle cx="68" cy="55" r="4" fill="url(#eyeCore)"/>
+                  <circle cx="92" cy="55" r="4" fill="url(#eyeCore)"/>
+                  <circle cx="68" cy="54" r="3" fill="#ff4444" opacity="0.9"/>
+                  <circle cx="92" cy="54" r="3" fill="#ff4444" opacity="0.9"/>
+                  <circle cx="68" cy="53" r="2" fill="#ff6666" opacity="0.8"/>
+                  <circle cx="92" cy="53" r="2" fill="#ff6666" opacity="0.8"/>
+                  <circle cx="68" cy="52" r="1.5" fill="#ffffff"/>
+                  <circle cx="92" cy="52" r="1.5" fill="#ffffff"/>
+                  <circle cx="68" cy="51.5" r="0.8" fill="#ffffff" opacity="0.9"/>
+                  <circle cx="92" cy="51.5" r="0.8" fill="#ffffff" opacity="0.9"/>
+                  
+                  <!-- Detailed nasal structure -->
+                  <path d="M80 60 L76 68 L80 75 L84 68 Z" fill="#000000"/>
+                  <path d="M78 65 L82 65" stroke="#222" stroke-width="0.6"/>
+                  <path d="M79 68 L81 68" stroke="#333" stroke-width="0.4"/>
+                  
+                  <!-- Complex jaw and mouth structure -->
+                  <path d="M62 75 Q80 85 98 75" 
+                        fill="none" 
+                        stroke="#000000" 
+                        stroke-width="3"/>
+                  <path d="M65 78 Q80 83 95 78" 
+                        fill="none" 
+                        stroke="rgba(51, 0, 0, 0.9)" 
+                        stroke-width="2"/>
+                  <path d="M68 80 Q80 82 92 80" 
+                        fill="none" 
+                        stroke="rgba(102, 0, 0, 0.8)" 
+                        stroke-width="1.5"/>
+                  
+                  <!-- Highly detailed teeth with individual characteristics -->
+                  <rect x="70" y="80" width="1.8" height="4.5" fill="#ffffff" rx="0.4"/>
+                  <rect x="72.5" y="80" width="1.8" height="5.5" fill="#ffffff" rx="0.4"/>
+                  <rect x="75" y="80" width="1.8" height="6" fill="#ffffff" rx="0.4"/>
+                  <rect x="77.5" y="80" width="2" height="6.5" fill="#ffffff" rx="0.4"/>
+                  <rect x="80.5" y="80" width="2" height="6.5" fill="#ffffff" rx="0.4"/>
+                  <rect x="83" y="80" width="1.8" height="6" fill="#ffffff" rx="0.4"/>
+                  <rect x="85.5" y="80" width="1.8" height="5.5" fill="#ffffff" rx="0.4"/>
+                  <rect x="88" y="80" width="1.8" height="4.5" fill="#ffffff" rx="0.4"/>
+                  
+                  <!-- Ultra-detailed flame structures -->
+                  <!-- Left flame cascade -->
+                  <path d="M38 38 Q30 30 35 22 Q42 28 48 18 Q52 30 45 40 Q50 48 42 52 Q38 45 42 38 Q35 45 38 38" fill="url(#flameHot)"/>
+                  <path d="M28 50 Q20 42 25 34 Q32 40 38 30 Q42 42 35 52 Q40 60 32 64 Q28 57 32 50 Q25 57 28 50" fill="url(#flameHot)"/>
+                  <path d="M35 65 Q27 57 32 49 Q39 55 45 45 Q49 57 42 67 Q47 75 39 79 Q35 72 39 65 Q32 72 35 65" fill="url(#flameHot)"/>
+                  <path d="M45 80 Q37 72 42 64 Q49 70 55 60 Q59 72 52 82 Q57 90 49 94 Q45 87 49 80 Q42 87 45 80" fill="url(#flameHot)"/>
+                  <path d="M32 85 Q24 77 29 69 Q36 75 42 65 Q46 77 39 87 Q44 95 36 99 Q32 92 36 85 Q29 92 32 85" fill="url(#flameHot)"/>
+                  
+                  <!-- Right flame cascade -->
+                  <path d="M122 38 Q130 30 125 22 Q118 28 112 18 Q108 30 115 40 Q110 48 118 52 Q122 45 118 38 Q125 45 122 38" fill="url(#flameHot)"/>
+                  <path d="M132 50 Q140 42 135 34 Q128 40 122 30 Q118 42 125 52 Q120 60 128 64 Q132 57 128 50 Q135 57 132 50" fill="url(#flameHot)"/>
+                  <path d="M125 65 Q133 57 128 49 Q121 55 115 45 Q111 57 118 67 Q113 75 121 79 Q125 72 121 65 Q128 72 125 65" fill="url(#flameHot)"/>
+                  <path d="M115 80 Q123 72 118 64 Q111 70 105 60 Q101 72 108 82 Q103 90 111 94 Q115 87 111 80 Q118 87 115 80" fill="url(#flameHot)"/>
+                  <path d="M128 85 Q136 77 131 69 Q124 75 118 65 Q114 77 121 87 Q116 95 124 99 Q128 92 124 85 Q131 92 128 85" fill="url(#flameHot)"/>
+                  
+                  <!-- Central bottom apex with crystalline detail -->
+                  <path d="M80 92 L70 110 L80 118 L90 110 Z" fill="url(#skullMaster)"/>
+                  <path d="M80 95 L74 107 L80 113 L86 107 Z" fill="rgba(255, 179, 179, 0.9)"/>
+                  <path d="M80 98 L77 104 L80 108 L83 104 Z" fill="rgba(255, 204, 204, 0.8)"/>
+                  
+                  <!-- Micro flame details -->
+                  <circle cx="48" cy="35" r="2.5" fill="url(#flameHot)" opacity="0.7"/>
+                  <circle cx="112" cy="35" r="2.5" fill="url(#flameHot)" opacity="0.7"/>
+                  <circle cx="42" cy="55" r="2" fill="url(#flameHot)" opacity="0.8"/>
+                  <circle cx="118" cy="55" r="2" fill="url(#flameHot)" opacity="0.8"/>
+                  <circle cx="45" cy="75" r="1.8" fill="url(#flameHot)" opacity="0.75"/>
+                  <circle cx="115" cy="75" r="1.8" fill="url(#flameHot)" opacity="0.75"/>
+                  
+                  <!-- Inner geometric accents -->
+                  <path d="M60 38 L80 28 L100 38" fill="none" stroke="url(#diamondFrame)" stroke-width="1.2" opacity="0.6"/>
+                  <path d="M60 82 L80 92 L100 82" fill="none" stroke="url(#diamondFrame)" stroke-width="1.2" opacity="0.6"/>
+                  <path d="M52 60 L65 50 L78 60" fill="none" stroke="url(#diamondFrame)" stroke-width="0.8" opacity="0.4"/>
+                  <path d="M82 60 L95 50 L108 60" fill="none" stroke="url(#diamondFrame)" stroke-width="0.8" opacity="0.4"/>
+                  
+                  <!-- Additional crystalline structure details -->
+                  <polygon points="80,15 85,22 80,25 75,22" fill="url(#diamondFrame)" opacity="0.5"/>
+                  <polygon points="80,95 75,102 80,108 85,102" fill="url(#diamondFrame)" opacity="0.5"/>
+                  <polygon points="45,60 52,55 55,65 48,68" fill="url(#diamondFrame)" opacity="0.4"/>
+                  <polygon points="115,60 108,55 105,65 112,68" fill="url(#diamondFrame)" opacity="0.4"/>
+                </svg>
+              </div>
+              <div ref="logoParticles" class="logo-particles"></div>
+            </div>
+            
+            <div class="brand-info">
+              <div class="brand-subtitle">ALGS Tournament Platform</div>
+              <div ref="championshipTitle" class="championship-title">
+                <h1 ref="titleMain" class="title-main">
+                  {{ isEwc2025Tournament ? '' : (isYear5Tournament ? 'ALGS Year 5 Open' : '') }}
+                </h1>
+              </div>
+            </div>
           </div>
-          <div ref="infoSeparator1" class="info-separator">•</div>
-          <div ref="infoItem2" class="info-item">
-            <span ref="infoIcon2" class="info-icon">📅</span>
-            <span ref="infoText2" class="info-text">
-              {{ isEwc2025Tournament ? 'Day 1 - Group A' : (isYear5Tournament ? 'Split 1 - 2025' : 'Jan 29 - Feb 2, 2025') }}
-            </span>
+
+          <div class="header-actions">
+            <div class="tournament-status">
+              <span class="status-indicator ended"></span>
+              <span class="status-text">Tournament Ended</span>
+            </div>
+            
+            <div ref="tournamentInfo" class="tournament-info-inline">
+              <div ref="infoItem1" class="info-card">
+                <div class="info-icon-container">
+                  <span ref="infoIcon1" class="info-icon">
+                    {{ isEwc2025Tournament ? '🏆' : (isYear5Tournament ? '🌍' : '📍') }}
+                  </span>
+                </div>
+                <div class="info-content">
+                  <div class="info-label">Event</div>
+                  <div ref="infoText1" class="info-value">
+                    {{ isEwc2025Tournament ? 'Championship Tournament' : (isYear5Tournament ? 'Global Tournament' : 'Sapporo, Japan') }}
+                  </div>
+                </div>
+              </div>
+
+              <div ref="infoItem2" class="info-card">
+                <div class="info-icon-container">
+                  <span ref="infoIcon2" class="info-icon">📅</span>
+                </div>
+                <div class="info-content">
+                  <div class="info-label">Schedule</div>
+                  <div ref="infoText2" class="info-value">
+                    {{ isEwc2025Tournament ? 'Day 1 - Group A' : (isYear5Tournament ? 'Split 1 - 2025' : 'Jan 29 - Feb 2, 2025') }}
+                  </div>
+                </div>
+              </div>
+
+              <div ref="infoItem3" class="info-card">
+                <div class="info-icon-container">
+                  <span ref="infoIcon3" class="info-icon">⚔️</span>
+                </div>
+                <div class="info-content">
+                  <div class="info-label">Format</div>
+                  <div ref="infoText3" class="info-value">
+                    {{ isEwc2025Tournament ? '20 Teams' : (isYear5Tournament ? '6 Tournament Rounds' : '40 Teams') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <nav class="header-nav">
+              <router-link to="/" class="nav-link primary">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Dashboard</span>
+              </router-link>
+              <router-link v-if="isYear5Tournament" to="/tournament/year-4-championship" class="nav-link">
+                <span class="nav-icon">🏆</span>
+                <span class="nav-text">Year 4</span>
+              </router-link>
+              <router-link v-if="isEwc2025Tournament" to="/tournament/year-4-championship" class="nav-link">
+                <span class="nav-icon">🏆</span>
+                <span class="nav-text">Year 4</span>
+              </router-link>
+              <router-link v-if="isEwc2025Tournament" to="/tournament/year-5-open" class="nav-link">
+                <span class="nav-icon">🌍</span>
+                <span class="nav-text">Year 5</span>
+              </router-link>
+            </nav>
           </div>
-          <div ref="infoSeparator2" class="info-separator">•</div>
-          <div ref="infoItem3" class="info-item">
-            <span ref="infoIcon3" class="info-icon">⚔️</span>
-            <span ref="infoText3" class="info-text">
-              {{ isEwc2025Tournament ? '20 Teams' : (isYear5Tournament ? '6 Tournament Rounds' : '40 Teams') }}
-            </span>
-          </div>
-        </div>
-        
-        <!-- Navigation Links -->
-        <div class="nav-links">
-          <router-link to="/" class="nav-link">🏠 ALGS Dashboard</router-link>
-          <router-link v-if="isYear5Tournament" to="/tournament/year-4-championship" class="nav-link">🏆 Year 4 Champions</router-link>
-          <router-link v-if="isEwc2025Tournament" to="/tournament/year-4-championship" class="nav-link">🏆 Year 4 Championship</router-link>
-          <router-link v-if="isEwc2025Tournament" to="/tournament/year-5-open" class="nav-link">🌍 Year 5 Open</router-link>
         </div>
       </div>
-    </div>
+    </header>
 
     <div class="main-layout bento-grid">
-      <!-- Hidden Tournament Selector for routing and functionality -->
+      
       <TournamentSelector
         ref="tournamentSelector"
         :is-year5-tournament="isYear5Tournament"
@@ -69,12 +297,12 @@
         style="display: none;"
       />
       
-      <!-- Left Column: Dashboard + Controls as unified unit -->
-      <div class="left-column">
-        <!-- Dashboard Panel -->
-        <div class="dashboard-panel">
+      
+      <div class="left-column" :class="{ 'adjust-controls-layout': shouldAdjustControlsLayout }">
+        
+        <div class="dashboard-panel" :class="{ 'has-collapsed-sections': hasCollapsedSections }">
           
-          <!-- Panel Header -->
+          
           <div class="dashboard-header">
             <div class="dashboard-main">
               <div ref="dashboardTitle" class="dashboard-title-enhanced">
@@ -84,9 +312,9 @@
             </div>
           </div>
           
-          <!-- Tournament Selection -->
+          
           <div class="dashboard-section">
-            <div class="section-header">
+            <div class="section-header" @click="toggleTournamentDays">
               <div class="section-main">
                 <div class="section-icon">
                   <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -98,49 +326,67 @@
                 </div>
                 <span class="section-title">Tournament Days</span>
               </div>
-            </div>
-            <div class="section-content">
-              <div class="day-tabs">
-                <button v-for="day in tournamentDays" 
-                        :key="day.id"
-                        :class="['day-tab', { active: selectedDay === day.id }]"
-                        @click="setDay(day.id)"
-                        :title="day.name">
-                  {{ day.name.replace('Day ', 'D') }}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Matchup Selection -->
-          <div class="dashboard-section">
-            <div class="section-header">
-              <div class="section-icon">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                  <line x1="3" y1="6" x2="21" y2="6"/>
-                  <path d="M16 10a4 4 0 0 1-8 0"/>
+              <div class="collapse-icon">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
+                     :style="{ transform: tournamentDaysCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }">
+                  <path d="m6 9 6 6 6-6"/>
                 </svg>
               </div>
-              <span class="section-title">Matchups</span>
             </div>
-            <div class="section-content">
-              <div class="matchup-list">
-                <button v-for="matchup in currentDayMatchups" 
-                        :key="matchup.id"
-                        :class="['matchup-item', { active: selectedMatchup === matchup.id }]"
-                        @click="handleMatchupSelect(matchup.id)"
-                        :title="matchup.description">
-                  <span class="matchup-name">{{ matchup.title }}</span>
-                  <span class="matchup-games">{{ matchup.games === 'auto' ? 'Auto' : matchup.games + 'G' }}</span>
-                </button>
+            <transition name="slide-down">
+              <div v-show="!tournamentDaysCollapsed" class="section-content">
+                <div class="day-tabs">
+                  <button v-for="day in tournamentDays" 
+                          :key="day.id"
+                          :class="['day-tab', { active: selectedDay === day.id }]"
+                          @click="setDay(day.id)"
+                          :title="day.name">
+                    {{ day.name }}
+                  </button>
+                </div>
+              </div>
+            </transition>
+          </div>
+
+          
+          <div class="dashboard-section">
+            <div class="section-header" @click="toggleMatchups">
+              <div class="section-main">
+                <div class="section-icon">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 0 1-8 0"/>
+                  </svg>
+                </div>
+                <span class="section-title">Matchups</span>
+              </div>
+              <div class="collapse-icon">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
+                     :style="{ transform: matchupsCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }">
+                  <path d="m6 9 6 6 6-6"/>
+                </svg>
               </div>
             </div>
+            <transition name="slide-down">
+              <div v-show="!matchupsCollapsed" class="section-content">
+                <div class="matchup-list">
+                  <button v-for="matchup in currentDayMatchups" 
+                          :key="matchup.id"
+                          :class="['matchup-item', { active: selectedMatchup === matchup.id }]"
+                          @click="handleMatchupSelect(matchup.id)"
+                          :title="matchup.description">
+                    <span class="matchup-name">{{ matchup.title }}</span>
+                    <span class="matchup-games">{{ matchup.games === 'auto' ? 'Auto' : matchup.games + 'G' }}</span>
+                  </button>
+                </div>
+              </div>
+            </transition>
           </div>
           
         </div>
         
-        <!-- Controls Panel - Now part of left column -->
+        
         <ActionPanel
           v-if="selectedMatchup"
           :current-map="currentMap"
@@ -152,9 +398,9 @@
         />
       </div>
       
-      <!-- Right Column: Chart Section -->
+      
       <div class="chart-section">
-        <!-- Dynamic Title Section -->
+        
         <div class="chart-title-section" v-if="selectedMatchup">
           <div class="chart-title-container">
             <div class="chart-title-main">
@@ -170,13 +416,13 @@
         
         <transition name="fade" mode="out-in">
           <div v-if="!selectedMatchup" key="loading" class="no-selection">
-          <!-- Optimized Vue.js + GSAP Chart Loading Animation -->
+          
           <div ref="chartLoadingContainer" class="chart-loading-container">
             
-            <!-- Central Glow Effect -->
+            
             <div ref="centralGlow" class="central-glow"></div>
             
-            <!-- Animated Chart Bars -->
+            
             <div class="chart-bars-container">
               <div ref="chartBar1" class="chart-bar chart-bar-1"></div>
               <div ref="chartBar2" class="chart-bar chart-bar-2"></div>
@@ -184,33 +430,33 @@
               <div ref="chartBar4" class="chart-bar chart-bar-4"></div>
               <div ref="chartBar5" class="chart-bar chart-bar-5"></div>
               
-              <!-- Connecting Line -->
+              
               <div ref="connectingLine" class="connecting-line"></div>
             </div>
             
-            <!-- Rotating Outer Ring -->
+            
             <div ref="outerRing" class="outer-ring">
               <div class="ring-circle"></div>
               <div class="ring-dot ring-dot-1"></div>
               <div class="ring-dot ring-dot-2"></div>
             </div>
             
-            <!-- Inner Rotating Ring -->
+            
             <div ref="innerRing" class="inner-ring">
               <div class="inner-ring-circle"></div>
               <div class="inner-ring-dot"></div>
             </div>
             
-            <!-- Roaming Circles -->
+            
             <div ref="roamingCircle1" class="roaming-circle roaming-circle-1"></div>
             <div ref="roamingCircle2" class="roaming-circle roaming-circle-2"></div>
             <div ref="roamingCircle3" class="roaming-circle roaming-circle-3"></div>
             <div ref="roamingCircle4" class="roaming-circle roaming-circle-4"></div>
             
-            <!-- Scanning Effect -->
+            
             <div ref="scanningLine" class="scanning-line"></div>
             
-            <!-- Main Content -->
+            
             <div class="loading-content">
               <h3 ref="mainHeading" class="loading-heading">
                 Select a matchup to view the interactive chart
@@ -222,16 +468,16 @@
               </div>
             </div>
             
-            <!-- Accent Line -->
+            
             <div ref="accentLine" class="accent-line"></div>
             
-            <!-- Corner Accents -->
+            
             <div class="corner-accent corner-accent-tl"></div>
             <div class="corner-accent corner-accent-tr"></div>
             <div class="corner-accent corner-accent-bl"></div>
             <div class="corner-accent corner-accent-br"></div>
             
-            <!-- Floating Data Points -->
+            
             <div ref="floatingDot1" class="floating-dot floating-dot-1"></div>
             <div ref="floatingDot2" class="floating-dot floating-dot-2"></div>
             <div ref="floatingDot3" class="floating-dot floating-dot-3"></div>
@@ -240,25 +486,21 @@
           </div>
         </div>
 
-          <div v-else key="chart" class="chart-display">
-            <!-- Chart Container with proper ID for ChartEngine -->
-            <div class="chart-area">
-              <InteractiveRaceChart
-                :teamConfig="teamConfig"
-              />
-              <transition name="fade">
-                <div v-if="isLoading" class="loading-overlay">
-                  <div class="loading-spinner"></div>
-                </div>
-              </transition>
-            </div>
-
+          <div v-else key="chart" class="chart-container">
+            <InteractiveRaceChart
+              :teamConfig="teamConfig"
+            />
+            <transition name="fade">
+              <div v-if="isLoading" class="loading-overlay">
+                <div class="loading-spinner"></div>
+              </div>
+            </transition>
           </div>
         </transition>
       </div>
     </div>
     
-    <!-- Global Map Tooltip -->
+    
     <div v-show="mapTooltip.visible" 
          class="map-tooltip"
          :style="{ left: mapTooltip.x + 'px', top: mapTooltip.y + 'px', border: '2px solid red', background: 'rgba(255,0,0,0.5)' }">
@@ -322,7 +564,7 @@ export default {
       tournamentId,
       isYear5: isYear5,
       isEwc2025: isEwc2025,
-      tournamentType: isEwc2025 ? 'EWC 2025' : (isYear5 ? 'Year 5 Open' : 'Year 4 Championship')
+      tournamentType: isEwc2025 ? 'ALGS Championship' : (isYear5 ? 'Year 5 Open' : 'Year 4 Championship')
     });
     
     return {
@@ -339,7 +581,6 @@ export default {
       
       // Animation intervals
       playInterval: null,
-      gameStateInterval: null,
       
       // Game selection state
       selectedGames: [],
@@ -347,6 +588,20 @@ export default {
       
       // Advanced controls state
       advancedControlsExpanded: false,
+      
+      // Collapsible sections state
+      tournamentDaysCollapsed: false,
+      matchupsCollapsed: false,
+      
+      // Debug collision detection
+      collisionDebug: {
+        dashboardRect: null,
+        controlsRect: null,
+        horizontalOverlap: false,
+        verticallyRelated: false,
+        isInOriginalPosition: false,
+        shouldAffect: false
+      },
       
       // Tournament days data
       tournamentDays: [],
@@ -440,6 +695,14 @@ export default {
     // Note: Controls positioning now handled by CSS Grid layout
     tournamentDays() {
       // Grid layout automatically handles positioning
+    },
+
+    // Watch for collapse changes to update collision detection
+    hasCollapsedSections() {
+      // Trigger collision detection when collapse state changes
+      this.$nextTick(() => {
+        this.isControlsInDashboardLane();
+      });
     }
   },
   
@@ -472,7 +735,7 @@ export default {
       if (!currentDay || !currentMatchup) return '';
       
       // Format: "Day Name - Matchup Title"
-      const dayName = currentDay.name.replace('Day ', 'D');
+      const dayName = currentDay.name;
       const matchupTitle = currentMatchup.title;
       
       return `${dayName} - ${matchupTitle}`;
@@ -485,12 +748,24 @@ export default {
       const currentMatchup = this.currentDayMatchups.find(matchup => matchup.id === this.selectedMatchup);
       if (!currentMatchup) return '';
       
-      // Show game count and tournament type
-      const gameInfo = currentMatchup.games === 'auto' ? 'Auto Games' : `${currentMatchup.games} Games`;
-      const tournamentType = this.isEwc2025Tournament ? 'EWC 2025' : 
-                             (this.isYear5Tournament ? 'ALGS Year 5 Open' : 'ALGS Year 4 Championship');
+      // Show tournament type only
+      const tournamentType = this.isEwc2025Tournament ? '' : 
+                             (this.isYear5Tournament ? 'ALGS Year 5 Open' : '');
       
-      return `${tournamentType} • ${gameInfo}`;
+      return tournamentType;
+    },
+
+    // Check if any sections are collapsed to adjust layout
+    hasCollapsedSections() {
+      return this.tournamentDaysCollapsed || this.matchupsCollapsed;
+    },
+
+    // Check if Controls panel should be affected by collapse (only if in same lane)
+    shouldAdjustControlsLayout() {
+      if (!this.hasCollapsedSections) return false;
+      
+      // Check if Controls panel is in its original position or overlapping with dashboard
+      return this.isControlsInDashboardLane();
     }
   },
   
@@ -520,11 +795,6 @@ export default {
     // Initialize chart loading animation
     this.initializeChartLoadingAnimation();
     
-    // Set up periodic updates for game state
-    this.gameStateInterval = setInterval(() => {
-      // Remove chartEngine dependency since we're handling state directly in Vue
-      // The new animation system is handled via watchers and intervals
-    }, 300);
     
     // Add debug method to global scope for troubleshooting
     window.debugTournamentView = () => {
@@ -577,31 +847,31 @@ export default {
       this.tournamentDays = this.isEwc2025Tournament ? [
         {
           id: 'day1',
-          name: 'Day 1 - Group A',
+          name: 'Day 1',
           matchups: [{
             id: 'Day1-A',
             title: 'Group A',
-            description: 'EWC 2025 Day 1 Group A featuring 20 elite teams',
+            description: 'Day 1 Group A featuring 20 elite teams',
             games: 'auto'
           }]
         },
         {
           id: 'day2',
-          name: 'Day 2 - Group B',
+          name: 'Day 2',
           matchups: [{
             id: 'Day2-B',
             title: 'Group B',
-            description: 'EWC 2025 Day 2 Group B featuring 20 elite teams',
+            description: 'Day 2 Group B featuring 20 elite teams',
             games: 'auto'
           }]
         },
         {
           id: 'day3',
-          name: 'Day 3 - Last Chance',
+          name: 'Day 3',
           matchups: [{
             id: 'Day3-LastChance',
             title: 'Last Chance',
-            description: 'EWC 2025 Day 3 Last Chance featuring 20 elite teams',
+            description: 'Day 3 Last Chance featuring 20 elite teams',
             games: 'auto'
           }]
         }
@@ -621,7 +891,7 @@ export default {
       ] : [
         {
           id: 'day1',
-          name: 'Day 1 - Groups',
+          name: 'Day 1',
           matchups: [
             { id: 'AvsB', title: 'A vs B', description: 'Group A vs Group B matchup', games: 6 },
             { id: 'CvsD', title: 'C vs D', description: 'Group C vs Group D matchup', games: 6 },
@@ -630,7 +900,7 @@ export default {
         },
         {
           id: 'day2',
-          name: 'Day 2 - Cross Groups',
+          name: 'Day 2',
           matchups: [
             { id: 'AvsC', title: 'A vs C', description: 'Group A vs Group C matchup', games: 6 },
             { id: 'BvsC', title: 'B vs C', description: 'Group B vs Group C matchup', games: 6 },
@@ -639,14 +909,14 @@ export default {
         },
         {
           id: 'day3',
-          name: 'Day 3 - Elimination',
+          name: 'Day 3',
           matchups: [
             { id: 'ER1', title: 'Elimination R1', description: 'First elimination round', games: 8 }
           ]
         },
         {
           id: 'day4',
-          name: 'Day 4 - Finals',
+          name: 'Day 4',
           matchups: [
             { id: 'ER2', title: 'Elimination R2', description: 'Second elimination round', games: 8 },
             { id: 'WR1', title: 'Winners R1', description: 'Winners bracket final', games: 8 }
@@ -847,165 +1117,137 @@ export default {
         return;
       }
       
-      // Set initial states for elements that will be animated (exclude nav-links)
-      gsap.set([this.$refs.championshipLogo, this.$refs.championshipTitle, this.$refs.tournamentInfo], {
-        opacity: 0,
-        y: 50,
-        scale: 0.8,
-        filter: 'blur(5px)'
+      // Wait for DOM to be ready
+      this.$nextTick(() => {
+        // Check if refs exist before animating
+        const elementsToAnimate = [
+          this.$refs.championshipLogo,
+          this.$refs.championshipTitle,
+          this.$refs.tournamentInfo
+        ].filter(Boolean);
+        
+        if (elementsToAnimate.length === 0) {
+          console.warn('⚠️ Header animation refs not found - skipping animations');
+          return;
+        }
+        
+        // Set initial states for elements that will be animated
+        gsap.set(elementsToAnimate, {
+          opacity: 0,
+          y: 30,
+          scale: 0.9
+        });
+        
+        // Set specific states for individual info items (check if they exist)
+        const infoItems = [
+          this.$refs.infoItem1,
+          this.$refs.infoItem2,
+          this.$refs.infoItem3
+        ].filter(Boolean);
+        
+        if (infoItems.length > 0) {
+          gsap.set(infoItems, {
+            opacity: 0,
+            x: -20,
+            scale: 0.95
+          });
+        }
+        
+        // Create simplified master timeline
+        const masterTimeline = gsap.timeline();
+        
+        // 1. Championship Logo animation
+        if (this.$refs.championshipLogo) {
+          masterTimeline.to(this.$refs.championshipLogo, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            ease: 'back.out(1.7)'
+          });
+        }
+        
+        // 2. Championship Title animation
+        if (this.$refs.championshipTitle) {
+          masterTimeline.to(this.$refs.championshipTitle, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.6,
+            ease: 'power2.out'
+          }, '-=0.4');
+        }
+        
+        // 3. Tournament Info animation
+        if (this.$refs.tournamentInfo) {
+          masterTimeline.to(this.$refs.tournamentInfo, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.6,
+            ease: 'power2.out'
+          }, '-=0.3');
+        }
+        
+        // 4. Individual info items animation
+        if (infoItems.length > 0) {
+          masterTimeline.to(infoItems, {
+            opacity: 1,
+            x: 0,
+            scale: 1,
+            duration: 0.5,
+            ease: 'power2.out',
+            stagger: 0.1
+          }, '-=0.3');
+        }
+        
+        // 5. Setup continuous animations
+        this.setupContinuousAnimations();
       });
-      
-      // Keep nav-links visible at all times - no animation
-      gsap.set('.nav-links', {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        filter: 'blur(0px)'
-      });
-      
-      // Set specific states for individual info items
-      gsap.set([this.$refs.infoItem1, this.$refs.infoItem2, this.$refs.infoItem3], {
-        opacity: 0,
-        x: -30,
-        scale: 0.9,
-        rotationY: 15
-      });
-      
-      gsap.set([this.$refs.infoSeparator1, this.$refs.infoSeparator2], {
-        opacity: 0,
-        scale: 0,
-        rotation: 180
-      });
-      
-      // Create sophisticated master timeline
-      const masterTimeline = gsap.timeline();
-      
-      // 1. Championship Logo with bounce and particles
-      masterTimeline
-        .to(this.$refs.championshipLogo, {
-        opacity: 1,
-        y: 0,
-          scale: 1,
-          filter: 'blur(0px)',
-          duration: 1.2,
-          ease: 'elastic.out(1, 0.6)'
-        })
-        .to(this.$refs.logoIcon, {
-          rotation: 360,
-          duration: 0.8,
-          ease: 'power2.out'
-        }, '-=0.6')
-        .to(this.$refs.logoParticles, {
-          opacity: 1,
-          scale: 1.2,
-          duration: 0.4,
-          ease: 'power2.out'
-        }, '-=0.4');
-      
-      // 2. Championship Title with typewriter effect
-      masterTimeline
-        .to(this.$refs.championshipTitle, {
-        opacity: 1,
-        y: 0,
-          scale: 1,
-          filter: 'blur(0px)',
-          duration: 0.8,
-          ease: 'power3.out'
-        }, '-=0.4')
-        .to(this.$refs.titleMain, {
-          backgroundPosition: '200% center',
-          duration: 2,
-          ease: 'power2.inOut'
-        }, '-=0.2');
-      
-      // 3. Tournament Info with faster staggered morphing animations (half the delay)
-      masterTimeline
-        .to(this.$refs.tournamentInfo, {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          filter: 'blur(0px)',
-        duration: 0.6,
-        ease: 'power2.out'
-        }, '-=0.15'); // Reduced from -=0.3 to -=0.15 for faster animation
-      
-      // 4. Individual info items with 3D flip effects (also faster)
-      masterTimeline
-        .to([this.$refs.infoItem1, this.$refs.infoItem2, this.$refs.infoItem3], {
-        opacity: 1,
-          x: 0,
-          scale: 1,
-          rotationY: 0,
-          duration: 0.8,
-          ease: 'back.out(1.7)',
-          stagger: 0.15
-        }, '-=0.2') // Reduced from -=0.4 to -=0.2 for faster animation
-        .to([this.$refs.infoIcon1, this.$refs.infoIcon2, this.$refs.infoIcon3], {
-          scale: 1.3,
-          rotation: 10,
-          duration: 0.3,
-          ease: 'elastic.out(1, 0.3)',
-          stagger: 0.1,
-          yoyo: true,
-          repeat: 1
-        }, '-=0.6');
-      
-      // 5. Separators with spin animation (faster)
-      masterTimeline
-        .to([this.$refs.infoSeparator1, this.$refs.infoSeparator2], {
-          opacity: 1,
-          scale: 1,
-          rotation: 0,
-        duration: 0.5,
-          ease: 'back.out(2)',
-          stagger: 0.1
-        }, '-=0.4'); // Reduced from -=0.8 to -=0.4 for faster animation
-      
-      // 6. Navigation links - removed from animation, stays visible
-      
-      // 7. Continuous subtle animations
-      this.setupContinuousAnimations();
     },
     
     setupContinuousAnimations() {
-      // Continuous logo glow effect
-      gsap.to(this.$refs.logoIcon, {
-        textShadow: '0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.6)',
-        duration: 2,
-        ease: 'power2.inOut',
-        yoyo: true,
-        repeat: -1
-      });
+      // Only animate elements that exist
+      if (this.$refs.logoIcon) {
+        // Continuous logo glow effect
+        gsap.to(this.$refs.logoIcon, {
+          textShadow: '0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.6)',
+          duration: 2,
+          ease: 'power2.inOut',
+          yoyo: true,
+          repeat: -1
+        });
+      }
       
-      // Subtle floating animation for info items
-      gsap.to([this.$refs.infoItem1, this.$refs.infoItem2, this.$refs.infoItem3], {
-        y: -3,
-        duration: 3,
-        ease: 'power2.inOut',
-        yoyo: true,
-        repeat: -1,
-        stagger: 0.5
-      });
+      // Subtle floating animation for info items (only if they exist)
+      const infoItems = [
+        this.$refs.infoItem1,
+        this.$refs.infoItem2,
+        this.$refs.infoItem3
+      ].filter(Boolean);
       
-      // Gentle rotation for separators
-      gsap.to([this.$refs.infoSeparator1, this.$refs.infoSeparator2], {
-        rotation: 10,
-        duration: 4,
-        ease: 'power2.inOut',
-        yoyo: true,
-        repeat: -1,
-        stagger: 0.2
-      });
+      if (infoItems.length > 0) {
+        gsap.to(infoItems, {
+          y: -2,
+          duration: 3,
+          ease: 'power2.inOut',
+          yoyo: true,
+          repeat: -1,
+          stagger: 0.5
+        });
+      }
       
-      // Particle animation for logo
-      gsap.to(this.$refs.logoParticles, {
-        opacity: 0.7,
-        scale: 1.1,
-        duration: 1.5,
-        ease: 'power2.inOut',
-        yoyo: true,
-        repeat: -1
-      });
+      // Particle animation for logo (only if it exists)
+      if (this.$refs.logoParticles) {
+        gsap.to(this.$refs.logoParticles, {
+          opacity: 0.7,
+          scale: 1.1,
+          duration: 1.5,
+          ease: 'power2.inOut',
+          yoyo: true,
+          repeat: -1
+        });
+      }
     },
 
     // Dashboard Title Animations
@@ -1579,6 +1821,104 @@ export default {
       this.advancedControlsExpanded = !this.advancedControlsExpanded;
     },
 
+    // Collapsible sections toggle
+    toggleTournamentDays() {
+      this.tournamentDaysCollapsed = !this.tournamentDaysCollapsed;
+    },
+
+    toggleMatchups() {
+      this.matchupsCollapsed = !this.matchupsCollapsed;
+    },
+
+    // Check if Controls panel is in the same lane as Dashboard
+    isControlsInDashboardLane() {
+      try {
+        const dashboardPanel = document.querySelector('.dashboard-panel');
+        const controlsPanel = document.querySelector('.enhanced-action-panel, .controls-panel-grid');
+        
+        if (!dashboardPanel || !controlsPanel) {
+          this.collisionDebug = {
+            ...this.collisionDebug,
+            panelsFound: false,
+            reason: 'Missing DOM elements - Dashboard or Controls panel not found'
+          };
+          console.log('🔍 Collision Check: Missing panels', { 
+            dashboardPanel: !!dashboardPanel, 
+            controlsPanel: !!controlsPanel 
+          });
+          return true; // Default to safe behavior
+        }
+
+        const dashboardRect = dashboardPanel.getBoundingClientRect();
+        const controlsRect = controlsPanel.getBoundingClientRect();
+        
+        // Check horizontal overlap - stricter detection
+        const horizontalOverlap = !(controlsRect.right < dashboardRect.left - 20 || controlsRect.left > dashboardRect.right + 20);
+        
+        // Check if controls are vertically related (roughly same area or below) 
+        const verticallyRelated = controlsRect.top >= dashboardRect.top - 100; // More tolerance
+        
+        // Check if controls are in original position (left side of screen) - more specific
+        const isInOriginalPosition = controlsRect.left < (window.innerWidth * 0.4); // Controls should be in left 40% of screen
+        
+        // Additional check: Controls panel should be relatively close to dashboard
+        const isNearDashboard = Math.abs(controlsRect.left - dashboardRect.left) < 100;
+        
+        const shouldAdjust = horizontalOverlap && verticallyRelated && isInOriginalPosition && isNearDashboard;
+        
+        // Update debug data with comprehensive information
+        this.collisionDebug = {
+          panelsFound: true,
+          dashboard: {
+            left: Math.round(dashboardRect.left),
+            right: Math.round(dashboardRect.right),
+            top: Math.round(dashboardRect.top),
+            bottom: Math.round(dashboardRect.bottom),
+            width: Math.round(dashboardRect.width),
+            height: Math.round(dashboardRect.height)
+          },
+          controls: {
+            left: Math.round(controlsRect.left),
+            right: Math.round(controlsRect.right),
+            top: Math.round(controlsRect.top),
+            bottom: Math.round(controlsRect.bottom),
+            width: Math.round(controlsRect.width),
+            height: Math.round(controlsRect.height)
+          },
+          analysis: {
+            horizontalOverlap,
+            verticallyRelated,
+            isInOriginalPosition,
+            isNearDashboard,
+            windowWidth: window.innerWidth,
+            shouldAdjust
+          },
+          reason: shouldAdjust ? 
+            'Controls panel is spatially related to Dashboard' : 
+            `Controls panel is not spatially related: ${!horizontalOverlap ? 'no horizontal overlap' : ''} ${!verticallyRelated ? 'not vertically related' : ''} ${!isInOriginalPosition ? 'not in original position' : ''} ${!isNearDashboard ? 'not near dashboard' : ''}`.trim()
+        };
+        
+        // Enhanced console logging with visual indicators
+        console.log('🔍 COLLISION DETECTION REPORT:');
+        console.log('📊 Panel Positions:', {
+          dashboard: this.collisionDebug.dashboard,
+          controls: this.collisionDebug.controls
+        });
+        console.log('🧠 Analysis:', this.collisionDebug.analysis);
+        console.log(`💡 Decision: ${shouldAdjust ? '✅ APPLY LAYOUT ADJUSTMENT' : '❌ NO LAYOUT ADJUSTMENT'}`);
+        console.log(`📝 Reason: ${this.collisionDebug.reason}`);
+        
+        return shouldAdjust;
+      } catch (error) {
+        console.error('❌ Collision detection error:', error);
+        this.collisionDebug = {
+          panelsFound: false,
+          error: error.message,
+          reason: 'Error occurred during collision detection'
+        };
+        return true; // Default to safe behavior
+      }
+    },
     
     // Export data handler
     exportData() {
@@ -1690,11 +2030,6 @@ export default {
     // Stop any ongoing animation
     this.stopAnimation();
     
-    // Clear game state interval
-    if (this.gameStateInterval) {
-      clearInterval(this.gameStateInterval);
-      this.gameStateInterval = null;
-    }
     
     
     
@@ -1735,4 +2070,4 @@ export default {
 }
 </script>
 
-<!-- No scoped styles needed as the CSS is already in championship.css --> 
+ 

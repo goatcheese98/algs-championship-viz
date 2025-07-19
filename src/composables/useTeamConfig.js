@@ -636,7 +636,7 @@ export function useTeamConfig() {
     teamLogos,
     teamMappings,
     
-    // Methods
+    
     getTeamLogo,
     getFallbackConfig,
     preloadImage,

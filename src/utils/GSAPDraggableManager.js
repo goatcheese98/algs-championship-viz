@@ -10,7 +10,7 @@ import { Draggable } from 'gsap/Draggable';
 export const GSAPDraggableManager = {
     instances: new Map(),
     
-    // Initialize ultra-performance dragging for a panel
+    
     initializeDraggable(panelElement, options = {}) {
         if (!panelElement) {
             console.warn('⚠️ No panel element provided for draggable initialization');
@@ -83,7 +83,7 @@ export const GSAPDraggableManager = {
                 allowEventDefault: false,
                 inertia: false,  // Disable inertia for instant stopping
                 dragResistance: 0,  // Zero resistance for instant movement
-                edgeResistance: 0,  // No edge resistance
+                
                 allowNativeTouchScrolling: false,
                 lockAxis: false,
                 
@@ -272,11 +272,7 @@ export const GSAPDraggableManager = {
             panelElement.style.cursor = 'grab';
             panelElement.style.zIndex = '1000';
             
-            // Remove event listeners
-            document.removeEventListener('mousemove', handleMove);
-            document.removeEventListener('mouseup', handleEnd);
-            document.removeEventListener('touchmove', handleMove);
-            document.removeEventListener('touchend', handleEnd);
+            
             
             console.log('✅ ULTRA-FAST drag ended:', panelId);
         };

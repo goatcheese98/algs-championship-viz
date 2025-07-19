@@ -1,77 +1,57 @@
-/**
- * MapColoringLogic - Centralized map coloring system using HSL color scheme
- * Handles occurrence-based coloring for tournament maps
- */
 
-/**
- * Base HSL color palette for tournament maps
- * Each map has a base hue with variations for different occurrences
- */
+
+
 export const MAP_COLOR_PALETTE = {
     'E-DISTRICT': {
-        hue: 240,        // Blue
+        hue: 240,
         name: 'E-District',
         variations: [
-            { saturation: 40, lightness: 50 },  // 1st occurrence
-            { saturation: 50, lightness: 50 },  // 2nd occurrence
-            { saturation: 60, lightness: 50 }   // 3rd+ occurrence
+            { saturation: 40, lightness: 50 },
+            { saturation: 50, lightness: 50 },
+            { saturation: 60, lightness: 50 }
         ]
     },
     'STORM POINT': {
-        hue: 20,         // Orange
+        hue: 20,
         name: 'Storm Point',
         variations: [
-            { saturation: 40, lightness: 50 },  // 1st occurrence
-            { saturation: 50, lightness: 50 },  // 2nd occurrence
-            { saturation: 60, lightness: 50 }   // 3rd+ occurrence
+            { saturation: 40, lightness: 50 },
+            { saturation: 50, lightness: 50 },
+            { saturation: 60, lightness: 50 }
         ]
     },
     'WORLD\'S EDGE': {
-        hue: 350,        // Red
+        hue: 350,
         name: 'World\'s Edge',
         variations: [
-            { saturation: 40, lightness: 50 },  // 1st occurrence
-            { saturation: 50, lightness: 50 },  // 2nd occurrence
-            { saturation: 60, lightness: 50 }   // 3rd+ occurrence
+            { saturation: 40, lightness: 50 },
+            { saturation: 50, lightness: 50 },
+            { saturation: 60, lightness: 50 }
         ]
     },
     'BROKEN MOON': {
-        hue: 188,         // Yellow-green
+        hue: 188,
         name: 'Broken Moon',
         variations: [
-            { saturation: 40, lightness: 50 },  // 1st occurrence
-            { saturation: 50, lightness: 50 },  // 2nd occurrence
-            { saturation: 60, lightness: 50 }   // 3rd+ occurrence
+            { saturation: 40, lightness: 50 },
+            { saturation: 50, lightness: 50 },
+            { saturation: 60, lightness: 50 }
         ]
     }
 };
 
-/**
- * Special state colors for non-map scenarios
- */
+
 export const SPECIAL_STATE_COLORS = {
-    UNKNOWN: '#6b7280',     // Gray for unknown maps
-    PRE_GAME: '#008000',    // Green for pre-game state
-    LOADING: '#9ca3af',     // Light gray for loading states
-    ERROR: '#ef4444'        // Red for error states
+    UNKNOWN: '#6b7280',
+    PRE_GAME: '#008000',
+    LOADING: '#9ca3af',
+    ERROR: '#ef4444'
 };
 
-/**
- * Generate HSL color string from components
- * @param {number} hue - Hue value (0-360)
- * @param {number} saturation - Saturation percentage (0-100)
- * @param {number} lightness - Lightness percentage (0-100)
- * @returns {string} HSL color string
- */
 export function createHSLColor(hue, saturation, lightness) {
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
-/**
- * Get base color for a map (first occurrence)
- * @param {string} mapName - Name of the map
- * @returns {string} CSS color string
- */
 export function getBaseMapColor(mapName) {
     if (!mapName || mapName === 'Unknown') {
         return SPECIAL_STATE_COLORS.UNKNOWN;
@@ -90,12 +70,6 @@ export function getBaseMapColor(mapName) {
     return createHSLColor(mapConfig.hue, firstVariation.saturation, firstVariation.lightness);
 }
 
-/**
- * Get color for a map based on its occurrence count
- * @param {string} mapName - Name of the map
- * @param {number} occurrenceCount - Which occurrence this is (1st, 2nd, 3rd+)
- * @returns {string} CSS color string
- */
 export function getMapColorByOccurrence(mapName, occurrenceCount) {
     if (!mapName || mapName === 'Unknown') {
         return SPECIAL_STATE_COLORS.UNKNOWN;
@@ -122,13 +96,6 @@ export function getMapColorByOccurrence(mapName, occurrenceCount) {
     return createHSLColor(mapConfig.hue, variation.saturation, variation.lightness);
 }
 
-/**
- * Calculate map occurrence up to a specific game
- * @param {string} mapName - Name of the map to count
- * @param {number} gameNumber - Game number to count up to
- * @param {Object} mapSequence - Map sequence data with game-to-map mapping
- * @returns {number} Number of times the map has occurred up to this game
- */
 export function calculateMapOccurrence(mapName, gameNumber, mapSequence) {
     if (!mapSequence || !mapSequence.maps) {
         return 1; // Default to first occurrence
@@ -144,13 +111,6 @@ export function calculateMapOccurrence(mapName, gameNumber, mapSequence) {
     return Math.max(1, occurrenceCount); // Ensure at least 1
 }
 
-/**
- * Get comprehensive map color information
- * @param {string} mapName - Name of the map
- * @param {number} gameNumber - Game number (optional)
- * @param {Object} mapSequence - Map sequence data (optional)
- * @returns {Object} Color information object
- */
 export function getMapColorInfo(mapName, gameNumber = null, mapSequence = null) {
     const baseColor = getBaseMapColor(mapName);
     
@@ -180,11 +140,6 @@ export function getMapColorInfo(mapName, gameNumber = null, mapSequence = null) 
     };
 }
 
-/**
- * Get all available map colors for a specific map
- * @param {string} mapName - Name of the map
- * @returns {string[]} Array of all color variations for the map
- */
 export function getAllMapColorVariations(mapName) {
     const mapConfig = MAP_COLOR_PALETTE[mapName];
     if (!mapConfig) {
@@ -196,10 +151,6 @@ export function getAllMapColorVariations(mapName) {
     );
 }
 
-/**
- * Get color palette summary for UI display
- * @returns {Object} Summary of all available colors
- */
 export function getColorPaletteSummary() {
     const summary = {
         maps: {},
@@ -225,34 +176,4 @@ export function getColorPaletteSummary() {
     return summary;
 }
 
-/**
- * Validate map color configuration
- * @param {string} mapName - Name of the map to validate
- * @returns {boolean} True if valid, false otherwise
- */
-export function validateMapColorConfig(mapName) {
-    const mapConfig = MAP_COLOR_PALETTE[mapName];
-    if (!mapConfig) {
-        return false;
-    }
-
-    // Check required properties
-    if (typeof mapConfig.hue !== 'number' || 
-        mapConfig.hue < 0 || 
-        mapConfig.hue > 360) {
-        return false;
-    }
-
-    if (!Array.isArray(mapConfig.variations) || 
-        mapConfig.variations.length === 0) {
-        return false;
-    }
-
-    // Check each variation
-    return mapConfig.variations.every(variation => 
-        typeof variation.saturation === 'number' &&
-        typeof variation.lightness === 'number' &&
-        variation.saturation >= 0 && variation.saturation <= 100 &&
-        variation.lightness >= 0 && variation.lightness <= 100
-    );
-} 
+ 

@@ -1,9 +1,5 @@
 <template>
-  <div class="chart-container">
-    <div class="chart-wrapper">
-      <svg ref="svgRef" class="algs-chart-svg"></svg>
-    </div>
-  </div>
+  <svg ref="svgRef" class="algs-chart-svg"></svg>
 </template>
 
 <script setup>
@@ -1711,51 +1707,20 @@ watch(isLegendVisible, (newVisible) => {
 </script>
 
 <style scoped>
-/* Chart Container - Black Background Encapsulation */
-.chart-container {
-    width: 100%;
-    height: 100%;
-    min-height: 900px;
-    background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 50%, rgba(26, 26, 26, 0.95) 100%);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 140, 66, 0.1);
-    border-radius: 12px;
-    box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.2),
-        0 0 16px rgba(255, 140, 66, 0.05),
-        inset 0 1px 0 rgba(255, 255, 255, 0.02);
-    transition: all 0.3s ease;
-    will-change: transform;
-    transform: translate3d(0, 0, 0);
-    contain: layout style paint;
-    overflow: hidden;
-    position: relative;
-}
-
-.chart-container:hover {
-    transform: translate3d(0, -2px, 0);
-    border-color: rgba(255, 140, 66, 0.2);
-    box-shadow: 
-        0 16px 48px rgba(0, 0, 0, 0.3),
-        0 0 32px rgba(255, 140, 66, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-.chart-wrapper {
-  width: 100%;
-  height: 100%;
-  min-height: 400px;
-  position: relative;
-}
 
 .algs-chart-svg {
   width: 100%;
   height: 100%;
-  overflow: visible;
+  min-height: 900px;
+  overflow: hidden;
   background: transparent;
+  display: block;
+  margin: 0;
+  padding: 0;
+  position: relative;
 }
 
-/* Global chart styles */
+
 :deep(.x-axis) {
   color: #94a3b8;
 }

@@ -46,22 +46,21 @@
 
       <!-- Game Filter Controls (merged with progress) -->
       <div class="filter-controls">
+        <div class="filter-action-label">Click to filter | X to clear</div>
         <div class="game-filter-grid">
           <button v-for="item in filterButtons" 
                   :key="item.id"
                   @click="item.type === 'game' ? toggleGameFilter(item.value) : resetGameFilter()"
-                  @mouseenter="item.type === 'game' ? showMapTooltip($event, item.value) : null"
-                  @mouseleave="hideMapTooltip"
+                  @mouseenter="item.type === 'game' ? showFilterTooltip($event, item.value) : showClearTooltip($event)"
+                  @mouseleave="hideFilterTooltip"
                   :class="['game-filter-btn', {
                     active: item.type === 'game' && selectedGames.includes(item.value),
                     current: item.type === 'game' && item.value === currentGame
                   }]"
-                  :style="item.type === 'game' ? getGameButtonStyle(item.value) : {}"
-                  :title="item.type === 'game' ? getGameTooltip(item.value) : 'Clear Filters'">
+                  :style="item.type === 'game' ? getGameButtonStyle(item.value) : getClearButtonStyle()">
             {{ item.label }}
           </button>
         </div>
-        <div class="filter-action-label">Click to filter | X to clear</div>
       </div>
 
       <!-- Current Map Info -->
@@ -190,6 +189,9 @@ export default {
       draggableInstance: null,
       
       tooltipTimeout: null,
+      
+      // Filter tooltip
+      filterTooltip: null,
     }
   },
   
@@ -263,6 +265,12 @@ export default {
     if (this.tooltipTimeout) {
       clearTimeout(this.tooltipTimeout);
     }
+    
+    // Clean up filter tooltip
+    if (this.filterTooltip) {
+      this.filterTooltip.remove();
+      this.filterTooltip = null;
+    }
   },
   
   methods: {
@@ -272,12 +280,11 @@ export default {
         'togglePlayback',
         'setCurrentGame',
         'resetPlayback',
-        'setGameFilter' // ADD THIS mapped action
+        'setGameFilter'
     ]),
     togglePanel() {
       this.panelExpanded = !this.panelExpanded;
       
-      // Animate panel expansion
       if (typeof gsap !== 'undefined') {
         if (this.panelExpanded) {
           gsap.to(this.$refs.actionPanel, {
@@ -301,7 +308,6 @@ export default {
         return;
       }
       
-      // Skip draggable initialization on mobile
       if (this.isMobileDevice()) {
         console.log('📱 Mobile device detected - skipping draggable initialization');
         return;
@@ -310,14 +316,12 @@ export default {
       const panelElement = this.$refs.actionPanel;
       const panelId = panelElement.id || `action-panel-${Date.now()}`;
       
-      // Ensure panel has ID
       if (!panelElement.id) {
         panelElement.id = panelId;
       }
       
       console.log('🚀 Initializing draggable for panel:', panelId);
       
-      // Initialize draggable with new system
       this.draggableInstance = GSAPDraggableManager.initializeDraggable(panelElement);
       
       if (this.draggableInstance) {
@@ -332,10 +336,8 @@ export default {
     updateGameFromSlider(event) {
       const gameValue = Math.min(Math.max(0, parseInt(event.target.value)), this.maxGames);
       
-      // Update store directly for responsive UI feedback
       this.setCurrentGame(gameValue);
       
-      // Reset filters when dragging back to initial state (game 0)
       if (gameValue === 0 && this.selectedGames.length > 0) {
         console.log('🔄 Progress bar dragged to 0, resetting filters');
         this.selectedGames = [];
@@ -353,12 +355,8 @@ export default {
       }, 100);
     },
     
-    // REMOVE the old togglePlayback method that emitted an event.
-    // The new one is mapped from the store and will be called directly
-    // by the @click handler in the template.
-    
     restart() {
-      this.resetPlayback(); // CHANGE to call store action
+      this.resetPlayback();
     },
     
 
@@ -367,22 +365,18 @@ export default {
       const wasSelected = this.selectedGames.includes(gameNum);
       
       if (wasSelected) {
-        // If already selected, toggle it off
         this.selectedGames.splice(this.selectedGames.indexOf(gameNum), 1);
         console.log(`🎮 Removed game ${gameNum} from filter. Selected: [${this.selectedGames.join(', ')}]`);
       } else {
-        // If not selected, add it to the selection (allow multiple)
         this.selectedGames.push(gameNum);
         console.log(`🎮 Added game ${gameNum} to filter. Selected: [${this.selectedGames.join(', ')}]`);
         
-        // Auto-progress to max level when any filter is selected
         if (this.currentGame < this.maxGames) {
           console.log(`🎯 Auto-progressing to game ${this.maxGames} for filtering`);
           this.setCurrentGame(this.maxGames);
         }
       }
       
-      // CHANGE: Call the store action directly instead of emitting
       this.setGameFilter({ 
         games: this.selectedGames, 
         action: wasSelected ? 'remove' : 'add',
@@ -395,19 +389,17 @@ export default {
       console.log('🔄 Resetting game filter and returning to initial state');
       this.selectedGames = [];
       
-      this.setGameFilter({ games: [], action: 'clear', maxGames: this.maxGames }); // CHANGE to call store action
-      this.setCurrentGame(0); // Also reset game progress
+      this.setGameFilter({ games: [], action: 'clear', maxGames: this.maxGames });
+      this.setCurrentGame(0);
     },
     
     getGameButtonStyle(gameNum) {
       const isActive = this.selectedGames.includes(gameNum);
       const isCurrent = gameNum === this.currentGame;
       
-      // Get map color for this game from chart data
-      let gameColor = '#6366f1'; // default fallback
+      let gameColor = '#6366f1';
       
       if (this.processedChartData && this.processedChartData.length > 0) {
-        // Find the game data from the first team (all teams have same game sequence)
         const firstTeam = this.processedChartData[0];
         if (firstTeam && firstTeam.games) {
           const gameData = firstTeam.games.find(game => game.gameNumber === gameNum);
@@ -423,27 +415,31 @@ export default {
         color: '#ffffff'
       };
       
-      // Add subtle glow effect only for current game during progress
       if (isCurrent) {
         return {
           ...baseStyle,
           boxShadow: `0 0 8px ${gameColor}60, 0 2px 4px rgba(0,0,0,0.3)`
         };
       } else if (isActive) {
-        // Keep enhanced styling for selected filters
         return {
           ...baseStyle,
           boxShadow: `0 0 12px ${gameColor}60, 0 0 20px ${gameColor}40`,
           transform: 'scale(1.15)'
         };
       } else {
-        // Default colored buttons with map colors
         return baseStyle;
       }
     },
     
+    getClearButtonStyle() {
+      return {
+        background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+        border: '2px solid #dc2626',
+        color: '#ffffff'
+      };
+    },
+    
     getGameTooltip(gameNum) {
-      // Get map name from chart data if available
       let mapName = '';
       
       if (this.processedChartData && this.processedChartData.length > 0) {
@@ -473,10 +469,8 @@ export default {
       };
       
       
-      // Try direct match first, then normalized match
       let imageUrl = mapImages[mapName];
       if (!imageUrl && mapName) {
-        // Try case-insensitive and normalized matching
         const normalizedMapName = mapName.toLowerCase().replace(/[^a-z]/g, '');
         const normalizedKeys = Object.keys(mapImages).reduce((acc, key) => {
           acc[key.toLowerCase().replace(/[^a-z]/g, '')] = mapImages[key];
@@ -489,7 +483,6 @@ export default {
     },
     
     getCurrentMapImageUrl() {
-      // Extract just the map name from "Game X - MapName" format
       let mapName = this.currentMap;
       if (mapName && mapName.includes(' - ')) {
         mapName = mapName.split(' - ')[1];
@@ -500,21 +493,17 @@ export default {
     },
     
     handleMapImageLoad(event) {
-      // Map image loaded successfully
     },
     
     handleMapImageError(event) {
-      // Hide the image and show fallback emoji
       event.target.style.display = 'none';
     },
     
     showMapTooltip(event, gameNum) {
-      // Clear any existing timeout
       if (this.tooltipTimeout) {
         clearTimeout(this.tooltipTimeout);
       }
       
-      // Set a delay before showing tooltip
       this.tooltipTimeout = setTimeout(() => {
         const mapName = this.getGameTooltip(gameNum);
         const imageUrl = this.getMapImageUrl(mapName);
@@ -523,29 +512,25 @@ export default {
           const rect = event.target.getBoundingClientRect();
           this.mapTooltip = {
             visible: true,
-            x: rect.left - 80, // Offset to center over button
-            y: rect.top - 120, // Position above button
+            x: rect.left - 80,
+            y: rect.top - 120,
             mapName: mapName,
             imageUrl: imageUrl
           };
         }
-      }, 200); // 0.2 second delay
+      }, 200);
     },
     
     showCurrentMapTooltip(event) {
-      // Clear any existing timeout
       if (this.tooltipTimeout) {
         clearTimeout(this.tooltipTimeout);
       }
       
-      // Set a delay before showing tooltip
       this.tooltipTimeout = setTimeout(() => {
-        // Don't show tooltip for initial state
         if (this.currentMap === 'Initial State' || !this.currentMap) {
           return;
         }
         
-        // Extract just the map name from "Game X - MapName" format
         let mapName = this.currentMap;
         if (mapName && mapName.includes(' - ')) {
           mapName = mapName.split(' - ')[1];
@@ -557,29 +542,20 @@ export default {
         if (imageUrl && mapName) {
           const rect = event.target.getBoundingClientRect();
           
-          // Calculate tooltip position with screen bounds checking
-          let tooltipX = rect.left + rect.width / 2 - 120; // Center tooltip over badge
-          let tooltipY = rect.top - 150; // Position above badge
+          let tooltipX = rect.left + rect.width / 2 - 120;
+          let tooltipY = rect.top - 150;
           
-          // Ensure tooltip doesn't go off-screen
-          const tooltipWidth = 280; // Match CSS max-width
-          const tooltipHeight = 150; // Approximate tooltip height
-          
-          // Adjust X position if going off right edge
           if (tooltipX + tooltipWidth > window.innerWidth) {
             tooltipX = window.innerWidth - tooltipWidth - 10;
           }
-          // Adjust X position if going off left edge
           if (tooltipX < 10) {
             tooltipX = 10;
           }
           
-          // Adjust Y position if going off top edge
           if (tooltipY < 10) {
-            tooltipY = rect.bottom + 10; // Show below badge instead
+            tooltipY = rect.bottom + 10;
           }
           
-          // Emit tooltip data to parent
           const tooltipData = {
             x: tooltipX,
             y: tooltipY,
@@ -589,7 +565,7 @@ export default {
           console.log('Emitting map tooltip:', tooltipData);
           this.$emit('show-map-tooltip', tooltipData);
         }
-      }, 200); // 0.2 second delay
+      }, 200);
     },
     
     hideMapTooltip() {
@@ -600,16 +576,101 @@ export default {
       this.$emit('hide-map-tooltip');
     },
     
+    createFilterTooltip() {
+      if (this.filterTooltip) {
+        this.filterTooltip.remove();
+      }
+      
+      this.filterTooltip = document.createElement('div');
+      this.filterTooltip.className = 'filter-tooltip';
+      this.filterTooltip.style.cssText = `
+        position: absolute;
+        visibility: hidden;
+        background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 100%);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 140, 66, 0.3);
+        border-radius: 8px;
+        padding: 12px 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 16px rgba(255, 140, 66, 0.1);
+        color: #ffffff;
+        font-family: Inter, system-ui, sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 1.4;
+        pointer-events: none;
+        z-index: 9999;
+        max-width: 200px;
+        text-align: left;
+      `;
+      
+      document.body.appendChild(this.filterTooltip);
+      return this.filterTooltip;
+    },
+    
+    showFilterTooltip(event, gameNum) {
+      if (!this.filterTooltip) {
+        this.createFilterTooltip();
+      }
+      
+      const mapName = this.getGameTooltip(gameNum);
+      
+      this.filterTooltip.innerHTML = `
+        <div style="font-weight: 600; color: #ff8c42; margin-bottom: 4px;">
+          Game ${gameNum}
+        </div>
+        <div style="color: #e5e7eb;">
+          ${mapName}
+        </div>
+      `;
+      
+      this.filterTooltip.style.visibility = 'visible';
+      
+      const rect = event.target.getBoundingClientRect();
+      const tooltipX = rect.left + rect.width / 2 - 100;
+      const tooltipY = rect.top - 80;
+      
+      this.filterTooltip.style.left = Math.max(10, Math.min(tooltipX, window.innerWidth - 210)) + 'px';
+      this.filterTooltip.style.top = Math.max(10, tooltipY) + 'px';
+    },
+    
+    showClearTooltip(event) {
+      if (!this.filterTooltip) {
+        this.createFilterTooltip();
+      }
+      
+      this.filterTooltip.innerHTML = `
+        <div style="font-weight: 600; color: #ff8c42;">
+          Clear Filters
+        </div>
+        <div style="color: #e5e7eb; margin-top: 4px;">
+          Remove all game filters and reset view
+        </div>
+      `;
+      
+      this.filterTooltip.style.visibility = 'visible';
+      
+      const rect = event.target.getBoundingClientRect();
+      const tooltipX = rect.left + rect.width / 2 - 100;
+      const tooltipY = rect.top - 80;
+      
+      this.filterTooltip.style.left = Math.max(10, Math.min(tooltipX, window.innerWidth - 210)) + 'px';
+      this.filterTooltip.style.top = Math.max(10, tooltipY) + 'px';
+    },
+    
+    hideFilterTooltip() {
+      if (this.filterTooltip) {
+        this.filterTooltip.style.visibility = 'hidden';
+      }
+    },
+    
     
     handleImageError() {
-      // Hide tooltip if image fails to load
       this.$emit('hide-map-tooltip');
     },
     
     adjustColor(hexColor, percent) {
-      // Simple color adjustment utility with null check
       if (!hexColor || typeof hexColor !== 'string' || !hexColor.startsWith('#')) {
-        return hexColor || '#dc2626'; // Return original or fallback color
+        return hexColor || '#dc2626';
       }
       
       const num = parseInt(hexColor.slice(1), 16);
@@ -624,10 +685,9 @@ export default {
     },
     
     getCurrentMapStyle() {
-      let mapColor = '#10b981'; // default fallback
+      let mapColor = '#d97706';
       let mapName = this.currentMap || 'Loading...';
       
-      // Get map color for current game from chart data
       if (this.processedChartData && this.processedChartData.length > 0 && this.currentGame > 0) {
         const firstTeam = this.processedChartData[0];
         if (firstTeam && firstTeam.games) {
@@ -650,15 +710,6 @@ export default {
       this.$emit('export-requested', this.selectedMatchup);
     },
 
-    // REMOVE the old toggleLegend method that emitted an event.
-    // The new one is mapped from the store and will be called directly
-    // by the @click handler in the template.
-
-    // REMOVE the old setAnimationSpeed method that emitted an event.
-    // The new one is mapped from the store and will be called directly
-    // by the @click handler in the template.
-    
-    // Mobile detection utility
     isMobileDevice() {
       return window.innerWidth <= 768;
     }

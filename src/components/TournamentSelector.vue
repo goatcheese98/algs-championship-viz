@@ -54,8 +54,8 @@
 </template>
 
 <script>
-import { useTournamentStore } from '../stores/tournament.js' // Import the store
-import { mapState, mapActions } from 'pinia' // Import Pinia helpers
+import { useTournamentStore } from '../stores/tournament.js'
+import { mapState, mapActions } from 'pinia'
 
 export default {
   name: 'TournamentSelector',
@@ -83,11 +83,7 @@ export default {
   
   data() {
     return {
-      // Tournament structure data
       tournamentDays: this.isEwc2025Tournament ? [
-        // ========================================
-        // EWC 2025 TOURNAMENT STRUCTURE
-        // ========================================
         {
           id: 'day1',
           name: 'Day 1 - Group A',
@@ -98,7 +94,7 @@ export default {
                 title: 'Group A',
                 description: 'Complete Day 1 Group A tournament featuring dynamic game count based on actual data across World\'s Edge, E-District, Storm Point, and Broken Moon.',
                 teams: 20,
-                games: 'auto', // Dynamic based on CSV data
+                games: 'auto',
                 maps: 'World\'s Edge → E-District → Storm Point → Broken Moon'
               }
           ]
@@ -113,7 +109,7 @@ export default {
                 title: 'Group B',
                 description: 'Complete Day 2 Group B tournament featuring dynamic game count based on actual data across World\'s Edge, E-District, and Storm Point.',
                 teams: 20,
-                games: 'auto', // Dynamic based on CSV data
+                games: 'auto',
                 maps: 'World\'s Edge → E-District → Storm Point'
               }
           ]
@@ -128,15 +124,12 @@ export default {
               title: 'Last Chance',
               description: 'Final Day 3 Last Chance tournament featuring 4 games with the same map sequence as Day 2: World\'s Edge, E-District, and Storm Point.',
               teams: 20,
-              games: 'auto', // Dynamic based on CSV data
+              games: 'auto',
               maps: 'World\'s Edge → E-District → Storm Point'
             }
           ]
         }
       ] : this.isYear5Tournament ? [
-        // ========================================
-        // YEAR 5 OPEN TOURNAMENT STRUCTURE
-        // ========================================
         {
           id: 'day1',
           name: 'Day 1 - Winners Round 1',
@@ -193,9 +186,6 @@ export default {
           ]
         }
       ] : [
-        // ========================================
-        // YEAR 4 CHAMPIONSHIP TOURNAMENT STRUCTURE
-        // ========================================
         {
           id: 'day1',
           name: 'Day 1 - Group Stages',
@@ -301,7 +291,7 @@ export default {
   },
   
   computed: {
-    ...mapState(useTournamentStore, ['selectedDay', 'selectedMatchup']), // Map state from store
+    ...mapState(useTournamentStore, ['selectedDay', 'selectedMatchup']),
     currentDayMatchups() {
       const currentDay = this.tournamentDays.find(day => day.id === this.selectedDay);
       return currentDay ? currentDay.matchups : [];
@@ -316,14 +306,13 @@ export default {
     selectedDay(newDay, oldDay) {
       if (newDay !== oldDay) {
         console.log('📅 TournamentSelector: Day changed from', oldDay, 'to', newDay);
-        // Force reactivity update
         this.$forceUpdate();
       }
     }
   },
   
   methods: {
-    ...mapActions(useTournamentStore, ['setDay', 'selectMatchup']), // Map actions
+    ...mapActions(useTournamentStore, ['setDay', 'selectMatchup']),
     
     getStatusClass(matchupId) {
       if (this.loadedMatchups.has(matchupId)) return 'loaded';
@@ -337,13 +326,11 @@ export default {
       return 'Available';
     },
     
-    // Public method to get matchup info by ID
     getMatchupInfo(matchupId) {
       const allMatchups = this.tournamentDays.flatMap(day => day.matchups);
       return allMatchups.find(matchup => matchup.id === matchupId);
     },
     
-    // Public method to get all available matchups
     getAvailableMatchups() {
       return this.tournamentDays.flatMap(day => 
         day.matchups.map(matchup => ({

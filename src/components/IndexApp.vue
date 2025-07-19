@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <!-- ALGS Header -->
     <header class="algs-header">
       <div class="header-content">
         <div class="algs-branding">
@@ -20,7 +19,6 @@
       </div>
     </header>
 
-    <!-- EWC 2025 Banner (more compact) -->
     <section class="ewc-banner">
       <div class="ewc-banner-content">
         <div class="ewc-banner-background">
@@ -54,18 +52,15 @@
       </div>
     </section>
 
-    <!-- Tournament Dashboard with Carousel -->
     <main class="dashboard-container">
       <div class="dashboard-title">
         <h2>Tournament Dashboard</h2>
         <p>Explore comprehensive visualizations and analytics for ALGS tournaments worldwide</p>
       </div>
 
-      <!-- Tournament Carousel -->
       <div class="carousel-container" @mouseenter="pauseAutoplay" @mouseleave="resumeAutoplay">
         <div class="carousel-wrapper">
           <div class="tournaments-carousel" ref="carousel">
-            <!-- Loop through tournaments -->
             <div class="tournament-card" v-for="tournament in tournaments" :key="tournament.url" @click="goToTournament(tournament.url)">
               <div class="tournament-icon">{{ tournament.icon }}</div>
               <h3>{{ tournament.name }}</h3>
@@ -89,7 +84,6 @@
           </div>
         </div>
         
-        <!-- Carousel Navigation -->
         <div class="carousel-nav">
           <button class="carousel-btn prev" @click="prevSlide">
             <span>‹</span>
@@ -108,8 +102,7 @@
       </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
+    <footer>
       <p>&copy; 2025 ALGS Tournament Dashboard. Built for competitive Apex Legends visualization.</p>
     </footer>
   </div>
@@ -171,7 +164,6 @@ export default {
   },
 
   beforeUnmount() {
-    // Clear the interval when the component is destroyed
     clearInterval(this.autoplayInterval)
   },
   
@@ -179,9 +171,7 @@ export default {
     initializeAnimations() {
       console.log('🎭 Initializing index page animations...')
       
-      // Check if GSAP is available
       if (typeof gsap !== 'undefined') {
-        // Animate main title entrance
         gsap.fromTo('.main-title', {
           y: -30,
           opacity: 0
@@ -192,7 +182,6 @@ export default {
           ease: 'power2.out'
         })
         
-        // Animate tournament cards
         gsap.fromTo('.tournament-card', {
           y: 50,
           opacity: 0,
@@ -261,14 +250,11 @@ export default {
     },
     
     openDataManagement() {
-      // Check if we're running locally and the automation server might be available
       const automationServerUrl = 'http://localhost:3002'
       
-      // Try to open the automation server GUI
       try {
         window.open(automationServerUrl, '_blank')
       } catch (error) {
-        // If that fails, show instructions
         const message = `
 🔧 Data Management Tools
 
@@ -293,6 +279,4 @@ The automation server provides full control over data extraction and file manage
     }
   }
 }
-</script>
-
-<!-- No scoped styles needed as the CSS is in index.html --> 
+</script> 
