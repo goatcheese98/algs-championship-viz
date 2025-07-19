@@ -509,6 +509,71 @@
             <InteractiveRaceChart
               :teamConfig="teamConfig"
             />
+            
+            <!-- Game Commentary Section - Absolutely positioned at bottom of chart -->
+            <div v-if="selectedMatchup" class="commentary-section-attached">
+              <div class="commentary-panel-attached">
+                <div class="commentary-header">
+                  <div class="commentary-main">
+                    <div class="commentary-icon">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+                      </svg>
+                    </div>
+                    <div class="commentary-title-enhanced">
+                      <span class="commentary-text">Game Commentary</span>
+                      <div class="commentary-glow"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="commentary-content">
+                  <div class="commentary-game-info">
+                    <div class="current-game-display">
+                      <div class="game-badge" :style="getCurrentGameBadgeStyle()">
+                        <span class="game-number">{{ currentGame > 0 ? currentGame : 'Pre-Game' }}</span>
+                        <span class="game-map" v-if="currentGame > 0">{{ getCurrentMapName() }}</span>
+                      </div>
+                    </div>
+                    
+                    <div class="commentary-stats">
+                      <div class="stat-item">
+                        <span class="stat-label">Teams:</span>
+                        <span class="stat-value">{{ getTeamCount() }}</span>
+                      </div>
+                      <div class="stat-item">
+                        <span class="stat-label">Progress:</span>
+                        <span class="stat-value">{{ Math.round((currentGame / maxGames) * 100) }}%</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="commentary-text-content">
+                    <div class="commentary-summary">
+                      <h3>{{ getCommentaryTitle() }}</h3>
+                      <p>{{ getCommentaryText() }}</p>
+                    </div>
+                    
+                    <div class="leaderboard-preview">
+                      <h4>Current Top 3</h4>
+                      <div class="top-teams" v-if="getTopTeams().length > 0">
+                        <div v-for="(team, index) in getTopTeams().slice(0, 3)" 
+                             :key="team.team" 
+                             class="top-team-item">
+                          <span class="position">{{ index + 1 }}</span>
+                          <span class="team-name">{{ team.team }}</span>
+                          <span class="team-points">{{ team.totalPoints }}pts</span>
+                        </div>
+                      </div>
+                      <div v-else class="no-data">
+                        Select a game to see leaderboard
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
             <transition name="fade">
               <div v-if="isLoading" class="loading-overlay">
                 <div class="loading-spinner"></div>
@@ -1769,6 +1834,90 @@ export default {
       
       return 'Tournament';
     },
+
+    // Commentary Methods
+    getCurrentMapName() {
+      if (this.currentGame === 0) return 'Pre-Game';
+      
+      if (this.processedChartData && this.processedChartData.length > 0) {
+        const firstTeam = this.processedChartData[0];
+        if (firstTeam && firstTeam.games) {
+          const currentGameData = firstTeam.games.find(game => game.gameNumber === this.currentGame);
+          if (currentGameData && currentGameData.map) {
+            return currentGameData.map;
+          }
+        }
+      }
+      
+      return `Game ${this.currentGame}`;
+    },
+
+    getCurrentGameBadgeStyle() {
+      let gameColor = '#ef4444';
+      
+      if (this.processedChartData && this.processedChartData.length > 0 && this.currentGame > 0) {
+        const firstTeam = this.processedChartData[0];
+        if (firstTeam && firstTeam.games) {
+          const currentGameData = firstTeam.games.find(game => game.gameNumber === this.currentGame);
+          if (currentGameData && currentGameData.color) {
+            gameColor = currentGameData.color;
+          }
+        }
+      }
+      
+      return {
+        background: `linear-gradient(135deg, ${gameColor} 0%, ${this.adjustColor(gameColor, -20)} 100%)`,
+        border: `2px solid ${gameColor}`,
+        boxShadow: `0 0 15px ${gameColor}60, 0 4px 8px rgba(0,0,0,0.3)`
+      };
+    },
+
+    getTeamCount() {
+      return this.processedChartData ? this.processedChartData.length : 0;
+    },
+
+    getTopTeams() {
+      if (!this.processedChartData || this.currentGame === 0) return [];
+      
+      return this.processedChartData
+        .map(team => ({
+          team: team.team,
+          totalPoints: team.games?.slice(0, this.currentGame).reduce((sum, game) => sum + (game.points || 0), 0) || 0
+        }))
+        .sort((a, b) => b.totalPoints - a.totalPoints);
+    },
+
+    getCommentaryTitle() {
+      if (this.currentGame === 0) {
+        return 'Pre-Tournament Analysis';
+      } else if (this.currentGame === this.maxGames) {
+        return 'Final Results Summary';
+      } else {
+        return `Game ${this.currentGame} Analysis`;
+      }
+    },
+
+    getCommentaryText() {
+      if (this.currentGame === 0) {
+        return `Welcome to the ${this.dynamicChartTitle}. ${this.getTeamCount()} elite teams are ready to compete across ${this.maxGames} intense games. Each team will fight for placement points and elimination survival in this high-stakes tournament format.`;
+      } else if (this.currentGame === this.maxGames) {
+        const topTeam = this.getTopTeams()[0];
+        if (topTeam) {
+          return `Tournament complete! ${topTeam.team} emerges victorious with ${topTeam.totalPoints} points after ${this.maxGames} grueling games. Their consistent performance and strategic gameplay secured their position at the top of the leaderboard.`;
+        }
+        return `The tournament has concluded after ${this.maxGames} games of intense competition. Final standings have been determined.`;
+      } else {
+        const topTeams = this.getTopTeams().slice(0, 3);
+        const currentMap = this.getCurrentMapName();
+        
+        if (topTeams.length >= 3) {
+          return `After ${this.currentGame} games on ${currentMap}, ${topTeams[0].team} leads with ${topTeams[0].totalPoints} points. ${topTeams[1].team} (${topTeams[1].totalPoints}pts) and ${topTeams[2].team} (${topTeams[2].totalPoints}pts) are fighting to close the gap. The competition remains fierce with ${this.maxGames - this.currentGame} games remaining.`;
+        } else if (topTeams.length > 0) {
+          return `Game ${this.currentGame} has concluded on ${currentMap}. ${topTeams[0].team} currently leads the standings. The tournament continues with strategic positioning crucial for the remaining games.`;
+        }
+        return `Game ${this.currentGame} on ${currentMap} is part of the ongoing tournament progression. Teams are battling for optimal placement points.`;
+      }
+    },
     
     // Game filter methods
     async toggleGameFilter(gameNum) {
@@ -2050,18 +2199,22 @@ export default {
       });
       
       return rows.join('\n');
+    },
+
+    stopAnimation() {
+      if (this.animationInterval) {
+        clearInterval(this.animationInterval);
+        this.animationInterval = null;
+      }
+      this.setPlaying(false);
     }
   },
   
   beforeUnmount() {
     console.log('🧹 TournamentView beforeUnmount() called - cleaning up');
     
-    
     // Stop any ongoing animation
     this.stopAnimation();
-    
-    
-    
     
     // Clean up chart
     this.cleanupChart();
@@ -2071,16 +2224,7 @@ export default {
       this.dashboardResizeObserver.disconnect();
       this.dashboardResizeObserver = null;
     }
-  },
-  
-  stopAnimation() {
-    if (this.animationInterval) {
-      clearInterval(this.animationInterval);
-      this.animationInterval = null;
-    }
-    this.setPlaying(false);
-  },
-  
+  }
 }
 </script>
 

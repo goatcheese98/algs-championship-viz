@@ -62,6 +62,7 @@
         <div class="map-badge" 
              :style="getCurrentMapStyle()"
              @mouseenter="showCurrentMapTooltip"
+             @mousemove="updateTooltipPosition"
              @mouseleave="hideMapTooltip"
              style="cursor: pointer;">
           <template v-if="getCurrentMapImageUrl() && currentMap">
@@ -73,10 +74,11 @@
                  @load="handleMapImageLoad"
                  @error="handleMapImageError"
                  @mouseenter="showCurrentMapTooltip"
+                 @mousemove="updateTooltipPosition"
                  @mouseleave="hideMapTooltip">
           </template>
           <span v-else class="map-icon">🗺️</span>
-          <span class="map-name" @mouseenter="showCurrentMapTooltip" @mouseleave="hideMapTooltip">{{ currentMap || 'Loading...' }}</span>
+          <span class="map-name" @mouseenter="showCurrentMapTooltip" @mousemove="updateTooltipPosition" @mouseleave="hideMapTooltip">{{ currentMap || 'Loading...' }}</span>
         </div>
       </div>
 
@@ -524,83 +526,80 @@ export default {
     },
     
     showCurrentMapTooltip(event) {
-      if (this.tooltipTimeout) {
-        clearTimeout(this.tooltipTimeout);
+      if (!this.mapTooltip) {
+        this.createMapTooltip();
       }
       
-      this.tooltipTimeout = setTimeout(() => {
-        if (!this.currentMap) {
-          return;
-        }
-        
-        if (!this.mapTooltip) {
-          this.createMapTooltip();
-        }
-        
-        let mapName = this.currentMap;
-        if (mapName && mapName.includes(' - ')) {
-          mapName = mapName.split(' - ')[1];
-        }
-        
-        const imageUrl = this.getMapImageUrl(mapName);
-        console.log('Current map tooltip - mapName:', mapName, 'imageUrl:', imageUrl);
-        
-        if (imageUrl && mapName) {
-          // Create tooltip content with large image preview
-          const isPreGame = mapName === 'Pre-game';
-          const tooltipTitle = isPreGame ? 'Tournament Status' : 'Current Map';
-          const tooltipSubtitle = isPreGame ? 'Pre-game Preparation' : mapName;
-          
-          this.mapTooltip.innerHTML = `
-            <div style="margin-bottom: 12px;">
-              <div style="font-weight: 600; color: #ef4444; font-size: 16px; margin-bottom: 8px;">
-                ${tooltipTitle}
-              </div>
-              <div style="font-weight: 500; color: #ffffff; font-size: 15px;">
-                ${tooltipSubtitle}
-              </div>
-              ${isPreGame ? '<div style="font-size: 12px; color: #a1a1aa; margin-top: 4px;">Teams preparing for competition</div>' : ''}
-            </div>
-            <div style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);">
-              <img src="${imageUrl}" 
-                   alt="${mapName}" 
-                   style="width: 100%; height: 180px; object-fit: cover; display: block;"
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-              <div style="display: none; height: 180px; background: rgba(75, 85, 99, 0.3); align-items: center; justify-content: center; font-size: 48px;">
-                ${isPreGame ? '⚡' : '🗺️'}
-              </div>
-            </div>
-          `;
-          
-          this.mapTooltip.style.visibility = 'visible';
-          
-          // Get the actual element bounds
-          const element = event.currentTarget;
-          const elementRect = element.getBoundingClientRect();
-          const tooltipWidth = 320; // width of tooltip
-          
-          // Position tooltip above the map badge
-          const tooltipX = elementRect.left + (elementRect.width / 2);
-          const tooltipY = elementRect.top - 20; // 20px above the element
-          
-          // Ensure tooltip stays within viewport
-          const minX = tooltipWidth / 2 + 20;
-          const maxX = window.innerWidth - (tooltipWidth / 2) - 20;
-          const clampedX = Math.max(minX, Math.min(tooltipX, maxX));
-          const clampedY = Math.max(20, tooltipY);
-          
-          // Apply positioning
-          this.mapTooltip.style.left = clampedX + 'px';
-          this.mapTooltip.style.top = clampedY + 'px';
-        }
-      }, 300); // Slightly longer delay for map tooltip
+      if (!this.currentMap) {
+        return;
+      }
+      
+      let mapName = this.currentMap;
+      if (mapName && mapName.includes(' - ')) {
+        mapName = mapName.split(' - ')[1];
+      }
+      
+      const imageUrl = this.getMapImageUrl(mapName);
+      
+      if (!imageUrl) {
+        return;
+      }
+      
+      // Create tooltip content - simplified
+      const isPreGame = mapName === 'Pre-game';
+      const tooltipTitle = isPreGame ? 'Tournament Status' : 'Current Map';
+      const tooltipSubtitle = isPreGame ? 'Pre-game Preparation' : mapName;
+      
+      this.mapTooltip.innerHTML = `
+        <div style="margin-bottom: 8px;">
+          <div style="font-weight: 600; color: #ef4444; font-size: 13px; margin-bottom: 4px;">
+            ${tooltipTitle}
+          </div>
+          <div style="font-weight: 500; color: #ffffff; font-size: 12px;">
+            ${tooltipSubtitle}
+          </div>
+        </div>
+        <div style="border-radius: 6px; overflow: hidden;">
+          <img src="${imageUrl}" 
+               alt="${mapName}" 
+               style="width: 100%; height: 80px; object-fit: cover; display: block;">
+        </div>
+      `;
+      
+      this.mapTooltip.style.visibility = 'visible';
+      
+      // Use client coordinates for accurate positioning
+      const mouseX = event.clientX;
+      const mouseY = event.clientY;
+      
+      // Position tooltip to the right of cursor (like bar graph tooltips)
+      const tooltipX = mouseX + 15; // 15px to the right of cursor
+      const tooltipY = mouseY; // At cursor level (top-left corner positioning)
+      
+      // Simple bounds checking
+      this.mapTooltip.style.left = Math.max(10, Math.min(tooltipX, window.innerWidth - 320)) + 'px';
+      this.mapTooltip.style.top = Math.max(10, tooltipY) + 'px';
+    },
+    
+    updateTooltipPosition(event) {
+      if (!this.mapTooltip || this.mapTooltip.style.visibility === 'hidden') {
+        return;
+      }
+      
+      // Use client coordinates for accurate positioning
+      const mouseX = event.clientX;
+      const mouseY = event.clientY;
+      
+      // Position tooltip to the right of cursor (like bar graph tooltips)
+      const tooltipX = mouseX + 15; // 15px to the right of cursor
+      const tooltipY = mouseY; // At cursor level (top-left corner positioning)
+      
+      // Simple bounds checking
+      this.mapTooltip.style.left = Math.max(10, Math.min(tooltipX, window.innerWidth - 320)) + 'px';
+      this.mapTooltip.style.top = Math.max(10, tooltipY) + 'px';
     },
     
     hideMapTooltip() {
-      if (this.tooltipTimeout) {
-        clearTimeout(this.tooltipTimeout);
-        this.tooltipTimeout = null;
-      }
       if (this.mapTooltip) {
         this.mapTooltip.style.visibility = 'hidden';
       }
@@ -664,7 +663,6 @@ export default {
         width: 320px;
         max-width: 320px;
         text-align: center;
-        transform: translateX(-50%);
       `;
       
       document.body.appendChild(this.mapTooltip);

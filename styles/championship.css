@@ -1464,7 +1464,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 0;
-    overflow: hidden;
+    overflow: visible; /* Allow commentary to extend beyond chart section */
     width: 100%;
     height: 100%;
     min-width: 800px; /* Ensure chart section has minimum width */
@@ -4240,3 +4240,415 @@ body {
         font-size: 0.7rem;
     }
 } 
+
+/* Commentary Section Styles */
+.commentary-section {
+    width: 100%;
+    margin: 0;
+    padding: 0 20px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    max-width: 2400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Align commentary with chart section on desktop */
+@media (min-width: 769px) {
+    .commentary-section {
+        padding-left: calc(20px + 280px + 24px); /* main padding + left column width + gap */
+        padding-right: 20px; /* match main layout padding */
+    }
+}
+
+.commentary-panel {
+    width: 100%;
+    max-width: 1200px;
+    background: linear-gradient(135deg, rgba(20, 20, 25, 0.95) 0%, rgba(30, 30, 35, 0.92) 100%);
+    border-radius: 0 0 12px 12px;
+    border: 1px solid rgba(217, 119, 6, 0.25);
+    border-top: none;
+    border-bottom: 2px solid rgba(217, 119, 6, 0.4);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(217, 119, 6, 0.15);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    transition: all 0.3s ease;
+}
+
+.commentary-panel:hover {
+    border-color: rgba(217, 119, 6, 0.4);
+    border-bottom-color: rgba(217, 119, 6, 0.6);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7), 0 0 16px rgba(217, 119, 6, 0.2);
+}
+
+.commentary-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 16px 20px 16px;
+    border-bottom: 2px solid rgba(255, 68, 68, 0.3);
+    flex-shrink: 0;
+    min-height: 64px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(25, 25, 30, 0.3) 0%, rgba(35, 35, 40, 0.15) 100%);
+    border-radius: 0;
+    margin-bottom: 8px;
+    position: relative;
+}
+
+.commentary-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.commentary-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.commentary-icon .icon {
+    width: 20px;
+    height: 20px;
+    color: #ef4444;
+    stroke-width: 2;
+}
+
+.commentary-title-enhanced {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    perspective: 1000px;
+}
+
+.commentary-text {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    text-transform: uppercase;
+    letter-spacing: 1.1px;
+    background: linear-gradient(
+        90deg,
+        #dc2626 0%, 
+        #ef4444 25%, 
+        #dc2626 50%, 
+        #ef4444 75%, 
+        #dc2626 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 0 8px rgba(220, 38, 38, 0.4));
+    transition: all 0.3s ease;
+}
+
+.commentary-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120%;
+    height: 120%;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(220, 38, 38, 0.15) 0%,
+        rgba(245, 158, 11, 0.08) 40%,
+        transparent 70%
+    );
+    border-radius: 50%;
+    z-index: 1;
+    filter: blur(4px);
+}
+
+.commentary-content {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.commentary-game-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(15, 15, 20, 0.4) 0%, rgba(25, 25, 30, 0.3) 100%);
+    border-radius: 8px;
+    border: 1px solid rgba(217, 119, 6, 0.2);
+}
+
+.current-game-display {
+    display: flex;
+    align-items: center;
+}
+
+.game-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    color: #ffffff;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.game-number {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.game-map {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.commentary-stats {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #f1f5f9;
+}
+
+.commentary-text-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.commentary-summary h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #ef4444;
+    margin-bottom: 12px;
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+}
+
+.commentary-summary p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #e2e8f0;
+    text-align: justify;
+}
+
+.leaderboard-preview {
+    background: linear-gradient(135deg, rgba(15, 15, 20, 0.6) 0%, rgba(25, 25, 30, 0.4) 100%);
+    border-radius: 8px;
+    padding: 16px;
+    border: 1px solid rgba(217, 119, 6, 0.15);
+}
+
+.leaderboard-preview h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #f59e0b;
+    margin-bottom: 12px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.top-teams {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.top-team-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, rgba(20, 20, 25, 0.5) 0%, rgba(30, 30, 35, 0.3) 100%);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.2s ease;
+}
+
+.top-team-item:hover {
+    background: linear-gradient(135deg, rgba(25, 25, 30, 0.6) 0%, rgba(35, 35, 40, 0.4) 100%);
+    border-color: rgba(217, 119, 6, 0.2);
+}
+
+.position {
+    font-weight: 700;
+    color: #f59e0b;
+    min-width: 20px;
+    text-align: center;
+}
+
+.team-name {
+    flex: 1;
+    color: #f1f5f9;
+    font-weight: 600;
+    padding: 0 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.team-points {
+    font-weight: 700;
+    color: #10b981;
+    font-size: 0.9rem;
+    min-width: 60px;
+    text-align: right;
+}
+
+.no-data {
+    text-align: center;
+    color: #64748b;
+    font-style: italic;
+    padding: 16px;
+}
+
+/* Mobile Commentary Styles */
+@media (max-width: 768px) {
+    .commentary-section {
+        margin-top: 16px;
+        padding: 0 20px;
+    }
+    
+    .commentary-panel {
+        margin: 0;
+    }
+    
+    .commentary-header {
+        padding: 14px 16px 16px 16px;
+    }
+    
+    .commentary-text {
+        font-size: 1.1rem;
+    }
+    
+    .commentary-content {
+        padding: 16px 20px;
+        gap: 16px;
+    }
+    
+    .commentary-game-info {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .commentary-stats {
+        justify-content: space-around;
+        gap: 16px;
+    }
+    
+    .commentary-text-content {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .commentary-summary h3 {
+        font-size: 1.2rem;
+    }
+    
+    .commentary-summary p {
+        font-size: 0.95rem;
+        text-align: left;
+    }
+}
+
+@media (max-width: 480px) {
+    .commentary-content {
+        padding: 12px 16px;
+    }
+    
+    .game-badge {
+        padding: 6px 12px;
+        gap: 6px;
+    }
+    
+    .commentary-stats {
+        gap: 12px;
+    }
+    
+    .stat-value {
+        font-size: 1.1rem;
+    }
+}
+
+/* Attached Commentary Section - Positioned at bottom of chart */
+.chart-container {
+    position: relative; /* Ensure this is set for absolute positioning */
+    overflow: visible; /* Allow commentary to extend beyond chart bounds */
+}
+
+.commentary-section-attached {
+    position: absolute;
+    top: 100%; /* Position at the very bottom edge of the chart */
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    z-index: 10;
+}
+
+.commentary-panel-attached {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(20, 20, 25, 0.95) 0%, rgba(30, 30, 35, 0.92) 100%);
+    border: 1px solid rgba(217, 119, 6, 0.25);
+    border-top: 2px solid rgba(217, 119, 6, 0.4);
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(217, 119, 6, 0.15);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    margin: 0;
+    margin-top: -1px; /* Slight overlap to create seamless connection */
+}
+
+.commentary-panel-attached:hover {
+    border-color: rgba(217, 119, 6, 0.4);
+    border-top-color: rgba(217, 119, 6, 0.6);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7), 0 0 16px rgba(217, 119, 6, 0.2);
+}
+
+/* Override header styling for attached version */
+.commentary-section-attached .commentary-header {
+    border-radius: 0;
+    border-bottom: 2px solid rgba(217, 119, 6, 0.3);
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, rgba(35, 35, 40, 0.4) 0%, rgba(45, 45, 50, 0.2) 100%);
+}
