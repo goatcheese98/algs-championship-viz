@@ -19,41 +19,41 @@
                     <!-- Ultra-detailed skull gradient -->
                     <radialGradient id="skullMaster" cx="50%" cy="30%" r="50%">
                       <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
-                      <stop offset="15%" style="stop-color:#fff5f5;stop-opacity:1" />
-                      <stop offset="35%" style="stop-color:#ffe0e0;stop-opacity:1" />
-                      <stop offset="55%" style="stop-color:#ffb3b3;stop-opacity:1" />
-                      <stop offset="75%" style="stop-color:#cc6666;stop-opacity:1" />
-                      <stop offset="90%" style="stop-color:#993333;stop-opacity:1" />
-                      <stop offset="100%" style="stop-color:#330000;stop-opacity:1" />
+                      <stop offset="15%" style="stop-color:#fff2f2;stop-opacity:1" />
+                      <stop offset="35%" style="stop-color:#ffd5d5;stop-opacity:1" />
+                      <stop offset="55%" style="stop-color:#ff9999;stop-opacity:1" />
+                      <stop offset="75%" style="stop-color:#cc4444;stop-opacity:1" />
+                      <stop offset="90%" style="stop-color:#992222;stop-opacity:1" />
+                      <stop offset="100%" style="stop-color:#440000;stop-opacity:1" />
                     </radialGradient>
                     
                     <!-- Diamond frame gradients -->
                     <linearGradient id="diamondFrame" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" style="stop-color:#ffe0e0;stop-opacity:0.98" />
-                      <stop offset="20%" style="stop-color:#ffcccc;stop-opacity:0.92" />
-                      <stop offset="40%" style="stop-color:#ff9999;stop-opacity:0.87" />
-                      <stop offset="60%" style="stop-color:#ff6666;stop-opacity:0.82" />
-                      <stop offset="80%" style="stop-color:#cc4444;stop-opacity:0.77" />
-                      <stop offset="100%" style="stop-color:#992222;stop-opacity:0.72" />
+                      <stop offset="0%" style="stop-color:#ffd5d5;stop-opacity:0.98" />
+                      <stop offset="20%" style="stop-color:#ffbbbb;stop-opacity:0.92" />
+                      <stop offset="40%" style="stop-color:#ff7777;stop-opacity:0.87" />
+                      <stop offset="60%" style="stop-color:#ff4444;stop-opacity:0.82" />
+                      <stop offset="80%" style="stop-color:#cc2222;stop-opacity:0.77" />
+                      <stop offset="100%" style="stop-color:#881111;stop-opacity:0.72" />
                     </linearGradient>
                     
                     <!-- Enhanced flame gradients -->
                     <radialGradient id="flameHot" cx="50%" cy="85%" r="70%">
-                      <stop offset="0%" style="stop-color:#ff3333;stop-opacity:0.95" />
-                      <stop offset="25%" style="stop-color:#ff5555;stop-opacity:0.85" />
-                      <stop offset="50%" style="stop-color:#ff7777;stop-opacity:0.65" />
-                      <stop offset="75%" style="stop-color:#ffaaaa;stop-opacity:0.45" />
-                      <stop offset="100%" style="stop-color:#ffdddd;stop-opacity:0.15" />
+                      <stop offset="0%" style="stop-color:#ff2222;stop-opacity:0.95" />
+                      <stop offset="25%" style="stop-color:#ff4444;stop-opacity:0.85" />
+                      <stop offset="50%" style="stop-color:#ff6666;stop-opacity:0.65" />
+                      <stop offset="75%" style="stop-color:#ff9999;stop-opacity:0.45" />
+                      <stop offset="100%" style="stop-color:#ffcccc;stop-opacity:0.15" />
                     </radialGradient>
                     
                     <!-- Multi-layer eye glow -->
                     <radialGradient id="eyeCore" cx="50%" cy="45%" r="60%">
                       <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
-                      <stop offset="20%" style="stop-color:#ffcccc;stop-opacity:0.95" />
-                      <stop offset="45%" style="stop-color:#ff6666;stop-opacity:0.85" />
-                      <stop offset="70%" style="stop-color:#cc3333;stop-opacity:0.7" />
-                      <stop offset="90%" style="stop-color:#991111;stop-opacity:0.5" />
-                      <stop offset="100%" style="stop-color:#550000;stop-opacity:0.3" />
+                      <stop offset="20%" style="stop-color:#ffbbbb;stop-opacity:0.95" />
+                      <stop offset="45%" style="stop-color:#ff4444;stop-opacity:0.85" />
+                      <stop offset="70%" style="stop-color:#cc2222;stop-opacity:0.7" />
+                      <stop offset="90%" style="stop-color:#880000;stop-opacity:0.5" />
+                      <stop offset="100%" style="stop-color:#440000;stop-opacity:0.3" />
                     </radialGradient>
                     
                     <!-- Shadow and depth gradients -->
@@ -67,7 +67,7 @@
                   <!-- Ultra-complex outer diamond with crystalline structure -->
                   <path d="M80 5 L130 20 L125 25 L135 30 L128 35 L138 42 L130 47 L140 55 L132 60 L140 68 L130 73 L138 78 L128 85 L135 90 L125 95 L130 100 L115 110 L108 105 L100 115 L92 107 L85 118 L80 110 L75 118 L68 107 L60 115 L52 105 L45 110 L30 100 L35 95 L25 90 L32 85 L22 78 L30 73 L20 68 L28 60 L20 55 L30 47 L22 42 L32 35 L25 30 L35 25 L30 20 L80 5 Z" 
                         fill="url(#diamondFrame)" 
-                        stroke="#ffb3b3" 
+                        stroke="#ff9999" 
                         stroke-width="1.8" 
                         opacity="0.85"/>
                   
@@ -100,16 +100,40 @@
                   <path d="M55 50 Q55 38 65 34 Q75 31 80 30 Q85 31 95 34 Q105 38 105 50 Q105 58 102 63 Q105 68 105 78 Q102 85 95 88 Q90 90 80 92 Q70 90 65 88 Q58 85 55 78 Q55 68 58 63 Q55 58 55 50 Z" 
                         fill="url(#skullMaster)"/>
                   
+                  <!-- Left horn structure -->
+                  <path d="M58 40 Q52 35 48 28 Q45 22 44 18 Q44 15 46 14 Q48 15 50 18 Q52 22 55 28 Q58 32 60 38" 
+                        fill="url(#skullMaster)" 
+                        stroke="rgba(204, 68, 68, 0.8)" 
+                        stroke-width="1"/>
+                  
+                  <!-- Right horn structure -->
+                  <path d="M102 40 Q108 35 112 28 Q115 22 116 18 Q116 15 114 14 Q112 15 110 18 Q108 22 105 28 Q102 32 100 38" 
+                        fill="url(#skullMaster)" 
+                        stroke="rgba(204, 68, 68, 0.8)" 
+                        stroke-width="1"/>
+                  
+                  <!-- Horn tips with glow -->
+                  <circle cx="46" cy="14" r="1.5" fill="#ff4444" opacity="0.9"/>
+                  <circle cx="114" cy="14" r="1.5" fill="#ff4444" opacity="0.9"/>
+                  <circle cx="46" cy="14" r="0.8" fill="#ffffff" opacity="0.8"/>
+                  <circle cx="114" cy="14" r="0.8" fill="#ffffff" opacity="0.8"/>
+                  
+                  <!-- Horn ridges for texture -->
+                  <path d="M50 32 Q52 30 54 32" fill="none" stroke="rgba(153, 34, 34, 0.6)" stroke-width="0.6"/>
+                  <path d="M52 25 Q54 23 56 25" fill="none" stroke="rgba(153, 34, 34, 0.6)" stroke-width="0.6"/>
+                  <path d="M106 32 Q108 30 110 32" fill="none" stroke="rgba(153, 34, 34, 0.6)" stroke-width="0.6"/>
+                  <path d="M104 25 Q106 23 108 25" fill="none" stroke="rgba(153, 34, 34, 0.6)" stroke-width="0.6"/>
+                  
                   <!-- Skull temporal bones -->
                   <path d="M58 45 Q65 42 72 44 Q78 43 88 44 Q95 42 102 45" 
                         fill="none" 
-                        stroke="rgba(204, 102, 102, 0.7)" 
+                        stroke="rgba(204, 68, 68, 0.7)" 
                         stroke-width="1.2"/>
                   
                   <!-- Forehead structure -->
                   <path d="M62 40 Q70 38 80 38 Q90 38 98 40" 
                         fill="none" 
-                        stroke="rgba(255, 204, 204, 0.6)" 
+                        stroke="rgba(255, 187, 187, 0.6)" 
                         stroke-width="0.8"/>
                   
                   <!-- Eye socket complex structure -->
@@ -180,8 +204,8 @@
                   
                   <!-- Central bottom apex with crystalline detail -->
                   <path d="M80 92 L70 110 L80 118 L90 110 Z" fill="url(#skullMaster)"/>
-                  <path d="M80 95 L74 107 L80 113 L86 107 Z" fill="rgba(255, 179, 179, 0.9)"/>
-                  <path d="M80 98 L77 104 L80 108 L83 104 Z" fill="rgba(255, 204, 204, 0.8)"/>
+                  <path d="M80 95 L74 107 L80 113 L86 107 Z" fill="rgba(255, 153, 153, 0.9)"/>
+                  <path d="M80 98 L77 104 L80 108 L83 104 Z" fill="rgba(255, 187, 187, 0.8)"/>
                   
                   <!-- Micro flame details -->
                   <circle cx="48" cy="35" r="2.5" fill="url(#flameHot)" opacity="0.7"/>

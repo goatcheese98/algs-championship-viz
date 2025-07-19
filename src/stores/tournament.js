@@ -7,7 +7,7 @@ export const useTournamentStore = defineStore('tournament', {
   state: () => ({
     selectedMatchup: '',
     selectedDay: 'day1',
-    isLegendVisible: false,
+    isLegendVisible: true,
     animationSpeed: 'medium',
     isPlaying: false,
     currentGame: 0,

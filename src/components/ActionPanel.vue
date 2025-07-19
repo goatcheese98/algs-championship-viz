@@ -6,7 +6,9 @@
     
     <div class="panel-header">
       <div class="panel-title">
-        <span class="drag-handle">⋮⋮</span>
+        <button class="expand-btn" @click="togglePanel" @mousedown.stop" title="Toggle advanced controls">
+          {{ panelExpanded ? '−' : '+' }}
+        </button>
         <div class="section-icon">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 20h9"/>
@@ -16,9 +18,7 @@
         <span class="title-text">Controls</span>
       </div>
       <div class="panel-controls">
-        <button class="expand-btn" @click="togglePanel" @mousedown.stop" title="Toggle advanced controls">
-          {{ panelExpanded ? '−' : '+' }}
-        </button>
+        <span class="drag-handle">⋮⋮</span>
       </div>
     </div>
 
@@ -584,7 +584,7 @@ export default {
       this.filterTooltip = document.createElement('div');
       this.filterTooltip.className = 'filter-tooltip';
       this.filterTooltip.style.cssText = `
-        position: absolute;
+        position: fixed;
         visibility: hidden;
         background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 100%);
         backdrop-filter: blur(12px);
@@ -598,9 +598,10 @@ export default {
         font-weight: 500;
         line-height: 1.4;
         pointer-events: none;
-        z-index: 9999;
+        z-index: 10000;
         max-width: 200px;
         text-align: left;
+        transform: translateX(-50%);
       `;
       
       document.body.appendChild(this.filterTooltip);
@@ -625,12 +626,24 @@ export default {
       
       this.filterTooltip.style.visibility = 'visible';
       
-      const rect = event.target.getBoundingClientRect();
-      const tooltipX = rect.left + rect.width / 2 - 100;
-      const tooltipY = rect.top - 80;
+      // Get the actual button element bounds
+      const button = event.currentTarget;
+      const buttonRect = button.getBoundingClientRect();
+      const tooltipWidth = 200; // max-width of tooltip
       
-      this.filterTooltip.style.left = Math.max(10, Math.min(tooltipX, window.innerWidth - 210)) + 'px';
-      this.filterTooltip.style.top = Math.max(10, tooltipY) + 'px';
+      // Center tooltip above the button using more precise positioning
+      const tooltipX = buttonRect.left + (buttonRect.width / 2);
+      const tooltipY = buttonRect.top - 60; // 60px above the button so numbers remain visible
+      
+      // Ensure tooltip stays within viewport with better bounds checking
+      const minX = tooltipWidth / 2 + 15;
+      const maxX = window.innerWidth - (tooltipWidth / 2) - 15;
+      const clampedX = Math.max(minX, Math.min(tooltipX, maxX));
+      const clampedY = Math.max(15, tooltipY);
+      
+      // Apply positioning with fixed positioning for accurate placement
+      this.filterTooltip.style.left = clampedX + 'px';
+      this.filterTooltip.style.top = clampedY + 'px';
     },
     
     showClearTooltip(event) {
@@ -649,12 +662,24 @@ export default {
       
       this.filterTooltip.style.visibility = 'visible';
       
-      const rect = event.target.getBoundingClientRect();
-      const tooltipX = rect.left + rect.width / 2 - 100;
-      const tooltipY = rect.top - 80;
+      // Get the actual button element bounds  
+      const button = event.currentTarget;
+      const buttonRect = button.getBoundingClientRect();
+      const tooltipWidth = 200; // max-width of tooltip
       
-      this.filterTooltip.style.left = Math.max(10, Math.min(tooltipX, window.innerWidth - 210)) + 'px';
-      this.filterTooltip.style.top = Math.max(10, tooltipY) + 'px';
+      // Center tooltip above the button using more precise positioning
+      const tooltipX = buttonRect.left + (buttonRect.width / 2);
+      const tooltipY = buttonRect.top - 60; // 60px above the button so numbers remain visible
+      
+      // Ensure tooltip stays within viewport with better bounds checking
+      const minX = tooltipWidth / 2 + 15;
+      const maxX = window.innerWidth - (tooltipWidth / 2) - 15;
+      const clampedX = Math.max(minX, Math.min(tooltipX, maxX));
+      const clampedY = Math.max(15, tooltipY);
+      
+      // Apply positioning with fixed positioning for accurate placement
+      this.filterTooltip.style.left = clampedX + 'px';
+      this.filterTooltip.style.top = clampedY + 'px';
     },
     
     hideFilterTooltip() {
