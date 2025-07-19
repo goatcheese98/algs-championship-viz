@@ -100,29 +100,31 @@
                   <path d="M55 50 Q55 38 65 34 Q75 31 80 30 Q85 31 95 34 Q105 38 105 50 Q105 58 102 63 Q105 68 105 78 Q102 85 95 88 Q90 90 80 92 Q70 90 65 88 Q58 85 55 78 Q55 68 58 63 Q55 58 55 50 Z" 
                         fill="url(#skullMaster)"/>
                   
-                  <!-- Left horn structure -->
-                  <path d="M58 40 Q52 35 48 28 Q45 22 44 18 Q44 15 46 14 Q48 15 50 18 Q52 22 55 28 Q58 32 60 38" 
+                  <!-- Left horn structure - Enhanced -->
+                  <path d="M58 40 Q50 34 45 26 Q41 18 39 12 Q38 8 40 6 Q42 7 44 10 Q46 16 49 24 Q54 30 58 36 Q60 38 60 40" 
                         fill="url(#skullMaster)" 
-                        stroke="rgba(204, 68, 68, 0.8)" 
-                        stroke-width="1"/>
+                        stroke="rgba(204, 68, 68, 0.9)" 
+                        stroke-width="1.2"/>
                   
-                  <!-- Right horn structure -->
-                  <path d="M102 40 Q108 35 112 28 Q115 22 116 18 Q116 15 114 14 Q112 15 110 18 Q108 22 105 28 Q102 32 100 38" 
+                  <!-- Right horn structure - Enhanced -->
+                  <path d="M102 40 Q110 34 115 26 Q119 18 121 12 Q122 8 120 6 Q118 7 116 10 Q114 16 111 24 Q106 30 102 36 Q100 38 100 40" 
                         fill="url(#skullMaster)" 
-                        stroke="rgba(204, 68, 68, 0.8)" 
-                        stroke-width="1"/>
+                        stroke="rgba(204, 68, 68, 0.9)" 
+                        stroke-width="1.2"/>
                   
-                  <!-- Horn tips with glow -->
-                  <circle cx="46" cy="14" r="1.5" fill="#ff4444" opacity="0.9"/>
-                  <circle cx="114" cy="14" r="1.5" fill="#ff4444" opacity="0.9"/>
-                  <circle cx="46" cy="14" r="0.8" fill="#ffffff" opacity="0.8"/>
-                  <circle cx="114" cy="14" r="0.8" fill="#ffffff" opacity="0.8"/>
+                  <!-- Horn tips with enhanced glow -->
+                  <circle cx="40" cy="6" r="2" fill="#ff4444" opacity="0.9"/>
+                  <circle cx="120" cy="6" r="2" fill="#ff4444" opacity="0.9"/>
+                  <circle cx="40" cy="6" r="1" fill="#ffffff" opacity="0.9"/>
+                  <circle cx="120" cy="6" r="1" fill="#ffffff" opacity="0.9"/>
                   
-                  <!-- Horn ridges for texture -->
-                  <path d="M50 32 Q52 30 54 32" fill="none" stroke="rgba(153, 34, 34, 0.6)" stroke-width="0.6"/>
-                  <path d="M52 25 Q54 23 56 25" fill="none" stroke="rgba(153, 34, 34, 0.6)" stroke-width="0.6"/>
-                  <path d="M106 32 Q108 30 110 32" fill="none" stroke="rgba(153, 34, 34, 0.6)" stroke-width="0.6"/>
-                  <path d="M104 25 Q106 23 108 25" fill="none" stroke="rgba(153, 34, 34, 0.6)" stroke-width="0.6"/>
+                  <!-- Enhanced horn ridges for texture -->
+                  <path d="M48 30 Q50 28 52 30" fill="none" stroke="rgba(153, 34, 34, 0.7)" stroke-width="0.8"/>
+                  <path d="M50 22 Q52 20 54 22" fill="none" stroke="rgba(153, 34, 34, 0.7)" stroke-width="0.8"/>
+                  <path d="M46 18 Q48 16 50 18" fill="none" stroke="rgba(153, 34, 34, 0.6)" stroke-width="0.6"/>
+                  <path d="M108 30 Q110 28 112 30" fill="none" stroke="rgba(153, 34, 34, 0.7)" stroke-width="0.8"/>
+                  <path d="M106 22 Q108 20 110 22" fill="none" stroke="rgba(153, 34, 34, 0.7)" stroke-width="0.8"/>
+                  <path d="M110 18 Q112 16 114 18" fill="none" stroke="rgba(153, 34, 34, 0.6)" stroke-width="0.6"/>
                   
                   <!-- Skull temporal bones -->
                   <path d="M58 45 Q65 42 72 44 Q78 43 88 44 Q95 42 102 45" 
@@ -288,21 +290,17 @@
             </div>
             
             <nav class="header-nav">
-              <router-link to="/" class="nav-link primary">
-                <span class="nav-icon">🏠</span>
-                <span class="nav-text">Dashboard</span>
+              <router-link to="/" class="algs-tournament-card compact">
+                <span class="tournament-text">Dashboard</span>
               </router-link>
-              <router-link v-if="isYear5Tournament" to="/tournament/year-4-championship" class="nav-link">
-                <span class="nav-icon">🏆</span>
-                <span class="nav-text">Year 4</span>
+              <router-link v-if="isYear5Tournament" to="/tournament/year-4-championship" class="algs-tournament-card compact">
+                <span class="tournament-text">Year 4</span>
               </router-link>
-              <router-link v-if="isEwc2025Tournament" to="/tournament/year-4-championship" class="nav-link">
-                <span class="nav-icon">🏆</span>
-                <span class="nav-text">Year 4</span>
+              <router-link v-if="isEwc2025Tournament" to="/tournament/year-4-championship" class="algs-tournament-card compact">
+                <span class="tournament-text">Year 4</span>
               </router-link>
-              <router-link v-if="isEwc2025Tournament" to="/tournament/year-5-open" class="nav-link">
-                <span class="nav-icon">🌍</span>
-                <span class="nav-text">Year 5</span>
+              <router-link v-if="isEwc2025Tournament" to="/tournament/year-5-open" class="algs-tournament-card compact">
+                <span class="tournament-text">Year 5</span>
               </router-link>
             </nav>
           </div>
@@ -359,14 +357,14 @@
             </div>
             <transition name="slide-down">
               <div v-show="!tournamentDaysCollapsed" class="section-content">
-                <div class="day-tabs">
-                  <button v-for="day in tournamentDays" 
-                          :key="day.id"
-                          :class="['day-tab', { active: selectedDay === day.id }]"
-                          @click="setDay(day.id)"
-                          :title="day.name">
+                <div class="algs-day-cards">
+                  <div v-for="day in tournamentDays" 
+                       :key="day.id"
+                       :class="['algs-day-card', { active: selectedDay === day.id }]"
+                       @click="setDay(day.id)"
+                       :title="day.name">
                     {{ day.name }}
-                  </button>
+                  </div>
                 </div>
               </div>
             </transition>
@@ -394,15 +392,15 @@
             </div>
             <transition name="slide-down">
               <div v-show="!matchupsCollapsed" class="section-content">
-                <div class="matchup-list">
-                  <button v-for="matchup in currentDayMatchups" 
-                          :key="matchup.id"
-                          :class="['matchup-item', { active: selectedMatchup === matchup.id }]"
-                          @click="handleMatchupSelect(matchup.id)"
-                          :title="matchup.description">
+                <div class="algs-matchup-list">
+                  <div v-for="matchup in currentDayMatchups" 
+                       :key="matchup.id"
+                       :class="['algs-sidebar-matchup', { active: selectedMatchup === matchup.id }]"
+                       @click="handleMatchupSelect(matchup.id)"
+                       :title="matchup.description">
                     <span class="matchup-name">{{ matchup.title }}</span>
                     <span class="matchup-games">{{ matchup.games === 'auto' ? 'Auto' : matchup.games + 'G' }}</span>
-                  </button>
+                  </div>
                 </div>
               </div>
             </transition>
@@ -421,6 +419,7 @@
       </div>
       
       
+
       <div class="chart-section">
         
         <div class="chart-title-section" v-if="selectedMatchup">
@@ -591,6 +590,11 @@ export default {
       // Game selection state
       selectedGames: [],
       
+      // ALGS Championship state
+      isGroupStageActive: true,
+      isBracketStageActive: false,
+      isTeamsActive: false,
+      championTeam: '',
       
       // Advanced controls state
       advancedControlsExpanded: false,
@@ -839,6 +843,34 @@ export default {
       'setAnimationSpeed',
       'setGameFilter'
     ]),
+    
+    // ALGS Championship stage selection methods
+    selectGroupStage() {
+      this.isGroupStageActive = true;
+      this.isBracketStageActive = false;
+      this.isTeamsActive = false;
+      console.log('📊 Selected Group Stage');
+    },
+    
+    selectBracketStage() {
+      this.isGroupStageActive = false;
+      this.isBracketStageActive = true;
+      this.isTeamsActive = false;
+      console.log('🏆 Selected Bracket Stage');
+    },
+    
+    selectTeams() {
+      this.isGroupStageActive = false;
+      this.isBracketStageActive = false;
+      this.isTeamsActive = true;
+      console.log('👥 Selected Teams');
+    },
+    
+    // Set champion team for demonstration
+    setChampionTeam(teamName) {
+      this.championTeam = teamName;
+      console.log('🏆 Champion team set:', teamName);
+    },
     
     // Initialize tournament days data
     initializeTournamentDays() {
@@ -1527,7 +1559,7 @@ export default {
     updateCurrentMap() {
       // Get map name from chart data based on current game
       if (this.currentGame === 0) {
-        this.currentMap = 'Initial State';
+        this.currentMap = 'Pre-game';
       } else if (this.processedChartData && this.processedChartData.length > 0) {
         const firstTeam = this.processedChartData[0];
         if (firstTeam && firstTeam.games) {

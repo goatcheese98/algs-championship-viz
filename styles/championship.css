@@ -51,6 +51,7 @@ body {
     font-size: clamp(0.9rem, 2vw, 1.125rem) !important;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
 }
 
@@ -70,7 +71,10 @@ body {
 
 .panel-title .title-text {
     font-weight: 600;
-    color: #f1f5f9;
+    color: #ef4444;
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+    flex: 1;
+    text-align: center;
 }
 
 .panel-controls {
@@ -863,20 +867,20 @@ body {
     justify-content: space-between;
     padding: 12px 16px;
     cursor: pointer;
-    border-radius: 10px;
+    border-radius: 6px;
     margin: 4px 6px;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
     min-height: 48px;
     text-align: center;
-    background: linear-gradient(135deg, rgba(217, 119, 6, 0.05) 0%, rgba(251, 191, 36, 0.05) 100%);
-    border: 1px solid rgba(217, 119, 6, 0.2);
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 68, 68, 0.25);
 }
 
 .section-header:hover {
-    background: linear-gradient(135deg, rgba(217, 119, 6, 0.15) 0%, rgba(251, 191, 36, 0.15) 100%);
-    border-color: rgba(217, 119, 6, 0.4);
+    background: rgba(51, 65, 85, 0.9);
+    border-color: rgba(255, 68, 68, 0.4);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3), 0 0 12px rgba(255, 68, 68, 0.15);
 }
 
 .section-main {
@@ -905,7 +909,8 @@ body {
 }
 
 .section-header:hover .section-icon {
-    background: rgba(217, 119, 6, 0.1);
+    background: rgba(255, 68, 68, 0.15);
+    border-color: rgba(255, 68, 68, 0.3);
 }
 
 .section-title {
@@ -1529,6 +1534,360 @@ body {
     gap: 6px;
     text-align: center;
     align-items: center;
+}
+
+/* Clean ALGS Championship Section */
+.algs-championship-section {
+    text-align: center;
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto 30px auto;
+}
+
+.simple-championship-title {
+    font-family: 'Rajdhani', 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: transparent;
+    -webkit-text-stroke: 2px #ef4444;
+    margin: 0 0 40px 0;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+
+/* Add ALGS Card Styling for Tournament Navigation */
+.algs-tournament-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.95));
+    border: 2px solid rgba(239, 68, 68, 0.4);
+    border-radius: 6px;
+    color: #f1f5f9;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    min-width: 140px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(239, 68, 68, 0.2);
+}
+
+.algs-tournament-card.compact {
+    padding: 8px 12px;
+    gap: 8px;
+    min-width: 100px;
+    font-size: 0.85rem;
+    border-width: 1.5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), 0 0 8px rgba(239, 68, 68, 0.15);
+}
+
+.algs-tournament-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.6), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.algs-tournament-card:hover {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(51, 65, 85, 1));
+    border-color: rgba(239, 68, 68, 0.7);
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(239, 68, 68, 0.25);
+    color: #ffffff;
+}
+
+.algs-tournament-card.compact:hover {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 12px rgba(239, 68, 68, 0.2);
+}
+
+.algs-tournament-card:hover::before {
+    opacity: 1;
+}
+
+.algs-tournament-card .tournament-icon {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    transition: all 0.3s ease;
+}
+
+.algs-tournament-card.compact .tournament-icon {
+    font-size: 1rem;
+}
+
+.algs-tournament-card:hover .tournament-icon {
+    opacity: 1;
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.4));
+}
+
+.algs-tournament-card .tournament-text {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.algs-tournament-card:hover .tournament-text {
+    color: rgba(239, 68, 68, 0.95);
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+}
+
+.algs-stage-cards {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.stage-card {
+    background: rgba(15, 23, 42, 0.85);
+    border: 2px solid #ef4444;
+    border-radius: 0;
+    padding: 14px 28px;
+    color: #ffffff;
+    font-family: 'Rajdhani', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    min-width: 140px;
+    text-align: center;
+}
+
+.stage-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #ef4444;
+}
+
+.stage-card:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.stage-card.active {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #dc2626;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+    color: #ffffff;
+}
+
+/* ALGS Matchup Cards */
+.algs-matchups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.algs-matchup-card {
+    background: rgba(15, 23, 42, 0.85);
+    border: 2px solid #ef4444;
+    border-radius: 0;
+    padding: 20px;
+    color: #ffffff;
+    font-family: 'Rajdhani', 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.algs-matchup-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #ef4444;
+}
+
+.algs-matchup-card:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.algs-matchup-card.selected {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #dc2626;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+}
+
+.algs-matchup-card .matchup-title {
+    font-family: 'Rajdhani', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0 0 10px 0;
+    color: #ffffff;
+}
+
+/* ALGS Day Cards for Sidebar */
+.algs-day-cards {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.algs-day-card {
+    background: rgba(15, 23, 42, 0.85) !important;
+    border: 2px solid #ef4444 !important;
+    border-radius: 0 !important;
+    padding: 12px 16px !important;
+    color: #f8fafc !important;
+    font-family: 'Rajdhani', 'Inter', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    cursor: pointer !important;
+    transition: all 0.25s ease !important;
+    position: relative !important;
+    overflow: hidden !important;
+    text-align: center !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+    min-height: auto !important;
+    white-space: nowrap !important;
+    display: block !important;
+}
+
+.algs-day-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #ef4444;
+    transform: scaleX(0);
+    transition: transform 0.25s ease;
+}
+
+.algs-day-card:hover {
+    background: rgba(51, 65, 85, 0.8) !important;
+    border-color: rgba(255, 68, 68, 0.4) !important;
+    color: #ffffff !important;
+    transform: translateY(-1px) !important;
+}
+
+.algs-day-card:hover::after {
+    transform: scaleX(1) !important;
+}
+
+.algs-day-card.active {
+    background: rgba(239, 68, 68, 0.2) !important;
+    border-color: #dc2626 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3) !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7), 0 0 6px rgba(255, 68, 68, 0.3) !important;
+}
+
+.algs-day-card.active::after {
+    transform: scaleX(1);
+    background: #dc2626;
+}
+
+/* ALGS Sidebar Matchup Cards */
+.algs-matchup-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.algs-sidebar-matchup {
+    background: rgba(15, 23, 42, 0.85) !important;
+    border: 2px solid #ef4444 !important;
+    border-radius: 0 !important;
+    padding: 12px 14px !important;
+    color: #f8fafc !important;
+    font-family: 'Rajdhani', 'Inter', sans-serif !important;
+    cursor: pointer !important;
+    transition: all 0.25s ease !important;
+    position: relative !important;
+    overflow: hidden !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.algs-sidebar-matchup::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #ef4444;
+    transform: scaleX(0);
+    transition: transform 0.25s ease;
+}
+
+.algs-sidebar-matchup:hover {
+    background: rgba(51, 65, 85, 0.8) !important;
+    border-color: rgba(255, 68, 68, 0.4) !important;
+    color: #ffffff !important;
+    transform: translateY(-1px) !important;
+}
+
+.algs-sidebar-matchup:hover::after {
+    transform: scaleX(1) !important;
+}
+
+.algs-sidebar-matchup.active {
+    background: rgba(239, 68, 68, 0.2) !important;
+    border-color: #dc2626 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3) !important;
+}
+
+.algs-sidebar-matchup.active::after {
+    transform: scaleX(1);
+    background: #dc2626;
+}
+
+.algs-sidebar-matchup .matchup-name {
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+    color: inherit !important;
+}
+
+.algs-sidebar-matchup .matchup-games {
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+    opacity: 0.9 !important;
+    color: #ef4444 !important;
 }
 
 .chart-title {
@@ -2726,45 +3085,44 @@ body {
 }
 
 .drag-handle {
-    color: rgba(245, 158, 11, 0.8);
+    color: rgba(239, 68, 68, 0.9);
     font-size: 0.9rem;
     cursor: move;
-    background: rgba(217, 119, 6, 0.15);
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.9));
     padding: 4px 8px;
     border-radius: 6px;
-    border: 1px solid rgba(217, 119, 6, 0.3);
+    border: 1px solid rgba(239, 68, 68, 0.3);
     transition: all 0.3s ease;
     user-select: none;
     font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .drag-handle:hover {
-    background: rgba(217, 119, 6, 0.25);
-    color: rgba(245, 158, 11, 1);
-    border-color: rgba(217, 119, 6, 0.5);
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(51, 65, 85, 0.95));
+    color: rgba(239, 68, 68, 1);
+    border-color: rgba(239, 68, 68, 0.5);
     transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 0 12px rgba(239, 68, 68, 0.2);
 }
 
 .expand-btn {
-    background: rgba(217, 119, 6, 0.2);
-    border: 2px solid rgba(217, 119, 6, 0.4);
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.9));
+    border: 2px solid rgba(239, 68, 68, 0.4);
     border-radius: 6px;
-    color: rgba(245, 158, 11, 1);
+    color: rgba(239, 68, 68, 1);
     width: 28px;
     height: 28px;
     font-size: 1rem;
     font-weight: 700;
-    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-weight: 500;
-    font-size: 0.8rem;
     position: relative;
     overflow: hidden;
-    animation: breathe 2s ease-in-out infinite;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .expand-btn::before {
@@ -2774,7 +3132,7 @@ body {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(217, 119, 6, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.3), transparent);
     transition: left 0.6s ease;
 }
 
@@ -2783,12 +3141,11 @@ body {
 }
 
 .expand-btn:hover {
-    background: rgba(217, 119, 6, 0.4);
-    border-color: rgba(217, 119, 6, 0.7);
-    color: rgba(217, 119, 6, 1);
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(51, 65, 85, 0.95));
+    border-color: rgba(239, 68, 68, 0.7);
+    color: rgba(239, 68, 68, 1);
     transform: scale(1.1) rotate(180deg);
-    box-shadow: 0 0 15px rgba(217, 119, 6, 0.5);
-    animation: pulse-glow 1s ease-in-out infinite;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 15px rgba(239, 68, 68, 0.4);
 }
 
 .expand-btn:active {
@@ -2822,20 +3179,22 @@ body {
 }
 
 .game-progress-section {
-    margin-bottom: 8px;
-    padding: 12px 16px;
-    background: linear-gradient(135deg, rgba(217, 119, 6, 0.05) 0%, rgba(251, 191, 36, 0.05) 100%);
+    margin-bottom: 12px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, rgba(5, 12, 24, 0.95), rgba(15, 23, 42, 0.98));
     border-radius: 10px;
-    border: 1px solid rgba(217, 119, 6, 0.2);
+    border: 2px solid rgba(239, 68, 68, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 0 12px rgba(239, 68, 68, 0.1);
 }
 
 .section-label {
     display: block;
     font-size: 0.9rem;
     font-weight: 700;
-    color: #dc2626;
-    margin-bottom: 6px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    color: #ef4444;
+    margin-bottom: 8px;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 6px rgba(239, 68, 68, 0.3);
     letter-spacing: 0.5px;
 }
 
@@ -3024,14 +3383,15 @@ body {
 
 /* Filter Controls (Merged with Progress) */
 .filter-controls {
-    margin-top: 8px;
-    padding: 12px 16px;
-    background: linear-gradient(135deg, rgba(217, 119, 6, 0.05) 0%, rgba(251, 191, 36, 0.05) 100%);
-    border: 1px solid rgba(217, 119, 6, 0.2);
+    margin-top: 12px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, rgba(5, 12, 24, 0.95), rgba(15, 23, 42, 0.98));
+    border: 2px solid rgba(239, 68, 68, 0.3);
     border-radius: 10px;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 0 12px rgba(239, 68, 68, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -3047,12 +3407,13 @@ body {
 .filter-action-label {
     text-align: center;
     font-size: 0.8rem;
-    color: #dc2626;
+    color: #ef4444;
     font-weight: 600;
-    margin-top: 8px;
+    margin-bottom: 12px;
     padding: 0 8px;
     opacity: 0.9;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 6px rgba(239, 68, 68, 0.3);
+    letter-spacing: 0.3px;
 }
 
 .filter-action-buttons {
@@ -3068,7 +3429,8 @@ body {
 }
 
 .control-section {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    padding: 0 8px;
 }
 
 .control-section:last-child {
@@ -3169,12 +3531,12 @@ body {
 
 .game-filter-btn.active {
     background: rgba(239, 68, 68, 0.25);
-    border-color: rgba(255, 68, 68, 0.6);
-    color: #ffffff !important;
+    border: 3px solid #ef4444 !important;
+    color: #000000 !important;
     font-weight: 650;
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4), 0 0 12px rgba(255, 68, 68, 0.2);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5), 0 0 25px rgba(239, 68, 68, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
     transform: scale(1.1);
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7), 0 0 6px rgba(255, 68, 68, 0.3);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
 }
 
 .game-filter-btn.current {
@@ -3188,11 +3550,12 @@ body {
 
 .game-filter-btn.active.current {
     background: rgba(239, 68, 68, 0.35);
-    border-color: rgba(255, 68, 68, 0.7);
-    color: #ffffff !important;
+    border: 3px solid #ef4444 !important;
+    color: #000000 !important;
     font-weight: 700;
-    box-shadow: 0 0 15px rgba(217, 119, 6, 0.8), 0 0 25px rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.7), 0 0 35px rgba(239, 68, 68, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.15);
     transform: scale(1.15);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4);
 }
 
 .game-filter-btn.progress-highlight {
@@ -3244,7 +3607,7 @@ body {
     border: none;
     border-radius: 6px;
     color: white;
-    padding: 10px;
+    padding: 12px 16px;
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 0.85rem;
@@ -3267,7 +3630,7 @@ body {
     border: none;
     border-radius: 6px;
     color: white;
-    padding: 10px;
+    padding: 12px 16px;
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 0.85rem;
@@ -3811,13 +4174,15 @@ body {
 /* Animation Speed Controls */
 .speed-controls {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     justify-content: space-between;
+    padding: 0 4px;
 }
 
 .speed-btn {
     flex: 1;
-    padding: 6px 12px;
+    padding: 8px 16px;
+    margin: 0 4px;
     border: 1px solid rgba(156, 163, 175, 0.25);
     border-radius: 6px;
     background: rgba(75, 85, 99, 0.4);

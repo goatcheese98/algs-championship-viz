@@ -9,12 +9,6 @@
         <button class="expand-btn" @click="togglePanel" @mousedown.stop" title="Toggle advanced controls">
           {{ panelExpanded ? '−' : '+' }}
         </button>
-        <div class="section-icon">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 20h9"/>
-            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-          </svg>
-        </div>
         <span class="title-text">Controls</span>
       </div>
       <div class="panel-controls">
@@ -472,7 +466,8 @@ export default {
         'BROKEN MOON': 'https://alegends.gg/wp-content/uploads/2025/07/apex-legends-broken-moon-bug.webp',
         'E-district': 'https://images2.minutemediacdn.com/image/upload/c_crop,w_3835,h_2157,x_73,y_0/c_fill,w_1080,ar_16:9,f_auto,q_auto,g_auto/images%2FvoltaxMediaLibrary%2Fmmsport%2Fesports_illustrated%2F01j7vfeyaec7wr6e98w0.jpg',
         'E-District': 'https://images2.minutemediacdn.com/image/upload/c_crop,w_3835,h_2157,x_73,y_0/c_fill,w_1080,ar_16:9,f_auto,q_auto,g_auto/images%2FvoltaxMediaLibrary%2Fmmsport%2Fesports_illustrated%2F01j7vfeyaec7wr6e98w0.jpg',
-        'E-DISTRICT': 'https://images2.minutemediacdn.com/image/upload/c_crop,w_3835,h_2157,x_73,y_0/c_fill,w_1080,ar_16:9,f_auto,q_auto,g_auto/images%2FvoltaxMediaLibrary%2Fmmsport%2Fesports_illustrated%2F01j7vfeyaec7wr6e98w0.jpg'
+        'E-DISTRICT': 'https://images2.minutemediacdn.com/image/upload/c_crop,w_3835,h_2157,x_73,y_0/c_fill,w_1080,ar_16:9,f_auto,q_auto,g_auto/images%2FvoltaxMediaLibrary%2Fmmsport%2Fesports_illustrated%2F01j7vfeyaec7wr6e98w0.jpg',
+        'Pre-game': 'https://img.redbull.com/images/c_crop,w_2560,h_1280,x_0,y_1227/c_auto,w_1200,h_630/f_auto,q_auto/redbullcom/2020/2/12/khb8wc0y3hthtimnnlqh/red-bull-energy-drink'
       };
       
       
@@ -534,7 +529,7 @@ export default {
       }
       
       this.tooltipTimeout = setTimeout(() => {
-        if (this.currentMap === 'Initial State' || !this.currentMap) {
+        if (!this.currentMap) {
           return;
         }
         
@@ -552,14 +547,19 @@ export default {
         
         if (imageUrl && mapName) {
           // Create tooltip content with large image preview
+          const isPreGame = mapName === 'Pre-game';
+          const tooltipTitle = isPreGame ? 'Tournament Status' : 'Current Map';
+          const tooltipSubtitle = isPreGame ? 'Pre-game Preparation' : mapName;
+          
           this.mapTooltip.innerHTML = `
             <div style="margin-bottom: 12px;">
-              <div style="font-weight: 600; color: #ff8c42; font-size: 16px; margin-bottom: 8px;">
-                Current Map
+              <div style="font-weight: 600; color: #ef4444; font-size: 16px; margin-bottom: 8px;">
+                ${tooltipTitle}
               </div>
               <div style="font-weight: 500; color: #ffffff; font-size: 15px;">
-                ${mapName}
+                ${tooltipSubtitle}
               </div>
+              ${isPreGame ? '<div style="font-size: 12px; color: #a1a1aa; margin-top: 4px;">Teams preparing for competition</div>' : ''}
             </div>
             <div style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);">
               <img src="${imageUrl}" 
@@ -567,7 +567,7 @@ export default {
                    style="width: 100%; height: 180px; object-fit: cover; display: block;"
                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
               <div style="display: none; height: 180px; background: rgba(75, 85, 99, 0.3); align-items: center; justify-content: center; font-size: 48px;">
-                🗺️
+                ${isPreGame ? '⚡' : '🗺️'}
               </div>
             </div>
           `;
@@ -618,10 +618,10 @@ export default {
         visibility: hidden;
         background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 100%);
         backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 140, 66, 0.3);
+        border: 1px solid rgba(239, 68, 68, 0.3);
         border-radius: 8px;
         padding: 12px 16px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 16px rgba(255, 140, 66, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 16px rgba(239, 68, 68, 0.1);
         color: #ffffff;
         font-family: Inter, system-ui, sans-serif;
         font-size: 13px;
@@ -650,10 +650,10 @@ export default {
         visibility: hidden;
         background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 100%);
         backdrop-filter: blur(12px);
-        border: 1px solid rgba(217, 119, 6, 0.3);
+        border: 1px solid rgba(239, 68, 68, 0.3);
         border-radius: 12px;
         padding: 16px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 16px rgba(217, 119, 6, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 16px rgba(239, 68, 68, 0.1);
         color: #ffffff;
         font-family: Inter, system-ui, sans-serif;
         font-size: 14px;
@@ -679,7 +679,7 @@ export default {
       const mapName = this.getGameTooltip(gameNum);
       
       this.filterTooltip.innerHTML = `
-        <div style="font-weight: 600; color: #ff8c42; margin-bottom: 4px;">
+        <div style="font-weight: 600; color: #ef4444; margin-bottom: 4px;">
           Game ${gameNum}
         </div>
         <div style="color: #e5e7eb;">
@@ -715,7 +715,7 @@ export default {
       }
       
       this.filterTooltip.innerHTML = `
-        <div style="font-weight: 600; color: #ff8c42;">
+        <div style="font-weight: 600; color: #ef4444;">
           Clear Filters
         </div>
         <div style="color: #e5e7eb; margin-top: 4px;">

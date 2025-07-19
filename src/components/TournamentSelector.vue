@@ -2,15 +2,15 @@
   <div class="tournament-overview">
     <div class="overview-header">
       <h1 class="overview-title">Tournament Overview</h1>
-      <div class="day-selector">
-        <button 
+      <div class="algs-stage-cards">
+        <div 
           v-for="day in tournamentDays" 
           :key="day.id"
-          :class="['day-tab', { active: selectedDay === day.id }]"
+          :class="['stage-card', { active: selectedDay === day.id }]"
           @click="setDay(day.id)"
         >
           {{ day.name }}
-        </button>
+        </div>
       </div>
     </div>
 
@@ -18,11 +18,11 @@
       <div :key="selectedDay" class="day-content active">
         <p style="color: #cbd5e1; margin-bottom: 20px;">{{ currentDayInfo.description }}</p>
         
-        <div class="matchups-grid">
+        <div class="algs-matchups-grid">
           <div 
             v-for="matchup in currentDayMatchups" 
             :key="matchup.id"
-            :class="['matchup-card', { selected: selectedMatchup === matchup.id }]"
+            :class="['algs-matchup-card', { selected: selectedMatchup === matchup.id }]"
             @click="selectMatchup(matchup.id)"
           >
             <div class="matchup-header">

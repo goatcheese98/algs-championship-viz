@@ -700,9 +700,9 @@ const renderLegend = (visible) => {
     const containerWidth = dimensions.value.width;
     const containerHeight = dimensions.value.height;
     
-    // Responsive legend dimensions
-    const baseWidth = Math.min(320, containerWidth * 0.25); // 25% of container width, max 320px
-    const baseHeight = Math.min(400, containerHeight * 0.6); // 60% of container height, max 400px
+    // Responsive legend dimensions - Increased size
+    const baseWidth = Math.min(400, containerWidth * 0.35); // 35% of container width, max 400px (was 25%, 320px)
+    const baseHeight = Math.min(500, containerHeight * 0.75); // 75% of container height, max 500px (was 60%, 400px)
     
     // Position legend in upper-right area (moved significantly higher)
     const legendX = containerWidth - baseWidth - 20;
@@ -731,26 +731,26 @@ const renderLegend = (visible) => {
         .attr('rx', 8)
         .attr('ry', 8)
         .style('fill', 'rgba(26, 26, 26, 0.9)')
-        .style('stroke', 'rgba(255, 140, 66, 0.3)')
+        .style('stroke', 'rgba(239, 68, 68, 0.3)')
         .style('stroke-width', '1px')
         .style('backdrop-filter', 'blur(8px)')
         .style('cursor', 'grab') // Show grab cursor to indicate draggable
         .on('mouseenter', function() {
             // Subtle highlight on hover to indicate interactivity
             d3.select(this)
-                .style('stroke', 'rgba(255, 140, 66, 0.5)')
+                .style('stroke', 'rgba(239, 68, 68, 0.5)')
                 .style('stroke-width', '2px');
         })
         .on('mouseleave', function() {
             // Reset styling when not hovering
             d3.select(this)
-                .style('stroke', 'rgba(255, 140, 66, 0.3)')
+                .style('stroke', 'rgba(239, 68, 68, 0.3)')
                 .style('stroke-width', '1px');
         });
     
-    // Legend title font size calculation (for dimension planning)
-    const titleFontSize = Math.max(12, Math.min(16, baseWidth / 20));
-    const titlePadding = 8;
+    // Legend title font size calculation (for dimension planning) - Increased
+    const titleFontSize = Math.max(14, Math.min(18, baseWidth / 18)); // Increased from 12-16 to 14-18, changed divisor from 20 to 18
+    const titlePadding = 16; // Increased from 8 to 16 for better spacing
     const titleText = 'Game Maps';
     const approximateTitleWidth = titleText.length * (titleFontSize * 0.7); // Approximate title width
     
@@ -769,9 +769,9 @@ const renderLegend = (visible) => {
         }
     });
     
-    // Create vertical layout for legend items with responsive spacing
-    const itemHeight = Math.max(16, Math.min(24, baseHeight / uniqueMaps.length * 0.8));
-    const totalContentHeight = uniqueMaps.length * itemHeight + 40; // +40 for title and padding
+    // Create vertical layout for legend items with responsive spacing - Improved spacing
+    const itemHeight = Math.max(20, Math.min(28, baseHeight / uniqueMaps.length * 0.8)); // Increased from 16-24 to 20-28
+    const totalContentHeight = uniqueMaps.length * itemHeight + 60; // Increased from +40 to +60 for better padding
     
     // Legend items (for width calculation)
     const legendItems = legendGroup.selectAll('.legend-item')
@@ -781,7 +781,7 @@ const renderLegend = (visible) => {
         .attr('class', 'legend-item');
     
     // Legend color boxes - responsive sizing
-    const boxSize = Math.max(10, Math.min(14, itemHeight * 0.7));
+    const boxSize = Math.max(12, Math.min(18, itemHeight * 0.8)); // Increased from 10-14 to 12-18, changed multiplier from 0.7 to 0.8
     legendItems.append('rect')
         .attr('width', boxSize)
         .attr('height', boxSize)
@@ -791,8 +791,8 @@ const renderLegend = (visible) => {
         .style('stroke', 'rgba(255, 255, 255, 0.3)')
         .style('stroke-width', '1px');
     
-    // Legend text with responsive font size
-    const textFontSize = Math.max(10, Math.min(13, baseWidth / 25));
+    // Legend text with responsive font size - Increased for better readability
+    const textFontSize = Math.max(12, Math.min(16, baseWidth / 20)); // Increased from 10-13 to 12-16, changed divisor from 25 to 20
     legendItems.append('text')
         .attr('x', boxSize + 8)
         .attr('y', boxSize / 2)
@@ -804,8 +804,8 @@ const renderLegend = (visible) => {
     
     // Calculate and set legend background size based on ALL content (including title)
     const maxTextWidth = Math.max(...uniqueMaps.map(d => d.map.length * (textFontSize * 0.6))); // Approximate text width
-    const contentWidth = maxTextWidth + boxSize + 30; // Content width
-    const titleWidth = approximateTitleWidth + 20; // Title width with padding
+    const contentWidth = maxTextWidth + boxSize + 40; // Content width - Increased padding from 30 to 40
+    const titleWidth = approximateTitleWidth + 32; // Title width with padding - Increased from 20 to 32
     const actualWidth = Math.max(150, Math.max(contentWidth, titleWidth)); // Ensure both title and content fit
     const actualHeight = Math.max(totalContentHeight, 100);
     
@@ -813,9 +813,9 @@ const renderLegend = (visible) => {
         .attr('width', actualWidth)
         .attr('height', actualHeight);
     
-    // Position legend items using actual width for consistency
+    // Position legend items using actual width for consistency - Improved spacing
     legendItems
-        .attr('transform', (d, i) => `translate(12, ${35 + i * itemHeight})`);
+        .attr('transform', (d, i) => `translate(16, ${40 + i * itemHeight})`); // Increased left padding from 12 to 16, top from 35 to 40
     
     // NOW create the title with correct positioning using actualWidth
     legendGroup.append('text')
@@ -1289,10 +1289,10 @@ const createTooltip = () => {
         .style('visibility', 'hidden')
         .style('background', 'linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 100%)')
         .style('backdrop-filter', 'blur(12px)')
-        .style('border', '1px solid rgba(255, 140, 66, 0.3)')
+        .style('border', '1px solid rgba(239, 68, 68, 0.3)')
         .style('border-radius', '8px')
         .style('padding', '12px 16px')
-        .style('box-shadow', '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 16px rgba(255, 140, 66, 0.1)')
+        .style('box-shadow', '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 16px rgba(239, 68, 68, 0.1)')
         .style('color', '#ffffff')
         .style('font-family', 'Inter, system-ui, sans-serif')
         .style('font-size', '13px')
@@ -1354,8 +1354,8 @@ const showTooltip = (event, gameData, teamName) => {
     tooltip.value
         .style('visibility', 'visible')
         .html(`
-            <div style="border-bottom: 1px solid rgba(255, 140, 66, 0.2); margin-bottom: 8px; padding-bottom: 6px;">
-                <strong style="color: #ff8c42; font-size: 14px;">${teamName}</strong>
+            <div style="border-bottom: 1px solid rgba(239, 68, 68, 0.2); margin-bottom: 8px; padding-bottom: 6px;">
+                <strong style="color: #ef4444; font-size: 14px;">${teamName}</strong>
                 <div style="color: #a0a0a0; font-size: 11px; margin-top: 2px;">${mapName}</div>
             </div>
             <div style="display: flex; flex-direction: column; gap: 4px;">
