@@ -58,7 +58,7 @@
       </div>
     </div>
 
-    <div class="main-layout">
+    <div class="main-layout bento-grid">
       <!-- Hidden Tournament Selector for routing and functionality -->
       <TournamentSelector
         ref="tournamentSelector"
@@ -69,88 +69,105 @@
         style="display: none;"
       />
       
-      <!-- Dashboard Side Panel -->
-      <div class="dashboard-panel">
-        
-        <!-- Panel Header -->
-        <div class="dashboard-header">
-          <div class="dashboard-main">
-            <div ref="dashboardTitle" class="dashboard-title-enhanced">
-              <span ref="dashboardText" class="dashboard-text">Tournament Dashboard</span>
-              <div ref="dashboardGlow" class="dashboard-glow"></div>
+      <!-- Left Column: Dashboard + Controls as unified unit -->
+      <div class="left-column">
+        <!-- Dashboard Panel -->
+        <div class="dashboard-panel">
+          
+          <!-- Panel Header -->
+          <div class="dashboard-header">
+            <div class="dashboard-main">
+              <div ref="dashboardTitle" class="dashboard-title-enhanced">
+                <span ref="dashboardText" class="dashboard-text">Tournament Dashboard</span>
+                <div ref="dashboardGlow" class="dashboard-glow"></div>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <!-- Tournament Selection -->
-        <div class="dashboard-section">
-          <div class="section-header">
-            <div class="section-main">
+          
+          <!-- Tournament Selection -->
+          <div class="dashboard-section">
+            <div class="section-header">
+              <div class="section-main">
+                <div class="section-icon">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                </div>
+                <span class="section-title">Tournament Days</span>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="day-tabs">
+                <button v-for="day in tournamentDays" 
+                        :key="day.id"
+                        :class="['day-tab', { active: selectedDay === day.id }]"
+                        @click="setDay(day.id)"
+                        :title="day.name">
+                  {{ day.name.replace('Day ', 'D') }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Matchup Selection -->
+          <div class="dashboard-section">
+            <div class="section-header">
               <div class="section-icon">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                  <line x1="16" y1="2" x2="16" y2="6"/>
-                  <line x1="8" y1="2" x2="8" y2="6"/>
-                  <line x1="3" y1="10" x2="21" y2="10"/>
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                  <line x1="3" y1="6" x2="21" y2="6"/>
+                  <path d="M16 10a4 4 0 0 1-8 0"/>
                 </svg>
               </div>
-              <span class="section-title">Tournament Days</span>
+              <span class="section-title">Matchups</span>
+            </div>
+            <div class="section-content">
+              <div class="matchup-list">
+                <button v-for="matchup in currentDayMatchups" 
+                        :key="matchup.id"
+                        :class="['matchup-item', { active: selectedMatchup === matchup.id }]"
+                        @click="handleMatchupSelect(matchup.id)"
+                        :title="matchup.description">
+                  <span class="matchup-name">{{ matchup.title }}</span>
+                  <span class="matchup-games">{{ matchup.games === 'auto' ? 'Auto' : matchup.games + 'G' }}</span>
+                </button>
+              </div>
             </div>
           </div>
-          <div class="section-content">
-            <div class="day-tabs">
-              <button v-for="day in tournamentDays" 
-                      :key="day.id"
-                      :class="['day-tab', { active: selectedDay === day.id }]"
-                      @click="setDay(day.id)"
-                      :title="day.name">
-                {{ day.name.replace('Day ', 'D') }}
-              </button>
-            </div>
-          </div>
+          
         </div>
-
-        <!-- Matchup Selection -->
-        <div class="dashboard-section">
-          <div class="section-header">
-            <div class="section-icon">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <path d="M16 10a4 4 0 0 1-8 0"/>
-              </svg>
+        
+        <!-- Controls Panel - Now part of left column -->
+        <ActionPanel
+          v-if="selectedMatchup"
+          :current-map="currentMap"
+          @export-requested="exportData"
+          @show-map-tooltip="showMapTooltip"
+          @hide-map-tooltip="hideMapTooltip"
+          :key="`action-panel-${selectedDay}-${selectedMatchup}`"
+          class="controls-panel-grid"
+        />
+      </div>
+      
+      <!-- Right Column: Chart Section -->
+      <div class="chart-section">
+        <!-- Dynamic Title Section -->
+        <div class="chart-title-section" v-if="selectedMatchup">
+          <div class="chart-title-container">
+            <div class="chart-title-main">
+              <h2 class="chart-title">{{ dynamicChartTitle }}</h2>
+              <div class="chart-subtitle">{{ dynamicChartSubtitle }}</div>
             </div>
-            <span class="section-title">Matchups</span>
-          </div>
-          <div class="section-content">
-            <div class="matchup-list">
-              <button v-for="matchup in currentDayMatchups" 
-                      :key="matchup.id"
-                      :class="['matchup-item', { active: selectedMatchup === matchup.id }]"
-                      @click="handleMatchupSelect(matchup.id)"
-                      :title="matchup.description">
-                <span class="matchup-name">{{ matchup.title }}</span>
-                <span class="matchup-games">{{ matchup.games === 'auto' ? 'Auto' : matchup.games + 'G' }}</span>
-              </button>
+            <div class="chart-title-decorations">
+              <div class="title-glow"></div>
+              <div class="title-accent-line"></div>
             </div>
           </div>
         </div>
         
-      </div>
-      
-      <!-- Always-Floating Controls Panel positioned below dashboard panel -->
-      <ActionPanel
-        v-if="selectedMatchup"
-        :current-map="currentMap"
-        @export-requested="exportData"
-        @show-map-tooltip="showMapTooltip"
-        @hide-map-tooltip="hideMapTooltip"
-        :key="`action-panel-${selectedDay}-${selectedMatchup}`"
-        class="standalone-controls"
-      />
-      
-      <!-- Chart Section -->
-      <div class="chart-section">
         <transition name="fade" mode="out-in">
           <div v-if="!selectedMatchup" key="loading" class="no-selection">
           <!-- Optimized Vue.js + GSAP Chart Loading Animation -->
@@ -397,10 +414,7 @@ export default {
       if (newMatchup) {
         this.fetchDataForMatchup();
         this.updateCurrentMap();
-        // Reposition controls when matchup changes
-        this.$nextTick(() => {
-          this.positionControlsPanel();
-        });
+        // Note: Controls positioning now handled by CSS Grid layout
       }
     },
     
@@ -423,11 +437,9 @@ export default {
       this.updateCurrentMap();
     },
     
-    // Reposition controls when tournament data changes
+    // Note: Controls positioning now handled by CSS Grid layout
     tournamentDays() {
-      this.$nextTick(() => {
-        this.positionControlsPanel();
-      });
+      // Grid layout automatically handles positioning
     }
   },
   
@@ -448,6 +460,37 @@ export default {
     currentDayMatchups() {
       const currentDay = this.tournamentDays.find(day => day.id === this.selectedDay);
       return currentDay ? currentDay.matchups : [];
+    },
+    
+    // Dynamic chart title based on tournament day and matchup
+    dynamicChartTitle() {
+      if (!this.selectedDay || !this.selectedMatchup) return '';
+      
+      const currentDay = this.tournamentDays.find(day => day.id === this.selectedDay);
+      const currentMatchup = this.currentDayMatchups.find(matchup => matchup.id === this.selectedMatchup);
+      
+      if (!currentDay || !currentMatchup) return '';
+      
+      // Format: "Day Name - Matchup Title"
+      const dayName = currentDay.name.replace('Day ', 'D');
+      const matchupTitle = currentMatchup.title;
+      
+      return `${dayName} - ${matchupTitle}`;
+    },
+    
+    // Dynamic chart subtitle with additional context
+    dynamicChartSubtitle() {
+      if (!this.selectedMatchup) return '';
+      
+      const currentMatchup = this.currentDayMatchups.find(matchup => matchup.id === this.selectedMatchup);
+      if (!currentMatchup) return '';
+      
+      // Show game count and tournament type
+      const gameInfo = currentMatchup.games === 'auto' ? 'Auto Games' : `${currentMatchup.games} Games`;
+      const tournamentType = this.isEwc2025Tournament ? 'EWC 2025' : 
+                             (this.isYear5Tournament ? 'ALGS Year 5 Open' : 'ALGS Year 4 Championship');
+      
+      return `${tournamentType} • ${gameInfo}`;
     }
   },
   
@@ -465,8 +508,8 @@ export default {
     // Auto-load first matchup on initial load
     this.autoLoadFirstMatchup();
     
-    // Position controls below dashboard
-    this.positionControlsPanel();
+    // Enable fluid dragging for controls panel
+    this.enableControlsDragging();
     
     // Initialize professional header animations with GSAP
     this.initializeHeaderAnimations();
@@ -664,10 +707,7 @@ export default {
               // Use a slight delay to ensure everything is ready
               setTimeout(() => {
                 this.handleMatchupSelect(firstMatchup.id);
-                // Position controls after initial load
-                setTimeout(() => {
-                  this.positionControlsPanel();
-                }, 300);
+                // Note: Controls positioning now handled by CSS Grid layout
               }, 100);
             } else {
               console.warn('⚠️ No matchups found in first day');
@@ -747,6 +787,54 @@ export default {
           }
         }, 50);
       }
+    },
+    
+    // Enable fluid dragging for controls panel
+    enableControlsDragging() {
+      // Wait for controls panel to be rendered
+      this.$nextTick(() => {
+        const controlsPanel = document.querySelector('.controls-panel-grid');
+        
+        if (controlsPanel && typeof gsap !== 'undefined' && gsap.plugins.Draggable) {
+          // Create highly fluid draggable instance
+          gsap.registerPlugin(Draggable);
+          
+          Draggable.create(controlsPanel, {
+            type: "x,y",
+            edgeResistance: 0.1,
+            inertia: true,
+            autoScroll: 1,
+            minimumMovement: 2,
+            // Extremely smooth movement settings
+            dragResistance: 0,
+            throwResistance: 200,
+            maxDuration: 0.8,
+            // Bounds to keep it within viewport
+            bounds: window,
+            // Smooth cursor changes
+            onDragStart: function() {
+              gsap.set(controlsPanel, { scale: 1.02, rotationZ: 0.01 });
+            },
+            onDrag: function() {
+              // Smooth real-time updates
+              gsap.set(controlsPanel, { 
+                force3D: true,
+                transformOrigin: "center center"
+              });
+            },
+            onDragEnd: function() {
+              gsap.to(controlsPanel, {
+                scale: 1,
+                rotationZ: 0,
+                duration: 0.3,
+                ease: "power2.out"
+              });
+            }
+          });
+          
+          console.log('✅ Fluid dragging enabled for controls panel');
+        }
+      });
     },
     
     // Professional Championship Header Animations
