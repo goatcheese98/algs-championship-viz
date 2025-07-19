@@ -415,8 +415,6 @@
           v-if="selectedMatchup"
           :current-map="currentMap"
           @export-requested="exportData"
-          @show-map-tooltip="showMapTooltip"
-          @hide-map-tooltip="hideMapTooltip"
           :key="`action-panel-${selectedDay}-${selectedMatchup}`"
           class="controls-panel-grid"
         />
@@ -426,14 +424,12 @@
       <div class="chart-section">
         
         <div class="chart-title-section" v-if="selectedMatchup">
+          <div class="chart-title-accent"></div>
+          <div class="chart-title-corners"></div>
           <div class="chart-title-container">
             <div class="chart-title-main">
               <h2 class="chart-title">{{ dynamicChartTitle }}</h2>
-              <div class="chart-subtitle">{{ dynamicChartSubtitle }}</div>
-            </div>
-            <div class="chart-title-decorations">
-              <div class="title-glow"></div>
-              <div class="title-accent-line"></div>
+              <div class="chart-subtitle" v-if="dynamicChartSubtitle">{{ dynamicChartSubtitle }}</div>
             </div>
           </div>
         </div>
@@ -524,20 +520,6 @@
       </div>
     </div>
     
-    
-    <div v-show="mapTooltip.visible" 
-         class="map-tooltip"
-         :style="{ left: mapTooltip.x + 'px', top: mapTooltip.y + 'px', border: '2px solid red', background: 'rgba(255,0,0,0.5)' }">
-      <div class="tooltip-content">
-        <div style="color: white; padding: 10px;">DEBUG: Tooltip is showing!</div>
-        <img :src="mapTooltip.imageUrl" 
-             :alt="mapTooltip.mapName"
-             class="map-image"
-             loading="eager"
-             decoding="async"
-             @error="hideMapTooltip">
-      </div>
-    </div>
   </div>
 </template>
 
@@ -633,14 +615,6 @@ export default {
       // ResizeObserver for dynamic positioning
       dashboardResizeObserver: null,
       
-      // Map tooltip state
-      mapTooltip: {
-        visible: false,
-        x: 0,
-        y: 0,
-        mapName: '',
-        imageUrl: ''
-      }
     }
   },
   
@@ -2075,22 +2049,6 @@ export default {
     this.setPlaying(false);
   },
   
-  // Tooltip methods
-  showMapTooltip(tooltipData) {
-    console.log('TournamentView received tooltip data:', tooltipData);
-    this.mapTooltip = {
-      visible: true,
-      x: tooltipData.x,
-      y: tooltipData.y,
-      mapName: tooltipData.mapName,
-      imageUrl: tooltipData.imageUrl
-    };
-    console.log('Tooltip state after update:', this.mapTooltip);
-  },
-  
-  hideMapTooltip() {
-    this.mapTooltip.visible = false;
-  }
 }
 </script>
 

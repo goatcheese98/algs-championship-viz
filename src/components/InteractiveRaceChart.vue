@@ -161,6 +161,92 @@ const setupSVG = () => {
     // Clear any existing content
     svg.selectAll('*').remove();
     
+    // Add gradient definitions for enhanced text styling
+    const defs = svg.append('defs');
+    
+    // Team name gradient
+    const teamNameGradient = defs.append('linearGradient')
+        .attr('id', 'teamNameGradient')
+        .attr('x1', '0%')
+        .attr('y1', '0%')
+        .attr('x2', '100%')
+        .attr('y2', '0%');
+    
+    teamNameGradient.append('stop')
+        .attr('offset', '0%')
+        .attr('stop-color', '#ffffff')
+        .attr('stop-opacity', '1');
+    teamNameGradient.append('stop')
+        .attr('offset', '20%')
+        .attr('stop-color', '#f8fafc')
+        .attr('stop-opacity', '1');
+    teamNameGradient.append('stop')
+        .attr('offset', '50%')
+        .attr('stop-color', '#ff7777')
+        .attr('stop-opacity', '1');
+    teamNameGradient.append('stop')
+        .attr('offset', '80%')
+        .attr('stop-color', '#f8fafc')
+        .attr('stop-opacity', '1');
+    teamNameGradient.append('stop')
+        .attr('offset', '100%')
+        .attr('stop-color', '#ffffff')
+        .attr('stop-opacity', '1');
+    
+    // Cumulative label gradient
+    const cumulativeGradient = defs.append('linearGradient')
+        .attr('id', 'cumulativeGradient')
+        .attr('x1', '0%')
+        .attr('y1', '0%')
+        .attr('x2', '100%')
+        .attr('y2', '0%');
+    
+    cumulativeGradient.append('stop')
+        .attr('offset', '0%')
+        .attr('stop-color', '#ffffff')
+        .attr('stop-opacity', '1');
+    cumulativeGradient.append('stop')
+        .attr('offset', '30%')
+        .attr('stop-color', '#ff9999')
+        .attr('stop-opacity', '1');
+    cumulativeGradient.append('stop')
+        .attr('offset', '70%')
+        .attr('stop-color', '#ff6666')
+        .attr('stop-opacity', '1');
+    cumulativeGradient.append('stop')
+        .attr('offset', '100%')
+        .attr('stop-color', '#ffffff')
+        .attr('stop-opacity', '1');
+    
+    // Ranking number gradient
+    const rankingGradient = defs.append('linearGradient')
+        .attr('id', 'rankingGradient')
+        .attr('x1', '0%')
+        .attr('y1', '0%')
+        .attr('x2', '0%')
+        .attr('y2', '100%');
+    
+    rankingGradient.append('stop')
+        .attr('offset', '0%')
+        .attr('stop-color', '#ffffff')
+        .attr('stop-opacity', '1');
+    rankingGradient.append('stop')
+        .attr('offset', '25%')
+        .attr('stop-color', '#fecaca')
+        .attr('stop-opacity', '1');
+    rankingGradient.append('stop')
+        .attr('offset', '50%')
+        .attr('stop-color', '#dc2626')
+        .attr('stop-opacity', '1');
+    rankingGradient.append('stop')
+        .attr('offset', '75%')
+        .attr('stop-color', '#991b1b')
+        .attr('stop-opacity', '1');
+    rankingGradient.append('stop')
+        .attr('offset', '100%')
+        .attr('stop-color', '#7f1d1d')
+        .attr('stop-opacity', '1');
+    
     // Configure SVG
     svg
         .style('width', '100%')
@@ -1741,18 +1827,32 @@ watch(isLegendVisible, (newVisible) => {
 
 :deep(.ranking-number) {
   font-weight: 700;
-  fill: #dc2626;
+  font-size: 16px;
+  fill: #ef4444;
+  text-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.8),
+    0 0 6px rgba(239, 68, 68, 0.4);
+  letter-spacing: 0.1px;
 }
 
 :deep(.team-label) {
-  font-weight: 600;
-  fill: #e2e8f0;
+  font-weight: 650;
+  font-size: 14px;
+  fill: #f8fafc;
+  text-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.7),
+    0 0 6px rgba(255, 68, 68, 0.25);
+  letter-spacing: 0.3px;
 }
 
 :deep(.cumulative-label) {
   font-weight: 700;
-  fill: #f1f5f9;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+  font-size: 14px;
+  fill: #ffffff;
+  text-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.8),
+    0 0 8px rgba(255, 68, 68, 0.3);
+  letter-spacing: 0.2px;
 }
 
 :deep(.segment-bar) {

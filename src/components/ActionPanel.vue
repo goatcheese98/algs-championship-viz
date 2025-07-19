@@ -169,9 +169,7 @@ export default {
   },
   
   emits: [
-    'export-requested',
-    'show-map-tooltip',
-    'hide-map-tooltip'
+    'export-requested'
   ],
   
   data() {
@@ -192,6 +190,9 @@ export default {
       
       // Filter tooltip
       filterTooltip: null,
+      
+      // Map tooltip
+      mapTooltip: null,
     }
   },
   
@@ -270,6 +271,12 @@ export default {
     if (this.filterTooltip) {
       this.filterTooltip.remove();
       this.filterTooltip = null;
+    }
+    
+    // Clean up map tooltip
+    if (this.mapTooltip) {
+      this.mapTooltip.remove();
+      this.mapTooltip = null;
     }
   },
   
@@ -531,6 +538,10 @@ export default {
           return;
         }
         
+        if (!this.mapTooltip) {
+          this.createMapTooltip();
+        }
+        
         let mapName = this.currentMap;
         if (mapName && mapName.includes(' - ')) {
           mapName = mapName.split(' - ')[1];
@@ -540,32 +551,49 @@ export default {
         console.log('Current map tooltip - mapName:', mapName, 'imageUrl:', imageUrl);
         
         if (imageUrl && mapName) {
-          const rect = event.target.getBoundingClientRect();
+          // Create tooltip content with large image preview
+          this.mapTooltip.innerHTML = `
+            <div style="margin-bottom: 12px;">
+              <div style="font-weight: 600; color: #ff8c42; font-size: 16px; margin-bottom: 8px;">
+                Current Map
+              </div>
+              <div style="font-weight: 500; color: #ffffff; font-size: 15px;">
+                ${mapName}
+              </div>
+            </div>
+            <div style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);">
+              <img src="${imageUrl}" 
+                   alt="${mapName}" 
+                   style="width: 100%; height: 180px; object-fit: cover; display: block;"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <div style="display: none; height: 180px; background: rgba(75, 85, 99, 0.3); align-items: center; justify-content: center; font-size: 48px;">
+                🗺️
+              </div>
+            </div>
+          `;
           
-          let tooltipX = rect.left + rect.width / 2 - 120;
-          let tooltipY = rect.top - 150;
+          this.mapTooltip.style.visibility = 'visible';
           
-          if (tooltipX + tooltipWidth > window.innerWidth) {
-            tooltipX = window.innerWidth - tooltipWidth - 10;
-          }
-          if (tooltipX < 10) {
-            tooltipX = 10;
-          }
+          // Get the actual element bounds
+          const element = event.currentTarget;
+          const elementRect = element.getBoundingClientRect();
+          const tooltipWidth = 320; // width of tooltip
           
-          if (tooltipY < 10) {
-            tooltipY = rect.bottom + 10;
-          }
+          // Position tooltip above the map badge
+          const tooltipX = elementRect.left + (elementRect.width / 2);
+          const tooltipY = elementRect.top - 20; // 20px above the element
           
-          const tooltipData = {
-            x: tooltipX,
-            y: tooltipY,
-            mapName: mapName,
-            imageUrl: imageUrl
-          };
-          console.log('Emitting map tooltip:', tooltipData);
-          this.$emit('show-map-tooltip', tooltipData);
+          // Ensure tooltip stays within viewport
+          const minX = tooltipWidth / 2 + 20;
+          const maxX = window.innerWidth - (tooltipWidth / 2) - 20;
+          const clampedX = Math.max(minX, Math.min(tooltipX, maxX));
+          const clampedY = Math.max(20, tooltipY);
+          
+          // Apply positioning
+          this.mapTooltip.style.left = clampedX + 'px';
+          this.mapTooltip.style.top = clampedY + 'px';
         }
-      }, 200);
+      }, 300); // Slightly longer delay for map tooltip
     },
     
     hideMapTooltip() {
@@ -573,7 +601,9 @@ export default {
         clearTimeout(this.tooltipTimeout);
         this.tooltipTimeout = null;
       }
-      this.$emit('hide-map-tooltip');
+      if (this.mapTooltip) {
+        this.mapTooltip.style.visibility = 'hidden';
+      }
     },
     
     createFilterTooltip() {
@@ -606,6 +636,39 @@ export default {
       
       document.body.appendChild(this.filterTooltip);
       return this.filterTooltip;
+    },
+    
+    createMapTooltip() {
+      if (this.mapTooltip) {
+        this.mapTooltip.remove();
+      }
+      
+      this.mapTooltip = document.createElement('div');
+      this.mapTooltip.className = 'map-tooltip';
+      this.mapTooltip.style.cssText = `
+        position: fixed;
+        visibility: hidden;
+        background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 100%);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(217, 119, 6, 0.3);
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 16px rgba(217, 119, 6, 0.1);
+        color: #ffffff;
+        font-family: Inter, system-ui, sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.4;
+        pointer-events: none;
+        z-index: 10000;
+        width: 320px;
+        max-width: 320px;
+        text-align: center;
+        transform: translateX(-50%);
+      `;
+      
+      document.body.appendChild(this.mapTooltip);
+      return this.mapTooltip;
     },
     
     showFilterTooltip(event, gameNum) {
@@ -710,7 +773,7 @@ export default {
     },
     
     getCurrentMapStyle() {
-      let mapColor = '#d97706';
+      let mapColor = '#ef4444';
       let mapName = this.currentMap || 'Loading...';
       
       if (this.processedChartData && this.processedChartData.length > 0 && this.currentGame > 0) {
