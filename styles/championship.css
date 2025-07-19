@@ -49,6 +49,88 @@ body {
 
 .panel-title {
     font-size: clamp(0.9rem, 2vw, 1.125rem) !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.panel-title .section-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    color: #d97706;
+}
+
+.panel-title .section-icon .icon {
+    width: 16px;
+    height: 16px;
+}
+
+.panel-title .title-text {
+    font-weight: 600;
+    color: #f1f5f9;
+}
+
+.panel-controls {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.toggle-floating-btn .icon {
+    width: 14px;
+    height: 14px;
+}
+
+/* Map Image Tooltip - Matching Chart Design Language */
+.map-tooltip {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    animation: chartTooltipFadeIn 0.2s ease-out;
+}
+
+.map-tooltip .tooltip-content {
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 140, 66, 0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 16px rgba(255, 140, 66, 0.1);
+    max-width: 200px;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+.map-tooltip .map-image {
+    width: 160px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 140, 66, 0.2);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.map-tooltip .map-name {
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 1.4;
+    text-align: center;
+    margin: 0;
+}
+
+@keyframes chartTooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .info-text {
@@ -376,6 +458,16 @@ body {
     min-width: 280px;
 }
 
+.dashboard-panel.compressed {
+    width: 48px;
+    min-width: 48px;
+}
+
+.dashboard-panel.compressed.expanded {
+    width: 260px;
+    min-width: 260px;
+}
+
 .dashboard-panel.force-expanded .dashboard-title,
 .dashboard-panel.force-expanded .section-title {
     opacity: 1;
@@ -452,6 +544,32 @@ body {
 .dashboard-section {
     flex-shrink: 0;
     margin-bottom: 8px;
+}
+
+.dashboard-section.compressed-controls {
+    background: rgba(217, 119, 6, 0.1);
+    border-radius: 6px;
+    margin: 8px 4px;
+}
+
+.dashboard-section.compressed-controls .section-header {
+    padding: 8px;
+}
+
+.dashboard-section.compressed-controls .expand-btn {
+    background: rgba(217, 119, 6, 0.2);
+    border: 1px solid rgba(217, 119, 6, 0.4);
+    color: #d97706;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dashboard-section.compressed-controls .expand-btn:hover {
+    background: rgba(217, 119, 6, 0.3);
+    transform: translateX(-2px);
 }
 
 .section-header {
@@ -1918,9 +2036,25 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+/* Integrated Action Panel Styles */
+.integrated-action-panel {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+}
+
+.integrated-action-panel .panel-header {
+    background: transparent;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(217, 119, 6, 0.2);
+}
+
 /* Enhanced GSAP-Powered Draggable Action Panel */
 .enhanced-action-panel {
-    position: absolute;
+    position: fixed;
     top: 55vh;
     right: 20px;
     background: linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(31, 41, 55, 0.95) 100%);
@@ -1930,6 +2064,7 @@ body {
     padding: 14px;
     min-width: 240px;
     max-width: 300px;
+    min-height: auto;
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.4),
         0 0 16px rgba(217, 119, 6, 0.08),
@@ -2130,6 +2265,8 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    padding: 0 12px;
+    margin: 8px 0;
 }
 
 .progress-value {
@@ -2179,6 +2316,21 @@ body {
     gap: 10px;
     justify-content: center;
     margin-top: 12px;
+}
+
+/* Smaller buttons for integrated panel */
+.integrated-action-panel .quick-controls {
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.integrated-action-panel .control-btn {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+}
+
+.integrated-action-panel .play-btn {
+    padding: 8px 16px;
 }
 
 .control-btn {
@@ -2251,6 +2403,16 @@ body {
     margin: 10px 0 6px 0;
 }
 
+/* Smaller map badge for integrated panel */
+.integrated-action-panel .map-badge {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+}
+
+.integrated-action-panel .map-icon {
+    font-size: 0.9rem;
+}
+
 .map-badge {
     background: linear-gradient(135deg, rgba(75, 85, 99, 0.8) 0%, rgba(107, 114, 128, 0.8) 100%);
     border: 1px solid rgba(156, 163, 175, 0.4);
@@ -2294,7 +2456,8 @@ body {
     font-size: 0.7rem;
     color: #d97706;
     font-weight: 500;
-    margin-top: 6px;
+    margin-top: 8px;
+    padding: 0 8px;
     opacity: 0.8;
 }
 
@@ -2318,11 +2481,23 @@ body {
     margin-bottom: 0;
 }
 
-.game-filter-buttons {
-    display: flex;
-    flex-wrap: wrap;
+.game-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
     gap: 6px;
-    flex: 1;
+    margin-bottom: 8px;
+    padding: 8px;
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    justify-items: center;
+}
+
+/* Floating panel uses full width */
+.enhanced-action-panel .game-filter-grid {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .game-filter-btn {
@@ -2760,10 +2935,10 @@ body {
     }
     
     /* Mobile Game Filter Buttons Layout */
-    .game-filter-buttons {
+    .game-filter-grid {
+        grid-template-columns: repeat(5, 1fr);
         gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
+        padding: 0 12px;
     }
     
     /* Mobile Export Button */
@@ -2816,8 +2991,10 @@ body {
         margin: 16px auto 100px auto !important;
     }
     
-    .game-filter-buttons {
+    .game-filter-grid {
+        grid-template-columns: repeat(5, 1fr);
         gap: 6px;
+        padding: 0 8px;
     }
     
     .game-filter-btn {

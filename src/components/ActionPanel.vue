@@ -1,17 +1,34 @@
 <template>
   <div v-if="maxGames > 0" 
        ref="actionPanel"
-       class="enhanced-action-panel tournament-controls"
-       :class="{ expanded: panelExpanded }">
+       :class="[isFloating ? 'enhanced-action-panel' : 'integrated-action-panel', { expanded: panelExpanded }]">
     
     <div class="panel-header">
       <div class="panel-title">
-        <span class="drag-handle">⋮⋮</span>
-        Controls
+        <span v-if="isFloating" class="drag-handle">⋮⋮</span>
+        <div class="section-icon">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+        </div>
+        <span class="title-text">Controls</span>
       </div>
-      <button class="expand-btn" @click="togglePanel" @mousedown.stop>
-        {{ panelExpanded ? '−' : '+' }}
-      </button>
+      <div class="panel-controls">
+        <button v-if="!isFloating" class="expand-btn toggle-floating-btn" @click="$emit('toggle-floating')" title="Float controls">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12l-6-6v4H9a4 4 0 0 0-4 4v0a4 4 0 0 0 4 4h6v4l6-6z"/>
+          </svg>
+        </button>
+        <button v-if="isFloating" class="expand-btn toggle-floating-btn" @click="$emit('toggle-floating')" title="Dock controls">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12l6-6v4h6a4 4 0 0 1 4 4v0a4 4 0 0 1-4 4H9v4l-6-6z"/>
+          </svg>
+        </button>
+        <button v-if="isFloating" class="expand-btn" @click="togglePanel" @mousedown.stop" title="Toggle advanced controls">
+          {{ panelExpanded ? '−' : '+' }}
+        </button>
+      </div>
     </div>
 
     <!-- Always visible: Game Progress and Controls -->
@@ -38,31 +55,30 @@
 
       <!-- Game Filter Controls (merged with progress) -->
       <div class="filter-controls">
-        <div class="filter-row">
-          <div class="game-filter-buttons">
-            <button v-for="game in maxGames" 
-                    :key="`game-${game}-${maxGames}`"
-                    @click="toggleGameFilter(game)"
-                    class="game-filter-btn"
-                    :class="{ 
-                      active: selectedGames.includes(game),
-                      current: game === currentGame 
-                    }"
-                    :style="getGameButtonStyle(game)"
-                    :data-tooltip="getGameTooltip(game)">
-              {{ game }}
-            </button>
-          </div>
-          <button @click="resetGameFilter" class="reset-filter-btn">
-            ✕
+        <div class="game-filter-grid">
+          <button v-for="item in filterButtons" 
+                  :key="item.id"
+                  @click="item.type === 'game' ? toggleGameFilter(item.value) : resetGameFilter()"
+                  @mouseenter="item.type === 'game' ? showMapTooltip($event, item.value) : null"
+                  @mouseleave="hideMapTooltip"
+                  :class="['game-filter-btn', {
+                    active: item.type === 'game' && selectedGames.includes(item.value),
+                    current: item.type === 'game' && item.value === currentGame
+                  }]"
+                  :style="item.type === 'game' ? getGameButtonStyle(item.value) : {}"
+                  :title="item.type === 'game' ? getGameTooltip(item.value) : 'Clear Filters'">
+            {{ item.label }}
           </button>
         </div>
-        <div class="filter-action-label">Apply Filter</div>
+        <div class="filter-action-label">Click to filter | X to clear</div>
       </div>
 
       <!-- Current Map Info -->
       <div class="current-map-display">
-        <div class="map-badge" :style="getCurrentMapStyle()">
+        <div class="map-badge" 
+             :style="getCurrentMapStyle()"
+             @mouseenter="showCurrentMapTooltip"
+             @mouseleave="hideMapTooltip">
           <span class="map-icon">🗺️</span>
           <span class="map-name">{{ currentMap || 'Loading...' }}</span>
         </div>
@@ -79,21 +95,29 @@
       </div>
     </div>
 
-    <!-- Expanded Controls (Export Only) -->
+    <!-- Expanded Controls (Advanced Features) -->
     <transition name="slide-down">
       <div v-if="panelExpanded" class="expanded-controls" @mousedown.stop>
         <!-- Export Controls -->
         <div class="control-section">
           <label class="section-label">Export Data</label>
           <button @click="exportData" class="export-btn">
-            📊 Export CSV
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7,10 12,15 17,10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Export CSV
           </button>
         </div>
         <!-- Legend Toggle -->
         <div class="control-section">
           <label class="section-label">Chart Legend</label>
           <button @click="toggleLegend" class="legend-toggle-btn">
-                            {{ isLegendVisible ? 'Hide Legend' : 'Show Legend' }}
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 2v20l3-2 3 2V2z"/>
+            </svg>
+            {{ isLegendVisible ? 'Hide' : 'Show' }} Legend
           </button>
         </div>
         
@@ -123,6 +147,19 @@
         </div>
       </div>
     </transition>
+    
+    <!-- Map Image Tooltip -->
+    <div v-if="mapTooltip.visible" 
+         class="map-tooltip"
+         :style="{ left: mapTooltip.x + 'px', top: mapTooltip.y + 'px' }">
+      <div class="tooltip-content">
+        <img :src="mapTooltip.imageUrl" 
+             :alt="mapTooltip.mapName"
+             class="map-image"
+             @error="handleImageError">
+        <div class="map-name">{{ mapTooltip.mapName }}</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -135,25 +172,19 @@ export default {
   name: 'ActionPanel',
   
   props: {
-    // selectedMatchup prop is no longer needed - now comes from store
-    // maxGames prop is no longer needed - now comes from store
-    // isPlaying prop is no longer needed - now comes from store
-    // currentGame prop is no longer needed - now comes from store
     currentMap: {
       type: String,
       default: ''
+    },
+    isFloating: {
+      type: Boolean,
+      default: false
     }
-    // chartData prop is no longer needed - now comes from store
   },
   
   emits: [
-    // 'game-changed', // REMOVE THIS EMIT
-    // 'play-toggled', // REMOVE THIS EMIT
-    // 'restart-requested', // REMOVE THIS EMIT
-    // 'game-filter-changed', // REMOVE THIS EMIT
     'export-requested',
-    // 'legend-toggled', // We no longer need to emit this
-    // 'animation-speed-changed' // We no longer need to emit this
+    'toggle-floating'
   ],
   
   data() {
@@ -169,8 +200,16 @@ export default {
       
       // GSAP draggable instance
       draggableInstance: null,
-
-      // animationSpeed: 'medium' // REMOVE THIS local state
+      
+      // Tooltip state
+      mapTooltip: {
+        visible: false,
+        x: 0,
+        y: 0,
+        mapName: '',
+        imageUrl: ''
+      },
+      tooltipTimeout: null,
     }
   },
   
@@ -193,6 +232,14 @@ export default {
         progress: progress
       });
       return progress;
+    },
+    filterButtons() {
+      const buttons = [];
+      for (let i = 1; i <= this.maxGames; i++) {
+        buttons.push({ id: `game-${i}`, type: 'game', value: i, label: i.toString() });
+      }
+      buttons.push({ id: 'clear-filter', type: 'clear', value: null, label: '✕' });
+      return buttons;
     }
   },
   
@@ -216,7 +263,9 @@ export default {
   mounted() {
     // Initialize draggable when component mounts
     this.$nextTick(() => {
-      this.initDraggable();
+      if (this.isFloating) {
+        this.initDraggable();
+      }
     });
   },
   
@@ -230,6 +279,11 @@ export default {
         // Use manager's destroy method with panel ID
         GSAPDraggableManager.destroyDraggable(this.$refs.actionPanel.id);
       }
+    }
+    
+    // Clean up tooltip timeout
+    if (this.tooltipTimeout) {
+      clearTimeout(this.tooltipTimeout);
     }
   },
   
@@ -295,12 +349,7 @@ export default {
       }
     },
     
-    updateDraggableConstraints() {
-      // For this implementation, we don't need to update constraints
-      // since the draggable is for the panel, not the game controls
-      // The game controls are handled through Vue reactivity
-      console.log('🎮 Draggable constraints updated for maxGames:', this.maxGames);
-    },
+    
     
     updateGameFromSlider(event) {
       const gameValue = Math.min(Math.max(0, parseInt(event.target.value)), this.maxGames);
@@ -424,12 +473,95 @@ export default {
         if (firstTeam && firstTeam.games) {
           const gameData = firstTeam.games.find(game => game.gameNumber === gameNum);
           if (gameData && gameData.map) {
-            mapName = ` - ${gameData.map}`;
+            mapName = gameData.map;
           }
         }
       }
       
-      return `Game ${gameNum}${mapName}`;
+      return mapName || `Game ${gameNum}`;
+    },
+    
+    getMapImageUrl(mapName) {
+      const mapImages = {
+        "World's Edge": 'https://cdn.mos.cms.futurecdn.net/MCKD8U49KzQ9UQE8X5BrQX-650-80.jpg.webp',
+        'Storm Point': 'https://www.charlieintel.com/cdn-image/wp-content/uploads/2023/10/25/apex-legends-season-19-storm-point-poi-zeus-station.jpg?width=768&quality=60&format=auto',
+        'Broken Moon': 'https://alegends.gg/wp-content/uploads/2025/07/apex-legends-broken-moon-bug.webp',
+        'E-District': 'https://images2.minutemediacdn.com/image/upload/c_crop,w_3835,h_2157,x_73,y_0/c_fill,w_1080,ar_16:9,f_auto,q_auto,g_auto/images%2FvoltaxMediaLibrary%2Fmmsport%2Fesports_illustrated%2F01j7vfeyaec7wr6e98w0.jpg'
+      };
+      
+      return mapImages[mapName] || '';
+    },
+    
+    showMapTooltip(event, gameNum) {
+      // Clear any existing timeout
+      if (this.tooltipTimeout) {
+        clearTimeout(this.tooltipTimeout);
+      }
+      
+      // Set a delay before showing tooltip
+      this.tooltipTimeout = setTimeout(() => {
+        const mapName = this.getGameTooltip(gameNum);
+        const imageUrl = this.getMapImageUrl(mapName);
+        
+        if (imageUrl) {
+          const rect = event.target.getBoundingClientRect();
+          this.mapTooltip = {
+            visible: true,
+            x: rect.left - 80, // Offset to center over button
+            y: rect.top - 120, // Position above button
+            mapName: mapName,
+            imageUrl: imageUrl
+          };
+        }
+      }, 200); // 0.2 second delay
+    },
+    
+    showCurrentMapTooltip(event) {
+      // Clear any existing timeout
+      if (this.tooltipTimeout) {
+        clearTimeout(this.tooltipTimeout);
+      }
+      
+      // Set a delay before showing tooltip
+      this.tooltipTimeout = setTimeout(() => {
+        // Extract map name from current map display
+        let mapName = '';
+        if (this.currentGame > 0 && this.processedChartData && this.processedChartData.length > 0) {
+          const firstTeam = this.processedChartData[0];
+          if (firstTeam && firstTeam.games) {
+            const currentGameData = firstTeam.games.find(game => game.gameNumber === this.currentGame);
+            if (currentGameData && currentGameData.map) {
+              mapName = currentGameData.map;
+            }
+          }
+        }
+        
+        const imageUrl = this.getMapImageUrl(mapName);
+        
+        if (imageUrl && mapName) {
+          const rect = event.target.getBoundingClientRect();
+          this.mapTooltip = {
+            visible: true,
+            x: rect.left + rect.width / 2 - 80, // Center over badge
+            y: rect.top - 120, // Position above badge
+            mapName: mapName,
+            imageUrl: imageUrl
+          };
+        }
+      }, 200); // 0.2 second delay
+    },
+    
+    hideMapTooltip() {
+      if (this.tooltipTimeout) {
+        clearTimeout(this.tooltipTimeout);
+        this.tooltipTimeout = null;
+      }
+      this.mapTooltip.visible = false;
+    },
+    
+    handleImageError() {
+      // Hide tooltip if image fails to load
+      this.mapTooltip.visible = false;
     },
     
     adjustColor(hexColor, percent) {

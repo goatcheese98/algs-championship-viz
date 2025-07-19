@@ -69,7 +69,6 @@ export default {
       type: Boolean,
       default: false
     },
-    // REMOVE selectedMatchup and selectedDay props
     loadedMatchups: {
       type: Set,
       default: () => new Set()
@@ -80,7 +79,6 @@ export default {
     }
   },
   
-  // REMOVE emits for matchup-selected and day-changed
   emits: [],
   
   data() {
@@ -326,9 +324,6 @@ export default {
   
   methods: {
     ...mapActions(useTournamentStore, ['setDay', 'selectMatchup']), // Map actions
-    
-    // REMOVE selectDay and selectMatchup methods that emitted events.
-    // The @click handlers in the template will now call the mapped store actions directly.
     
     getStatusClass(matchupId) {
       if (this.loadedMatchups.has(matchupId)) return 'loaded';

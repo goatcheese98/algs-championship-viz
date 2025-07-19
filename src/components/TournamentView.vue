@@ -71,7 +71,7 @@
       
       <!-- Dashboard Side Panel -->
       <div ref="dashboardPanel" class="dashboard-panel" 
-           :class="{ expanded: panelExpanded, 'force-expanded': !isSmallWindow }"
+           :class="{ expanded: panelExpanded, 'force-expanded': !isSmallWindow, 'compressed': isPanelFloating }"
            @mouseenter="expandPanel"
            @mouseleave="collapsePanel">
         
@@ -147,166 +147,30 @@
           </div>
         </div>
         
-        <!-- Game Controls & Filters Section -->
-        <div v-if="selectedMatchup" class="dashboard-section">
-          <div class="section-header">
-            <div class="section-icon" :title="panelExpanded ? 'Game Controls & Filters' : 'Game Progress'">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <polygon points="10,8 16,12 10,16 10,8"/>
-              </svg>
-            </div>
-            <span class="section-title" v-show="panelExpanded">Game Controls & Filters</span>
-          </div>
-          <div class="section-content" v-show="panelExpanded">
-            <!-- Game Progress Info -->
-            <div class="progress-section">
-              <div class="progress-info">
-                <span class="progress-label">Game {{ currentGame || 0 }}/{{ maxGames || 0 }}</span>
-                <div class="map-indicator" :title="currentMap || 'No map selected'">
-                  <svg class="map-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="1,6 1,22 8,18 16,22 23,18 23,2 16,6 8,2 1,6"/>
-                    <line x1="8" y1="2" x2="8" y2="18"/>
-                    <line x1="16" y1="6" x2="16" y2="22"/>
-                  </svg>
-                </div>
-              </div>
-              <input type="range" 
-                     :min="0" 
-                     :max="maxGames || 0" 
-                     :value="currentGame || 0"
-                     @input="updateGameFromSlider"
-                     class="game-slider"
-                     :title="`Game ${currentGame || 0} of ${maxGames || 0}`">
-              <div class="game-actions-label">Click to jump to game | Double-click to filter</div>
-            </div>
-
-            <!-- Combined Game Controls Grid -->
-            <div class="game-controls-grid">
-              <div class="game-circles-container smart-grid" :style="getGridStyle()">
-                <button v-for="game in (maxGames || 0)" 
-                        :key="`game-${game}`"
-                        @click="handleGameClick(game, $event)"
-                        @dblclick="toggleGameFilter(game)"
-                        :class="['game-circle', { 
-                          active: currentGame === game && !selectedGames.includes(game),
-                          filtered: selectedGames.includes(game),
-                          passed: game < currentGame && !selectedGames.includes(game)
-                        }]"
-                        :style="getCircularGameStyle(game)"
-                        :title="getGameTooltip(game)">
-                  {{ game }}
-                </button>
-              </div>
-              <div class="game-controls-actions">
-                <button @click="resetGameFilter" class="reset-filter-btn" title="Clear all filters">
-                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            <!-- Current Map Display -->
-            <div class="current-map-display">
-              <div class="map-badge" :style="getCurrentMapStyle()">
-                <span class="map-name">{{ currentMap || 'Loading...' }}</span>
-              </div>
-            </div>
-
-            <!-- Playback Controls -->
-            <div class="playback-section">
-              <button @click="togglePlayback" 
-                      class="control-button play-button"
-                      :title="isPlaying ? 'Pause playback' : 'Start playback'">
-                <svg class="control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polygon v-if="!isPlaying" points="5,3 19,12 5,21 5,3"/>
-                  <rect v-else x="6" y="4" width="4" height="16"/>
-                  <rect v-else x="14" y="4" width="4" height="16"/>
-                </svg>
-              </button>
-              <button @click="restart" 
-                      class="control-button reset-button"
-                      title="Reset to beginning">
-                <svg class="control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="1,4 1,10 7,10"/>
-                  <path d="M3.51,15A9,9 0 0,0 12,21A9,9 0 0,0 21,12A9,9 0 0,0 12,3A9,9 0 0,0 4.5,4.5l0,0L1,4"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
+        <!-- Game Controls & Filters Section - Only show when not floating -->
+        <ActionPanel
+          v-if="!isPanelFloating"
+          :is-floating="false"
+          :current-map="currentMap"
+          @toggle-floating="toggleFloatingPanel"
+          @export-requested="exportData"
+        />
         
-        <!-- Advanced Controls Section -->
-        <div v-if="selectedMatchup" class="dashboard-section">
+        <!-- Compressed State Controls Section - Show only arrow when floating -->
+        <div v-if="isPanelFloating" class="dashboard-section compressed-controls">
           <div class="section-header">
             <div class="section-main">
-              <div class="section-icon" :title="panelExpanded ? 'Advanced Controls' : 'Advanced'">
+              <div class="section-icon" :title="'Controls are floating'">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="3"/>
-                  <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+                  <path d="M12 20h9"/>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
                 </svg>
               </div>
-              <span class="section-title" v-show="panelExpanded">Advanced Controls</span>
+              <span class="section-title" v-show="panelExpanded">Controls (Floating)</span>
             </div>
-            <button @click="toggleAdvancedControls" class="expand-btn" v-show="panelExpanded" :title="advancedControlsExpanded ? 'Collapse advanced controls' : 'Expand advanced controls'">
-              {{ advancedControlsExpanded ? '−' : '+' }}
+            <button class="expand-btn" @click="toggleFloatingPanel" :title="'Dock controls back to sidebar'">
+              ←
             </button>
-          </div>
-          <div class="section-content" v-show="panelExpanded">
-            <transition name="slide-down">
-              <div v-if="advancedControlsExpanded" class="advanced-controls">
-                <!-- Export Controls -->
-                <div class="control-group">
-                  <label class="control-label">Export Data</label>
-                  <button @click="exportData" class="export-btn">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="7,10 12,15 17,10"/>
-                      <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    Export CSV
-                  </button>
-                </div>
-                
-                <!-- Legend Toggle -->
-                <div class="control-group">
-                  <label class="control-label">Chart Legend</label>
-                  <button @click="toggleLegend" class="legend-toggle-btn">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M9 2v20l3-2 3 2V2z"/>
-                    </svg>
-                    {{ isLegendVisible ? 'Hide' : 'Show' }} Legend
-                  </button>
-                </div>
-                
-                <!-- Animation Speed Controls -->
-                <div class="control-group">
-                  <label class="control-label">Animation Speed</label>
-                  <div class="speed-controls">
-                    <button 
-                      @click="setAnimationSpeed('slow')" 
-                      :class="['speed-btn', { active: animationSpeed === 'slow' }]"
-                    >
-                      Slow
-                    </button>
-                    <button 
-                      @click="setAnimationSpeed('medium')" 
-                      :class="['speed-btn', { active: animationSpeed === 'medium' }]"
-                    >
-                      Medium
-                    </button>
-                    <button 
-                      @click="setAnimationSpeed('fast')" 
-                      :class="['speed-btn', { active: animationSpeed === 'fast' }]"
-                    >
-                      Fast
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </transition>
           </div>
         </div>
       </div>
@@ -400,9 +264,12 @@
 
             <!-- Action Panel Component - Moved outside chart-area for full page dragging -->
             <ActionPanel
+              v-if="isPanelFloating"
+              :is-floating="true"
+              @toggle-floating="toggleFloatingPanel"
+              @export-requested="exportData"
               :key="`action-panel-${selectedDay}-${selectedMatchup}`"
               :current-map="currentMap"
-              @export-requested="handleExportRequested"
             />
           </div>
         </transition>
@@ -418,6 +285,7 @@ import ActionPanel from './ActionPanel.vue'
 import InteractiveRaceChart from './InteractiveRaceChart.vue'
 import { useTournamentStore } from '../stores/tournament.js'
 import { mapActions, mapState } from 'pinia'
+import { gsap } from 'gsap'
 
 export default {
   name: 'TournamentView',
@@ -482,6 +350,7 @@ export default {
       // Dashboard panel state
       panelExpanded: false,
       isSmallWindow: false,
+      isPanelFloating: false,
       
       // Advanced controls state
       advancedControlsExpanded: false,
@@ -1138,163 +1007,7 @@ export default {
       });
     },
     
-    // Event handlers for child components - REMOVED DUPLICATE, see comprehensive version below
-
-    // REMOVE the handleMatchupSelected method - now handled by watcher
-
-    // REMOVE handleGameChanged and handleRestartRequested methods
-    // These are now handled directly by the store actions
-
-    startAnimation() {
-      console.log('🎬 Starting animation from game', this.currentGame);
-      
-      // Clear any existing animation
-      this.stopAnimation();
-        
-      // If we're at the end, restart from game 1
-      if (this.currentGame >= this.maxGames) {
-        this.setCurrentGame(1);
-      } else if (this.currentGame === 0) {
-        // If at initial state, start from game 1
-        this.setCurrentGame(1);
-      }
-      
-      // Start the animation interval
-      this.playInterval = setInterval(() => {
-        if (this.currentGame < this.maxGames) {
-          this.setCurrentGame(this.currentGame + 1);
-        this.updateCurrentMap();
-          console.log('🎮 Animation progressed to game', this.currentGame);
-        } else {
-          // Reached the end, stop playing
-          console.log('🏁 Animation completed');
-          this.setPlaying(false); // Use the action to update the store
-        }
-      }, 3000); // 3 seconds per game - adjust speed as needed
-    },
-
-    stopAnimation() {
-      if (this.playInterval) {
-        clearInterval(this.playInterval);
-        this.playInterval = null;
-        console.log('⏸️ Animation stopped');
-          }
-    },
-
-    // REMOVE the handleGameFilterChanged method entirely
-
-    handleExportRequested(selectedMatchup) {
-      console.log('📤 Export requested for:', selectedMatchup);
-      
-      if (this.processedChartData && this.processedChartData.length > 0) {
-        // Generate CSV content from processed chart data
-        const csvContent = this.generateCSVContent(this.processedChartData, selectedMatchup);
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${selectedMatchup}_export.csv`;
-        a.click();
-        
-        URL.revokeObjectURL(url);
-      } else {
-        console.warn('⚠️ No chart data available for export');
-      }
-    },
-
-    generateCSVContent(data, matchupName) {
-      if (!data || data.length === 0) return '';
-      
-      // Create CSV header
-      const maxGames = Math.max(...data.map(team => team.games?.length || 0));
-      const headers = ['Team', 'Total Points'];
-      for (let i = 1; i <= maxGames; i++) {
-        headers.push(`Game ${i} Points`, `Game ${i} Map`);
-        }
-        
-      // Create CSV rows
-      const rows = [headers.join(',')];
-      
-      data.forEach(team => {
-        const row = [team.team];
-        
-        // Calculate total points
-        const totalPoints = team.games?.reduce((sum, game) => sum + (game.points || 0), 0) || 0;
-        row.push(totalPoints);
-        
-        // Add game-by-game data
-        for (let i = 1; i <= maxGames; i++) {
-          const game = team.games?.find(g => g.gameNumber === i);
-          row.push(game?.points || 0);
-          row.push(game?.map || '');
-        }
-        
-        rows.push(row.join(','));
-      });
-      
-      return rows.join('\n');
-    },
-
-    // REMOVE the handleLegendToggled method entirely
-    // handleLegendToggled(visible) {
-    //   console.log('🎨 Toggling chart legend:', visible ? 'ON' : 'OFF');
-    //   this.isLegendVisible = visible;
-    // },
-
-    // REMOVE the handleAnimationSpeedChanged method entirely
-
-    /**
-     * Enhanced cleanup method with error handling and race condition prevention
-     */
-
-
-    // REMOVE the handleDayChanged method - now handled by watcher
-
-
     
-    getMatchupTitle(matchupId) {
-      if (!this.$refs.tournamentSelector) return 'Unknown Matchup';
-      
-      const matchupInfo = this.$refs.tournamentSelector.getMatchupInfo(matchupId);
-      return matchupInfo ? matchupInfo.title : 'Unknown Matchup';
-    },
-
-    
-
-    showChartError(error) {
-      this.errorMessage = error.message;
-      console.error('Chart error:', error);
-      
-      // Show error in chart container
-      const container = document.getElementById('vue-chart-container');
-      if (container) {
-        container.innerHTML = `
-          <div style="
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 400px;
-            color: #fca5a5;
-            font-size: 1.2rem;
-            text-align: center;
-            background: rgba(220, 38, 38, 0.1);
-            border: 1px solid #dc2626;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px;
-          ">
-            <div>
-              <div style="font-size: 2rem; margin-bottom: 10px;">⚠️</div>
-              <div>Failed to load chart: ${error.message}</div>
-              <div style="font-size: 0.9rem; margin-top: 10px; opacity: 0.8;">
-                Try refreshing the page or selecting a different matchup
-              </div>
-            </div>
-          </div>
-        `;
-      }
-    },
     
     updateCurrentMap() {
       // Get map name from chart data based on current game
@@ -1590,6 +1303,10 @@ export default {
     toggleAdvancedControls() {
       this.advancedControlsExpanded = !this.advancedControlsExpanded;
     },
+
+    toggleFloatingPanel() {
+      this.isPanelFloating = !this.isPanelFloating;
+    },
     
     // Export data handler
     exportData() {
@@ -1610,6 +1327,87 @@ export default {
       } else {
         console.warn('⚠️ No chart data available for export');
       }
+    },
+
+    handleExportRequested(selectedMatchup) {
+      console.log('📤 Export requested for:', selectedMatchup);
+      
+      if (this.processedChartData && this.processedChartData.length > 0) {
+        // Generate CSV content from processed chart data
+        const csvContent = this.generateCSVContent(this.processedChartData, selectedMatchup);
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${selectedMatchup}_export.csv`;
+        a.click();
+        
+        URL.revokeObjectURL(url);
+      } else {
+        console.warn('⚠️ No chart data available for export');
+      }
+    },
+
+    startAnimation() {
+      console.log('🎬 Starting animation from game', this.currentGame);
+      
+      // Clear any existing animation
+      this.stopAnimation();
+        
+      // If we're at the end, restart from game 1
+      if (this.currentGame >= this.maxGames) {
+        this.setCurrentGame(1);
+      } else if (this.currentGame === 0) {
+        // If at initial state, start from game 1
+        this.setCurrentGame(1);
+      }
+      
+      // Start the animation interval
+      this.playInterval = setInterval(() => {
+        if (this.currentGame < this.maxGames) {
+          this.setCurrentGame(this.currentGame + 1);
+        this.updateCurrentMap();
+          console.log('🎮 Animation progressed to game', this.currentGame);
+        } else {
+          // Reached the end, stop playing
+          console.log('🏁 Animation completed');
+          this.setPlaying(false); // Use the action to update the store
+        }
+      }, 3000); // 3 seconds per game - adjust speed as needed
+    },
+
+    generateCSVContent(data, matchupName) {
+      if (!data || data.length === 0) return '';
+      
+      // Create CSV header
+      const maxGames = Math.max(...data.map(team => team.games?.length || 0));
+      const headers = ['Team', 'Total Points'];
+      for (let i = 1; i <= maxGames; i++) {
+        headers.push(`Game ${i} Points`, `Game ${i} Map`);
+        }
+        
+      // Create CSV rows
+      const rows = [headers.join(',')];
+      
+      data.forEach(team => {
+        const row = [team.team];
+        
+        // Calculate total points
+        const totalPoints = team.games?.reduce((sum, game) => sum + (game.points || 0), 0) || 0;
+        row.push(totalPoints);
+        
+        // Add game-by-game data
+        for (let i = 1; i <= maxGames; i++) {
+          const game = team.games?.find(g => g.gameNumber === i);
+          row.push(game?.points || 0);
+          row.push(game?.map || '');
+        }
+        
+        rows.push(row.join(','));
+      });
+      
+      return rows.join('\n');
     }
   },
   
@@ -1628,11 +1426,7 @@ export default {
       this.gameStateInterval = null;
     }
     
-    // Clear any sync intervals if they exist
-    if (this.syncInterval) {
-      clearInterval(this.syncInterval);
-      this.syncInterval = null;
-    }
+    
     
     // Clean up chart
     this.cleanupChart();

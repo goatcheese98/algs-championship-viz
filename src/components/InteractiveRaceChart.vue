@@ -11,22 +11,17 @@ import { ref, watch, onMounted, onUnmounted, defineProps, nextTick, computed } f
 import * as d3 from 'd3';
 import { useTournamentStore } from '../stores/tournament.js'; // Import the store
 import { GSAPDraggableManager } from '../utils/GSAPDraggableManager.js';
+import { gsap } from 'gsap';
 
 // ============================================================================
 // 1. DEFINE PROPS (The component's public API)
 // ============================================================================
 const props = defineProps({
-  // data prop removed - now comes from store via processedChartData
-  // currentGame prop removed - now comes from store
   teamConfig: {
     type: Object,
     required: true,
     default: () => ({})
   },
-  // maxGames prop removed - now comes from store
-  // REMOVE isFiltered and filteredGameIndices props
-  // isLegendVisible prop is no longer needed
-  // The animationSpeed prop is no longer needed
 });
 
 // Use the store
@@ -1541,6 +1536,8 @@ const extractGameData = (data, gameIndex) => {
     console.warn('⚠️ Data format not recognized, using as-is');
     return data;
 };
+
+
 
 // ============================================================================
 // 7. REACTIVE WATCHERS
