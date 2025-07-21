@@ -498,28 +498,6 @@ export function getMapSequence(matchupId) {
     return MAP_SEQUENCES[matchupId] || null;
 }
 
-export function getAllMatchupIds() {
-    return Object.keys(MAP_SEQUENCES);
-}
 
-export function isValidMatchup(matchupId) {
-    return MAP_SEQUENCES.hasOwnProperty(matchupId);
-}
 
-export function getMatchupsByTournament(tournamentType) {
-    const filtered = {};
-    
-    Object.keys(MAP_SEQUENCES).forEach(matchupId => {
-        const isEwc2025 = matchupId.startsWith('Day1-A') || matchupId.startsWith('Day2-B');
-        const isYear5 = matchupId.startsWith('Day') && !isEwc2025;
-        const isYear4 = !matchupId.startsWith('Day') && !isEwc2025;
-        
-        if ((tournamentType === 'year5' && isYear5) || 
-            (tournamentType === 'year4' && isYear4) ||
-            (tournamentType === 'ewc2025' && isEwc2025)) {
-            filtered[matchupId] = MAP_SEQUENCES[matchupId];
-        }
-    });
-    
-    return filtered;
-} 
+ 

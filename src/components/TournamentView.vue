@@ -99,18 +99,18 @@
       </div>
     </header>
 
+    <!-- Tournament Selector (outside grid) -->
+    <TournamentSelector
+      ref="tournamentSelector"
+      :is-year5-tournament="isYear5Tournament"
+      :is-ewc2025-tournament="isEwc2025Tournament"
+      :loaded-matchups="loadedMatchups"
+      :loading-matchups="loadingMatchups"
+      style="display: none;"
+    />
+    
     <div class="main-layout bento-grid">
-      
-      <TournamentSelector
-        ref="tournamentSelector"
-        :is-year5-tournament="isYear5Tournament"
-        :is-ewc2025-tournament="isEwc2025Tournament"
-        :loaded-matchups="loadedMatchups"
-        :loading-matchups="loadingMatchups"
-        style="display: none;"
-      />
-      
-      
+      <!-- Left Column: Tournament Controls -->
       <div class="left-column" :class="{ 'adjust-controls-layout': shouldAdjustControlsLayout }">
         
         <div class="dashboard-panel" :class="{ 'has-collapsed-sections': hasCollapsedSections }">
@@ -205,13 +205,12 @@
           :current-map="currentMap"
           @export-requested="exportData"
           :key="`action-panel-${selectedDay}-${selectedMatchup}`"
-          class="controls-panel-grid"
+          class="action-panel"
         />
       </div>
       
-      
-
-      <div class="chart-section" :class="{ compressed: isChartCompressed }">
+      <!-- Right Column: Chart Visualization -->
+      <div class="chart-container" :class="{ compressed: isChartCompressed }">
         
         <div class="chart-title-section" v-if="selectedMatchup">
           <div class="chart-title-accent"></div>
@@ -314,6 +313,7 @@
               :class="{ compressed: isChartCompressed }"
               :teamConfig="teamConfig"
               :compressionFactor="isChartCompressed ? 0.8 : 1.0"
+              style="width: 100%; height: 100%; min-height: 400px;"
             />
             
             <transition name="fade">
@@ -693,8 +693,6 @@ export default {
     // Auto-load first matchup on initial load
     this.autoLoadFirstMatchup();
     
-    // Enable fluid dragging for controls panel
-    this.enableControlsDragging();
     
     // Initialize professional header animations with GSAP
     this.initializeHeaderAnimations();
@@ -1007,53 +1005,6 @@ export default {
       }
     },
     
-    // Enable fluid dragging for controls panel
-    enableControlsDragging() {
-      // Wait for controls panel to be rendered
-      this.$nextTick(() => {
-        const controlsPanel = document.querySelector('.controls-panel-grid');
-        
-        if (controlsPanel && typeof gsap !== 'undefined' && gsap.plugins.Draggable) {
-          // Create highly fluid draggable instance
-          gsap.registerPlugin(Draggable);
-          
-          Draggable.create(controlsPanel, {
-            type: "x,y",
-            edgeResistance: 0.1,
-            inertia: true,
-            autoScroll: 1,
-            minimumMovement: 2,
-            // Extremely smooth movement settings
-            dragResistance: 0,
-            throwResistance: 200,
-            maxDuration: 0.8,
-            // Bounds to keep it within viewport
-            bounds: window,
-            // Smooth cursor changes
-            onDragStart: function() {
-              gsap.set(controlsPanel, { scale: 1.02, rotationZ: 0.01 });
-            },
-            onDrag: function() {
-              // Smooth real-time updates
-              gsap.set(controlsPanel, { 
-                force3D: true,
-                transformOrigin: "center center"
-              });
-            },
-            onDragEnd: function() {
-              gsap.to(controlsPanel, {
-                scale: 1,
-                rotationZ: 0,
-                duration: 0.3,
-                ease: "power2.out"
-              });
-            }
-          });
-          
-          console.log('✅ Fluid dragging enabled for controls panel');
-        }
-      });
-    },
     
     // Professional Championship Header Animations
     initializeHeaderAnimations() {
@@ -1810,27 +1761,6 @@ export default {
       return `Game ${gameNum}${mapName}`;
     },
     
-    getCurrentMapStyle() {
-      let mapColor = '#10b981'; // default fallback
-      
-      // Get map color for current game from chart data
-      if (this.processedChartData && this.processedChartData.length > 0 && this.currentGame > 0) {
-        const firstTeam = this.processedChartData[0];
-        if (firstTeam && firstTeam.games) {
-          const currentGameData = firstTeam.games.find(game => game.gameNumber === this.currentGame);
-          if (currentGameData && currentGameData.color) {
-            mapColor = currentGameData.color;
-          }
-        }
-      }
-      
-      return {
-        background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, -20)} 100%)`,
-        border: `2px solid ${mapColor}`,
-        color: '#ffffff',
-        boxShadow: `0 0 15px ${mapColor}60, 0 4px 8px rgba(0,0,0,0.3)`
-      };
-    },
     
     // Advanced controls toggle
     toggleAdvancedControls() {
@@ -1847,94 +1777,6 @@ export default {
     },
 
     // Check if Controls panel is in the same lane as Dashboard
-    isControlsInDashboardLane() {
-      try {
-        const dashboardPanel = document.querySelector('.dashboard-panel');
-        const controlsPanel = document.querySelector('.enhanced-action-panel, .controls-panel-grid');
-        
-        if (!dashboardPanel || !controlsPanel) {
-          this.collisionDebug = {
-            ...this.collisionDebug,
-            panelsFound: false,
-            reason: 'Missing DOM elements - Dashboard or Controls panel not found'
-          };
-          console.log('🔍 Collision Check: Missing panels', { 
-            dashboardPanel: !!dashboardPanel, 
-            controlsPanel: !!controlsPanel 
-          });
-          return true; // Default to safe behavior
-        }
-
-        const dashboardRect = dashboardPanel.getBoundingClientRect();
-        const controlsRect = controlsPanel.getBoundingClientRect();
-        
-        // Check horizontal overlap - stricter detection
-        const horizontalOverlap = !(controlsRect.right < dashboardRect.left - 20 || controlsRect.left > dashboardRect.right + 20);
-        
-        // Check if controls are vertically related (roughly same area or below) 
-        const verticallyRelated = controlsRect.top >= dashboardRect.top - 100; // More tolerance
-        
-        // Check if controls are in original position (left side of screen) - more specific
-        const isInOriginalPosition = controlsRect.left < (window.innerWidth * 0.4); // Controls should be in left 40% of screen
-        
-        // Additional check: Controls panel should be relatively close to dashboard
-        const isNearDashboard = Math.abs(controlsRect.left - dashboardRect.left) < 100;
-        
-        const shouldAdjust = horizontalOverlap && verticallyRelated && isInOriginalPosition && isNearDashboard;
-        
-        // Update debug data with comprehensive information
-        this.collisionDebug = {
-          panelsFound: true,
-          dashboard: {
-            left: Math.round(dashboardRect.left),
-            right: Math.round(dashboardRect.right),
-            top: Math.round(dashboardRect.top),
-            bottom: Math.round(dashboardRect.bottom),
-            width: Math.round(dashboardRect.width),
-            height: Math.round(dashboardRect.height)
-          },
-          controls: {
-            left: Math.round(controlsRect.left),
-            right: Math.round(controlsRect.right),
-            top: Math.round(controlsRect.top),
-            bottom: Math.round(controlsRect.bottom),
-            width: Math.round(controlsRect.width),
-            height: Math.round(controlsRect.height)
-          },
-          analysis: {
-            horizontalOverlap,
-            verticallyRelated,
-            isInOriginalPosition,
-            isNearDashboard,
-            windowWidth: window.innerWidth,
-            shouldAdjust
-          },
-          reason: shouldAdjust ? 
-            'Controls panel is spatially related to Dashboard' : 
-            `Controls panel is not spatially related: ${!horizontalOverlap ? 'no horizontal overlap' : ''} ${!verticallyRelated ? 'not vertically related' : ''} ${!isInOriginalPosition ? 'not in original position' : ''} ${!isNearDashboard ? 'not near dashboard' : ''}`.trim()
-        };
-        
-        // Enhanced console logging with visual indicators
-        console.log('🔍 COLLISION DETECTION REPORT:');
-        console.log('📊 Panel Positions:', {
-          dashboard: this.collisionDebug.dashboard,
-          controls: this.collisionDebug.controls
-        });
-        console.log('🧠 Analysis:', this.collisionDebug.analysis);
-        console.log(`💡 Decision: ${shouldAdjust ? '✅ APPLY LAYOUT ADJUSTMENT' : '❌ NO LAYOUT ADJUSTMENT'}`);
-        console.log(`📝 Reason: ${this.collisionDebug.reason}`);
-        
-        return shouldAdjust;
-      } catch (error) {
-        console.error('❌ Collision detection error:', error);
-        this.collisionDebug = {
-          panelsFound: false,
-          error: error.message,
-          reason: 'Error occurred during collision detection'
-        };
-        return true; // Default to safe behavior
-      }
-    },
     
     // Export data handler
     exportData() {
@@ -2072,7 +1914,7 @@ export default {
 
     measureOriginalHeights() {
       this.$nextTick(() => {
-        const chartSection = this.$el.querySelector('.chart-section');
+        const chartSection = this.$el.querySelector('.chart-container');
         const chartSvg = this.$el.querySelector('.algs-chart-svg');
         
         console.log('🔍 Element check:', {
@@ -2164,10 +2006,6 @@ export default {
       });
     },
 
-    // Map tooltip methods for commentary section
-    getMapImageUrl(mapName) {
-      return getMapImageUrl(mapName);
-    },
 
     createCommentaryMapTooltip() {
       if (this.mapTooltip) {
@@ -2763,7 +2601,7 @@ export default {
 }
 
 /* Ultra-simplified chart section layout */
-.chart-section {
+.chart-container-section {
   display: flex;
   flex-direction: column;
 }
@@ -2776,6 +2614,10 @@ export default {
 .chart-component-container {
   flex: 1;
   position: relative;
+  width: 100%;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
   transition: height 0.5s ease-out;
 }
 
@@ -2804,14 +2646,14 @@ export default {
 }
 
 /* Chart section - let it naturally size based on content */
-.chart-section {
+.chart-container-section {
   display: flex;
   flex-direction: column;
   transition: all 0.3s ease;
 }
 
 /* When compressed, ensure no extra space */
-.chart-section.compressed {
+.chart-container-section.compressed {
   transition: all 0.3s ease;
 }
 
@@ -2874,6 +2716,463 @@ export default {
   font-size: 12px;
   color: #94a3b8;
   font-style: italic;
+}
+
+/* =============================================================================
+   TOURNAMENT HEADER - COMPREHENSIVE STYLING
+   ============================================================================= */
+
+.tournament-header {
+  position: relative;
+  width: 100%;
+  background: linear-gradient(135deg, #1a0000 0%, #2d0000 25%, #4a0000 50%, #2d0000 75%, #1a0000 100%);
+  border-bottom: 2px solid #dc2626;
+  padding: var(--spacing-5xl) 0;
+  margin-bottom: var(--spacing-5xl);
+  overflow: hidden;
+  box-shadow: 
+    0 4px 20px rgba(220, 38, 38, 0.3),
+    0 8px 40px rgba(0, 0, 0, 0.6);
+}
+
+.header-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.header-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-4xl);
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-4xl);
+}
+
+.header-branding {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4xl);
+}
+
+.championship-logo {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  filter: drop-shadow(0 0 15px rgba(220, 38, 38, 0.8));
+}
+
+.apex-logo-svg,
+.apex-logo-fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.brand-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.brand-subtitle {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-medium);
+  color: #f1f5f9;
+  opacity: 0.9;
+}
+
+.tournament-status {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #10b981;
+  animation: pulse 2s infinite;
+}
+
+.status-indicator.ended {
+  background: #6b7280;
+  animation: none;
+}
+
+.status-text {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: #d1d5db;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.championship-title {
+  margin-top: var(--spacing-md);
+}
+
+.title-main {
+  font-size: 2.5rem;
+  font-weight: 900;
+  background: linear-gradient(45deg, #dc2626, #ef4444, #f87171, #ef4444, #dc2626);
+  background-size: 300% 300%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+  letter-spacing: -1px;
+  margin: 0;
+  animation: gradient-shift 4s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.header-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4xl);
+  align-items: flex-end;
+}
+
+.tournament-info-inline {
+  display: flex;
+  gap: var(--spacing-2xl);
+  flex-wrap: wrap;
+}
+
+.tournament-header-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xl);
+  padding: var(--spacing-2xl) var(--spacing-4xl);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(12px);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+  min-width: 160px;
+}
+
+.tournament-header-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.5), transparent);
+  opacity: 0.8;
+}
+
+.info-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.info-icon {
+  font-size: 16px;
+  filter: grayscale(0.2);
+}
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.info-label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  color: rgba(239, 68, 68, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .tournament-info-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .tournament-header-card {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-top {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-4xl);
+  }
+  
+  .header-branding {
+    justify-content: center;
+  }
+  
+  .header-actions {
+    align-items: center;
+  }
+  
+  .title-main {
+    font-size: 2rem;
+  }
+  
+  .tournament-info-inline {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+/* =============================================================================
+   TOURNAMENT SELECTION UI - MISSING STYLES
+   ============================================================================= */
+
+.dashboard-panel {
+  padding: var(--spacing-4xl);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.8) 100%);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(8px);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.dashboard-header {
+  margin-bottom: var(--spacing-5xl);
+  text-align: center;
+}
+
+.dashboard-title-enhanced {
+  position: relative;
+  display: inline-block;
+}
+
+.dashboard-text {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.dashboard-section {
+  margin-bottom: var(--spacing-5xl);
+  border-radius: var(--radius-lg);
+  background: rgba(15, 23, 42, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  backdrop-filter: blur(4px);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-4xl);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.section-header:hover {
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.section-main {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xl);
+}
+
+.section-icon {
+  width: 24px;
+  height: 24px;
+  color: rgba(239, 68, 68, 0.8);
+}
+
+.section-icon .icon {
+  width: 100%;
+  height: 100%;
+}
+
+.section-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.collapse-icon {
+  width: 20px;
+  height: 20px;
+  color: rgba(239, 68, 68, 0.6);
+  transition: transform 0.3s ease;
+}
+
+.collapse-icon .icon {
+  width: 100%;
+  height: 100%;
+}
+
+.section-content {
+  padding: 0 var(--spacing-4xl) var(--spacing-4xl);
+  overflow: hidden;
+}
+
+.algs-day-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+  margin: var(--spacing-lg) 0;
+}
+
+.algs-day-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  padding: var(--spacing-lg) var(--spacing-2xl);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.9) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.algs-day-card:hover {
+  border-color: rgba(239, 68, 68, 0.6);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 1) 100%);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+  transform: translateY(-2px);
+}
+
+.algs-day-card.active {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.1) 100%);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3), inset 0 1px 0 rgba(239, 68, 68, 0.2);
+}
+
+.algs-matchup-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin: var(--spacing-lg) 0;
+}
+
+.algs-sidebar-matchup {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-2xl);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(30, 41, 59, 0.7) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.algs-sidebar-matchup:hover {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.9) 100%);
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 0 2px 12px rgba(239, 68, 68, 0.1);
+  transform: translateX(4px);
+}
+
+.algs-sidebar-matchup.active {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.08) 100%);
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 12px rgba(239, 68, 68, 0.3);
+}
+
+.matchup-name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  flex: 1;
+}
+
+.matchup-games {
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-bold);
+  color: rgba(239, 68, 68, 0.8);
+  background: rgba(239, 68, 68, 0.1);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Transition animations */
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.slide-down-enter-from,
+.slide-down-leave-to {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.slide-down-enter-to,
+.slide-down-leave-from {
+  max-height: 500px;
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>
 

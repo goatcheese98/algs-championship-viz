@@ -1394,7 +1394,7 @@ html, body, #app, .main-layout {
 .algs-sidebar-matchup,
 .algs-matchup-card {
   background: 
-    linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%),
+    var(--gradient-dark-primary),
     radial-gradient(circle at 20% 80%, rgba(217, 119, 6, 0.04) 0%, transparent 50%);
   border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: var(--radius-lg);
@@ -1651,7 +1651,7 @@ html, body, #app, .main-layout {
 }
 
 .chart-title {
-  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--color-text-primary);
   text-align: center;
@@ -2043,32 +2043,6 @@ html, body, #app, .main-layout {
   100% { opacity: 0.9; }
 }
 
-/* Chart Mobile Responsiveness */
-@media (max-width: 768px) {
-  .chart-loading-container {
-    height: 60vh;
-    min-height: 400px;
-    max-height: 500px;
-  }
-  
-  .loading-heading {
-    font-size: 1.1rem;
-  }
-  
-  .chart-title {
-    font-size: 1.8rem;
-  }
-  
-  .central-glow {
-    width: 200px;
-    height: 200px;
-  }
-  
-  .chart-bars-container {
-    width: 120px;
-    height: 120px;
-  }
-}
 
 /* =============================================================================
    INTERACTIVE CONTROLS & GAME ELEMENTS
@@ -2079,7 +2053,7 @@ html, body, #app, .main-layout {
 .enhanced-action-panel {
   position: fixed;
   top: clamp(20px, 50vh - 300px, calc(100vh - 600px));
-  right: clamp(10px, 20px, 2vw);
+  right: 20px;
   max-height: calc(100vh - 40px);
   z-index: 1000;
   background: rgba(15, 23, 42, 0.95);
@@ -2089,7 +2063,7 @@ html, body, #app, .main-layout {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   min-width: 280px;
   max-width: 320px;
-  width: clamp(280px, 25vw, 320px);
+  width: 320px;
   transition: var(--transition-fast);
   overflow: hidden;
   overflow-y: auto;
@@ -2482,36 +2456,6 @@ html, body, #app, .main-layout {
   color: var(--color-text-subtle);
 }
 
-/* Mobile Responsive Controls */
-@media (max-width: 768px) {
-  .enhanced-action-panel {
-    position: static;
-    right: auto;
-    top: auto;
-    transform: none;
-    margin: var(--spacing-4xl) auto;
-    max-width: 100%;
-  }
-  
-  .game-controls-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-2xl);
-  }
-  
-  .speed-controls {
-    gap: var(--spacing-xs);
-  }
-  
-  .speed-btn {
-    padding: var(--spacing-lg) var(--spacing-xl);
-    font-size: 0.7rem;
-  }
-  
-  .view-toggle-btn {
-    position: static;
-    margin: var(--spacing-2xl) auto;
-  }
-}
 
 /* =============================================================================
    MAP SYSTEM & INTERACTIVE TOOLTIPS
@@ -2878,36 +2822,6 @@ html, body, #app, .main-layout {
   animation: none;
 }
 
-/* Mobile Map System */
-@media (max-width: 768px) {
-  .current-map-display {
-    flex-direction: column;
-    text-align: center;
-    gap: var(--spacing-2xl);
-    padding: var(--spacing-3xl);
-  }
-  
-  .map-progression {
-    flex-wrap: wrap;
-    gap: var(--spacing-2xl);
-  }
-  
-  .map-tooltip-enhanced {
-    max-width: 90vw;
-    margin: 0 5vw;
-  }
-  
-  .tooltip-details-grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-2xl);
-  }
-  
-  .map-image-gallery {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: var(--spacing-lg);
-    padding: var(--spacing-3xl);
-  }
-}
 
 /* =============================================================================
    CHART COMPRESSION & ENHANCED INTERACTIVITY
@@ -3262,75 +3176,4 @@ html, body, #app, .main-layout {
   50% { transform: scale(1.02); }
 }
 
-/* Mobile Chart Optimizations */
-@media (max-width: 768px) {
-  .view-toggle-btn {
-    font-size: 0.7rem;
-    padding: var(--spacing-lg) var(--spacing-2xl);
-  }
-  
-  .chart-scale-indicators {
-    font-size: 0.65rem;
-    padding: 0 var(--spacing-2xl);
-  }
-  
-  .chart-hover-tooltip {
-    max-width: 80vw;
-    font-size: 0.8rem;
-  }
-  
-  .chart-legend-enhanced {
-    max-width: 200px;
-    padding: var(--spacing-2xl);
-  }
-  
-  .team-ranking-indicator {
-    width: 20px;
-    height: 20px;
-    font-size: 0.7rem;
-    left: -25px;
-  }
-  
-  .point-value-overlay {
-    font-size: 0.65rem;
-    min-width: 20px;
-    height: 16px;
-  }
-}
 
-/* =============================================================================
-   RESPONSIVE COMPONENT ADJUSTMENTS
-   ============================================================================= */
-
-@media (max-width: 768px) {
-  .btn {
-    min-height: 40px;
-    padding: var(--spacing-lg) var(--spacing-2xl);
-  }
-  
-  .btn--sm {
-    min-height: 36px;
-    padding: var(--spacing-md) var(--spacing-xl);
-  }
-  
-  .btn--lg {
-    min-height: 48px;
-    padding: var(--spacing-4xl) var(--spacing-5xl);
-  }
-  
-  .panel {
-    padding: var(--spacing-2xl);
-    border-radius: var(--radius-lg);
-  }
-  
-  .panel__header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-2xl);
-  }
-  
-  .panel__controls {
-    width: 100%;
-    justify-content: space-between;
-  }
-}

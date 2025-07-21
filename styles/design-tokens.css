@@ -236,6 +236,14 @@
   --align-center: center;
   --justify-center: center;
   --justify-between: space-between;
+  
+  /* Repeated gradient patterns - HIGH IMPACT */
+  --gradient-dark-primary: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%);
+  --gradient-dark-subtle: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(15, 15, 20, 0.4));
+  --gradient-overlay-strong: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(15, 15, 20, 0.6));
+  --gradient-overlay-light: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(15, 25, 20, 0.7));
+  --gradient-glow-primary: radial-gradient(circle at center, rgba(239, 68, 68, 0.05) 0%, transparent 70%);
+  --gradient-glow-accent: radial-gradient(circle at center, rgba(217, 119, 6, 0.03) 0%, transparent 50%);
 }
 
 /* =============================================================================

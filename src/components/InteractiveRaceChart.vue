@@ -100,25 +100,10 @@ let resizeObserver = null;
 // 4. UTILITY FUNCTIONS (Adapted from ChartRenderer.js)
 // ============================================================================
 
-// Mobile detection utility
-function isMobileDevice() {
-    return window.innerWidth <= 768;
-}
 
-// Responsive font scaling utility
-function getResponsiveFontSize(baseSize, mobileScale = 0.8) {
-    const isMobile = isMobileDevice();
+// Font scaling utility
+function getResponsiveFontSize(baseSize) {
     const containerWidth = window.innerWidth;
-    
-    if (isMobile) {
-        const scaledSize = Math.max(10, baseSize * mobileScale);
-        if (containerWidth < 400) {
-            return Math.max(9, scaledSize * 0.9);
-        } else if (containerWidth < 600) {
-            return Math.max(10, scaledSize * 0.95);
-        }
-        return scaledSize;
-    }
     
     if (containerWidth > 1400) {
         return Math.min(baseSize * 1.1, baseSize + 3);
@@ -128,19 +113,8 @@ function getResponsiveFontSize(baseSize, mobileScale = 0.8) {
 }
 
 // Point size scaling utility
-function getResponsivePointSize(baseSize = 4, mobileScale = 0.8) {
-    const isMobile = isMobileDevice();
+function getResponsivePointSize(baseSize = 4) {
     const containerWidth = window.innerWidth;
-    
-    if (isMobile) {
-        const scaledSize = Math.max(3, baseSize * mobileScale);
-        if (containerWidth < 400) {
-            return Math.max(2.5, scaledSize * 0.9);
-        } else if (containerWidth < 600) {
-            return Math.max(3, scaledSize * 0.95);
-        }
-        return scaledSize;
-    }
     
     if (containerWidth > 1400) {
         return Math.min(baseSize * 1.2, baseSize + 2);
@@ -332,14 +306,8 @@ const updateDimensions = () => {
     const totalWidth = newWidth + margin.left + margin.right;
     const totalHeight = newHeight + margin.top + margin.bottom;
     
-    // Mobile-specific constraints
-    const isMobile = window.innerWidth <= 768;
-    const maxWidth = isMobile ? 
-        Math.min(totalWidth, window.innerWidth - 40) : 
-        Math.min(totalWidth, window.innerWidth * 0.98);
-    const maxHeight = isMobile ? 
-        Math.min(totalHeight, window.innerHeight * 0.8) : 
-        Math.min(totalHeight, window.innerHeight * 0.9);
+    const maxWidth = Math.min(totalWidth, window.innerWidth * 0.98);
+    const maxHeight = Math.min(totalHeight, window.innerHeight * 0.9);
     
     d3.select(svgRef.value)
         .attr('width', maxWidth)
@@ -526,30 +494,23 @@ const setupTeamEntries = (teamEntriesEnter) => {
     let logoX = -220;
     let labelX = -180;
     
-    // Mobile-specific positioning
-    if (isMobileDevice()) {
-        rankingX = -60;
-        logoX = -30;
-        labelX = -85;
-    } else {
-        // Desktop responsive positioning
-        if (windowWidth < 1200) {
-            rankingX = Math.max(-240, -margin.left + 20);
-            logoX = Math.max(-200, -margin.left + 40);
-            labelX = Math.max(-160, -margin.left + 60);
-        }
-        
-        if (windowWidth < 900) {
-            rankingX = Math.max(-220, -margin.left + 15);
-            logoX = Math.max(-180, -margin.left + 35);
-            labelX = Math.max(-140, -margin.left + 55);
-        }
-        
-        if (windowWidth < 700) {
-            rankingX = Math.max(-140, -margin.left + 10);
-            logoX = Math.max(-115, -margin.left + 25);
-            labelX = Math.max(-85, -margin.left + 45);
-        }
+    // Responsive positioning
+    if (windowWidth < 1200) {
+        rankingX = Math.max(-240, -margin.left + 20);
+        logoX = Math.max(-200, -margin.left + 40);
+        labelX = Math.max(-160, -margin.left + 60);
+    }
+    
+    if (windowWidth < 900) {
+        rankingX = Math.max(-220, -margin.left + 15);
+        logoX = Math.max(-180, -margin.left + 35);
+        labelX = Math.max(-140, -margin.left + 55);
+    }
+    
+    if (windowWidth < 700) {
+        rankingX = Math.max(-140, -margin.left + 10);
+        logoX = Math.max(-115, -margin.left + 25);
+        labelX = Math.max(-85, -margin.left + 45);
     }
     
     // Ranking numbers
@@ -611,17 +572,15 @@ const setupTeamEntries = (teamEntriesEnter) => {
         .style('text-shadow', '0 1px 2px rgba(0,0,0,0.5)')
         .text('🎮'); // Will be updated by updateTeamLogos
     
-    // Team label (hidden on mobile)
-    if (!isMobileDevice()) {
-        teamEntriesEnter.append('text')
-            .attr('class', 'team-label')
-            .attr('x', labelX)
-            .attr('dy', '0.35em')
-            .style('text-anchor', 'start')
-            .style('font-size', getResponsiveFontSize(14) + 'px')
-            .style('font-weight', '600')
-            .style('fill', '#e2e8f0');
-    }
+    // Team label
+    teamEntriesEnter.append('text')
+        .attr('class', 'team-label')
+        .attr('x', labelX)
+        .attr('dy', '0.35em')
+        .style('text-anchor', 'start')
+        .style('font-size', getResponsiveFontSize(14) + 'px')
+        .style('font-weight', '600')
+        .style('fill', '#e2e8f0');
 };
 
 // Update team logos using teamConfig
@@ -1144,6 +1103,40 @@ const renderTeamSegments = (teamGroup, teamData, config) => {
     
     // Merge and update segments
     const allSegments = segmentsEnter.merge(segments);
+    
+    // Ensure ALL segments (new and existing) have event listeners
+    allSegments.select('.segment-bar')
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, gameData) {
+            // Highlight the segment on hover
+            d3.select(this)
+                .style('stroke', '#ffffff')
+                .style('stroke-width', '2px')
+                .style('filter', 'brightness(1.2)');
+            
+            // Show tooltip
+            showTooltip(event, gameData, teamData.team);
+        })
+        .on('mousemove', function(event, gameData) {
+            // Update tooltip position on mouse move
+            if (tooltip.value) {
+                const [mouseX, mouseY] = d3.pointer(event, document.body);
+                tooltip.value
+                    .style('left', (mouseX + 15) + 'px')
+                    .style('top', (mouseY - 10) + 'px');
+            }
+        })
+        .on('mouseout', function() {
+            // Remove highlight
+            d3.select(this)
+                .style('stroke', 'rgba(0,0,0,0.8)')
+                .style('stroke-width', '1px')
+                .style('filter', 'none');
+            
+            // Hide tooltip
+            hideTooltip();
+        });
+    
     updateSegments(allSegments, teamData, { transitionDuration: duration });
 };
 
@@ -1332,11 +1325,16 @@ const createTooltip = () => {
 const showTooltip = (event, gameData, teamName) => {
     if (!tooltip.value) return;
     
+    // Debug: Log the gameData structure to understand what we're getting
+    console.log('🔍 Tooltip gameData:', gameData);
+    console.log('🔍 Tooltip teamName:', teamName);
+    
     // Convert placement points back to placement (reverse lookup)
     const placementPoints = gameData.placementPoints || 0;
     const kills = gameData.kills || 0;
     const points = gameData.points || 0;
     const mapName = gameData.map || 'Unknown Map';
+    const gameNumber = gameData.gameNumber || 1;
     
     // Reverse lookup placement from points (ALGS point system)
     const getPlacementFromPoints = (placementPoints) => {
@@ -1376,32 +1374,64 @@ const showTooltip = (event, gameData, teamName) => {
     
     tooltip.value
         .style('visibility', 'visible')
+        .style('opacity', 0)
+        .transition()
+        .duration(200)
+        .style('opacity', 1)
         .html(`
-            <div style="border-bottom: 1px solid rgba(239, 68, 68, 0.2); margin-bottom: 8px; padding-bottom: 6px;">
-                <strong style="color: #ef4444; font-size: 14px;">${teamName}</strong>
-                <div style="color: #a0a0a0; font-size: 11px; margin-top: 2px;">${mapName}</div>
+            <div style="border-bottom: 1px solid rgba(239, 68, 68, 0.3); margin-bottom: 10px; padding-bottom: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                    <strong style="color: #ef4444; font-size: 15px; font-weight: 700;">${teamName}</strong>
+                    <span style="color: #10b981; font-size: 12px; font-weight: 600; background: rgba(16, 185, 129, 0.1); padding: 2px 6px; border-radius: 4px;">Game ${gameNumber}</span>
+                </div>
+                <div style="color: #a0a0a0; font-size: 12px; font-weight: 500;">${mapName}</div>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 4px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: #e0e0e0;">Placement:</span>
-                    <span style="color: #4ade80; font-weight: 600;">${placementText}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: #e0e0e0;">Kills:</span>
-                    <span style="color: #f87171; font-weight: 600;">${kills}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: #e0e0e0;">Points:</span>
-                    <span style="color: #60a5fa; font-weight: 600;">${points}</span>
-                </div>
+            <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px 8px; align-items: center;">
+                <span style="color: #e0e0e0; font-weight: 500;">Placement:</span>
+                <span style="color: #4ade80; font-weight: 700; font-size: 14px;">${placementText}</span>
+                
+                <span style="color: #e0e0e0; font-weight: 500;">Kills:</span>
+                <span style="color: #f87171; font-weight: 700; font-size: 14px;">${kills}</span>
+                
+                <span style="color: #e0e0e0; font-weight: 500;">Total Points:</span>
+                <span style="color: #60a5fa; font-weight: 700; font-size: 14px;">${points}</span>
+                
+                ${placementPoints + kills > 0 ? `
+                <span style="color: #e0e0e0; font-weight: 500; font-size: 11px; grid-column: 1 / -1; margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.1);">
+                    ${placementPoints} placement + ${kills} kills = ${points} points
+                </span>
+                ` : ''}
             </div>
         `);
     
-    // Position tooltip near cursor
+    // Improved tooltip positioning with viewport boundary checking
     const [mouseX, mouseY] = d3.pointer(event, document.body);
+    const tooltipWidth = 220; // Approximate tooltip width
+    const tooltipHeight = 140; // Approximate tooltip height
+    
+    // Calculate optimal position
+    let left = mouseX + 15;
+    let top = mouseY - 10;
+    
+    // Prevent tooltip from going off-screen
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    if (left + tooltipWidth > viewportWidth) {
+        left = mouseX - tooltipWidth - 15; // Position to the left of cursor
+    }
+    
+    if (top + tooltipHeight > viewportHeight) {
+        top = mouseY - tooltipHeight - 10; // Position above cursor
+    }
+    
+    // Ensure minimum distance from edges
+    left = Math.max(10, Math.min(left, viewportWidth - tooltipWidth - 10));
+    top = Math.max(10, Math.min(top, viewportHeight - tooltipHeight - 10));
+    
     tooltip.value
-        .style('left', (mouseX + 15) + 'px')
-        .style('top', (mouseY - 10) + 'px');
+        .style('left', left + 'px')
+        .style('top', top + 'px');
 };
 
 const hideTooltip = () => {
@@ -1826,8 +1856,9 @@ watch(isLegendVisible, (newVisible) => {
 .algs-chart-svg {
   width: 100%;
   height: 100%;
-  min-height: 900px;
-  overflow: hidden;
+  min-height: 400px;
+  max-height: 100%;
+  overflow: visible;
   background: transparent;
   display: block;
   margin: 0;

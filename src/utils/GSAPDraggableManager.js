@@ -327,7 +327,16 @@ export const GSAPDraggableManager = {
         return instance;
     },
     
-    // Clean up draggable instance
+    cleanup(instanceOrId) {
+        if (typeof instanceOrId === 'string') {
+            this.destroyDraggable(instanceOrId);
+        } else if (instanceOrId && instanceOrId.cleanup) {
+            instanceOrId.cleanup();
+        } else {
+            console.warn('⚠️ Invalid cleanup parameter:', instanceOrId);
+        }
+    },
+
     destroyDraggable(panelId) {
         if (this.instances.has(panelId)) {
             const instance = this.instances.get(panelId);
@@ -338,75 +347,36 @@ export const GSAPDraggableManager = {
             console.log(`🗑️ Cleaned up draggable: ${panelId}`);
         }
     },
-    
-    // Cleanup all instances
+
     destroyAll() {
         console.log('🧹 Cleaning up all draggable instances...');
         this.instances.forEach((instance, panelId) => {
             this.destroyDraggable(panelId);
         });
         console.log('✅ All draggable instances cleaned up');
-    },
-    
-    // Get status of all draggable instances
-    getStatus() {
-        const status = {};
-        this.instances.forEach((instance, panelId) => {
-            status[panelId] = {
-                active: !!instance,
-                type: instance.type || 'unknown',
-                element: instance.element || null,
-                hasGsap: instance.gsapInstance ? true : false
-            };
-        });
-        return status;
-    },
-    
-    // Debug function to log all instances
-    debugInstances() {
-        console.log('🔍 Debug: Active draggable instances:');
-        console.table(this.getStatus());
-    },
-    
-    // Add cleanup method for backward compatibility
-    cleanup(instanceOrId) {
-        if (typeof instanceOrId === 'string') {
-            // If it's a string, treat it as an ID
-            this.destroyDraggable(instanceOrId);
-        } else if (instanceOrId && instanceOrId.cleanup) {
-            // If it's an instance with cleanup method, call it
-            instanceOrId.cleanup();
-        } else {
-            console.warn('⚠️ Invalid cleanup parameter:', instanceOrId);
-        }
     }
 };
 
-// Simple initialization function for Vue components
 export function initializeEnhancedDraggable(panelRef) {
     if (!panelRef) {
         console.warn('⚠️ Panel ref not available for draggable initialization');
         return null;
     }
     
-    // Add unique ID if not present
     if (!panelRef.id) {
         panelRef.id = `enhanced-panel-${Date.now()}`;
     }
     
-    console.log('🎯 Initializing ULTRA-FAST enhanced draggable for:', panelRef.id);
+    console.log('🎯 Initializing enhanced draggable for:', panelRef.id);
     return GSAPDraggableManager.initializeDraggable(panelRef);
 }
 
-// Cleanup function
 export function cleanupAllDraggables() {
     GSAPDraggableManager.destroyAll();
 }
 
-// Make available globally for debugging
 if (typeof window !== 'undefined') {
     window.GSAPDraggableManager = GSAPDraggableManager;
 }
 
-// Export default for easier importing
 export default GSAPDraggableManager; 

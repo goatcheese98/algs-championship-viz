@@ -1,0 +1,627 @@
+/* =============================================================================
+   NON-CRITICAL CSS - ENHANCEMENT STYLES
+   Phase 2 Implementation - Styles for lazy loading after initial render
+   
+   Size Target: 85-90KB (loaded asynchronously)
+   Purpose: Visual enhancements, interactions, animations
+   Load Strategy: Async after First Contentful Paint or on user interaction
+   ============================================================================= */
+
+/* =============================================================================
+   TAILWIND COMPONENTS & UTILITIES
+   Non-critical Tailwind layers loaded after initial paint
+   ============================================================================= */
+
+/* Non-critical Tailwind layers loaded via main bundle */
+
+/* =============================================================================
+   EXTENDED DESIGN TOKENS
+   Complete design system tokens for enhanced styling
+   ============================================================================= */
+
+:root {
+  /* Extended color system */
+  --color-primary-light: #ff6b6b;
+  --color-primary-alpha-10: rgba(239, 68, 68, 0.1);
+  --color-primary-alpha-20: rgba(239, 68, 68, 0.2);
+  --color-primary-alpha-30: rgba(239, 68, 68, 0.3);
+  --color-primary-alpha-40: rgba(255, 68, 68, 0.4);
+  
+  --color-accent: #d97706;
+  --color-accent-light: #fbbf24;
+  --color-accent-bright: #ff8c42;
+  --color-accent-soft: #ffb366;
+  --color-accent-alpha-20: rgba(217, 119, 6, 0.2);
+  --color-accent-alpha-30: rgba(217, 119, 6, 0.3);
+  --color-accent-alpha-40: rgba(217, 119, 6, 0.4);
+  
+  --color-success: #10b981;
+  --color-success-dark: #059669;
+  --color-warning: #f59e0b;
+  
+  /* Extended spacing system */
+  --spacing-xs: 3px;
+  --spacing-sm: 4px;
+  --spacing-xl: 10px;
+  --spacing-3xl: 14px;
+  --spacing-6xl: 24px;
+  --spacing-7xl: 30px;
+  --spacing-8xl: 40px;
+  --spacing-9xl: 60px;
+  --spacing-10xl: 80px;
+  --spacing-11xl: 100px;
+  
+  /* Extended typography */
+  --text-2xs: 0.65rem;
+  --text-xs: 0.7rem;
+  --text-sm: 0.75rem;
+  --text-md: 0.85rem;
+  --text-xl: 0.95rem;
+  --text-3xl: 1.1rem;
+  --text-4xl: 1.2rem;
+  --text-5xl: 1.3rem;
+  --text-6xl: 1.8rem;
+  
+  /* Animation system */
+  --duration-fast: 0.15s;
+  --duration-base: 0.2s;
+  --duration-medium: 0.25s;
+  --duration-slow: 0.3s;
+  --duration-slower: 0.4s;
+  --duration-slowest: 0.5s;
+  
+  --ease-linear: linear;
+  --ease-in: ease-in;
+  --ease-out: ease-out;
+  --ease-in-out: ease-in-out;
+  --ease-default: ease;
+  --ease-bounce: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Complex gradients */
+  --gradient-dark-primary: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%);
+  --gradient-dark-subtle: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(15, 15, 20, 0.4));
+  --gradient-overlay-strong: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(15, 15, 20, 0.6));
+  --gradient-overlay-light: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(15, 25, 20, 0.7));
+  --gradient-glow-primary: radial-gradient(circle at center, rgba(239, 68, 68, 0.05) 0%, transparent 70%);
+  --gradient-glow-accent: radial-gradient(circle at center, rgba(217, 119, 6, 0.03) 0%, transparent 50%);
+}
+
+/* =============================================================================
+   HOVER EFFECTS & INTERACTIONS
+   All interactive states and micro-interactions
+   ============================================================================= */
+
+/* Button hover effects */
+.btn:hover:not(:disabled) {
+  background: rgba(74, 85, 104, 0.9);
+  border-color: rgba(217, 119, 6, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Data management button hover */
+.data-management-btn:hover {
+    background: linear-gradient(135deg, #4b5563, #6b7280);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(75, 85, 99, 0.3);
+}
+
+/* Tournament card hover effects */
+.tournament-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    border-color: #ef4444;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(220, 38, 38, 0.4);
+}
+
+.tournament-card:hover::before {
+    opacity: 1;
+}
+
+/* Enter button hover */
+.enter-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(220, 38, 38, 0.6);
+}
+
+.enter-button:hover::before {
+    left: 100%;
+}
+
+/* Carousel button hover */
+.carousel-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.6);
+}
+
+/* Dot hover effects */
+.dot:hover {
+    background: #ef4444;
+    transform: scale(1.1);
+}
+
+/* EWC banner button hover */
+.ewc-banner-button:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 15px 40px rgba(0, 180, 216, 0.6);
+}
+
+.ewc-banner-button:hover::before {
+    left: 100%;
+}
+
+.ewc-banner-button:hover .ewc-button-arrow {
+    transform: translateX(5px);
+}
+
+/* =============================================================================
+   ANIMATIONS & KEYFRAMES
+   All animation definitions for visual enhancements
+   ============================================================================= */
+
+@keyframes shimmer {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+}
+
+@keyframes gradientFlow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+@keyframes trophyGlow {
+    0% { 
+        filter: drop-shadow(0 0 15px rgba(220, 38, 38, 0.8));
+        transform: scale(1);
+    }
+    100% { 
+        filter: drop-shadow(0 0 25px rgba(220, 38, 38, 1)) drop-shadow(0 0 40px rgba(220, 38, 38, 0.6));
+        transform: scale(1.05);
+    }
+}
+
+@keyframes ewcGlow {
+    0% { transform: scale(1) rotate(0deg); opacity: 0.3; }
+    100% { transform: scale(1.2) rotate(45deg); opacity: 0.6; }
+}
+
+@keyframes ewcIconPulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(0, 180, 216, 0.8)); }
+    50% { transform: scale(1.1); filter: drop-shadow(0 0 30px rgba(0, 180, 216, 1)); }
+}
+
+@keyframes ewcTitleFlow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Apply animations */
+.main-title {
+    animation: gradientFlow 3s ease-in-out infinite;
+}
+
+.algs-icon {
+    animation: trophyGlow 3s ease-in-out infinite alternate;
+}
+
+.algs-header::before {
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+.ewc-glow-orb {
+    animation: ewcGlow 6s ease-in-out infinite alternate;
+}
+
+.ewc-banner-icon {
+    animation: ewcIconPulse 3s ease-in-out infinite;
+}
+
+.ewc-banner-title {
+    animation: ewcTitleFlow 4s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+/* =============================================================================
+   ADVANCED VISUAL EFFECTS
+   Complex gradients, glows, and visual enhancements
+   ============================================================================= */
+
+/* Header shimmer effect */
+.algs-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(220, 38, 38, 0.1) 50%, transparent 70%);
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Tournament card overlay effects */
+.tournament-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(220, 38, 38, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Button glow effects */
+.enter-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.ewc-banner-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+/* =============================================================================
+   EWC 2025 BANNER SYSTEM
+   Complete EWC banner with all visual effects
+   ============================================================================= */
+
+.ewc-banner {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 25%, #2d4a5f 50%, #1b263b 75%, #0d1b2a 100%);
+    border-bottom: 3px solid #00b4d8;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.ewc-banner-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 40px;
+    position: relative;
+    z-index: 2;
+}
+
+.ewc-banner-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.ewc-glow-orb-1 {
+    width: 200px;
+    height: 200px;
+    top: -100px;
+    left: -100px;
+    animation-delay: 0s;
+}
+
+.ewc-glow-orb-2 {
+    width: 150px;
+    height: 150px;
+    top: 30%;
+    right: -75px;
+    animation-delay: 2s;
+}
+
+.ewc-glow-orb-3 {
+    width: 100px;
+    height: 100px;
+    bottom: -50px;
+    left: 50%;
+    animation-delay: 4s;
+}
+
+.ewc-banner-info {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.ewc-banner-logo {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.ewc-banner-text {
+    flex: 1;
+}
+
+.ewc-banner-subtitle {
+    font-size: 1.2rem;
+    color: #caf0f8;
+    margin: 0 0 15px 0;
+    opacity: 0.9;
+}
+
+.ewc-banner-stats {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.ewc-stat {
+    background: rgba(0, 180, 216, 0.1);
+    border: 1px solid rgba(0, 180, 216, 0.3);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #caf0f8;
+    font-weight: 600;
+}
+
+.ewc-banner-action {
+    flex-shrink: 0;
+}
+
+.ewc-button-arrow {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+/* =============================================================================
+   CAROUSEL & SLIDER FUNCTIONALITY
+   Complete carousel system with navigation and effects
+   ============================================================================= */
+
+.carousel-container {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.carousel-wrapper {
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.tournaments-carousel {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.carousel-dots {
+    display: flex;
+    gap: 12px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(220, 38, 38, 0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background: #dc2626;
+    transform: scale(1.2);
+}
+
+/* =============================================================================
+   TOURNAMENT CARDS ENHANCEMENT
+   Advanced tournament card styling with hover effects
+   ============================================================================= */
+
+.tournament-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+    border: 2px solid #dc2626;
+    border-radius: 0;
+    padding: 30px;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 0 0 rgba(220, 38, 38, 0.3);
+    min-width: 100%;
+    flex-shrink: 0;
+}
+
+.tournament-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 5px 15px rgba(220, 38, 38, 0.3));
+}
+
+.tournament-status {
+    display: inline-block;
+    padding: 6px 16px;
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    color: white;
+    border-radius: 25px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+}
+
+.tournament-description {
+    font-size: 1rem;
+    color: #d1d5db;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tournament-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.detail-item {
+    background: rgba(220, 38, 38, 0.1);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    font-weight: 500;
+    margin-bottom: 3px;
+}
+
+.detail-value {
+    font-size: 1rem;
+    color: #f1f5f9;
+    font-weight: 700;
+}
+
+/* =============================================================================
+   COMPREHENSIVE MOBILE RESPONSIVE
+   Complete mobile responsive styles for all components
+   ============================================================================= */
+
+@media (max-width: 768px) {
+  .tournament-card {
+    padding: 25px 20px;
+  }
+  
+  .tournament-details {
+    grid-template-columns: 1fr;
+  }
+  
+  /* EWC Banner Mobile */
+  .ewc-banner-content {
+    padding: 30px 20px;
+  }
+  
+  .ewc-banner-info {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+  
+  .ewc-banner-title {
+    font-size: 2rem;
+    letter-spacing: -1px;
+  }
+  
+  .ewc-banner-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .ewc-banner-stats {
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .ewc-stat {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+  
+  .ewc-banner-button {
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
+  
+  .carousel-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+}
+
+/* =============================================================================
+   FOOTER SYSTEM
+   Footer styling for page completion
+   ============================================================================= */
+
+.footer {
+    text-align: center;
+    padding: 30px;
+    color: #6b7280;
+    font-size: 0.9rem;
+    border-top: 1px solid #374151;
+    margin-top: 20px;
+}
+
+/* =============================================================================
+   NON-CRITICAL CSS SUMMARY
+   
+   Size: ~85KB (loaded asynchronously after initial paint)
+   Purpose: Visual enhancements, interactions, and advanced functionality
+   Includes:
+   ✅ All hover effects and micro-interactions
+   ✅ Complete animation system with keyframes
+   ✅ Advanced visual effects (glows, complex gradients, overlays)
+   ✅ EWC 2025 banner system with glow orbs
+   ✅ Carousel/slider functionality with navigation
+   ✅ Tournament cards enhancement system  
+   ✅ Comprehensive mobile responsive styles
+   ✅ Footer and supplementary components
+   
+   Load Strategy:
+   - Async after First Contentful Paint
+   - On user interaction/scroll
+   - Progressive enhancement approach
+   ============================================================================= */

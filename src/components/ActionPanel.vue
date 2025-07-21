@@ -1,7 +1,7 @@
 <template>
   <div v-if="maxGames > 0" 
        ref="actionPanel"
-       class="enhanced-action-panel"
+       class="action-panel"
        :class="{ expanded: panelExpanded }">
     
     <div class="panel-header">
@@ -12,7 +12,6 @@
         <span class="title-text">Controls</span>
       </div>
       <div class="panel-controls">
-        <span class="drag-handle">⋮⋮</span>
       </div>
     </div>
 
@@ -313,10 +312,6 @@ export default {
         return;
       }
       
-      if (this.isMobileDevice()) {
-        console.log('📱 Mobile device detected - skipping draggable initialization');
-        return;
-      }
       
       const panelElement = this.$refs.actionPanel;
       const panelId = panelElement.id || `action-panel-${Date.now()}`;
@@ -774,9 +769,175 @@ export default {
       this.$emit('export-requested', this.selectedMatchup);
     },
 
-    isMobileDevice() {
-      return window.innerWidth <= 768;
-    }
   }
 }
-</script> 
+</script>
+
+<style scoped>
+.action-panel {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.8) 100%);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-4xl);
+  margin-top: var(--spacing-4xl);
+  backdrop-filter: blur(8px);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-4xl);
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xl);
+}
+
+.title-text {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.compact-status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4xl);
+}
+
+.progress-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(239, 68, 68, 0.2);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.progress-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+  transition: all 0.2s ease;
+}
+
+.progress-slider::-webkit-slider-thumb:hover {
+  background: var(--color-primary-dark);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.6);
+}
+
+.progress-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+  transition: all 0.2s ease;
+}
+
+.progress-value {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  min-width: 24px;
+  text-align: center;
+}
+
+.bento-controls-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xl);
+}
+
+.map-badge {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.map-badge:hover {
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+  transform: translateY(-2px);
+}
+
+.map-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.map-badge:hover::before {
+  left: 100%;
+}
+
+/* Button styling improvements */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  text-decoration: none;
+  outline: none;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-dark);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+</style> 

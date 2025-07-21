@@ -595,38 +595,8 @@ export function useTeamConfig() {
     })
   }
   
-  /**
-   * Preload all team logos
-   * @returns {Promise<void>}
-   */
-  const preloadAllLogos = async () => {
-    const urls = Object.values(teamLogos.value).filter(url => url && !url.includes('fa.png'))
-    
-    try {
-      await Promise.allSettled(urls.map(url => preloadImage(url)))
-      console.log('✅ Team logos preloaded successfully')
-    } catch (error) {
-      console.warn('⚠️ Some team logos failed to preload:', error)
-    }
-  }
   
-  /**
-   * Get team initials for display
-   * @param {string} teamName - Team name
-   * @returns {string} Team initials
-   */
-  const getTeamInitials = (teamName) => {
-    return getFallbackConfig(teamName).initials
-  }
   
-  /**
-   * Check if image is loaded
-   * @param {string} url - Image URL
-   * @returns {boolean} Is loaded
-   */
-  const isImageLoaded = (url) => {
-    return loadedImages.value.has(url)
-  }
   
   return {
     // Reactive state
@@ -639,10 +609,7 @@ export function useTeamConfig() {
     
     getTeamLogo,
     getFallbackConfig,
-    preloadImage,
-    preloadAllLogos,
-    getTeamInitials,
-    isImageLoaded
+    preloadImage
   }
 }
 

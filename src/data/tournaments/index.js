@@ -61,24 +61,4 @@ export const getMapImageUrl = (mapName) => {
   return normalizedImages[normalizedMapName] || ''
 }
 
-/**
- * Get all available tournament types
- * @returns {Array} Array of tournament type strings
- */
-export const getAvailableTournaments = () => {
-  return Object.keys(tournaments)
-}
 
-/**
- * Get tournament metadata (name, description) without full config
- * @param {string} tournamentType - Tournament identifier
- * @returns {Object} Tournament metadata
- */
-export const getTournamentMeta = (tournamentType) => {
-  const config = getTournamentConfig(tournamentType)
-  return {
-    id: config.id,
-    name: config.name,
-    description: config.description
-  }
-}
