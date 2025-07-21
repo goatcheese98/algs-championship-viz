@@ -5,7 +5,6 @@ import router from './router';
 
 import './utils/GSAPDraggableManager.js';
 import './styles/tailwind.css';
-import '../styles/championship.css';
 
 const routerLinkStyles = document.createElement('style');
 routerLinkStyles.textContent = `

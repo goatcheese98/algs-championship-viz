@@ -1650,8 +1650,8 @@ const extractGameData = (data, gameIndex) => {
 
 // Watch for compression factor changes
 watch(() => props.compressionFactor, () => {
-  console.log('🔄 Compression factor changed, triggering resize');
-  handleResize();
+  console.log('🔄 Compression factor changed, updating dimensions');
+  updateDimensions();
 });
 
 // Watch for data changes (new matchup loaded)

@@ -190,7 +190,7 @@
                        @click="handleMatchupSelect(matchup.id)"
                        :title="matchup.description">
                     <span class="matchup-name">{{ matchup.title }}</span>
-                    <span class="matchup-games">{{ matchup.games === 'auto' ? 'Auto' : matchup.games + 'G' }}</span>
+                    <span class="matchup-games">{{ matchup.games === 'auto' ? '' : matchup.games + 'G' }}</span>
                   </div>
                 </div>
               </div>
@@ -2130,19 +2130,15 @@ export default {
     setCSSCompressionProperties() {
       const root = document.documentElement;
       const compressedChartHeight = this.originalChartHeight * 0.8;
-      // Correct calculation: compressed chart height + non-chart content height
-      const compressedSectionHeight = compressedChartHeight + this.nonChartContentHeight;
       
       root.style.setProperty('--original-chart-height', `${this.originalChartHeight}px`);
       root.style.setProperty('--original-section-height', `${this.originalSectionHeight}px`);
       root.style.setProperty('--compressed-chart-height', `${compressedChartHeight}px`);
-      root.style.setProperty('--compressed-section-height', `${compressedSectionHeight}px`);
       root.style.setProperty('--compression-reduction', `${this.compressionReduction}px`);
       
-      console.log('🎨 CSS properties set:', {
-        compressedChartHeight,
-        compressedSectionHeight,
-        nonChartContentHeight: this.nonChartContentHeight,
+      console.log('🎨 Simplified approach - letting layout naturally compress:', {
+        originalChartHeight: this.originalChartHeight,
+        compressedChartHeight: compressedChartHeight,
         reduction: this.compressionReduction
       });
     },
@@ -2774,15 +2770,19 @@ export default {
 
 .chart-loading-container {
   flex: 1;
-  min-height: 400px;
 }
 
 /* Chart component container */
 .chart-component-container {
   flex: 1;
-  min-height: 400px;
   position: relative;
   transition: height 0.5s ease-out;
+}
+
+/* When compressed, allow the container to shrink */
+.compressed .chart-component-container {
+  flex: none;
+  min-height: 0;
 }
 
 /* Direct compression on InteractiveRaceChart component - 20% reduction (400px → 320px) */
@@ -2803,9 +2803,16 @@ export default {
   max-height: 320px;
 }
 
-/* Remove chart section compression - let natural SVG compression work */
+/* Chart section - let it naturally size based on content */
 .chart-section {
-  transition: height 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+/* When compressed, ensure no extra space */
+.chart-section.compressed {
+  transition: all 0.3s ease;
 }
 
 .commentary-panel {
