@@ -1,6 +1,43 @@
 /* Import Tailwind CSS */
 @import "tailwindcss";
 
+/* Additional Tailwind utilities for our design system */
+@layer utilities {
+  /* Our custom font sizes that match design tokens */
+  .text-2xs { font-size: 0.65rem; line-height: 1.2; }
+  
+  /* Gap utilities that match our design tokens */
+  .gap-xs { gap: 3px; }
+  .gap-sm { gap: 4px; }
+  .gap-md { gap: 6px; }
+  .gap-lg { gap: 8px; }
+  .gap-2xl { gap: 12px; }
+  .gap-4xl { gap: 16px; }
+  .gap-5xl { gap: 20px; }
+  
+  /* Custom colors */
+  .text-primary { color: #ef4444; }
+  .text-accent { color: #d97706; }
+  .text-muted { color: #cbd5e1; }
+  .text-subtle { color: #94a3b8; }
+  
+  .bg-dark-primary { background-color: #1a0f0f; }
+  .bg-dark-secondary { background-color: #2d1b1b; }
+  .bg-card { background-color: rgba(45, 55, 72, 0.8); }
+  .bg-panel { background-color: rgba(74, 85, 104, 0.6); }
+  
+  /* Shadow utilities */
+  .shadow-glow-primary { box-shadow: 0 0 8px rgba(239, 68, 68, 0.3); }
+  .shadow-glow-accent { box-shadow: 0 0 8px rgba(217, 119, 6, 0.3); }
+  .shadow-strong { box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6); }
+  
+  /* Additional gap utilities for proper spacing */
+  .gap-0\.5 { gap: 2px; }
+  .gap-1\.5 { gap: 6px; }
+  .gap-2\.5 { gap: 10px; }
+  .gap-3\.5 { gap: 14px; }
+}
+
 /* Modern Button System - Tailwind Compatible */
 .btn {
   display: inline-flex;
@@ -9,7 +46,7 @@
   padding: 0.5rem 0.75rem;
   font-size: 0.8rem;
   font-weight: 500;
-  border-radius: 0.375rem;
+  border-radius: 0.75rem;
   border: 1px solid rgba(239, 68, 68, 0.25);
   background-color: rgba(30, 41, 59, 0.85);
   color: #f8fafc;
@@ -47,24 +84,27 @@
   box-shadow: none;
 }
 
-/* Button Sizes */
+/* Button Sizes - Professional Standards */
 .btn-sm {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  min-height: 1.75rem;
-  min-width: 1.75rem;
+  padding: 0.375rem 0.75rem; /* 6px 12px */
+  font-size: 0.75rem; /* 12px */
+  min-height: 2rem; /* 32px */
+  min-width: 2rem;
+  border-radius: 0.75rem;
 }
 
 .btn-md {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.8rem;
-  min-height: 2rem;
+  padding: 0.5rem 1rem; /* 8px 16px */
+  font-size: 0.875rem; /* 14px */
+  min-height: 2.5rem; /* 40px */
+  border-radius: 0.75rem;
 }
 
 .btn-lg {
-  padding: 0.75rem 1rem;
-  font-size: 0.9rem;
-  min-height: 2.5rem;
+  padding: 0.75rem 1.25rem; /* 12px 20px */
+  font-size: 0.9375rem; /* 15px */
+  min-height: 3rem; /* 48px */
+  border-radius: 0.75rem;
 }
 
 .btn-xl {
@@ -78,6 +118,7 @@
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   border-color: #ef4444;
   color: white;
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -90,6 +131,7 @@
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   border-color: #10b981;
   color: white;
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .btn-success:hover:not(:disabled) {
@@ -102,6 +144,7 @@
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   border-color: #ef4444;
   color: white;
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .btn-danger:hover:not(:disabled) {
@@ -143,22 +186,25 @@
 }
 
 .btn-icon {
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem; /* 40px */
+  height: 2.5rem;
   padding: 0;
-  border-radius: 0.375rem;
+  border-radius: 0.75rem;
   min-width: auto;
   min-height: auto;
+  font-size: 0.875rem;
 }
 
 .btn-icon.btn-sm {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 2rem; /* 32px */
+  height: 2rem;
+  font-size: 0.75rem;
 }
 
 .btn-icon.btn-lg {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 3rem; /* 48px */
+  height: 3rem;
+  font-size: 1rem;
 }
 
 .btn-full {
@@ -306,6 +352,170 @@
   background: rgba(239, 68, 68, 0.4);
 }
 
+/* Map Badge Styling */
+.map-badge {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Bento Box Container System */
+.filter-buttons-container {
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  padding: 16px;
+  margin-bottom: 8px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.filter-buttons-container .btn {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(15, 15, 20, 0.6)) !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(217, 119, 6, 0.2) !important;
+  backdrop-filter: blur(6px) !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  padding: 6px 12px !important;
+  min-width: 32px !important;
+}
+
+.filter-buttons-container .btn::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, transparent, rgba(217, 119, 6, 0.5), transparent) !important;
+  opacity: 0 !important;
+  transition: opacity 0.3s ease !important;
+}
+
+.filter-buttons-container .btn:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(217, 119, 6, 0.4) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(217, 119, 6, 0.1) !important;
+}
+
+.filter-buttons-container .btn:hover::before {
+  opacity: 1 !important;
+}
+
+.filter-buttons-container .btn.btn-active {
+  border-color: rgba(34, 197, 94, 0.4) !important;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(15, 25, 20, 0.7)) !important;
+}
+
+.filter-buttons-container .btn.btn-active::before {
+  background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.5), transparent) !important;
+  opacity: 1 !important;
+}
+
+.filter-buttons-container .btn.btn-danger {
+  border-color: rgba(220, 38, 38, 0.4) !important;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(25, 15, 15, 0.7)) !important;
+}
+
+.filter-buttons-container .btn.btn-danger::before {
+  background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.5), transparent) !important;
+  opacity: 1 !important;
+}
+
+.bento-controls-container {
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  padding: 16px;
+  margin-bottom: 16px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bento-controls-container .map-badge {
+  width: 100%;
+  flex: 1;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(15, 15, 20, 0.6)) !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(6px) !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+  min-width: 140px !important;
+}
+
+.bento-controls-container .map-badge::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
+  opacity: 0 !important;
+  transition: opacity 0.3s ease !important;
+}
+
+.bento-controls-container .map-badge:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+}
+
+.bento-controls-container .map-badge:hover::before {
+  opacity: 1 !important;
+}
+
+.bento-controls-container .control-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  width: 100%;
+}
+
+.bento-controls-container .control-buttons .btn {
+  flex: 1;
+  max-width: 120px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(15, 15, 20, 0.6)) !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(217, 119, 6, 0.2) !important;
+  backdrop-filter: blur(6px) !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  padding: 6px 12px !important;
+}
+
+.bento-controls-container .control-buttons .btn::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, transparent, rgba(217, 119, 6, 0.5), transparent) !important;
+  opacity: 0 !important;
+  transition: opacity 0.3s ease !important;
+}
+
+.bento-controls-container .control-buttons .btn:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(217, 119, 6, 0.4) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(217, 119, 6, 0.1) !important;
+}
+
+.bento-controls-container .control-buttons .btn:hover::before {
+  opacity: 1 !important;
+}
+
 /* Animation utilities */
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
@@ -337,21 +547,36 @@
   }
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments - maintaining readability */
 @media (max-width: 768px) {
   .btn {
-    min-height: 2.5rem;
-    padding: 0.5rem 0.75rem;
+    min-height: 2rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
   }
   
   .btn-sm {
-    min-height: 2.25rem;
-    padding: 0.375rem 0.625rem;
+    min-height: 1.75rem;
+    padding: 0.3125rem 0.625rem;
+    font-size: 0.6875rem;
   }
   
   .btn-lg {
-    min-height: 3rem;
-    padding: 1rem 1.25rem;
+    min-height: 2.5rem;
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .btn-icon {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.75rem;
+  }
+  
+  .btn-icon.btn-sm {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.6875rem;
   }
   
   .panel {

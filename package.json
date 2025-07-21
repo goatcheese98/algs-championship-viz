@@ -27,6 +27,7 @@
   "author": "ALGS Viz Team",
   "license": "MIT",
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
     "@tailwindcss/typography": "^0.5.16",
     "@vitejs/plugin-vue": "5.2.4",
     "autoprefixer": "^10.4.21",

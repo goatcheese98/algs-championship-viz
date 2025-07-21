@@ -212,7 +212,7 @@
       
       
 
-      <div class="chart-section">
+      <div class="chart-section" :class="{ compressed: isChartCompressed }">
         
         <div class="chart-title-section" v-if="selectedMatchup">
           <div class="chart-title-accent"></div>
@@ -221,6 +221,29 @@
             <div class="chart-title-main">
               <h2 class="chart-title">{{ dynamicChartTitle }}</h2>
               <div class="chart-subtitle" v-if="dynamicChartSubtitle">{{ dynamicChartSubtitle }}</div>
+            </div>
+            
+            <!-- Chart View Toggle Button -->
+            <div class="chart-view-toggle">
+              <button @click="toggleChartView" 
+                      class="view-toggle-btn"
+                      :title="isChartCompressed ? 'Expand Chart View' : 'Compress Chart View'">
+                <div class="toggle-icon">
+                  <svg v-if="isChartCompressed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15,3 21,3 21,9"></polyline>
+                    <polyline points="9,21 3,21 3,15"></polyline>
+                    <line x1="21" y1="3" x2="14" y2="10"></line>
+                    <line x1="3" y1="21" x2="10" y2="14"></line>
+                  </svg>
+                  <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="4,14 10,14 10,20"></polyline>
+                    <polyline points="20,10 14,10 14,4"></polyline>
+                    <line x1="14" y1="10" x2="21" y2="3"></line>
+                    <line x1="3" y1="21" x2="10" y2="14"></line>
+                  </svg>
+                </div>
+                <span class="toggle-label">{{ isChartCompressed ? 'EXPAND' : 'COMPRESS' }}</span>
+              </button>
             </div>
           </div>
         </div>
@@ -302,63 +325,60 @@
               :teamConfig="teamConfig"
             />
             
-            <!-- Game Commentary Section - Absolutely positioned at bottom of chart -->
-            <div v-if="selectedMatchup" class="commentary-section-attached">
-              <div class="commentary-panel-attached">
-                <div class="commentary-header">
-                  <div class="commentary-main">
-                    <div class="commentary-icon">
-                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
-                      </svg>
+            <!-- Direct Commentary Panel - Matches Chart Width -->
+            <div v-if="selectedMatchup" class="commentary-panel" ref="commentarySection">
+              <div class="panel-border">
+                <div class="corner-accent top-left"></div>
+                <div class="corner-accent top-right"></div>
+                <div class="corner-accent bottom-left"></div>
+                <div class="corner-accent bottom-right"></div>
+              </div>
+              
+              <!-- Side by Side Content Layout -->
+              <div class="commentary-layout">
+                <!-- Left Side - Commentary Text with Inline Map Badge -->
+                <div class="commentary-content">
+                  <div class="commentary-with-badge">
+                    <div v-if="currentGame > 0" class="inline-map-badge" :style="getCurrentGameBadgeStyle()">
+                      <div class="badge-glow"></div>
+                      <span class="game-number">{{ currentGame }}</span>
+                      <span class="divider">//</span>
+                      <span class="game-map">{{ getCurrentMapName() }}</span>
                     </div>
-                    <div class="commentary-title-enhanced">
-                      <span class="commentary-text">Game Commentary</span>
-                      <div class="commentary-glow"></div>
-                    </div>
+                    <p class="commentary-text">{{ commentaryText }}</p>
                   </div>
                 </div>
-                
-                <div class="commentary-content">
-                  <div class="commentary-game-info">
-                    <div class="current-game-display">
-                      <div class="game-badge" :style="getCurrentGameBadgeStyle()">
-                        <span class="game-number">{{ currentGame > 0 ? currentGame : 'Pre-Game' }}</span>
-                        <span class="game-map" v-if="currentGame > 0">{{ getCurrentMapName() }}</span>
-                      </div>
+
+                <!-- Right Side - Compact Dominance Containers -->
+                <div class="dominance-containers" v-if="currentGame > 0">
+                  <!-- Current Dominance (Cumulative) -->
+                  <div class="dominance-compact current" v-if="getTopTeams().length > 0">
+                    <div class="dominance-header">
+                      <span class="dominance-title">CURRENT DOMINANCE</span>
                     </div>
-                    
-                    <div class="commentary-stats">
-                      <div class="stat-item">
-                        <span class="stat-label">Teams:</span>
-                        <span class="stat-value">{{ getTeamCount() }}</span>
-                      </div>
-                      <div class="stat-item">
-                        <span class="stat-label">Progress:</span>
-                        <span class="stat-value">{{ Math.round((currentGame / maxGames) * 100) }}%</span>
+                    <div class="teams-compact">
+                      <div v-for="(team, index) in getTopTeams().slice(0, 3)" 
+                           :key="`current-${team.team}`" 
+                           :class="['team-compact', `rank-${index + 1}`]">
+                        <span class="rank">{{ index + 1 }}</span>
+                        <span class="name">{{ team.team }}</span>
+                        <span class="points">{{ team.totalPoints }}</span>
                       </div>
                     </div>
                   </div>
-                  
-                  <div class="commentary-text-content">
-                    <div class="commentary-summary">
-                      <h3>{{ getCommentaryTitle() }}</h3>
-                      <p>{{ getCommentaryText() }}</p>
+
+                  <!-- Match Dominance (Single Game) -->
+                  <div class="dominance-compact match" v-if="getMatchTopTeams().length > 0">
+                    <div class="dominance-header">
+                      <span class="dominance-title">MATCH DOMINANCE</span>
                     </div>
-                    
-                    <div class="leaderboard-preview">
-                      <h4>Current Top 3</h4>
-                      <div class="top-teams" v-if="getTopTeams().length > 0">
-                        <div v-for="(team, index) in getTopTeams().slice(0, 3)" 
-                             :key="team.team" 
-                             class="top-team-item">
-                          <span class="position">{{ index + 1 }}</span>
-                          <span class="team-name">{{ team.team }}</span>
-                          <span class="team-points">{{ team.totalPoints }}pts</span>
-                        </div>
-                      </div>
-                      <div v-else class="no-data">
-                        Select a game to see leaderboard
+                    <div class="teams-compact">
+                      <div v-for="(team, index) in getMatchTopTeams().slice(0, 3)" 
+                           :key="`match-${team.team}`" 
+                           :class="['team-compact', `rank-${index + 1}`]">
+                        <span class="rank">{{ index + 1 }}</span>
+                        <span class="name">{{ team.team }}</span>
+                        <span class="points">{{ team.matchPoints }}</span>
                       </div>
                     </div>
                   </div>
@@ -387,6 +407,7 @@ import InteractiveRaceChart from './InteractiveRaceChart.vue'
 import { useTournamentStore } from '../stores/tournament.js'
 import { mapActions, mapState } from 'pinia'
 import { gsap } from 'gsap'
+import { createCommentary } from '../data/commentary.js'
 
 export default {
   name: 'TournamentView',
@@ -476,6 +497,9 @@ export default {
       // ResizeObserver for dynamic positioning
       dashboardResizeObserver: null,
       
+      // Chart view state
+      isChartCompressed: false,
+      
     }
   },
   
@@ -545,6 +569,7 @@ export default {
     // Watch for data changes to update current map
     processedChartData() {
       this.updateCurrentMap();
+      this.adjustCommentaryWidth();
     },
 
     currentGame() {
@@ -625,6 +650,27 @@ export default {
       
       // Check if Controls panel is in its original position or overlapping with dashboard
       return this.isControlsInDashboardLane();
+    },
+
+    // Commentary functionality
+    commentary() {
+      return createCommentary(
+        this.dynamicChartTitle,
+        this.getTeamCount(),
+        this.maxGames
+      );
+    },
+
+    commentaryTitle() {
+      return this.commentary.getTitle(this.currentGame);
+    },
+
+    commentaryText() {
+      return this.commentary.getText(
+        this.currentGame,
+        this.getTopTeams(),
+        this.getCurrentMapName()
+      );
     }
   },
   
@@ -654,6 +700,11 @@ export default {
     // Initialize chart loading animation
     this.initializeChartLoadingAnimation();
     
+    // Adjust commentary width to match chart
+    this.adjustCommentaryWidth();
+    
+    // Add window resize listener for commentary width
+    window.addEventListener('resize', this.adjustCommentaryWidth);
     
     // Add debug method to global scope for troubleshooting
     window.debugTournamentView = () => {
@@ -1679,37 +1730,21 @@ export default {
         .sort((a, b) => b.totalPoints - a.totalPoints);
     },
 
-    getCommentaryTitle() {
-      if (this.currentGame === 0) {
-        return 'Pre-Tournament Analysis';
-      } else if (this.currentGame === this.maxGames) {
-        return 'Final Results Summary';
-      } else {
-        return `Game ${this.currentGame} Analysis`;
-      }
+    getMatchTopTeams() {
+      if (!this.processedChartData || this.currentGame === 0) return [];
+      
+      return this.processedChartData
+        .map(team => {
+          const currentGameData = team.games?.find(game => game.gameNumber === this.currentGame);
+          return {
+            team: team.team,
+            matchPoints: currentGameData?.points || 0
+          };
+        })
+        .filter(team => team.matchPoints > 0)
+        .sort((a, b) => b.matchPoints - a.matchPoints);
     },
 
-    getCommentaryText() {
-      if (this.currentGame === 0) {
-        return `Welcome to the ${this.dynamicChartTitle}. ${this.getTeamCount()} elite teams are ready to compete across ${this.maxGames} intense games. Each team will fight for placement points and elimination survival in this high-stakes tournament format.`;
-      } else if (this.currentGame === this.maxGames) {
-        const topTeam = this.getTopTeams()[0];
-        if (topTeam) {
-          return `Tournament complete! ${topTeam.team} emerges victorious with ${topTeam.totalPoints} points after ${this.maxGames} grueling games. Their consistent performance and strategic gameplay secured their position at the top of the leaderboard.`;
-        }
-        return `The tournament has concluded after ${this.maxGames} games of intense competition. Final standings have been determined.`;
-      } else {
-        const topTeams = this.getTopTeams().slice(0, 3);
-        const currentMap = this.getCurrentMapName();
-        
-        if (topTeams.length >= 3) {
-          return `After ${this.currentGame} games on ${currentMap}, ${topTeams[0].team} leads with ${topTeams[0].totalPoints} points. ${topTeams[1].team} (${topTeams[1].totalPoints}pts) and ${topTeams[2].team} (${topTeams[2].totalPoints}pts) are fighting to close the gap. The competition remains fierce with ${this.maxGames - this.currentGame} games remaining.`;
-        } else if (topTeams.length > 0) {
-          return `Game ${this.currentGame} has concluded on ${currentMap}. ${topTeams[0].team} currently leads the standings. The tournament continues with strategic positioning crucial for the remaining games.`;
-        }
-        return `Game ${this.currentGame} on ${currentMap} is part of the ongoing tournament progression. Teams are battling for optimal placement points.`;
-      }
-    },
     
     // Game filter methods
     async toggleGameFilter(gameNum) {
@@ -1999,6 +2034,31 @@ export default {
         this.animationInterval = null;
       }
       this.setPlaying(false);
+    },
+
+    adjustCommentaryWidth() {
+      this.$nextTick(() => {
+        const chartElement = this.$el.querySelector('svg');
+        const commentaryElement = this.$refs.commentarySection;
+        
+        if (chartElement && commentaryElement) {
+          const chartWidth = chartElement.getBoundingClientRect().width;
+          console.log(`🎯 Adjusting commentary width to match chart: ${chartWidth}px`);
+          commentaryElement.style.width = `${chartWidth}px`;
+          commentaryElement.style.maxWidth = `${chartWidth}px`;
+          commentaryElement.style.minWidth = `${chartWidth}px`;
+        }
+      });
+    },
+
+    toggleChartView() {
+      this.isChartCompressed = !this.isChartCompressed;
+      console.log(`📊 Chart view toggled: ${this.isChartCompressed ? 'COMPRESSED' : 'EXPANDED'}`);
+      
+      // Trigger width adjustment after view change
+      this.$nextTick(() => {
+        this.adjustCommentaryWidth();
+      });
     }
   },
   
@@ -2007,6 +2067,9 @@ export default {
     
     // Stop any ongoing animation
     this.stopAnimation();
+    
+    // Remove window resize listener
+    window.removeEventListener('resize', this.adjustCommentaryWidth);
     
     // Clean up chart
     this.cleanupChart();
@@ -2019,5 +2082,515 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+/* Enhanced Gaming Commentary Panel - Main Container */
+.commentary-panel {
+  margin-top: 0;
+  width: 100%;
+  max-width: none;
+  background: linear-gradient(135deg, 
+    rgba(10, 10, 15, 0.98) 0%, 
+    rgba(15, 15, 25, 0.98) 50%, 
+    rgba(20, 20, 30, 0.98) 100%);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 8px 32px rgba(239, 68, 68, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+  padding: 12px 14px;
+}
+
+.commentary-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(239, 68, 68, 0.1) 50%, 
+    transparent 70%);
+  pointer-events: none;
+  animation: scan-line 3s linear infinite;
+}
+
+@keyframes scan-line {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.panel-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.corner-accent {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(239, 68, 68, 0.6);
+}
+
+.corner-accent.top-left {
+  top: 0;
+  left: 0;
+  border-right: none;
+  border-bottom: none;
+}
+
+.corner-accent.top-right {
+  top: 0;
+  right: 0;
+  border-left: none;
+  border-bottom: none;
+}
+
+.corner-accent.bottom-left {
+  bottom: 0;
+  left: 0;
+  border-right: none;
+  border-top: none;
+}
+
+.corner-accent.bottom-right {
+  bottom: 0;
+  right: 0;
+  border-left: none;
+  border-top: none;
+}
+
+/* Side by Side Layout */
+.commentary-layout {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.commentary-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.commentary-with-badge {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inline-map-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  position: relative;
+  overflow: hidden;
+  align-self: flex-start;
+  margin-bottom: 4px;
+}
+
+.inline-map-badge .badge-glow {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+  animation: badge-shine 2s linear infinite;
+}
+
+@keyframes badge-shine {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.inline-map-badge .game-number {
+  font-weight: 900;
+  text-shadow: 0 0 6px currentColor;
+}
+
+.inline-map-badge .divider {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 300;
+}
+
+.inline-map-badge .game-map {
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+/* Responsive Design */
+@media (max-width: 1100px) {
+  .commentary-layout {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .dominance-containers {
+    flex-direction: row;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .dominance-containers {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .dominance-compact {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* Dynamic text sizing based on container */
+@media (min-width: 1200px) {
+  .commentary-text {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 800px) {
+  .commentary-text {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+}
+
+.commentary-text {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #e5e7eb;
+  margin: 0;
+  font-weight: 400;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Compact Dominance Containers - 50% Bigger */
+.dominance-containers {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  flex-shrink: 0;
+  flex-basis: auto;
+}
+
+.dominance-compact {
+  flex: 1;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.6) 0%, 
+    rgba(239, 68, 68, 0.1) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 9px;
+  padding: 9px 12px;
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.dominance-compact::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    #ef4444, 
+    transparent);
+  animation: compact-glow 3s linear infinite;
+}
+
+@keyframes compact-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.dominance-compact.current {
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.dominance-compact.current::before {
+  background: linear-gradient(90deg, 
+    transparent, 
+    #10b981, 
+    transparent);
+}
+
+.dominance-compact.match {
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+.dominance-compact.match::before {
+  background: linear-gradient(90deg, 
+    transparent, 
+    #fbbf24, 
+    transparent);
+}
+
+.dominance-header {
+  margin-bottom: 6px;
+}
+
+.dominance-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  color: #ef4444;
+  text-shadow: 0 0 6px rgba(239, 68, 68, 0.8);
+}
+
+.current .dominance-title {
+  color: #10b981;
+  text-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
+}
+
+.match .dominance-title {
+  color: #fbbf24;
+  text-shadow: 0 0 6px rgba(251, 191, 36, 0.8);
+}
+
+.teams-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.team-compact {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 4.5px 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4.5px;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+  font-size: 13.5px;
+}
+
+.team-compact:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateX(1px);
+}
+
+.team-compact.rank-1 {
+  border-left-color: #ffd700;
+}
+
+.team-compact.rank-2 {
+  border-left-color: #c0c0c0;
+}
+
+.team-compact.rank-3 {
+  border-left-color: #cd7f32;
+}
+
+.team-compact .rank {
+  font-size: 12px;
+  font-weight: 900;
+  color: #ffffff;
+  width: 15px;
+  text-align: center;
+  text-shadow: 0 0 4.5px currentColor;
+}
+
+.rank-1 .rank {
+  color: #ffd700;
+}
+
+.rank-2 .rank {
+  color: #c0c0c0;
+}
+
+.rank-3 .rank {
+  color: #cd7f32;
+}
+
+.team-compact .name {
+  flex: 1;
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.team-compact .points {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #10b981;
+  text-shadow: 0 0 4.5px #10b981;
+  min-width: 27px;
+  text-align: right;
+}
+
+.leaderboard-compact {
+  margin-top: 8px;
+}
+
+/* Chart Title Container Positioning */
+.chart-title-container {
+  position: relative;
+}
+
+/* Chart View Toggle Button */
+.chart-view-toggle {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.view-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, 0.2) 0%, 
+    rgba(239, 68, 68, 0.1) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 6px;
+  color: #ef4444;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  position: relative;
+  overflow: hidden;
+}
+
+.view-toggle-btn:hover {
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, 0.3) 0%, 
+    rgba(239, 68, 68, 0.2) 100%);
+  border-color: rgba(239, 68, 68, 0.6);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
+}
+
+.view-toggle-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+.toggle-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-icon svg {
+  width: 100%;
+  height: 100%;
+  color: currentColor;
+}
+
+.toggle-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-shadow: 0 0 4px rgba(239, 68, 68, 0.6);
+}
+
+/* Chart compression styles */
+.chart-section.compressed {
+  max-height: 400px;
+  overflow: hidden;
+}
+
+.chart-section.compressed .chart-container {
+  transform: scaleY(0.6);
+  transform-origin: top center;
+  transition: transform 0.5s ease-out;
+}
+
+.chart-section:not(.compressed) .chart-container {
+  transform: scaleY(1);
+  transition: transform 0.5s ease-out;
+}
+
+.leaderboard-compact h4 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fbbf24;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.top-teams {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.top-team-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 12px;
+}
+
+.top-team-item .position {
+  font-weight: 700;
+  color: #ef4444;
+  min-width: 16px;
+}
+
+.top-team-item .team-name {
+  flex: 1;
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+.top-team-item .team-points {
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.no-data {
+  font-size: 12px;
+  color: #94a3b8;
+  font-style: italic;
+}
+</style>
 
  

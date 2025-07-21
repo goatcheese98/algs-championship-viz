@@ -6,7 +6,7 @@
     
     <div class="panel-header">
       <div class="panel-title">
-        <button class="btn btn--icon btn--primary" @click="togglePanel" @mousedown.stop" title="Toggle advanced controls">
+        <button class="btn btn-icon btn-primary" @click="togglePanel" @mousedown.stop" title="Toggle advanced controls">
           {{ panelExpanded ? '−' : '+' }}
         </button>
         <span class="title-text">Controls</span>
@@ -19,9 +19,9 @@
     <!-- Always visible: Game Progress and Controls -->
     <div class="compact-status">
       <!-- Game Progress (always visible) -->
-      <div class="game-progress-section">
-        <label class="section-label">Game Progress: {{ displayedProgress }} / {{ maxGames }}</label>
-        <div class="progress-container">
+      <div class="flex flex-col gap-1.5 mb-4">
+        <label class="text-xs text-gray-400 font-medium">Game Progress: {{ displayedProgress }} / {{ maxGames }}</label>
+        <div class="flex items-center gap-1.5">
           <span class="progress-value">0</span>
           <input type="range" 
                  :min="0" 
@@ -38,29 +38,10 @@
         </div>
       </div>
 
-      <!-- Game Filter Controls (merged with progress) -->
-      <div class="filter-controls">
-        <div class="filter-action-label">Click to filter | X to clear</div>
-        <div class="game-filter-grid">
-          <button v-for="item in filterButtons" 
-                  :key="item.id"
-                  @click="item.type === 'game' ? toggleGameFilter(item.value) : resetGameFilter()"
-                  @mouseenter="item.type === 'game' ? showFilterTooltip($event, item.value) : showClearTooltip($event)"
-                  @mouseleave="hideFilterTooltip"
-                  :class="['btn', 'btn--sm', {
-                    'btn--active': item.type === 'game' && selectedGames.includes(item.value),
-                    'btn--primary': item.type === 'game' && item.value === currentGame,
-                    'btn--danger': item.type === 'clear'
-                  }]"
-                  :style="item.type === 'game' ? getGameButtonStyle(item.value) : getClearButtonStyle()">
-            {{ item.label }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Current Map Info -->
-      <div class="current-map-display">
-        <div class="map-badge" 
+      <!-- Bento Box Container for Map + Controls -->
+      <div class="bento-controls-container">
+        <!-- Current Map Info -->
+        <div class="map-badge flex items-center gap-2 p-3 rounded-xl font-semibold text-white shadow-md transition-all" 
              :style="getCurrentMapStyle()"
              @mouseenter="showCurrentMapTooltip"
              @mousemove="updateTooltipPosition"
@@ -81,26 +62,46 @@
           <span v-else class="map-icon">🗺️</span>
           <span class="map-name" @mouseenter="showCurrentMapTooltip" @mousemove="updateTooltipPosition" @mouseleave="hideMapTooltip">{{ currentMap || 'Loading...' }}</span>
         </div>
+
+        <!-- Quick Controls (Play/Reset) -->
+        <div class="control-buttons">
+          <button @click="togglePlayback" class="btn btn-md btn-success">
+            {{ isPlaying ? 'Pause' : 'Play' }}
+          </button>
+          <button @click="restart" class="btn btn-md btn-danger">
+            Reset
+          </button>
+        </div>
       </div>
 
-      <!-- Quick Controls (Play/Reset) - Moved below map badge -->
-      <div class="quick-controls">
-        <button @click="togglePlayback" class="btn btn--md btn--success">
-          {{ isPlaying ? 'Pause' : 'Play' }}
-        </button>
-        <button @click="restart" class="btn btn--md btn--danger">
-          Reset
-        </button>
+      <!-- Game Filter Controls Container -->
+      <div class="filter-buttons-container">
+        <div class="text-2xs text-gray-400 opacity-80 text-center mb-3">Click to filter | X to clear</div>
+        <div class="flex flex-wrap justify-center gap-2">
+          <button v-for="item in filterButtons" 
+                  :key="item.id"
+                  @click="item.type === 'game' ? toggleGameFilter(item.value) : resetGameFilter()"
+                  @mouseenter="item.type === 'game' ? showFilterTooltip($event, item.value) : showClearTooltip($event)"
+                  @mouseleave="hideFilterTooltip"
+                  :class="['btn', 'btn-sm', {
+                    'btn-active': item.type === 'game' && selectedGames.includes(item.value),
+                    'btn-primary': item.type === 'game' && item.value === currentGame,
+                    'btn-danger': item.type === 'clear'
+                  }]"
+                  :style="item.type === 'game' ? getGameButtonStyle(item.value) : getClearButtonStyle()">
+            {{ item.label }}
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- Expanded Controls (Advanced Features) -->
     <transition name="slide-down">
-      <div v-if="panelExpanded" class="expanded-controls" @mousedown.stop>
+      <div v-if="panelExpanded" class="flex flex-col gap-6 pt-4 border-t border-white/10 mt-4" @mousedown.stop>
         <!-- Export Controls -->
-        <div class="control-section">
-          <label class="section-label">Export Data</label>
-          <button @click="exportData" class="btn btn--lg btn--success btn--full">
+        <div class="flex flex-col gap-3">
+          <label class="text-xs text-primary font-medium">Export Data</label>
+          <button @click="exportData" class="btn btn-md btn-success btn-full">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
               <polyline points="7,10 12,15 17,10"/>
@@ -110,9 +111,9 @@
           </button>
         </div>
         <!-- Legend Toggle -->
-        <div class="control-section">
-          <label class="section-label">Chart Legend</label>
-          <button @click="toggleLegend" class="btn btn--lg btn--purple btn--full">
+        <div class="flex flex-col gap-3">
+          <label class="text-xs text-primary font-medium">Chart Legend</label>
+          <button @click="toggleLegend" class="btn btn-md btn-purple btn-full">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M9 2v20l3-2 3 2V2z"/>
             </svg>
@@ -121,24 +122,24 @@
         </div>
         
         <!-- Animation Speed Controls -->
-        <div class="control-section">
-          <label class="section-label">Animation Speed</label>
-          <div class="speed-controls">
+        <div class="flex flex-col gap-3">
+          <label class="text-xs text-primary font-medium">Animation Speed</label>
+          <div class="flex gap-3 justify-center">
             <button 
               @click="setAnimationSpeed('slow')" 
-              :class="['btn', 'btn--sm', { 'btn--active': animationSpeed === 'slow' }]"
+              :class="['btn', 'btn-sm', { 'btn-active': animationSpeed === 'slow' }]"
             >
               Slow
             </button>
             <button 
               @click="setAnimationSpeed('medium')" 
-              :class="['btn', 'btn--sm', { 'btn--active': animationSpeed === 'medium' }]"
+              :class="['btn', 'btn-sm', { 'btn-active': animationSpeed === 'medium' }]"
             >
               Medium
             </button>
             <button 
               @click="setAnimationSpeed('fast')" 
-              :class="['btn', 'btn--sm', { 'btn--active': animationSpeed === 'fast' }]"
+              :class="['btn', 'btn-sm', { 'btn-active': animationSpeed === 'fast' }]"
             >
               Fast
             </button>
@@ -414,22 +415,23 @@ export default {
         }
       }
       
+      // Apply dynamic color to text with glow effect
       const baseStyle = {
-        background: `linear-gradient(135deg, ${gameColor} 0%, ${this.adjustColor(gameColor, -10)} 100%)`,
-        border: `2px solid ${gameColor}`,
-        color: '#ffffff'
+        color: gameColor,
+        textShadow: `0 0 8px ${gameColor}, 0 1px 2px rgba(0, 0, 0, 0.8)`
       };
       
       if (isCurrent) {
         return {
           ...baseStyle,
-          boxShadow: `0 0 8px ${gameColor}60, 0 2px 4px rgba(0,0,0,0.3)`
+          textShadow: `0 0 12px ${gameColor}, 0 0 20px ${gameColor}60, 0 1px 2px rgba(0, 0, 0, 0.8)`,
+          fontWeight: '700'
         };
       } else if (isActive) {
         return {
           ...baseStyle,
-          boxShadow: `0 0 12px ${gameColor}60, 0 0 20px ${gameColor}40`,
-          transform: 'scale(1.15)'
+          textShadow: `0 0 16px ${gameColor}, 0 0 24px ${gameColor}80, 0 1px 2px rgba(0, 0, 0, 0.8)`,
+          fontWeight: '700'
         };
       } else {
         return baseStyle;
@@ -437,10 +439,11 @@ export default {
     },
     
     getClearButtonStyle() {
+      // Apply red color to clear button text with glow
       return {
-        background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
-        border: '2px solid #dc2626',
-        color: '#ffffff'
+        color: '#dc2626',
+        textShadow: '0 0 8px #dc2626, 0 1px 2px rgba(0, 0, 0, 0.8)',
+        fontWeight: '700'
       };
     },
     
@@ -750,7 +753,6 @@ export default {
     
     getCurrentMapStyle() {
       let mapColor = '#ef4444';
-      let mapName = this.currentMap || 'Loading...';
       
       if (this.processedChartData && this.processedChartData.length > 0 && this.currentGame > 0) {
         const firstTeam = this.processedChartData[0];
@@ -762,11 +764,10 @@ export default {
         }
       }
       
+      // Apply dynamic color to map badge text with glow
       return {
-        background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, -20)} 100%)`,
-        border: `2px solid ${mapColor}`,
-        color: '#ffffff',
-        boxShadow: `0 0 15px ${mapColor}60, 0 4px 8px rgba(0,0,0,0.3)`
+        color: mapColor,
+        textShadow: `0 0 10px ${mapColor}, 0 0 20px ${mapColor}60, 0 1px 2px rgba(0, 0, 0, 0.8)`
       };
     },
     
