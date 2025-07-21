@@ -1,0 +1,215 @@
+<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Ultra-detailed skull gradient -->
+    <radialGradient id="skullMaster" cx="50%" cy="30%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="15%" style="stop-color:#fff2f2;stop-opacity:1" />
+      <stop offset="35%" style="stop-color:#ffd5d5;stop-opacity:1" />
+      <stop offset="55%" style="stop-color:#ff9999;stop-opacity:1" />
+      <stop offset="75%" style="stop-color:#cc4444;stop-opacity:1" />
+      <stop offset="90%" style="stop-color:#992222;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#440000;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Diamond frame gradients -->
+    <linearGradient id="diamondFrame" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd5d5;stop-opacity:0.98" />
+      <stop offset="20%" style="stop-color:#ffbbbb;stop-opacity:0.92" />
+      <stop offset="40%" style="stop-color:#ff7777;stop-opacity:0.87" />
+      <stop offset="60%" style="stop-color:#ff4444;stop-opacity:0.82" />
+      <stop offset="80%" style="stop-color:#cc2222;stop-opacity:0.77" />
+      <stop offset="100%" style="stop-color:#881111;stop-opacity:0.72" />
+    </linearGradient>
+    
+    <!-- Enhanced flame gradients -->
+    <radialGradient id="flameHot" cx="50%" cy="85%" r="70%">
+      <stop offset="0%" style="stop-color:#ff2222;stop-opacity:0.95" />
+      <stop offset="25%" style="stop-color:#ff4444;stop-opacity:0.85" />
+      <stop offset="50%" style="stop-color:#ff6666;stop-opacity:0.65" />
+      <stop offset="75%" style="stop-color:#ff9999;stop-opacity:0.45" />
+      <stop offset="100%" style="stop-color:#ffcccc;stop-opacity:0.15" />
+    </radialGradient>
+    
+    <!-- Multi-layer eye glow -->
+    <radialGradient id="eyeCore" cx="50%" cy="45%" r="60%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="20%" style="stop-color:#ffbbbb;stop-opacity:0.95" />
+      <stop offset="45%" style="stop-color:#ff4444;stop-opacity:0.85" />
+      <stop offset="70%" style="stop-color:#cc2222;stop-opacity:0.7" />
+      <stop offset="90%" style="stop-color:#880000;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#440000;stop-opacity:0.3" />
+    </radialGradient>
+    
+    <!-- Shadow and depth gradients -->
+    <radialGradient id="shadowDepth" cx="50%" cy="60%" r="80%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.1" />
+      <stop offset="50%" style="stop-color:#330000;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#110000;stop-opacity:0.8" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Ultra-complex outer diamond with crystalline structure -->
+  <path d="M80 5 L130 20 L125 25 L135 30 L128 35 L138 42 L130 47 L140 55 L132 60 L140 68 L130 73 L138 78 L128 85 L135 90 L125 95 L130 100 L115 110 L108 105 L100 115 L92 107 L85 118 L80 110 L75 118 L68 107 L60 115 L52 105 L45 110 L30 100 L35 95 L25 90 L32 85 L22 78 L30 73 L20 68 L28 60 L20 55 L30 47 L22 42 L32 35 L25 30 L35 25 L30 20 L80 5 Z" 
+        fill="url(#diamondFrame)" 
+        stroke="#ff9999" 
+        stroke-width="1.8" 
+        opacity="0.85"/>
+  
+  <!-- Secondary crystalline layer -->
+  <path d="M80 12 L118 25 L113 32 L120 38 L115 45 L122 52 L115 58 L122 65 L115 72 L120 78 L113 85 L118 92 L105 102 L98 97 L90 105 L85 98 L80 108 L75 98 L70 105 L62 97 L55 102 L42 92 L47 85 L40 78 L45 72 L38 65 L45 58 L38 52 L45 45 L40 38 L47 32 L42 25 L80 12 Z" 
+        fill="none" 
+        stroke="url(#diamondFrame)" 
+        stroke-width="1.5" 
+        opacity="0.7"/>
+  
+  <!-- Inner diamond structure -->
+  <path d="M80 22 L110 52 L80 118 L50 52 Z" 
+        fill="url(#shadowDepth)" 
+        stroke="url(#diamondFrame)" 
+        stroke-width="2.2"/>
+  
+  <!-- Tertiary inner diamond -->
+  <path d="M80 30 L95 55 L80 105 L65 55 Z" 
+        fill="none" 
+        stroke="url(#diamondFrame)" 
+        stroke-width="1.2" 
+        opacity="0.6"/>
+  
+  <!-- Central shadow oval for skull -->
+  <ellipse cx="80" cy="65" rx="30" ry="40" 
+           fill="#0d0000" 
+           opacity="0.95"/>
+  
+  <!-- Skull base structure with anatomical accuracy -->
+  <path d="M55 50 Q55 38 65 34 Q75 31 80 30 Q85 31 95 34 Q105 38 105 50 Q105 58 102 63 Q105 68 105 78 Q102 85 95 88 Q90 90 80 92 Q70 90 65 88 Q58 85 55 78 Q55 68 58 63 Q55 58 55 50 Z" 
+        fill="url(#skullMaster)"/>
+  
+  <!-- Left horn structure - Enhanced -->
+  <path d="M58 40 Q50 34 45 26 Q41 18 39 12 Q38 8 40 6 Q42 7 44 10 Q46 16 49 24 Q54 30 58 36 Q60 38 60 40" 
+        fill="url(#skullMaster)" 
+        stroke="rgba(204, 68, 68, 0.9)" 
+        stroke-width="1.2"/>
+  
+  <!-- Right horn structure - Enhanced -->
+  <path d="M102 40 Q110 34 115 26 Q119 18 121 12 Q122 8 120 6 Q118 7 116 10 Q114 16 111 24 Q106 30 102 36 Q100 38 100 40" 
+        fill="url(#skullMaster)" 
+        stroke="rgba(204, 68, 68, 0.9)" 
+        stroke-width="1.2"/>
+  
+  <!-- Horn tips with enhanced glow -->
+  <circle cx="40" cy="6" r="2" fill="#ff4444" opacity="0.9"/>
+  <circle cx="120" cy="6" r="2" fill="#ff4444" opacity="0.9"/>
+  <circle cx="40" cy="6" r="1" fill="#ffffff" opacity="0.9"/>
+  <circle cx="120" cy="6" r="1" fill="#ffffff" opacity="0.9"/>
+  
+  <!-- Enhanced horn ridges for texture -->
+  <path d="M48 30 Q50 28 52 30" fill="none" stroke="rgba(153, 34, 34, 0.7)" stroke-width="0.8"/>
+  <path d="M50 22 Q52 20 54 22" fill="none" stroke="rgba(153, 34, 34, 0.7)" stroke-width="0.8"/>
+  <path d="M46 18 Q48 16 50 18" fill="none" stroke="rgba(153, 34, 34, 0.6)" stroke-width="0.6"/>
+  <path d="M108 30 Q110 28 112 30" fill="none" stroke="rgba(153, 34, 34, 0.7)" stroke-width="0.8"/>
+  <path d="M106 22 Q108 20 110 22" fill="none" stroke="rgba(153, 34, 34, 0.7)" stroke-width="0.8"/>
+  <path d="M110 18 Q112 16 114 18" fill="none" stroke="rgba(153, 34, 34, 0.6)" stroke-width="0.6"/>
+  
+  <!-- Skull temporal bones -->
+  <path d="M58 45 Q65 42 72 44 Q78 43 88 44 Q95 42 102 45" 
+        fill="none" 
+        stroke="rgba(204, 68, 68, 0.7)" 
+        stroke-width="1.2"/>
+  
+  <!-- Forehead structure -->
+  <path d="M62 40 Q70 38 80 38 Q90 38 98 40" 
+        fill="none" 
+        stroke="rgba(255, 187, 187, 0.6)" 
+        stroke-width="0.8"/>
+  
+  <!-- Eye socket complex structure -->
+  <ellipse cx="68" cy="55" rx="7" ry="9" fill="#000000"/>
+  <ellipse cx="92" cy="55" rx="7" ry="9" fill="#000000"/>
+  
+  <!-- Eye socket depth layers -->
+  <ellipse cx="68" cy="53" rx="5.5" ry="7.5" fill="rgba(51, 0, 0, 0.9)"/>
+  <ellipse cx="92" cy="53" rx="5.5" ry="7.5" fill="rgba(51, 0, 0, 0.9)"/>
+  <ellipse cx="68" cy="52" rx="4" ry="6" fill="rgba(102, 0, 0, 0.8)"/>
+  <ellipse cx="92" cy="52" rx="4" ry="6" fill="rgba(102, 0, 0, 0.8)"/>
+  
+  <!-- Multi-layered glowing eyes -->
+  <circle cx="68" cy="55" r="4" fill="url(#eyeCore)"/>
+  <circle cx="92" cy="55" r="4" fill="url(#eyeCore)"/>
+  <circle cx="68" cy="54" r="3" fill="#ff4444" opacity="0.9"/>
+  <circle cx="92" cy="54" r="3" fill="#ff4444" opacity="0.9"/>
+  <circle cx="68" cy="53" r="2" fill="#ff6666" opacity="0.8"/>
+  <circle cx="92" cy="53" r="2" fill="#ff6666" opacity="0.8"/>
+  <circle cx="68" cy="52" r="1.5" fill="#ffffff"/>
+  <circle cx="92" cy="52" r="1.5" fill="#ffffff"/>
+  <circle cx="68" cy="51.5" r="0.8" fill="#ffffff" opacity="0.9"/>
+  <circle cx="92" cy="51.5" r="0.8" fill="#ffffff" opacity="0.9"/>
+  
+  <!-- Detailed nasal structure -->
+  <path d="M80 60 L76 68 L80 75 L84 68 Z" fill="#000000"/>
+  <path d="M78 65 L82 65" stroke="#222" stroke-width="0.6"/>
+  <path d="M79 68 L81 68" stroke="#333" stroke-width="0.4"/>
+  
+  <!-- Complex jaw and mouth structure -->
+  <path d="M62 75 Q80 85 98 75" 
+        fill="none" 
+        stroke="#000000" 
+        stroke-width="3"/>
+  <path d="M65 78 Q80 83 95 78" 
+        fill="none" 
+        stroke="rgba(51, 0, 0, 0.9)" 
+        stroke-width="2"/>
+  <path d="M68 80 Q80 82 92 80" 
+        fill="none" 
+        stroke="rgba(102, 0, 0, 0.8)" 
+        stroke-width="1.5"/>
+  
+  <!-- Highly detailed teeth with individual characteristics -->
+  <rect x="70" y="80" width="1.8" height="4.5" fill="#ffffff" rx="0.4"/>
+  <rect x="72.5" y="80" width="1.8" height="5.5" fill="#ffffff" rx="0.4"/>
+  <rect x="75" y="80" width="1.8" height="6" fill="#ffffff" rx="0.4"/>
+  <rect x="77.5" y="80" width="2" height="6.5" fill="#ffffff" rx="0.4"/>
+  <rect x="80.5" y="80" width="2" height="6.5" fill="#ffffff" rx="0.4"/>
+  <rect x="83" y="80" width="1.8" height="6" fill="#ffffff" rx="0.4"/>
+  <rect x="85.5" y="80" width="1.8" height="5.5" fill="#ffffff" rx="0.4"/>
+  <rect x="88" y="80" width="1.8" height="4.5" fill="#ffffff" rx="0.4"/>
+  
+  <!-- Ultra-detailed flame structures -->
+  <!-- Left flame cascade -->
+  <path d="M38 38 Q30 30 35 22 Q42 28 48 18 Q52 30 45 40 Q50 48 42 52 Q38 45 42 38 Q35 45 38 38" fill="url(#flameHot)"/>
+  <path d="M28 50 Q20 42 25 34 Q32 40 38 30 Q42 42 35 52 Q40 60 32 64 Q28 57 32 50 Q25 57 28 50" fill="url(#flameHot)"/>
+  <path d="M35 65 Q27 57 32 49 Q39 55 45 45 Q49 57 42 67 Q47 75 39 79 Q35 72 39 65 Q32 72 35 65" fill="url(#flameHot)"/>
+  <path d="M45 80 Q37 72 42 64 Q49 70 55 60 Q59 72 52 82 Q57 90 49 94 Q45 87 49 80 Q42 87 45 80" fill="url(#flameHot)"/>
+  <path d="M32 85 Q24 77 29 69 Q36 75 42 65 Q46 77 39 87 Q44 95 36 99 Q32 92 36 85 Q29 92 32 85" fill="url(#flameHot)"/>
+  
+  <!-- Right flame cascade -->
+  <path d="M122 38 Q130 30 125 22 Q118 28 112 18 Q108 30 115 40 Q110 48 118 52 Q122 45 118 38 Q125 45 122 38" fill="url(#flameHot)"/>
+  <path d="M132 50 Q140 42 135 34 Q128 40 122 30 Q118 42 125 52 Q120 60 128 64 Q132 57 128 50 Q135 57 132 50" fill="url(#flameHot)"/>
+  <path d="M125 65 Q133 57 128 49 Q121 55 115 45 Q111 57 118 67 Q113 75 121 79 Q125 72 121 65 Q128 72 125 65" fill="url(#flameHot)"/>
+  <path d="M115 80 Q123 72 118 64 Q111 70 105 60 Q101 72 108 82 Q103 90 111 94 Q115 87 111 80 Q118 87 115 80" fill="url(#flameHot)"/>
+  <path d="M128 85 Q136 77 131 69 Q124 75 118 65 Q114 77 121 87 Q116 95 124 99 Q128 92 124 85 Q131 92 128 85" fill="url(#flameHot)"/>
+  
+  <!-- Central bottom apex with crystalline detail -->
+  <path d="M80 92 L70 110 L80 118 L90 110 Z" fill="url(#skullMaster)"/>
+  <path d="M80 95 L74 107 L80 113 L86 107 Z" fill="rgba(255, 153, 153, 0.9)"/>
+  <path d="M80 98 L77 104 L80 108 L83 104 Z" fill="rgba(255, 187, 187, 0.8)"/>
+  
+  <!-- Micro flame details -->
+  <circle cx="48" cy="35" r="2.5" fill="url(#flameHot)" opacity="0.7"/>
+  <circle cx="112" cy="35" r="2.5" fill="url(#flameHot)" opacity="0.7"/>
+  <circle cx="42" cy="55" r="2" fill="url(#flameHot)" opacity="0.8"/>
+  <circle cx="118" cy="55" r="2" fill="url(#flameHot)" opacity="0.8"/>
+  <circle cx="45" cy="75" r="1.8" fill="url(#flameHot)" opacity="0.75"/>
+  <circle cx="115" cy="75" r="1.8" fill="url(#flameHot)" opacity="0.75"/>
+  
+  <!-- Inner geometric accents -->
+  <path d="M60 38 L80 28 L100 38" fill="none" stroke="url(#diamondFrame)" stroke-width="1.2" opacity="0.6"/>
+  <path d="M60 82 L80 92 L100 82" fill="none" stroke="url(#diamondFrame)" stroke-width="1.2" opacity="0.6"/>
+  <path d="M52 60 L65 50 L78 60" fill="none" stroke="url(#diamondFrame)" stroke-width="0.8" opacity="0.4"/>
+  <path d="M82 60 L95 50 L108 60" fill="none" stroke="url(#diamondFrame)" stroke-width="0.8" opacity="0.4"/>
+  
+  <!-- Additional crystalline structure details -->
+  <polygon points="80,15 85,22 80,25 75,22" fill="url(#diamondFrame)" opacity="0.5"/>
+  <polygon points="80,95 75,102 80,108 85,102" fill="url(#diamondFrame)" opacity="0.5"/>
+  <polygon points="45,60 52,55 55,65 48,68" fill="url(#diamondFrame)" opacity="0.4"/>
+  <polygon points="115,60 108,55 105,65 112,68" fill="url(#diamondFrame)" opacity="0.4"/>
+</svg>

@@ -1,0 +1,372 @@
+/* Import Tailwind CSS */
+@import "tailwindcss";
+
+/* Modern Button System - Tailwind Compatible */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  background-color: rgba(30, 41, 59, 0.85);
+  color: #f8fafc;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+  min-height: 2rem;
+  position: relative;
+  overflow: hidden;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.btn:hover:not(:disabled) {
+  background-color: rgba(74, 85, 104, 0.9);
+  border-color: rgba(217, 119, 6, 0.4);
+  color: #f1f5f9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.btn:disabled {
+  background-color: rgba(107, 114, 128, 0.6);
+  border-color: rgba(107, 114, 128, 0.4);
+  color: rgba(203, 213, 225, 0.6);
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Button Sizes */
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  min-height: 1.75rem;
+  min-width: 1.75rem;
+}
+
+.btn-md {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8rem;
+  min-height: 2rem;
+}
+
+.btn-lg {
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  min-height: 2.5rem;
+}
+
+.btn-xl {
+  padding: 1rem 1.25rem;
+  font-size: 0.95rem;
+  min-height: 3rem;
+}
+
+/* Button Colors */
+.btn-primary {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border-color: #ef4444;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  border-color: #dc2626;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: #10b981;
+  color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  border-color: #059669;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border-color: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  border-color: #dc2626;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, #d97706 0%, #ea580c 100%);
+  border-color: #d97706;
+  color: white;
+}
+
+.btn-accent:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  border-color: #ea580c;
+  box-shadow: 0 0 12px rgba(217, 119, 6, 0.4);
+}
+
+.btn-purple {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.8) 0%, rgba(147, 51, 234, 0.8) 100%);
+  border-color: rgba(168, 85, 247, 0.6);
+  color: white;
+}
+
+.btn-purple:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.9) 0%, rgba(126, 34, 206, 0.9) 100%);
+  border-color: rgba(147, 51, 234, 0.8);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+}
+
+/* Button Modifiers */
+.btn-active {
+  background: linear-gradient(135deg, #d97706 0%, #ea580c 100%);
+  border-color: #d97706;
+  color: white;
+  box-shadow: 0 0 12px rgba(217, 119, 6, 0.4);
+}
+
+.btn-icon {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: 0.375rem;
+  min-width: auto;
+  min-height: auto;
+}
+
+.btn-icon.btn-sm {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.btn-icon.btn-lg {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.btn-circle {
+  border-radius: 9999px;
+}
+
+.btn-outline {
+  background: transparent;
+  border-width: 2px;
+}
+
+.btn-outline:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Icon styling within buttons */
+.btn .icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.btn-sm .icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.btn-lg .icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.btn-xl .icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.btn .icon + span,
+.btn span + .icon {
+  margin-left: 0.375rem;
+}
+
+/* Panel System */
+.panel {
+  background-color: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(74, 85, 104, 0.6);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+.panel-compact {
+  padding: 0.75rem;
+}
+
+.panel-spacious {
+  padding: 2rem;
+}
+
+.panel-bordered {
+  border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+.panel-highlighted {
+  border-color: #ef4444;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Panel Header */
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.panel-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.panel-title .icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  color: #ef4444;
+}
+
+.panel-controls {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+/* Panel Content */
+.panel-content {
+  color: #f1f5f9;
+  line-height: 1.6;
+}
+
+.panel-content-scrollable {
+  max-height: 24rem;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.panel-content-scrollable::-webkit-scrollbar {
+  width: 4px;
+}
+
+.panel-content-scrollable::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.125rem;
+}
+
+.panel-content-scrollable::-webkit-scrollbar-thumb {
+  background: rgba(239, 68, 68, 0.3);
+  border-radius: 0.125rem;
+}
+
+.panel-content-scrollable::-webkit-scrollbar-thumb:hover {
+  background: rgba(239, 68, 68, 0.4);
+}
+
+/* Animation utilities */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .btn {
+    min-height: 2.5rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .btn-sm {
+    min-height: 2.25rem;
+    padding: 0.375rem 0.625rem;
+  }
+  
+  .btn-lg {
+    min-height: 3rem;
+    padding: 1rem 1.25rem;
+  }
+  
+  .panel {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+  }
+  
+  .panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .panel-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

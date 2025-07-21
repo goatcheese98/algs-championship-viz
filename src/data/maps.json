@@ -1,0 +1,16 @@
+{
+  "images": {
+    "World's Edge": "https://cdn.mos.cms.futurecdn.net/MCKD8U49KzQ9UQE8X5BrQX-650-80.jpg.webp",
+    "Storm Point": "https://www.charlieintel.com/cdn-image/wp-content/uploads/2023/10/25/apex-legends-season-19-storm-point-poi-zeus-station.jpg?width=768&quality=60&format=auto",
+    "Broken Moon": "https://alegends.gg/wp-content/uploads/2025/07/apex-legends-broken-moon-bug.webp",
+    "E-District": "https://images2.minutemediacdn.com/image/upload/c_crop,w_3835,h_2157,x_73,y_0/c_fill,w_1080,ar_16:9,f_auto,q_auto,g_auto/images%2FvoltaxMediaLibrary%2Fmmsport%2Fesports_illustrated%2F01j7vfeyaec7wr6e98w0.jpg",
+    "Pre-game": "https://img.redbull.com/images/c_crop,w_2560,h_1280,x_0,y_1227/c_auto,w_1200,h_630/f_auto,q_auto/redbullcom/2020/2/12/khb8wc0y3hthtimnnlqh/red-bull-energy-drink"
+  },
+  "aliases": {
+    "WORLD'S EDGE": "World's Edge",
+    "STORM POINT": "Storm Point", 
+    "BROKEN MOON": "Broken Moon",
+    "E-district": "E-District",
+    "E-DISTRICT": "E-District"
+  }
+}

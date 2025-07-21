@@ -6,7 +6,7 @@
     
     <div class="panel-header">
       <div class="panel-title">
-        <button class="expand-btn" @click="togglePanel" @mousedown.stop" title="Toggle advanced controls">
+        <button class="btn btn--icon btn--primary" @click="togglePanel" @mousedown.stop" title="Toggle advanced controls">
           {{ panelExpanded ? '−' : '+' }}
         </button>
         <span class="title-text">Controls</span>
@@ -47,9 +47,10 @@
                   @click="item.type === 'game' ? toggleGameFilter(item.value) : resetGameFilter()"
                   @mouseenter="item.type === 'game' ? showFilterTooltip($event, item.value) : showClearTooltip($event)"
                   @mouseleave="hideFilterTooltip"
-                  :class="['game-filter-btn', {
-                    active: item.type === 'game' && selectedGames.includes(item.value),
-                    current: item.type === 'game' && item.value === currentGame
+                  :class="['btn', 'btn--sm', {
+                    'btn--active': item.type === 'game' && selectedGames.includes(item.value),
+                    'btn--primary': item.type === 'game' && item.value === currentGame,
+                    'btn--danger': item.type === 'clear'
                   }]"
                   :style="item.type === 'game' ? getGameButtonStyle(item.value) : getClearButtonStyle()">
             {{ item.label }}
@@ -84,10 +85,10 @@
 
       <!-- Quick Controls (Play/Reset) - Moved below map badge -->
       <div class="quick-controls">
-        <button @click="togglePlayback" class="control-btn play-btn">
+        <button @click="togglePlayback" class="btn btn--md btn--success">
           {{ isPlaying ? 'Pause' : 'Play' }}
         </button>
-        <button @click="restart" class="control-btn">
+        <button @click="restart" class="btn btn--md btn--danger">
           Reset
         </button>
       </div>
@@ -99,23 +100,23 @@
         <!-- Export Controls -->
         <div class="control-section">
           <label class="section-label">Export Data</label>
-          <button @click="exportData" class="export-btn">
+          <button @click="exportData" class="btn btn--lg btn--success btn--full">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
               <polyline points="7,10 12,15 17,10"/>
               <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
-            Export CSV
+            <span>Export CSV</span>
           </button>
         </div>
         <!-- Legend Toggle -->
         <div class="control-section">
           <label class="section-label">Chart Legend</label>
-          <button @click="toggleLegend" class="legend-toggle-btn">
+          <button @click="toggleLegend" class="btn btn--lg btn--purple btn--full">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M9 2v20l3-2 3 2V2z"/>
             </svg>
-            {{ isLegendVisible ? 'Hide' : 'Show' }} Legend
+            <span>{{ isLegendVisible ? 'Hide' : 'Show' }} Legend</span>
           </button>
         </div>
         
@@ -125,19 +126,19 @@
           <div class="speed-controls">
             <button 
               @click="setAnimationSpeed('slow')" 
-              :class="['speed-btn', { active: animationSpeed === 'slow' }]"
+              :class="['btn', 'btn--sm', { 'btn--active': animationSpeed === 'slow' }]"
             >
               Slow
             </button>
             <button 
               @click="setAnimationSpeed('medium')" 
-              :class="['speed-btn', { active: animationSpeed === 'medium' }]"
+              :class="['btn', 'btn--sm', { 'btn--active': animationSpeed === 'medium' }]"
             >
               Medium
             </button>
             <button 
               @click="setAnimationSpeed('fast')" 
-              :class="['speed-btn', { active: animationSpeed === 'fast' }]"
+              :class="['btn', 'btn--sm', { 'btn--active': animationSpeed === 'fast' }]"
             >
               Fast
             </button>
@@ -153,6 +154,7 @@
 import { useTournamentStore } from '../stores/tournament.js' // Import the store
 import { mapState, mapActions } from 'pinia' // Import Pinia helpers
 import { GSAPDraggableManager } from '../utils/GSAPDraggableManager.js'
+import { getMapImageUrl } from '../data/tournaments'
 
 export default {
   name: 'ActionPanel',
@@ -459,31 +461,7 @@ export default {
     },
     
     getMapImageUrl(mapName) {
-      const mapImages = {
-        "World's Edge": 'https://cdn.mos.cms.futurecdn.net/MCKD8U49KzQ9UQE8X5BrQX-650-80.jpg.webp',
-        "WORLD'S EDGE": 'https://cdn.mos.cms.futurecdn.net/MCKD8U49KzQ9UQE8X5BrQX-650-80.jpg.webp',
-        'Storm Point': 'https://www.charlieintel.com/cdn-image/wp-content/uploads/2023/10/25/apex-legends-season-19-storm-point-poi-zeus-station.jpg?width=768&quality=60&format=auto',
-        'STORM POINT': 'https://www.charlieintel.com/cdn-image/wp-content/uploads/2023/10/25/apex-legends-season-19-storm-point-poi-zeus-station.jpg?width=768&quality=60&format=auto',
-        'Broken Moon': 'https://alegends.gg/wp-content/uploads/2025/07/apex-legends-broken-moon-bug.webp',
-        'BROKEN MOON': 'https://alegends.gg/wp-content/uploads/2025/07/apex-legends-broken-moon-bug.webp',
-        'E-district': 'https://images2.minutemediacdn.com/image/upload/c_crop,w_3835,h_2157,x_73,y_0/c_fill,w_1080,ar_16:9,f_auto,q_auto,g_auto/images%2FvoltaxMediaLibrary%2Fmmsport%2Fesports_illustrated%2F01j7vfeyaec7wr6e98w0.jpg',
-        'E-District': 'https://images2.minutemediacdn.com/image/upload/c_crop,w_3835,h_2157,x_73,y_0/c_fill,w_1080,ar_16:9,f_auto,q_auto,g_auto/images%2FvoltaxMediaLibrary%2Fmmsport%2Fesports_illustrated%2F01j7vfeyaec7wr6e98w0.jpg',
-        'E-DISTRICT': 'https://images2.minutemediacdn.com/image/upload/c_crop,w_3835,h_2157,x_73,y_0/c_fill,w_1080,ar_16:9,f_auto,q_auto,g_auto/images%2FvoltaxMediaLibrary%2Fmmsport%2Fesports_illustrated%2F01j7vfeyaec7wr6e98w0.jpg',
-        'Pre-game': 'https://img.redbull.com/images/c_crop,w_2560,h_1280,x_0,y_1227/c_auto,w_1200,h_630/f_auto,q_auto/redbullcom/2020/2/12/khb8wc0y3hthtimnnlqh/red-bull-energy-drink'
-      };
-      
-      
-      let imageUrl = mapImages[mapName];
-      if (!imageUrl && mapName) {
-        const normalizedMapName = mapName.toLowerCase().replace(/[^a-z]/g, '');
-        const normalizedKeys = Object.keys(mapImages).reduce((acc, key) => {
-          acc[key.toLowerCase().replace(/[^a-z]/g, '')] = mapImages[key];
-          return acc;
-        }, {});
-        imageUrl = normalizedKeys[normalizedMapName];
-      }
-      
-      return imageUrl || '';
+      return getMapImageUrl(mapName)
     },
     
     getCurrentMapImageUrl() {

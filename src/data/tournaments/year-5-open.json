@@ -1,0 +1,62 @@
+{
+  "id": "year-5-open",
+  "name": "ALGS Year 5 Open",
+  "description": "Year 5 Open Tournament",
+  "days": [
+    {
+      "id": "day1",
+      "name": "Day 1 - Winners Round 1",
+      "description": "Year 5 Open Winners Round 1 featuring 6 tournament rounds. All rounds use the same map rotation: E-District (2) → Storm Point (2) → World's Edge (2).",
+      "matchups": [
+        {
+          "id": "Day1-WinnersRound1-1",
+          "title": "Winners Round 1 #1",
+          "description": "First round of Winners Round 1. 6 games with E-District opening sequence.",
+          "teams": 20,
+          "games": 6,
+          "maps": "E-District → Storm Point → World's Edge"
+        },
+        {
+          "id": "Day1-WinnersRound1-2",
+          "title": "Winners Round 1 #2",
+          "description": "Second round of Winners Round 1. Consistent map rotation pattern.",
+          "teams": 20,
+          "games": 6,
+          "maps": "E-District → Storm Point → World's Edge"
+        },
+        {
+          "id": "Day1-WinnersRound1-3",
+          "title": "Winners Round 1 #3",
+          "description": "Third round of Winners Round 1. Standard 6-game format.",
+          "teams": 20,
+          "games": 6,
+          "maps": "E-District → Storm Point → World's Edge"
+        },
+        {
+          "id": "Day1-WinnersRound1-4",
+          "title": "Winners Round 1 #4",
+          "description": "Fourth round of Winners Round 1. Maintaining competitive balance.",
+          "teams": 20,
+          "games": 6,
+          "maps": "E-District → Storm Point → World's Edge"
+        },
+        {
+          "id": "Day1-WinnersRound1-5",
+          "title": "Winners Round 1 #5",
+          "description": "Fifth round of Winners Round 1. Continued tournament progression.",
+          "teams": 20,
+          "games": 6,
+          "maps": "E-District → Storm Point → World's Edge"
+        },
+        {
+          "id": "Day1-WinnersRound1-6",
+          "title": "Winners Round 1 #6",
+          "description": "Final round of Winners Round 1. Concluding the first day of competition.",
+          "teams": 20,
+          "games": 6,
+          "maps": "E-District → Storm Point → World's Edge"
+        }
+      ]
+    }
+  ]
+}

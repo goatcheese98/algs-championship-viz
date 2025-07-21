@@ -25,6 +25,7 @@ let batchProcessor = null;
 let isProcessing = false;
 let processingQueue = [];
 let selectedFolder = 'year5champions'; // Default folder
+let browserEngine = 'puppeteer'; // Default engine for backward compatibility
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
@@ -35,7 +36,8 @@ io.on('connection', (socket) => {
         isProcessing,
         queueLength: processingQueue.length,
         scraperInitialized: scraper !== null,
-        selectedFolder: selectedFolder
+        selectedFolder: selectedFolder,
+        browserEngine: browserEngine
     });
     
     socket.on('disconnect', () => {
@@ -49,7 +51,8 @@ function broadcastState() {
         isProcessing,
         queueLength: processingQueue.length,
         scraperInitialized: scraper !== null,
-        selectedFolder: selectedFolder
+        selectedFolder: selectedFolder,
+        browserEngine: browserEngine
     });
 }
 
@@ -70,6 +73,7 @@ app.get('/api/status', (req, res) => {
         queueLength: processingQueue.length,
         scraperInitialized: scraper !== null,
         selectedFolder: selectedFolder,
+        browserEngine: browserEngine,
         timestamp: new Date().toISOString()
     });
 });
@@ -78,14 +82,15 @@ app.get('/api/status', (req, res) => {
 app.post('/api/initialize', async (req, res) => {
     try {
         if (!scraper) {
-            const ALGSScraper = require('./algs-scraper');
-            scraper = new ALGSScraper();
+            const ScraperFactory = require('./scraper-factory');
+            scraper = ScraperFactory.createScraper(browserEngine);
             await scraper.init();
         }
         
         res.json({
             success: true,
-            message: 'Scraper initialized successfully'
+            message: `Scraper initialized successfully with ${browserEngine}`,
+            browserEngine: browserEngine
         });
         
         broadcastState();
@@ -114,8 +119,8 @@ app.post('/api/process-url', async (req, res) => {
         
         // Initialize scraper if needed
         if (!scraper) {
-            const ALGSScraper = require('./algs-scraper');
-            scraper = new ALGSScraper();
+            const ScraperFactory = require('./scraper-factory');
+            scraper = ScraperFactory.createScraper(browserEngine);
             await scraper.init();
         }
         
@@ -176,8 +181,8 @@ app.post('/api/start-batch', async (req, res) => {
         
         // Initialize scraper if needed
         if (!scraper) {
-            const ALGSScraper = require('./algs-scraper');
-            scraper = new ALGSScraper();
+            const ScraperFactory = require('./scraper-factory');
+            scraper = ScraperFactory.createScraper(browserEngine);
             await scraper.init();
         }
         
@@ -489,6 +494,84 @@ app.get('/api/selected-folder', (req, res) => {
     });
 });
 
+// Browser Engine Management API Endpoints
+
+// Get available browser engines
+app.get('/api/browser-engines', (req, res) => {
+    const ScraperFactory = require('./scraper-factory');
+    res.json({
+        success: true,
+        engines: ScraperFactory.getSupportedEngines(),
+        currentEngine: browserEngine,
+        defaultEngine: ScraperFactory.getDefaultEngine()
+    });
+});
+
+// Set browser engine
+app.post('/api/set-browser-engine', async (req, res) => {
+    try {
+        const { engine } = req.body;
+        
+        if (!engine || typeof engine !== 'string') {
+            return res.status(400).json({
+                success: false,
+                error: 'Engine name is required'
+            });
+        }
+        
+        const ScraperFactory = require('./scraper-factory');
+        const supportedEngines = ScraperFactory.getSupportedEngines();
+        
+        if (!supportedEngines.includes(engine)) {
+            return res.status(400).json({
+                success: false,
+                error: `Unsupported engine: ${engine}. Supported engines: ${supportedEngines.join(', ')}`
+            });
+        }
+        
+        // Close existing scraper if running
+        if (scraper) {
+            console.log(`🔄 Switching from ${browserEngine} to ${engine}`);
+            await scraper.close();
+            scraper = null;
+        }
+        
+        browserEngine = engine;
+        console.log(`🔧 Browser engine set to: ${browserEngine}`);
+        
+        // Broadcast engine change to all connected clients
+        io.emit('engine-changed', {
+            browserEngine: browserEngine,
+            timestamp: new Date().toISOString()
+        });
+        
+        broadcastState();
+        
+        res.json({
+            success: true,
+            message: `Browser engine set to ${browserEngine}`,
+            browserEngine: browserEngine,
+            scraperReinitialized: false
+        });
+        
+    } catch (error) {
+        console.error('❌ Error setting browser engine:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Get current browser engine
+app.get('/api/current-browser-engine', (req, res) => {
+    res.json({
+        success: true,
+        browserEngine: browserEngine,
+        scraperInitialized: scraper !== null
+    });
+});
+
 // List processed files
 app.get('/api/list-processed-files', async (req, res) => {
     try {
@@ -606,8 +689,8 @@ app.post('/api/extract-metadata', async (req, res) => {
         
         // Initialize scraper if needed
         if (!scraper) {
-            const ALGSScraper = require('./algs-scraper');
-            scraper = new ALGSScraper();
+            const ScraperFactory = require('./scraper-factory');
+            scraper = ScraperFactory.createScraper(browserEngine);
             await scraper.init();
         }
 
@@ -657,8 +740,8 @@ app.post('/api/batch-extract-metadata', async (req, res) => {
         
         // Initialize scraper if needed
         if (!scraper) {
-            const ALGSScraper = require('./algs-scraper');
-            scraper = new ALGSScraper();
+            const ScraperFactory = require('./scraper-factory');
+            scraper = ScraperFactory.createScraper(browserEngine);
             await scraper.init();
         }
 

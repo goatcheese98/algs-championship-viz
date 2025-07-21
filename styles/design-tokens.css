@@ -1,0 +1,319 @@
+/* =============================================================================
+   ALGS Championship Visualization - Design Tokens
+   Extracted from championship.css analysis - Phase 1 Implementation
+   ============================================================================= */
+
+:root {
+  /* =============================================================================
+     COLOR SYSTEM
+     Based on frequency analysis of championship.css
+     ============================================================================= */
+  
+  /* Primary Brand Colors */
+  --color-primary: #ef4444;           /* Used 51 times - main red */
+  --color-primary-dark: #dc2626;      /* Used 32 times - darker red */
+  --color-primary-light: #ff6b6b;     /* Computed lighter variant */
+  --color-primary-alpha-10: rgba(239, 68, 68, 0.1);   /* Used 9 times */
+  --color-primary-alpha-20: rgba(239, 68, 68, 0.2);   /* Used 10 times */
+  --color-primary-alpha-30: rgba(239, 68, 68, 0.3);   /* Used 19 times */
+  --color-primary-alpha-40: rgba(255, 68, 68, 0.4);   /* Used 14 times */
+  
+  /* Accent Colors */
+  --color-accent: #d97706;            /* Orange accent base */
+  --color-accent-light: #fbbf24;      /* Used 3 times */
+  --color-accent-bright: #ff8c42;     /* Used 9 times */
+  --color-accent-soft: #ffb366;       /* Used 8 times */
+  --color-accent-alpha-20: rgba(217, 119, 6, 0.2);    /* Used 13 times */
+  --color-accent-alpha-30: rgba(217, 119, 6, 0.3);    /* Used 16 times */
+  --color-accent-alpha-40: rgba(217, 119, 6, 0.4);    /* Used 12 times */
+  
+  /* Neutral Colors */
+  --color-white: #ffffff;             /* Used 26 times */
+  --color-text-primary: #f1f5f9;      /* Used 25 times - main text */
+  --color-text-light: #f8fafc;        /* Used 7 times */
+  --color-text-muted: #cbd5e1;        /* Used 7 times */
+  --color-text-subtle: #94a3b8;       /* Used 8 times */
+  --color-text-secondary: #64748b;    /* Used 2 times */
+  --color-text-tertiary: #9ca3af;     /* Used 2 times */
+  
+  /* Background Colors */
+  --color-bg-primary: #1a0f0f;        /* Dark base background */
+  --color-bg-secondary: #2d1b1b;      /* Dark variant background */
+  --color-bg-tertiary: #0f0f0f;       /* Deepest background */
+  --color-bg-card: rgba(45, 55, 72, 0.8);       /* Used 8 times - card backgrounds */
+  --color-bg-panel: rgba(74, 85, 104, 0.6);     /* Used 7 times - panel backgrounds */
+  --color-bg-border: #e2e8f0;         /* Used 2 times */
+  
+  /* Shadow & Overlay Colors */
+  --color-shadow-base: rgba(0, 0, 0, 0.3);      /* Used 26 times */
+  --color-shadow-medium: rgba(0, 0, 0, 0.6);    /* Used 13 times */
+  --color-shadow-light: rgba(0, 0, 0, 0.4);     /* Used 11 times */
+  --color-shadow-strong: rgba(0, 0, 0, 0.5);    /* Used 8 times */
+  
+  /* Success & Status Colors */
+  --color-success: #10b981;           /* Used 4 times */
+  --color-success-dark: #059669;      /* Used 2 times */
+  --color-info: #6366f1;              /* Default fallback */
+  --color-warning: #f59e0b;           /* Used 2 times */
+  
+  /* =============================================================================
+     SPACING SYSTEM
+     Based on frequency analysis - most common values
+     ============================================================================= */
+  
+  /* Base spacing scale */
+  --spacing-xs: 3px;      /* Used 4 times */
+  --spacing-sm: 4px;      /* Used 27 times */
+  --spacing-md: 6px;      /* Used 27 times */
+  --spacing-lg: 8px;      /* Used 54 times - most common */
+  --spacing-xl: 10px;     /* Used 17 times */
+  --spacing-2xl: 12px;    /* Used 39 times */
+  --spacing-3xl: 14px;    /* Used 8 times */
+  --spacing-4xl: 16px;    /* Used 45 times */
+  --spacing-5xl: 20px;    /* Used 36 times */
+  --spacing-6xl: 24px;    /* Used 5 times */
+  --spacing-7xl: 30px;    /* Used 7 times */
+  --spacing-8xl: 40px;    /* Used 12 times */
+  --spacing-9xl: 60px;    /* Used 4 times */
+  --spacing-10xl: 80px;   /* Used 4 times */
+  --spacing-11xl: 100px;  /* Used 4 times */
+  
+  /* =============================================================================
+     TYPOGRAPHY SYSTEM
+     Based on frequency analysis of font-size values
+     ============================================================================= */
+  
+  /* Font size scale */
+  --text-2xs: 0.65rem;    /* Used 3 times */
+  --text-xs: 0.7rem;      /* Used 8 times */
+  --text-sm: 0.75rem;     /* Used 9 times */
+  --text-base: 0.8rem;    /* Used 15 times - most common */
+  --text-md: 0.85rem;     /* Used 11 times */
+  --text-lg: 0.9rem;      /* Used 14 times */
+  --text-xl: 0.95rem;     /* Used 4 times */
+  --text-2xl: 1rem;       /* Used 13 times */
+  --text-3xl: 1.1rem;     /* Used 10 times */
+  --text-4xl: 1.2rem;     /* Used 5 times */
+  --text-5xl: 1.3rem;     /* Used 3 times */
+  --text-6xl: 1.8rem;     /* Used 2 times */
+  
+  /* Font weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Line heights */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.4;
+  --line-height-relaxed: 1.6;
+  
+  /* =============================================================================
+     BORDER RADIUS SYSTEM
+     Based on frequency analysis
+     ============================================================================= */
+  
+  --radius-none: 0;
+  --radius-xs: 1px;       /* Used 3 times */
+  --radius-sm: 2px;       /* Used 1 time */
+  --radius-base: 3px;     /* Used 4 times */
+  --radius-md: 4px;       /* Used 10 times */
+  --radius-lg: 6px;       /* Used 19 times - most common */
+  --radius-xl: 8px;       /* Used 10 times */
+  --radius-2xl: 10px;     /* Used 2 times */
+  --radius-3xl: 12px;     /* Used 5 times */
+  --radius-4xl: 16px;     /* Used 3 times */
+  --radius-5xl: 18px;     /* Used 1 time */
+  --radius-6xl: 20px;     /* Used 1 time */
+  --radius-full: 50%;     /* Used 20 times - circles */
+  
+  /* =============================================================================
+     ANIMATION & TRANSITION SYSTEM
+     Based on frequency analysis
+     ============================================================================= */
+  
+  /* Transition durations */
+  --duration-fast: 0.15s;
+  --duration-base: 0.2s;      /* Used 17 times */
+  --duration-medium: 0.25s;   /* Used 7 times */
+  --duration-slow: 0.3s;      /* Used 23 times - most common */
+  --duration-slower: 0.4s;
+  --duration-slowest: 0.5s;
+  
+  /* Transition timing functions */
+  --ease-linear: linear;
+  --ease-in: ease-in;
+  --ease-out: ease-out;
+  --ease-in-out: ease-in-out;
+  --ease-default: ease;       /* Most common */
+  --ease-bounce: cubic-bezier(0.4, 0, 0.2, 1);  /* Used 2 times */
+  
+  /* Complete transition values */
+  --transition-fast: all var(--duration-base) var(--ease-default);
+  --transition-base: all var(--duration-medium) var(--ease-default);
+  --transition-slow: all var(--duration-slow) var(--ease-default);   /* Most common */
+  --transition-transform-fast: transform var(--duration-base) var(--ease-default);
+  --transition-transform-base: transform var(--duration-medium) var(--ease-default);
+  --transition-transform-slow: transform var(--duration-slow) var(--ease-default);
+  --transition-opacity: opacity var(--duration-slow) var(--ease-default);
+  
+  /* =============================================================================
+     Z-INDEX LAYERING SYSTEM
+     Based on frequency analysis - standardized layers
+     ============================================================================= */
+  
+  --z-behind: -1;
+  --z-base: 1;           /* Used 5 times */
+  --z-low: 2;            /* Used 5 times */
+  --z-mid: 5;            /* Used 2 times */
+  --z-high: 10;          /* Used 6 times - most common */
+  --z-modal: 1000;       /* Used 3 times */
+  --z-modal-high: 1001;  /* Used 2 times */
+  --z-tooltip: 10000;    /* Used 1 time - map tooltips */
+  
+  /* =============================================================================
+     BOX SHADOW SYSTEM
+     Combining common shadow patterns with design tokens
+     ============================================================================= */
+  
+  --shadow-xs: 0 1px 2px var(--color-shadow-light);
+  --shadow-sm: 0 2px 4px var(--color-shadow-base);
+  --shadow-base: 0 4px 8px var(--color-shadow-base);
+  --shadow-md: 0 6px 12px var(--color-shadow-base);
+  --shadow-lg: 0 8px 16px var(--color-shadow-medium);
+  --shadow-xl: 0 12px 24px var(--color-shadow-medium);
+  --shadow-2xl: 0 16px 32px var(--color-shadow-strong);
+  
+  /* Glow effects */
+  --glow-primary: 0 0 8px var(--color-primary-alpha-30);
+  --glow-primary-strong: 0 0 15px var(--color-primary-alpha-30), 0 4px 8px var(--color-shadow-base);
+  --glow-accent: 0 0 8px var(--color-accent-alpha-30);
+  --glow-accent-strong: 0 0 12px var(--color-accent-alpha-40);
+  --glow-success: 0 0 8px rgba(16, 185, 129, 0.3);
+  
+  /* =============================================================================
+     BREAKPOINT SYSTEM
+     Standardizing the 8 duplicate media queries found
+     ============================================================================= */
+  
+  --breakpoint-xs: 320px;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;    /* Most common breakpoint - used 8 times */
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;   /* Used in dashboard changes */
+  --breakpoint-2xl: 1400px;
+  --breakpoint-3xl: 1920px;  /* Ultra-wide support */
+  --breakpoint-4xl: 2560px;  /* Ultra-wide max */
+  
+  /* =============================================================================
+     COMPONENT-SPECIFIC TOKENS
+     High-impact repeated patterns
+     ============================================================================= */
+  
+  /* Button base properties */
+  --btn-padding: var(--spacing-md) var(--spacing-lg);
+  --btn-border-radius: var(--radius-lg);
+  --btn-border-width: 1px;
+  --btn-font-weight: var(--font-weight-medium);
+  --btn-transition: var(--transition-slow);
+  
+  /* Panel/Card base properties */
+  --panel-padding: var(--spacing-4xl);
+  --panel-border-radius: var(--radius-xl);
+  --panel-bg: var(--color-bg-card);
+  --panel-border: 1px solid var(--color-bg-panel);
+  --panel-shadow: var(--shadow-md);
+  
+  /* Form control properties */
+  --input-padding: var(--spacing-2xl) var(--spacing-4xl);
+  --input-border-radius: var(--radius-lg);
+  --input-border: 1px solid var(--color-bg-panel);
+  --input-bg: var(--color-bg-card);
+  --input-transition: var(--transition-base);
+  
+  /* Flex utilities (most common patterns) */
+  --flex-center: flex;
+  --align-center: center;
+  --justify-center: center;
+  --justify-between: space-between;
+}
+
+/* =============================================================================
+   UTILITY CLASSES
+   Most frequently needed patterns from analysis
+   ============================================================================= */
+
+/* Flex utilities - replacing 103+ flex declarations */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-start { justify-content: flex-start; }
+.justify-end { justify-content: flex-end; }
+
+/* Gap utilities - replacing 50+ gap declarations */
+.gap-1 { gap: var(--spacing-sm); }
+.gap-2 { gap: var(--spacing-lg); }       /* Most common - 8px */
+.gap-3 { gap: var(--spacing-2xl); }      /* 12px */
+.gap-4 { gap: var(--spacing-4xl); }      /* 16px */
+.gap-5 { gap: var(--spacing-5xl); }      /* 20px */
+
+/* Spacing utilities - most common values */
+.p-1 { padding: var(--spacing-sm); }
+.p-2 { padding: var(--spacing-lg); }
+.p-3 { padding: var(--spacing-2xl); }
+.p-4 { padding: var(--spacing-4xl); }
+.p-5 { padding: var(--spacing-5xl); }
+
+.px-1 { padding-left: var(--spacing-sm); padding-right: var(--spacing-sm); }
+.px-2 { padding-left: var(--spacing-lg); padding-right: var(--spacing-lg); }
+.px-3 { padding-left: var(--spacing-2xl); padding-right: var(--spacing-2xl); }
+.px-4 { padding-left: var(--spacing-4xl); padding-right: var(--spacing-4xl); }
+
+.py-1 { padding-top: var(--spacing-sm); padding-bottom: var(--spacing-sm); }
+.py-2 { padding-top: var(--spacing-lg); padding-bottom: var(--spacing-lg); }
+.py-3 { padding-top: var(--spacing-2xl); padding-bottom: var(--spacing-2xl); }
+.py-4 { padding-top: var(--spacing-4xl); padding-bottom: var(--spacing-4xl); }
+
+/* Border radius utilities */
+.rounded-none { border-radius: var(--radius-none); }
+.rounded-sm { border-radius: var(--radius-base); }
+.rounded { border-radius: var(--radius-lg); }        /* Most common - 6px */
+.rounded-lg { border-radius: var(--radius-xl); }     /* 8px */
+.rounded-xl { border-radius: var(--radius-3xl); }    /* 12px */
+.rounded-full { border-radius: var(--radius-full); } /* 50% - circles */
+
+/* Text utilities */
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }          /* Most common - 0.8rem */
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-2xl); }
+
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }
+
+/* Color utilities */
+.text-primary { color: var(--color-primary); }
+.text-white { color: var(--color-white); }
+.text-muted { color: var(--color-text-muted); }
+
+.bg-primary { background-color: var(--color-primary); }
+.bg-card { background-color: var(--color-bg-card); }
+.bg-panel { background-color: var(--color-bg-panel); }
+
+/* Transition utilities */
+.transition { transition: var(--transition-slow); }
+.transition-fast { transition: var(--transition-fast); }
+.transition-transform { transition: var(--transition-transform-slow); }
+
+/* Shadow utilities */
+.shadow { box-shadow: var(--shadow-base); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.glow-primary { box-shadow: var(--glow-primary); }
+.glow-accent { box-shadow: var(--glow-accent); }

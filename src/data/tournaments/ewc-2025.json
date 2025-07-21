@@ -1,0 +1,52 @@
+{
+  "id": "ewc-2025",
+  "name": "EWC 2025",
+  "description": "Esports World Cup 2025",
+  "days": [
+    {
+      "id": "day1",
+      "name": "Day 1 - Group A",
+      "description": "EWC 2025 Day 1 Group A featuring 20 elite teams competing across 10 games with diverse maps and strategic legend bans.",
+      "matchups": [
+        {
+          "id": "Day1-A",
+          "title": "Group A",
+          "description": "Complete Day 1 Group A tournament featuring dynamic game count based on actual data across World's Edge, E-District, Storm Point, and Broken Moon.",
+          "teams": 20,
+          "games": "auto",
+          "maps": "World's Edge → E-District → Storm Point → Broken Moon"
+        }
+      ]
+    },
+    {
+      "id": "day2",
+      "name": "Day 2 - Group B",
+      "description": "EWC 2025 Day 2 Group B featuring 20 elite teams competing across 9 games with strategic map rotations and legend bans.",
+      "matchups": [
+        {
+          "id": "Day2-B",
+          "title": "Group B",
+          "description": "Complete Day 2 Group B tournament featuring dynamic game count based on actual data across World's Edge, E-District, and Storm Point.",
+          "teams": 20,
+          "games": "auto",
+          "maps": "World's Edge → E-District → Storm Point"
+        }
+      ]
+    },
+    {
+      "id": "day3",
+      "name": "Day 3 - Last Chance",
+      "description": "EWC 2025 Day 3 Last Chance featuring 20 elite teams competing across 4 games with the same map rotation as Day 2.",
+      "matchups": [
+        {
+          "id": "Day3-LastChance",
+          "title": "Last Chance",
+          "description": "Final Day 3 Last Chance tournament featuring 4 games with the same map sequence as Day 2: World's Edge, E-District, and Storm Point.",
+          "teams": 20,
+          "games": "auto",
+          "maps": "World's Edge → E-District → Storm Point"
+        }
+      ]
+    }
+  ]
+}

@@ -14,7 +14,12 @@
       "Bash(echo $BASH_MAX_OUTPUT_LENGTH)",
       "Bash(grep:*)",
       "Bash(chmod:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(python3:*)",
+      "Bash(curl:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss init:*)",
+      "Bash(./node_modules/.bin/tailwindcss:*)"
     ],
     "deny": []
   }
