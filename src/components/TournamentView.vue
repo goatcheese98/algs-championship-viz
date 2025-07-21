@@ -321,9 +321,11 @@
         </div>
 
           <div v-else key="chart" class="chart-container">
-            <InteractiveRaceChart
-              :teamConfig="teamConfig"
-            />
+            <div class="chart-wrapper" :class="{ compressed: isChartCompressed }">
+              <InteractiveRaceChart
+                :teamConfig="teamConfig"
+              />
+            </div>
             
             <!-- Direct Commentary Panel - Matches Chart Width -->
             <div v-if="selectedMatchup" class="commentary-panel" ref="commentarySection">
@@ -343,7 +345,10 @@
                       <div class="badge-glow"></div>
                       <span class="game-number">{{ currentGame }}</span>
                       <span class="divider">//</span>
-                      <span class="game-map">{{ getCurrentMapName() }}</span>
+                      <span class="game-map" 
+                            @mouseenter="showCommentaryMapTooltip"
+                            @mousemove="updateCommentaryTooltipPosition"
+                            @mouseleave="hideCommentaryMapTooltip">{{ getCurrentMapName() }}</span>
                     </div>
                     <p class="commentary-text">{{ commentaryText }}</p>
                   </div>
@@ -408,6 +413,7 @@ import { useTournamentStore } from '../stores/tournament.js'
 import { mapActions, mapState } from 'pinia'
 import { gsap } from 'gsap'
 import { createCommentary } from '../data/commentary.js'
+import { getMapImageUrl } from '../data/tournaments'
 
 export default {
   name: 'TournamentView',
@@ -499,6 +505,9 @@ export default {
       
       // Chart view state
       isChartCompressed: false,
+      
+      // Map tooltip for commentary section
+      mapTooltip: null,
       
     }
   },
@@ -2055,10 +2064,132 @@ export default {
       this.isChartCompressed = !this.isChartCompressed;
       console.log(`📊 Chart view toggled: ${this.isChartCompressed ? 'COMPRESSED' : 'EXPANDED'}`);
       
-      // Trigger width adjustment after view change
+      // Trigger chart resize and width adjustment after view change
       this.$nextTick(() => {
-        this.adjustCommentaryWidth();
+        // Dispatch resize event to make chart recalculate dimensions
+        window.dispatchEvent(new Event('resize'));
+        
+        // Adjust commentary width after chart resizes
+        setTimeout(() => {
+          this.adjustCommentaryWidth();
+        }, 100);
       });
+    },
+
+    // Map tooltip methods for commentary section
+    getMapImageUrl(mapName) {
+      return getMapImageUrl(mapName);
+    },
+
+    createCommentaryMapTooltip() {
+      if (this.mapTooltip) {
+        this.mapTooltip.remove();
+      }
+      
+      this.mapTooltip = document.createElement('div');
+      this.mapTooltip.className = 'commentary-map-tooltip';
+      this.mapTooltip.style.cssText = `
+        position: fixed;
+        visibility: hidden;
+        background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 100%);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 16px rgba(239, 68, 68, 0.1);
+        color: #ffffff;
+        font-family: Inter, system-ui, sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.4;
+        pointer-events: none;
+        z-index: 10000;
+        width: 320px;
+        max-width: 320px;
+        text-align: center;
+      `;
+      
+      document.body.appendChild(this.mapTooltip);
+      return this.mapTooltip;
+    },
+
+    showCommentaryMapTooltip(event) {
+      if (!this.mapTooltip) {
+        this.createCommentaryMapTooltip();
+      }
+      
+      const currentMapName = this.getCurrentMapName();
+      if (!currentMapName) {
+        return;
+      }
+      
+      let mapName = currentMapName;
+      if (mapName && mapName.includes(' - ')) {
+        mapName = mapName.split(' - ')[1];
+      }
+      
+      const imageUrl = this.getMapImageUrl(mapName);
+      
+      if (!imageUrl) {
+        return;
+      }
+      
+      // Create tooltip content
+      const isPreGame = mapName === 'Pre-game';
+      const tooltipTitle = isPreGame ? 'Tournament Status' : 'Current Map';
+      const tooltipSubtitle = isPreGame ? 'Pre-game Preparation' : mapName;
+      
+      this.mapTooltip.innerHTML = `
+        <div style="margin-bottom: 8px;">
+          <div style="font-weight: 600; color: #ef4444; font-size: 13px; margin-bottom: 4px;">
+            ${tooltipTitle}
+          </div>
+          <div style="font-weight: 500; color: #ffffff; font-size: 12px;">
+            ${tooltipSubtitle}
+          </div>
+        </div>
+        <div style="border-radius: 6px; overflow: hidden;">
+          <img src="${imageUrl}" 
+               alt="${mapName}" 
+               style="width: 100%; height: 80px; object-fit: cover; display: block;">
+        </div>
+      `;
+      
+      this.mapTooltip.style.visibility = 'visible';
+      
+      // Position tooltip to the right of cursor
+      const mouseX = event.clientX;
+      const mouseY = event.clientY;
+      
+      const tooltipX = mouseX + 15; // 15px to the right of cursor
+      const tooltipY = mouseY; // At cursor level
+      
+      // Simple bounds checking
+      this.mapTooltip.style.left = Math.max(10, Math.min(tooltipX, window.innerWidth - 320)) + 'px';
+      this.mapTooltip.style.top = Math.max(10, tooltipY) + 'px';
+    },
+    
+    updateCommentaryTooltipPosition(event) {
+      if (!this.mapTooltip || this.mapTooltip.style.visibility === 'hidden') {
+        return;
+      }
+      
+      // Update tooltip position based on mouse movement
+      const mouseX = event.clientX;
+      const mouseY = event.clientY;
+      
+      const tooltipX = mouseX + 15; // 15px to the right of cursor
+      const tooltipY = mouseY; // At cursor level
+      
+      // Simple bounds checking
+      this.mapTooltip.style.left = Math.max(10, Math.min(tooltipX, window.innerWidth - 320)) + 'px';
+      this.mapTooltip.style.top = Math.max(10, tooltipY) + 'px';
+    },
+    
+    hideCommentaryMapTooltip() {
+      if (this.mapTooltip) {
+        this.mapTooltip.style.visibility = 'hidden';
+      }
     }
   },
   
@@ -2078,6 +2209,12 @@ export default {
     if (this.dashboardResizeObserver) {
       this.dashboardResizeObserver.disconnect();
       this.dashboardResizeObserver = null;
+    }
+    
+    // Clean up map tooltip
+    if (this.mapTooltip) {
+      this.mapTooltip.remove();
+      this.mapTooltip = null;
     }
   }
 }
@@ -2240,6 +2377,14 @@ export default {
 .inline-map-badge .game-map {
   font-weight: 600;
   opacity: 0.95;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.inline-map-badge .game-map:hover {
+  opacity: 1;
+  text-shadow: 0 0 8px currentColor;
+  transform: scale(1.02);
 }
 
 /* Responsive Design */
@@ -2529,21 +2674,27 @@ export default {
   text-shadow: 0 0 4px rgba(239, 68, 68, 0.6);
 }
 
-/* Chart compression styles */
-.chart-section.compressed {
-  max-height: 400px;
+/* Chart compression styles - Control chart wrapper height */
+.chart-wrapper {
+  transition: all 0.5s ease-out;
+  width: 100%;
+}
+
+.chart-wrapper.compressed {
+  height: 300px;
   overflow: hidden;
 }
 
-.chart-section.compressed .chart-container {
-  transform: scaleY(0.6);
-  transform-origin: top center;
-  transition: transform 0.5s ease-out;
+.chart-wrapper:not(.compressed) {
+  height: auto;
+  overflow: visible;
 }
 
-.chart-section:not(.compressed) .chart-container {
-  transform: scaleY(1);
-  transition: transform 0.5s ease-out;
+/* Ensure the SVG scales properly within the wrapper */
+.chart-wrapper.compressed .algs-chart-svg {
+  max-height: 300px;
+  width: 100%;
+  height: 100%;
 }
 
 .leaderboard-compact h4 {

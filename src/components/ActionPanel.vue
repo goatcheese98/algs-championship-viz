@@ -97,49 +97,48 @@
 
     <!-- Expanded Controls (Advanced Features) -->
     <transition name="slide-down">
-      <div v-if="panelExpanded" class="flex flex-col gap-6 pt-4 border-t border-white/10 mt-4" @mousedown.stop>
-        <!-- Export Controls -->
-        <div class="flex flex-col gap-3">
-          <label class="text-xs text-primary font-medium">Export Data</label>
-          <button @click="exportData" class="btn btn-md btn-success btn-full">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7,10 12,15 17,10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            <span>Export CSV</span>
-          </button>
-        </div>
-        <!-- Legend Toggle -->
-        <div class="flex flex-col gap-3">
-          <label class="text-xs text-primary font-medium">Chart Legend</label>
-          <button @click="toggleLegend" class="btn btn-md btn-purple btn-full">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 2v20l3-2 3 2V2z"/>
-            </svg>
-            <span>{{ isLegendVisible ? 'Hide' : 'Show' }} Legend</span>
-          </button>
+      <div v-if="panelExpanded" class="expanded-controls-container" @mousedown.stop>
+        
+        <!-- Export & Legend Controls (Same Row) -->
+        <div class="controls-section">
+          <label class="controls-section-label">Export Data & Chart Legend</label>
+          <div class="controls-row">
+            <button @click="exportData" class="expanded-control-btn">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7,10 12,15 17,10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>Export CSV</span>
+            </button>
+            <button @click="toggleLegend" class="expanded-control-btn">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 2v20l3-2 3 2V2z"/>
+              </svg>
+              <span>{{ isLegendVisible ? 'Hide' : 'Show' }} Legend</span>
+            </button>
+          </div>
         </div>
         
         <!-- Animation Speed Controls -->
-        <div class="flex flex-col gap-3">
-          <label class="text-xs text-primary font-medium">Animation Speed</label>
-          <div class="flex gap-3 justify-center">
+        <div class="controls-section">
+          <label class="controls-section-label">Animation Speed</label>
+          <div class="controls-row">
             <button 
               @click="setAnimationSpeed('slow')" 
-              :class="['btn', 'btn-sm', { 'btn-active': animationSpeed === 'slow' }]"
+              :class="['expanded-control-btn', 'speed-btn', { 'active': animationSpeed === 'slow' }]"
             >
               Slow
             </button>
             <button 
               @click="setAnimationSpeed('medium')" 
-              :class="['btn', 'btn-sm', { 'btn-active': animationSpeed === 'medium' }]"
+              :class="['expanded-control-btn', 'speed-btn', { 'active': animationSpeed === 'medium' }]"
             >
               Medium
             </button>
             <button 
               @click="setAnimationSpeed('fast')" 
-              :class="['btn', 'btn-sm', { 'btn-active': animationSpeed === 'fast' }]"
+              :class="['expanded-control-btn', 'speed-btn', { 'active': animationSpeed === 'fast' }]"
             >
               Fast
             </button>

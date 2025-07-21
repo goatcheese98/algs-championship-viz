@@ -164,6 +164,23 @@ const setupSVG = () => {
     // Add gradient definitions for enhanced text styling
     const defs = svg.append('defs');
     
+    // Legend background gradient (info card style)
+    const legendGradient = defs.append('linearGradient')
+        .attr('id', 'legendGradient')
+        .attr('x1', '0%')
+        .attr('y1', '0%')
+        .attr('x2', '100%')
+        .attr('y2', '100%');
+    
+    legendGradient.append('stop')
+        .attr('offset', '0%')
+        .attr('stop-color', 'rgba(0, 0, 0, 0.5)')
+        .attr('stop-opacity', '1');
+    legendGradient.append('stop')
+        .attr('offset', '100%')
+        .attr('stop-color', 'rgba(15, 15, 20, 0.6)')
+        .attr('stop-opacity', '1');
+    
     // Team name gradient
     const teamNameGradient = defs.append('linearGradient')
         .attr('id', 'teamNameGradient')
@@ -728,23 +745,23 @@ const renderLegend = (visible) => {
         .attr('class', 'legend-background')
         .attr('x', 0)
         .attr('y', 0)
-        .attr('rx', 8)
-        .attr('ry', 8)
-        .style('fill', 'rgba(26, 26, 26, 0.9)')
-        .style('stroke', 'rgba(239, 68, 68, 0.3)')
+        .attr('rx', 6)
+        .attr('ry', 6)
+        .style('fill', 'url(#legendGradient)')
+        .style('stroke', 'rgba(255, 255, 255, 0.1)')
         .style('stroke-width', '1px')
-        .style('backdrop-filter', 'blur(8px)')
+        .style('backdrop-filter', 'blur(6px)')
         .style('cursor', 'grab') // Show grab cursor to indicate draggable
         .on('mouseenter', function() {
-            // Subtle highlight on hover to indicate interactivity
+            // Subtle highlight on hover to indicate interactivity (info card style)
             d3.select(this)
-                .style('stroke', 'rgba(239, 68, 68, 0.5)')
-                .style('stroke-width', '2px');
+                .style('stroke', 'rgba(255, 255, 255, 0.3)')
+                .style('stroke-width', '1px');
         })
         .on('mouseleave', function() {
-            // Reset styling when not hovering
+            // Reset styling when not hovering (info card style)
             d3.select(this)
-                .style('stroke', 'rgba(239, 68, 68, 0.3)')
+                .style('stroke', 'rgba(255, 255, 255, 0.1)')
                 .style('stroke-width', '1px');
         });
     
@@ -817,16 +834,17 @@ const renderLegend = (visible) => {
     legendItems
         .attr('transform', (d, i) => `translate(16, ${40 + i * itemHeight})`); // Increased left padding from 12 to 16, top from 35 to 40
     
-    // NOW create the title with correct positioning using actualWidth
+    // NOW create the title with correct positioning using actualWidth (info card style)
     legendGroup.append('text')
         .attr('class', 'legend-title')
         .attr('x', actualWidth / 2) // Use actual legend width for perfect centering
         .attr('y', titlePadding + titleFontSize) // Position based on font size and padding
         .style('text-anchor', 'middle')
-        .style('font-size', `${titleFontSize}px`)
-        .style('font-weight', '700')
-        .style('fill', '#ffffff')
-        .style('text-shadow', '0 1px 2px rgba(0,0,0,0.5)')
+        .style('font-size', '12px') // Match info card label size
+        .style('font-weight', '500') // Match info card label weight
+        .style('fill', '#94a3b8') // Match info card label color
+        .style('text-transform', 'uppercase')
+        .style('letter-spacing', '0.05em')
         .style('cursor', 'grab') // Make title also show grab cursor
         .text(titleText);
     

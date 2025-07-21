@@ -19,7 +19,8 @@
       "Bash(curl:*)",
       "Bash(npm install:*)",
       "Bash(npx tailwindcss init:*)",
-      "Bash(./node_modules/.bin/tailwindcss:*)"
+      "Bash(./node_modules/.bin/tailwindcss:*)",
+      "Bash(git add:*)"
     ],
     "deny": []
   }
