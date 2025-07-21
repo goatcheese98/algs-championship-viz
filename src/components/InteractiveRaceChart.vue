@@ -18,6 +18,10 @@ const props = defineProps({
     required: true,
     default: () => ({})
   },
+  compressionFactor: {
+    type: Number,
+    default: 1.0
+  }
 });
 
 // Use the store
@@ -320,7 +324,8 @@ const updateDimensions = () => {
     
     const containerRect = container.getBoundingClientRect();
     const newWidth = Math.max(300, containerRect.width - margin.left - margin.right);
-    const newHeight = Math.max(200, containerRect.height - margin.top - margin.bottom);
+    const baseNewHeight = Math.max(200, containerRect.height - margin.top - margin.bottom);
+    const newHeight = baseNewHeight * props.compressionFactor;
     
     dimensions.value = { width: newWidth, height: newHeight };
     
@@ -1642,6 +1647,12 @@ const extractGameData = (data, gameIndex) => {
 // ============================================================================
 // 7. REACTIVE WATCHERS
 // ============================================================================
+
+// Watch for compression factor changes
+watch(() => props.compressionFactor, () => {
+  console.log('🔄 Compression factor changed, triggering resize');
+  handleResize();
+});
 
 // Watch for data changes (new matchup loaded)
   watch(() => processedChartData.value, (newData) => {

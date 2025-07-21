@@ -228,14 +228,16 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 32px;
+    gap: 40px;
+    width: 100%;
 }
 
 .header-branding {
     display: flex;
     align-items: center;
     gap: 24px;
-    flex: 1;
+    flex: 0 0 auto;
+    min-width: 0;
 }
 
 .brand-info {
@@ -245,19 +247,22 @@ body {
 }
 
 .brand-subtitle {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: rgba(239, 68, 68, 0.9);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    opacity: 0.8;
+    letter-spacing: 0.08em;
+    opacity: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .header-actions {
     display: flex;
     align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
+    gap: 24px;
+    flex: 1;
+    justify-content: flex-end;
+    min-width: 0;
 }
 
 .tournament-status {
@@ -270,6 +275,16 @@ body {
     border: 1px solid var(--color-primary-alpha-30);
     backdrop-filter: blur(8px);
     flex-shrink: 0;
+    margin: 8px 0;
+}
+
+.brand-info .tournament-status {
+    padding: 4px 10px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    border-radius: 12px;
+    align-self: flex-start;
+    margin: 6px 0;
 }
 
 .status-indicator {
@@ -305,8 +320,9 @@ body {
 
 .header-nav {
     display: flex;
-    gap: var(--spacing-4xl);
+    gap: 12px;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .header-nav .nav-link {
@@ -489,9 +505,12 @@ body {
 
 .tournament-info-inline {
     display: flex;
-    gap: var(--spacing-2xl);
+    gap: 20px;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
 }
 
 .info-card {
@@ -3692,11 +3711,17 @@ body {
         text-align: center;
     }
     
+    .brand-info .tournament-status {
+        align-self: center;
+        margin: 8px 0;
+    }
+    
     .header-actions {
         flex-direction: column;
-        gap: var(--spacing-2xl);
+        gap: 16px;
         width: 100%;
         align-items: center;
+        justify-content: center;
     }
     
     .tournament-info-inline {

@@ -26,7 +26,11 @@
             </div>
             
             <div class="brand-info">
-              <div class="brand-subtitle">ALGS Tournament Platform</div>
+              <div class="brand-subtitle">Apex Legends Global Series</div>
+              <div class="tournament-status">
+                <span class="status-indicator ended"></span>
+                <span class="status-text">Tournament Ended</span>
+              </div>
               <div ref="championshipTitle" class="championship-title">
                 <h1 ref="titleMain" class="title-main">
                   {{ isEwc2025Tournament ? '' : (isYear5Tournament ? 'ALGS Year 5 Open' : '') }}
@@ -36,13 +40,8 @@
           </div>
 
           <div class="header-actions">
-            <div class="tournament-status">
-              <span class="status-indicator ended"></span>
-              <span class="status-text">Tournament Ended</span>
-            </div>
-            
             <div ref="tournamentInfo" class="tournament-info-inline">
-              <div ref="infoItem1" class="info-card">
+              <div ref="infoItem1" class="tournament-header-card">
                 <div class="info-icon-container">
                   <span ref="infoIcon1" class="info-icon">
                     {{ isEwc2025Tournament ? '🏆' : (isYear5Tournament ? '🌍' : '📍') }}
@@ -56,7 +55,7 @@
                 </div>
               </div>
 
-              <div ref="infoItem2" class="info-card">
+              <div ref="infoItem2" class="tournament-header-card">
                 <div class="info-icon-container">
                   <span ref="infoIcon2" class="info-icon">📅</span>
                 </div>
@@ -68,7 +67,7 @@
                 </div>
               </div>
 
-              <div ref="infoItem3" class="info-card">
+              <div ref="infoItem3" class="tournament-header-card">
                 <div class="info-icon-container">
                   <span ref="infoIcon3" class="info-icon">⚔️</span>
                 </div>
@@ -82,16 +81,16 @@
             </div>
             
             <nav class="header-nav">
-              <router-link to="/" class="algs-tournament-card compact">
+              <router-link to="/" class="tournament-nav-button">
                 <span class="tournament-text">Dashboard</span>
               </router-link>
-              <router-link v-if="isYear5Tournament" to="/tournament/year-4-championship" class="algs-tournament-card compact">
+              <router-link v-if="isYear5Tournament" to="/tournament/year-4-championship" class="tournament-nav-button">
                 <span class="tournament-text">Year 4</span>
               </router-link>
-              <router-link v-if="isEwc2025Tournament" to="/tournament/year-4-championship" class="algs-tournament-card compact">
+              <router-link v-if="isEwc2025Tournament" to="/tournament/year-4-championship" class="tournament-nav-button">
                 <span class="tournament-text">Year 4</span>
               </router-link>
-              <router-link v-if="isEwc2025Tournament" to="/tournament/year-5-open" class="algs-tournament-card compact">
+              <router-link v-if="isEwc2025Tournament" to="/tournament/year-5-open" class="tournament-nav-button">
                 <span class="tournament-text">Year 5</span>
               </router-link>
             </nav>
@@ -248,14 +247,12 @@
           </div>
         </div>
         
-        <transition name="fade" mode="out-in">
-          <div v-if="!selectedMatchup" key="loading" class="no-selection">
+        <transition name="chart-fade" mode="out-in">
           
-          <div ref="chartLoadingContainer" class="chart-loading-container">
-            
+          <!-- Loading State -->
+          <div v-if="!selectedMatchup" key="loading" ref="chartLoadingContainer" class="chart-loading-container">
             
             <div ref="centralGlow" class="central-glow"></div>
-            
             
             <div class="chart-bars-container">
               <div ref="chartBar1" class="chart-bar chart-bar-1"></div>
@@ -264,10 +261,8 @@
               <div ref="chartBar4" class="chart-bar chart-bar-4"></div>
               <div ref="chartBar5" class="chart-bar chart-bar-5"></div>
               
-              
               <div ref="connectingLine" class="connecting-line"></div>
             </div>
-            
             
             <div ref="outerRing" class="outer-ring">
               <div class="ring-circle"></div>
@@ -275,21 +270,17 @@
               <div class="ring-dot ring-dot-2"></div>
             </div>
             
-            
             <div ref="innerRing" class="inner-ring">
               <div class="inner-ring-circle"></div>
               <div class="inner-ring-dot"></div>
             </div>
-            
             
             <div ref="roamingCircle1" class="roaming-circle roaming-circle-1"></div>
             <div ref="roamingCircle2" class="roaming-circle roaming-circle-2"></div>
             <div ref="roamingCircle3" class="roaming-circle roaming-circle-3"></div>
             <div ref="roamingCircle4" class="roaming-circle roaming-circle-4"></div>
             
-            
             <div ref="scanningLine" class="scanning-line"></div>
-            
             
             <div class="loading-content">
               <h3 ref="mainHeading" class="loading-heading">
@@ -302,15 +293,12 @@
               </div>
             </div>
             
-            
             <div ref="accentLine" class="accent-line"></div>
-            
             
             <div class="corner-accent corner-accent-tl"></div>
             <div class="corner-accent corner-accent-tr"></div>
             <div class="corner-accent corner-accent-bl"></div>
             <div class="corner-accent corner-accent-br"></div>
-            
             
             <div ref="floatingDot1" class="floating-dot floating-dot-1"></div>
             <div ref="floatingDot2" class="floating-dot floating-dot-2"></div>
@@ -318,78 +306,15 @@
             <div ref="floatingDot4" class="floating-dot floating-dot-4"></div>
             
           </div>
-        </div>
-
-          <div v-else key="chart" class="chart-container">
-            <div class="chart-wrapper" :class="{ compressed: isChartCompressed }">
-              <InteractiveRaceChart
-                :teamConfig="teamConfig"
-              />
-            </div>
-            
-            <!-- Direct Commentary Panel - Matches Chart Width -->
-            <div v-if="selectedMatchup" class="commentary-panel" ref="commentarySection">
-              <div class="panel-border">
-                <div class="corner-accent top-left"></div>
-                <div class="corner-accent top-right"></div>
-                <div class="corner-accent bottom-left"></div>
-                <div class="corner-accent bottom-right"></div>
-              </div>
-              
-              <!-- Side by Side Content Layout -->
-              <div class="commentary-layout">
-                <!-- Left Side - Commentary Text with Inline Map Badge -->
-                <div class="commentary-content">
-                  <div class="commentary-with-badge">
-                    <div v-if="currentGame > 0" class="inline-map-badge" :style="getCurrentGameBadgeStyle()">
-                      <div class="badge-glow"></div>
-                      <span class="game-number">{{ currentGame }}</span>
-                      <span class="divider">//</span>
-                      <span class="game-map" 
-                            @mouseenter="showCommentaryMapTooltip"
-                            @mousemove="updateCommentaryTooltipPosition"
-                            @mouseleave="hideCommentaryMapTooltip">{{ getCurrentMapName() }}</span>
-                    </div>
-                    <p class="commentary-text">{{ commentaryText }}</p>
-                  </div>
-                </div>
-
-                <!-- Right Side - Compact Dominance Containers -->
-                <div class="dominance-containers" v-if="currentGame > 0">
-                  <!-- Current Dominance (Cumulative) -->
-                  <div class="dominance-compact current" v-if="getTopTeams().length > 0">
-                    <div class="dominance-header">
-                      <span class="dominance-title">CURRENT DOMINANCE</span>
-                    </div>
-                    <div class="teams-compact">
-                      <div v-for="(team, index) in getTopTeams().slice(0, 3)" 
-                           :key="`current-${team.team}`" 
-                           :class="['team-compact', `rank-${index + 1}`]">
-                        <span class="rank">{{ index + 1 }}</span>
-                        <span class="name">{{ team.team }}</span>
-                        <span class="points">{{ team.totalPoints }}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Match Dominance (Single Game) -->
-                  <div class="dominance-compact match" v-if="getMatchTopTeams().length > 0">
-                    <div class="dominance-header">
-                      <span class="dominance-title">MATCH DOMINANCE</span>
-                    </div>
-                    <div class="teams-compact">
-                      <div v-for="(team, index) in getMatchTopTeams().slice(0, 3)" 
-                           :key="`match-${team.team}`" 
-                           :class="['team-compact', `rank-${index + 1}`]">
-                        <span class="rank">{{ index + 1 }}</span>
-                        <span class="name">{{ team.team }}</span>
-                        <span class="points">{{ team.matchPoints }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          
+          <!-- Chart State - Direct Component -->
+          <div v-else key="chart" class="chart-component-container">
+            <InteractiveRaceChart
+              ref="interactiveChart"
+              :class="{ compressed: isChartCompressed }"
+              :teamConfig="teamConfig"
+              :compressionFactor="isChartCompressed ? 0.8 : 1.0"
+            />
             
             <transition name="fade">
               <div v-if="isLoading" class="loading-overlay">
@@ -397,7 +322,72 @@
               </div>
             </transition>
           </div>
+          
         </transition>
+        
+        <!-- Commentary Panel (independent, outside transition) -->
+        <div v-if="selectedMatchup" class="commentary-panel" ref="commentarySection">
+          <div class="panel-border">
+            <div class="corner-accent top-left"></div>
+            <div class="corner-accent top-right"></div>
+            <div class="corner-accent bottom-left"></div>
+            <div class="corner-accent bottom-right"></div>
+          </div>
+          
+          <!-- Side by Side Content Layout -->
+          <div class="commentary-layout">
+            <!-- Left Side - Commentary Text with Inline Map Badge -->
+            <div class="commentary-content">
+              <div class="commentary-with-badge">
+                <div v-if="currentGame > 0" class="inline-map-badge" :style="getCurrentGameBadgeStyle()">
+                  <div class="badge-glow"></div>
+                  <span class="game-number">{{ currentGame }}</span>
+                  <span class="divider">//</span>
+                  <span class="game-map" 
+                        @mouseenter="showCommentaryMapTooltip"
+                        @mousemove="updateCommentaryTooltipPosition"
+                        @mouseleave="hideCommentaryMapTooltip">{{ getCurrentMapName() }}</span>
+                </div>
+                <p class="commentary-text">{{ commentaryText }}</p>
+              </div>
+            </div>
+
+            <!-- Right Side - Compact Dominance Containers -->
+            <div class="dominance-containers" v-if="currentGame > 0">
+              <!-- Current Dominance (Cumulative) -->
+              <div class="dominance-compact current" v-if="getTopTeams().length > 0">
+                <div class="dominance-header">
+                  <span class="dominance-title">CURRENT DOMINANCE</span>
+                </div>
+                <div class="teams-compact">
+                  <div v-for="(team, index) in getTopTeams().slice(0, 3)" 
+                       :key="`current-${team.team}`" 
+                       :class="['team-compact', `rank-${index + 1}`]">
+                    <span class="rank">{{ index + 1 }}</span>
+                    <span class="name">{{ team.team }}</span>
+                    <span class="points">{{ team.totalPoints }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Match Dominance (Single Game) -->
+              <div class="dominance-compact match" v-if="getMatchTopTeams().length > 0">
+                <div class="dominance-header">
+                  <span class="dominance-title">MATCH DOMINANCE</span>
+                </div>
+                <div class="teams-compact">
+                  <div v-for="(team, index) in getMatchTopTeams().slice(0, 3)" 
+                       :key="`match-${team.team}`" 
+                       :class="['team-compact', `rank-${index + 1}`]">
+                    <span class="rank">{{ index + 1 }}</span>
+                    <span class="name">{{ team.team }}</span>
+                    <span class="points">{{ team.matchPoints }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     
@@ -505,6 +495,12 @@ export default {
       
       // Chart view state
       isChartCompressed: false,
+      
+      // Dynamic height measurement for synchronized compression
+      originalChartHeight: 0,
+      originalSectionHeight: 0,
+      compressionReduction: 0,
+      nonChartContentHeight: 0,
       
       // Map tooltip for commentary section
       mapTooltip: null,
@@ -895,6 +891,11 @@ export default {
           hasData: !!(this.processedChartData && this.processedChartData.length > 0),
           maxGames: this.maxGames
         });
+        
+        // Measure heights for compression after chart is loaded
+        setTimeout(() => {
+          this.measureOriginalHeights();
+        }, 500); // Wait for chart to render fully
         
       } catch (error) {
         console.error('❌ Error handling matchup selection:', error);
@@ -2047,22 +2048,113 @@ export default {
 
     adjustCommentaryWidth() {
       this.$nextTick(() => {
-        const chartElement = this.$el.querySelector('svg');
         const commentaryElement = this.$refs.commentarySection;
         
-        if (chartElement && commentaryElement) {
+        if (!commentaryElement || !this.selectedMatchup) {
+          return; // No commentary panel to adjust when no matchup is selected
+        }
+        
+        // Direct targeting of the chart SVG
+        const chartElement = this.$el.querySelector('.algs-chart-svg') || 
+                            this.$refs.interactiveChart?.$el?.querySelector('svg');
+        
+        if (chartElement) {
           const chartWidth = chartElement.getBoundingClientRect().width;
           console.log(`🎯 Adjusting commentary width to match chart: ${chartWidth}px`);
           commentaryElement.style.width = `${chartWidth}px`;
           commentaryElement.style.maxWidth = `${chartWidth}px`;
           commentaryElement.style.minWidth = `${chartWidth}px`;
+        } else {
+          console.warn('⚠️ Chart SVG element not found for width adjustment');
         }
+      });
+    },
+
+    measureOriginalHeights() {
+      this.$nextTick(() => {
+        const chartSection = this.$el.querySelector('.chart-section');
+        const chartSvg = this.$el.querySelector('.algs-chart-svg');
+        
+        console.log('🔍 Element check:', {
+          chartSection: !!chartSection,
+          chartSvg: !!chartSvg,
+          isCompressed: this.isChartCompressed
+        });
+        
+        if (chartSection && chartSvg && !this.isChartCompressed) {
+          // Get more detailed measurements
+          const chartTitleSection = this.$el.querySelector('.chart-title-section');
+          const chartComponentContainer = this.$el.querySelector('.chart-component-container');
+          
+          this.originalSectionHeight = chartSection.getBoundingClientRect().height;
+          this.originalChartHeight = chartSvg.getBoundingClientRect().height;
+          
+          // Calculate the non-chart content height (title section, padding, etc.)
+          this.nonChartContentHeight = this.originalSectionHeight - this.originalChartHeight;
+          
+          // Calculate 20% reduction (80% of original = 20% reduction) 
+          const compressedChartHeight = this.originalChartHeight * 0.8;
+          this.compressionReduction = this.originalChartHeight - compressedChartHeight;
+          
+          console.log('📏 Detailed Height Analysis:', {
+            chartSection: {
+              element: 'chart-section',
+              height: this.originalSectionHeight
+            },
+            chartTitleSection: {
+              element: 'chart-title-section', 
+              height: chartTitleSection ? chartTitleSection.getBoundingClientRect().height : 'not found'
+            },
+            chartComponentContainer: {
+              element: 'chart-component-container',
+              height: chartComponentContainer ? chartComponentContainer.getBoundingClientRect().height : 'not found'
+            },
+            chartSvg: {
+              element: 'algs-chart-svg',
+              height: this.originalChartHeight
+            },
+            calculations: {
+              nonChartContentHeight: this.nonChartContentHeight,
+              compressedChartHeight: compressedChartHeight,
+              compressionReduction: this.compressionReduction,
+              expectedCompressedSectionHeight: compressedChartHeight + this.nonChartContentHeight
+            }
+          });
+          
+          // Set CSS custom properties for dynamic compression
+          this.setCSSCompressionProperties();
+        }
+      });
+    },
+
+    setCSSCompressionProperties() {
+      const root = document.documentElement;
+      const compressedChartHeight = this.originalChartHeight * 0.8;
+      // Correct calculation: compressed chart height + non-chart content height
+      const compressedSectionHeight = compressedChartHeight + this.nonChartContentHeight;
+      
+      root.style.setProperty('--original-chart-height', `${this.originalChartHeight}px`);
+      root.style.setProperty('--original-section-height', `${this.originalSectionHeight}px`);
+      root.style.setProperty('--compressed-chart-height', `${compressedChartHeight}px`);
+      root.style.setProperty('--compressed-section-height', `${compressedSectionHeight}px`);
+      root.style.setProperty('--compression-reduction', `${this.compressionReduction}px`);
+      
+      console.log('🎨 CSS properties set:', {
+        compressedChartHeight,
+        compressedSectionHeight,
+        nonChartContentHeight: this.nonChartContentHeight,
+        reduction: this.compressionReduction
       });
     },
 
     toggleChartView() {
       this.isChartCompressed = !this.isChartCompressed;
       console.log(`📊 Chart view toggled: ${this.isChartCompressed ? 'COMPRESSED' : 'EXPANDED'}`);
+      
+      // Measure heights if not already done
+      if (this.originalChartHeight === 0) {
+        this.measureOriginalHeights();
+      }
       
       // Trigger chart resize and width adjustment after view change
       this.$nextTick(() => {
@@ -2674,27 +2766,61 @@ export default {
   text-shadow: 0 0 4px rgba(239, 68, 68, 0.6);
 }
 
-/* Chart compression styles - Control chart wrapper height */
-.chart-wrapper {
-  transition: all 0.5s ease-out;
-  width: 100%;
+/* Ultra-simplified chart section layout */
+.chart-section {
+  display: flex;
+  flex-direction: column;
 }
 
-.chart-wrapper.compressed {
-  height: 300px;
+.chart-loading-container {
+  flex: 1;
+  min-height: 400px;
+}
+
+/* Chart component container */
+.chart-component-container {
+  flex: 1;
+  min-height: 400px;
+  position: relative;
+  transition: height 0.5s ease-out;
+}
+
+/* Direct compression on InteractiveRaceChart component - 20% reduction (400px → 320px) */
+.interactive-race-chart {
+  width: 100%;
+  height: 100%;
+  transition: height 0.5s ease-out;
+}
+
+.interactive-race-chart.compressed {
+  height: 320px;
+  max-height: 320px;
   overflow: hidden;
 }
 
-.chart-wrapper:not(.compressed) {
-  height: auto;
-  overflow: visible;
+.chart-component-container:has(.compressed) {
+  height: 320px;
+  max-height: 320px;
 }
 
-/* Ensure the SVG scales properly within the wrapper */
-.chart-wrapper.compressed .algs-chart-svg {
-  max-height: 300px;
-  width: 100%;
-  height: 100%;
+/* Remove chart section compression - let natural SVG compression work */
+.chart-section {
+  transition: height 0.3s ease;
+}
+
+.commentary-panel {
+  flex-shrink: 0;
+}
+
+/* Subtle transition between loading and chart states */
+.chart-fade-enter-active,
+.chart-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.chart-fade-enter-from,
+.chart-fade-leave-to {
+  opacity: 0;
 }
 
 .leaderboard-compact h4 {
