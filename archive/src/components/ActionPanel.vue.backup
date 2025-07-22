@@ -6,12 +6,10 @@
     
     <div class="panel-header">
       <div class="panel-title">
-        <button class="btn btn-icon btn-primary" @click="togglePanel" @mousedown.stop" title="Toggle advanced controls">
+        <button type="button" class="btn btn-icon btn-primary" @click="toggleLevel1" @mousedown.stop" title="Toggle advanced controls">
           {{ level1Expanded ? '−' : '+' }}
         </button>
         <span class="title-text">Controls</span>
-      </div>
-      <div class="panel-controls">
       </div>
     </div>
 
@@ -28,10 +26,6 @@
                  :value="currentGame"
                  @input="updateGameFromSlider"
                  @change="updateGameFromSlider"
-                 @mousedown="startSliderControl"
-                 @mouseup="endSliderControl"
-                 @touchstart="startSliderControl"
-                 @touchend="endSliderControl"
                  class="progress-slider">
           <span class="progress-value">{{ maxGames }}</span>
         </div>
@@ -54,19 +48,17 @@
                  decoding="async"
                  @load="handleMapImageLoad"
                  @error="handleMapImageError"
-                 @mouseenter="showCurrentMapTooltip"
-                 @mousemove="updateTooltipPosition"
-                 @mouseleave="hideMapTooltip">
+>
           </template>
           <span v-else class="map-icon">🗺️</span>
         </div>
 
         <!-- Quick Controls (Play/Reset) -->
         <div class="control-buttons">
-          <button @click="togglePlayback" class="btn btn-md btn-success">
+          <button type="button" @click="togglePlayback" class="btn btn-md btn-success">
             {{ isPlaying ? 'Pause' : 'Play' }}
           </button>
-          <button @click="restart" class="btn btn-md btn-danger">
+          <button type="button" @click="restart" class="btn btn-md btn-danger">
             Reset
           </button>
         </div>
@@ -74,7 +66,7 @@
 
       <!-- Level 1 Expansion Toggle -->
       <div class="expansion-toggle-container">
-        <button @click="toggleLevel1" class="expansion-toggle-btn">
+        <button type="button" @click="toggleLevel1" class="expansion-toggle-btn">
           <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
                :style="{ transform: level1Expanded ? 'rotate(180deg)' : 'rotate(0deg)' }">
             <path d="m6 9 6 6 6-6"/>
@@ -90,7 +82,7 @@
         <div class="filter-buttons-container">
           <div class="text-2xs text-gray-400 opacity-80 text-center mb-3">Click to filter | X to clear</div>
           <div class="flex flex-wrap justify-center gap-2">
-            <button v-for="item in filterButtons" 
+            <button type="button" v-for="item in filterButtons" 
                     :key="item.id"
                     @click="item.type === 'game' ? toggleGameFilter(item.value) : resetGameFilter()"
                     @mouseenter="item.type === 'game' ? showFilterTooltip($event, item.value) : showClearTooltip($event)"
@@ -108,7 +100,7 @@
         
         <!-- Level 2 Expansion Toggle -->
         <div class="expansion-toggle-container level2-toggle">
-          <button @click="toggleLevel2" class="expansion-toggle-btn">
+          <button type="button" @click="toggleLevel2" class="expansion-toggle-btn">
             <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
                  :style="{ transform: level2Expanded ? 'rotate(180deg)' : 'rotate(0deg)' }">
               <path d="m6 9 6 6 6-6"/>
@@ -127,7 +119,7 @@
         <div class="controls-section">
           <label class="controls-section-label">Export Data & Chart Legend</label>
           <div class="controls-row">
-            <button @click="exportData" class="expanded-control-btn">
+            <button type="button" @click="exportData" class="expanded-control-btn">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="7,10 12,15 17,10"/>
@@ -135,7 +127,7 @@
               </svg>
               <span>Export CSV</span>
             </button>
-            <button @click="toggleLegend" class="expanded-control-btn">
+            <button type="button" @click="toggleLegend" class="expanded-control-btn">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 2v20l3-2 3 2V2z"/>
               </svg>
@@ -148,19 +140,19 @@
         <div class="controls-section">
           <label class="controls-section-label">Animation Speed</label>
           <div class="controls-row">
-            <button 
+            <button type="button"
               @click="setAnimationSpeed('slow')" 
               :class="['expanded-control-btn', 'speed-btn', { 'active': animationSpeed === 'slow' }]"
             >
               Slow
             </button>
-            <button 
+            <button type="button"
               @click="setAnimationSpeed('medium')" 
               :class="['expanded-control-btn', 'speed-btn', { 'active': animationSpeed === 'medium' }]"
             >
               Medium
             </button>
-            <button 
+            <button type="button"
               @click="setAnimationSpeed('fast')" 
               :class="['expanded-control-btn', 'speed-btn', { 'active': animationSpeed === 'fast' }]"
             >
@@ -192,8 +184,7 @@ export default {
   },
   
   emits: [
-    'export-requested',
-    'game-filter-changed'
+    'export-requested'
   ],
   
   data() {
@@ -203,7 +194,6 @@ export default {
       level2Expanded: false,  // Second level: Export, Legend, Animation
       
       // Game state
-      manualSliderControl: false,
       
       // Filter state
       selectedGames: [],
@@ -244,8 +234,6 @@ export default {
   },
   
   watch: {
-
-    
     // Watch for changes in maxGames to update controls
     maxGames(newMaxGames, oldMaxGames) {
       console.log(`🎮 ActionPanel: maxGames watcher triggered - from ${oldMaxGames} to ${newMaxGames}`);
@@ -302,10 +290,6 @@ export default {
     toggleLevel2() {
       this.level2Expanded = !this.level2Expanded;
     },
-    // Legacy method for backward compatibility
-    togglePanel() {
-      this.toggleLevel1();
-    },
     
     initDraggable() {
       console.log('🎯 Initializing ActionPanel draggable...');
@@ -349,18 +333,7 @@ export default {
       if (gameValue === 0 && this.selectedGames.length > 0) {
         console.log('🔄 Progress bar dragged to 0, resetting filters');
         this.selectedGames = [];
-        this.$emit('game-filter-changed', { games: [], action: 'clear' });
       }
-    },
-    
-    startSliderControl() {
-      this.manualSliderControl = true;
-    },
-    
-    endSliderControl() {
-      setTimeout(() => {
-        this.manualSliderControl = false;
-      }, 100);
     },
     
     restart() {
@@ -486,27 +459,6 @@ export default {
       event.target.style.display = 'none';
     },
     
-    showMapTooltip(event, gameNum) {
-      if (this.tooltipTimeout) {
-        clearTimeout(this.tooltipTimeout);
-      }
-      
-      this.tooltipTimeout = setTimeout(() => {
-        const mapName = this.getGameTooltip(gameNum);
-        const imageUrl = this.getMapImageUrl(mapName);
-        
-        if (imageUrl) {
-          const rect = event.target.getBoundingClientRect();
-          this.mapTooltip = {
-            visible: true,
-            x: rect.left - 80,
-            y: rect.top - 120,
-            mapName: mapName,
-            imageUrl: imageUrl
-          };
-        }
-      }, 200);
-    },
     
     showCurrentMapTooltip(event) {
       if (!this.currentMap) {
@@ -572,10 +524,8 @@ export default {
     hideFilterTooltip() {
       // Hide all filter-related tooltips
       tooltipManager.hideTooltip('clear-filter');
-      // Hide game-specific filter tooltips (they use filter-{gameNum} pattern)
-      for (let i = 1; i <= this.maxGames; i++) {
-        tooltipManager.hideTooltip(`filter-${i}`);
-      }
+      // Use a more efficient approach for hiding game filter tooltips
+      tooltipManager.destroyAll();
     },
     
     

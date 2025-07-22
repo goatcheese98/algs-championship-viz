@@ -12,9 +12,10 @@
    Purpose: Prevent layout shifts and ensure fast initial paint
    ============================================================================= */
 
-/* Tailwind CSS base layer */
-
-@import "tailwindcss";
+/* Tailwind CSS directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Global resets */
 
