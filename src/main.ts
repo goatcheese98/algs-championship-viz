@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import { initializePerformanceMonitoring, perf } from './utils/performance-simple'
+import './styles/app.css'
 
 // Type-safe performance monitoring
 interface PerformanceData {
