@@ -1,0 +1,1350 @@
+{
+  "timestamp": "2025-07-21T18:36:26.696Z",
+  "testUrl": "http://localhost:3000",
+  "summary": {
+    "totalTests": 18,
+    "successfulTests": 18,
+    "failedTests": 0,
+    "browsers": 3,
+    "pages": 2,
+    "devices": 3,
+    "averageScore": 100,
+    "bestPerforming": {
+      "browser": "chromium",
+      "page": "dashboard",
+      "device": "desktop",
+      "url": "/",
+      "timestamp": "2025-07-21T18:35:40.608Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        }
+      },
+      "performance": {
+        "navigationTime": 148,
+        "navigationTiming": {
+          "domContentLoaded": 145.69999999552965,
+          "loadComplete": 156.09999999403954,
+          "firstPaint": 168,
+          "firstContentfulPaint": 0
+        },
+        "resourceCount": 46,
+        "memoryUsage": {
+          "used": 14,
+          "total": 17
+        }
+      },
+      "errors": [],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/dashboard-chromium-desktop.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    "worstPerforming": {}
+  },
+  "compatibilityMatrix": {
+    "chromium": {
+      "dashboard": {
+        "desktop": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        },
+        "tablet": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        },
+        "mobile": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        }
+      },
+      "tournament": {
+        "desktop": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        },
+        "tablet": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        },
+        "mobile": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        }
+      }
+    },
+    "firefox": {
+      "dashboard": {
+        "desktop": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        },
+        "tablet": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        },
+        "mobile": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        }
+      },
+      "tournament": {
+        "desktop": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        },
+        "tablet": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        },
+        "mobile": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        }
+      }
+    },
+    "webkit": {
+      "dashboard": {
+        "desktop": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        },
+        "tablet": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        },
+        "mobile": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        }
+      },
+      "tournament": {
+        "desktop": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        },
+        "tablet": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        },
+        "mobile": {
+          "score": 100,
+          "grade": "A",
+          "loaded": true
+        }
+      }
+    }
+  },
+  "results": [
+    {
+      "browser": "chromium",
+      "page": "dashboard",
+      "device": "desktop",
+      "url": "/",
+      "timestamp": "2025-07-21T18:35:40.608Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        }
+      },
+      "performance": {
+        "navigationTime": 148,
+        "navigationTiming": {
+          "domContentLoaded": 145.69999999552965,
+          "loadComplete": 156.09999999403954,
+          "firstPaint": 168,
+          "firstContentfulPaint": 0
+        },
+        "resourceCount": 46,
+        "memoryUsage": {
+          "used": 14,
+          "total": 17
+        }
+      },
+      "errors": [],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/dashboard-chromium-desktop.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "chromium",
+      "page": "tournament",
+      "device": "desktop",
+      "url": "/tournament/year-4-championship",
+      "timestamp": "2025-07-21T18:35:43.161Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        }
+      },
+      "performance": {
+        "navigationTime": 67,
+        "navigationTiming": {
+          "domContentLoaded": 62.900000005960464,
+          "loadComplete": 101.90000000596046,
+          "firstPaint": 84,
+          "firstContentfulPaint": 0
+        },
+        "resourceCount": 48,
+        "memoryUsage": {
+          "used": 14,
+          "total": 17
+        }
+      },
+      "errors": [],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/tournament-chromium-desktop.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "chromium",
+      "page": "dashboard",
+      "device": "tablet",
+      "url": "/",
+      "timestamp": "2025-07-21T18:35:45.733Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        },
+        "responsive": {
+          "hasHorizontalScrollbar": false,
+          "hasVerticalScrollbar": true,
+          "viewportMeta": true,
+          "fontSize": 16,
+          "minTouchTargetSize": 24
+        }
+      },
+      "performance": {
+        "navigationTime": 166,
+        "navigationTiming": {
+          "domContentLoaded": 165.5,
+          "loadComplete": 223.89999999850988,
+          "firstPaint": 180,
+          "firstContentfulPaint": 216
+        },
+        "resourceCount": 47,
+        "memoryUsage": {
+          "used": 14,
+          "total": 17
+        }
+      },
+      "errors": [],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/dashboard-chromium-tablet.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "chromium",
+      "page": "tournament",
+      "device": "tablet",
+      "url": "/tournament/year-4-championship",
+      "timestamp": "2025-07-21T18:35:48.129Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        },
+        "responsive": {
+          "hasHorizontalScrollbar": false,
+          "hasVerticalScrollbar": true,
+          "viewportMeta": true,
+          "fontSize": 16,
+          "minTouchTargetSize": 6
+        }
+      },
+      "performance": {
+        "navigationTime": 68,
+        "navigationTiming": {
+          "domContentLoaded": 63.100000001490116,
+          "loadComplete": 101.90000000596046,
+          "firstPaint": 72,
+          "firstContentfulPaint": 0
+        },
+        "resourceCount": 49,
+        "memoryUsage": {
+          "used": 14,
+          "total": 17
+        }
+      },
+      "errors": [],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/tournament-chromium-tablet.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "chromium",
+      "page": "dashboard",
+      "device": "mobile",
+      "url": "/",
+      "timestamp": "2025-07-21T18:35:50.471Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        },
+        "responsive": {
+          "hasHorizontalScrollbar": false,
+          "hasVerticalScrollbar": true,
+          "viewportMeta": true,
+          "fontSize": 16,
+          "minTouchTargetSize": 24
+        }
+      },
+      "performance": {
+        "navigationTime": 175,
+        "navigationTiming": {
+          "domContentLoaded": 174.60000000149012,
+          "loadComplete": 0,
+          "firstPaint": 184,
+          "firstContentfulPaint": 0
+        },
+        "resourceCount": 47,
+        "memoryUsage": {
+          "used": 14,
+          "total": 17
+        }
+      },
+      "errors": [],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/dashboard-chromium-mobile.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "chromium",
+      "page": "tournament",
+      "device": "mobile",
+      "url": "/tournament/year-4-championship",
+      "timestamp": "2025-07-21T18:35:52.846Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        },
+        "responsive": {
+          "hasHorizontalScrollbar": false,
+          "hasVerticalScrollbar": true,
+          "viewportMeta": true,
+          "fontSize": 16,
+          "minTouchTargetSize": 6
+        }
+      },
+      "performance": {
+        "navigationTime": 64,
+        "navigationTiming": {
+          "domContentLoaded": 58.600000001490116,
+          "loadComplete": 95.20000000298023,
+          "firstPaint": 64,
+          "firstContentfulPaint": 0
+        },
+        "resourceCount": 49,
+        "memoryUsage": {
+          "used": 14,
+          "total": 17
+        }
+      },
+      "errors": [],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/tournament-chromium-mobile.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "firefox",
+      "page": "dashboard",
+      "device": "desktop",
+      "url": "/",
+      "timestamp": "2025-07-21T18:35:56.764Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        }
+      },
+      "performance": {
+        "navigationTime": 285,
+        "navigationTiming": {
+          "domContentLoaded": 282,
+          "loadComplete": 3,
+          "firstPaint": 0,
+          "firstContentfulPaint": 289
+        },
+        "resourceCount": 46,
+        "memoryUsage": null
+      },
+      "errors": [
+        "[JavaScript Error: \"The stylesheet http://localhost:3000/assets/tournament-animations.css was not loaded because its MIME type, “text/html”, is not “text/css”.\" {file: \"http://localhost:3000/tournament/year-4-championship\" line: 0}]",
+        "[JavaScript Error: \"The stylesheet http://localhost:3000/assets/chart-enhancements.css was not loaded because its MIME type, “text/html”, is not “text/css”.\" {file: \"http://localhost:3000/tournament/year-4-championship\" line: 0}]"
+      ],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/dashboard-firefox-desktop.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "firefox",
+      "page": "tournament",
+      "device": "desktop",
+      "url": "/tournament/year-4-championship",
+      "timestamp": "2025-07-21T18:35:59.459Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        }
+      },
+      "performance": {
+        "navigationTime": 108,
+        "navigationTiming": {
+          "domContentLoaded": 107,
+          "loadComplete": 152,
+          "firstPaint": 0,
+          "firstContentfulPaint": 121
+        },
+        "resourceCount": 48,
+        "memoryUsage": null
+      },
+      "errors": [],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/tournament-firefox-desktop.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "firefox",
+      "page": "dashboard",
+      "device": "tablet",
+      "url": "/",
+      "timestamp": "2025-07-21T18:36:01.894Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        },
+        "responsive": {
+          "hasHorizontalScrollbar": false,
+          "hasVerticalScrollbar": true,
+          "viewportMeta": true,
+          "fontSize": 16,
+          "minTouchTargetSize": 24
+        }
+      },
+      "performance": {
+        "navigationTime": 140,
+        "navigationTiming": {
+          "domContentLoaded": 138,
+          "loadComplete": 0,
+          "firstPaint": 0,
+          "firstContentfulPaint": 147
+        },
+        "resourceCount": 47,
+        "memoryUsage": null
+      },
+      "errors": [
+        "[JavaScript Error: \"The stylesheet http://localhost:3000/assets/mobile-enhancements.css was not loaded because its MIME type, “text/html”, is not “text/css”.\" {file: \"http://localhost:3000/tournament/year-4-championship\" line: 0}]",
+        "[JavaScript Error: \"The stylesheet http://localhost:3000/assets/chart-enhancements.css was not loaded because its MIME type, “text/html”, is not “text/css”.\" {file: \"http://localhost:3000/tournament/year-4-championship\" line: 0}]",
+        "[JavaScript Error: \"The stylesheet http://localhost:3000/assets/tournament-animations.css was not loaded because its MIME type, “text/html”, is not “text/css”.\" {file: \"http://localhost:3000/tournament/year-4-championship\" line: 0}]"
+      ],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/dashboard-firefox-tablet.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "firefox",
+      "page": "tournament",
+      "device": "tablet",
+      "url": "/tournament/year-4-championship",
+      "timestamp": "2025-07-21T18:36:04.184Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        },
+        "responsive": {
+          "hasHorizontalScrollbar": false,
+          "hasVerticalScrollbar": true,
+          "viewportMeta": true,
+          "fontSize": 16,
+          "minTouchTargetSize": 6
+        }
+      },
+      "performance": {
+        "navigationTime": 104,
+        "navigationTiming": {
+          "domContentLoaded": 100,
+          "loadComplete": 150,
+          "firstPaint": 0,
+          "firstContentfulPaint": 112
+        },
+        "resourceCount": 49,
+        "memoryUsage": null
+      },
+      "errors": [],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/tournament-firefox-tablet.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "firefox",
+      "page": "dashboard",
+      "device": "mobile",
+      "url": "/",
+      "timestamp": "2025-07-21T18:36:06.569Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        },
+        "responsive": {
+          "hasHorizontalScrollbar": false,
+          "hasVerticalScrollbar": true,
+          "viewportMeta": true,
+          "fontSize": 16,
+          "minTouchTargetSize": 24
+        }
+      },
+      "performance": {
+        "navigationTime": 139,
+        "navigationTiming": {
+          "domContentLoaded": 137,
+          "loadComplete": 0,
+          "firstPaint": 0,
+          "firstContentfulPaint": 148
+        },
+        "resourceCount": 47,
+        "memoryUsage": null
+      },
+      "errors": [
+        "[JavaScript Error: \"The stylesheet http://localhost:3000/assets/tournament-animations.css was not loaded because its MIME type, “text/html”, is not “text/css”.\" {file: \"http://localhost:3000/tournament/year-4-championship\" line: 0}]",
+        "[JavaScript Error: \"The stylesheet http://localhost:3000/assets/chart-enhancements.css was not loaded because its MIME type, “text/html”, is not “text/css”.\" {file: \"http://localhost:3000/tournament/year-4-championship\" line: 0}]",
+        "[JavaScript Error: \"The stylesheet http://localhost:3000/assets/mobile-enhancements.css was not loaded because its MIME type, “text/html”, is not “text/css”.\" {file: \"http://localhost:3000/tournament/year-4-championship\" line: 0}]"
+      ],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/dashboard-firefox-mobile.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "firefox",
+      "page": "tournament",
+      "device": "mobile",
+      "url": "/tournament/year-4-championship",
+      "timestamp": "2025-07-21T18:36:08.843Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        },
+        "responsive": {
+          "hasHorizontalScrollbar": false,
+          "hasVerticalScrollbar": true,
+          "viewportMeta": true,
+          "fontSize": 16,
+          "minTouchTargetSize": 6
+        }
+      },
+      "performance": {
+        "navigationTime": 115,
+        "navigationTiming": {
+          "domContentLoaded": 109,
+          "loadComplete": 175,
+          "firstPaint": 0,
+          "firstContentfulPaint": 136
+        },
+        "resourceCount": 49,
+        "memoryUsage": null
+      },
+      "errors": [],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/tournament-firefox-mobile.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "webkit",
+      "page": "dashboard",
+      "device": "desktop",
+      "url": "/",
+      "timestamp": "2025-07-21T18:36:12.372Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        }
+      },
+      "performance": {
+        "navigationTime": 146,
+        "navigationTiming": {
+          "domContentLoaded": 138,
+          "loadComplete": 151,
+          "firstPaint": 0,
+          "firstContentfulPaint": 341
+        },
+        "resourceCount": 47,
+        "memoryUsage": null
+      },
+      "errors": [
+        "Did not parse stylesheet at 'http://localhost:3000/src/styles/routes/dashboard.css' because non CSS MIME types are not allowed in strict mode.",
+        "❌ Failed to load route CSS: Home (/src/styles/routes/dashboard.css)",
+        "Failed to load CSS for route Home: Error: Failed to load CSS for route: Home",
+        "❌ CSS Error: http://localhost:3000/src/styles/routes/dashboard.css - Failed to load"
+      ],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/dashboard-webkit-desktop.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "webkit",
+      "page": "tournament",
+      "device": "desktop",
+      "url": "/tournament/year-4-championship",
+      "timestamp": "2025-07-21T18:36:14.965Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        }
+      },
+      "performance": {
+        "navigationTime": 85,
+        "navigationTiming": {
+          "domContentLoaded": 80,
+          "loadComplete": 129,
+          "firstPaint": 0,
+          "firstContentfulPaint": 168
+        },
+        "resourceCount": 48,
+        "memoryUsage": null
+      },
+      "errors": [],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/tournament-webkit-desktop.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "webkit",
+      "page": "dashboard",
+      "device": "tablet",
+      "url": "/",
+      "timestamp": "2025-07-21T18:36:17.484Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        },
+        "responsive": {
+          "hasHorizontalScrollbar": false,
+          "hasVerticalScrollbar": true,
+          "viewportMeta": true,
+          "fontSize": 16,
+          "minTouchTargetSize": 24
+        }
+      },
+      "performance": {
+        "navigationTime": 101,
+        "navigationTiming": {
+          "domContentLoaded": 97,
+          "loadComplete": 134,
+          "firstPaint": 0,
+          "firstContentfulPaint": 180
+        },
+        "resourceCount": 48,
+        "memoryUsage": null
+      },
+      "errors": [
+        "Did not parse stylesheet at 'http://localhost:3000/assets/mobile-enhancements.css' because non CSS MIME types are not allowed in strict mode.",
+        "Did not parse stylesheet at 'http://localhost:3000/src/styles/routes/dashboard.css' because non CSS MIME types are not allowed in strict mode.",
+        "❌ Failed to load route CSS: Home (/src/styles/routes/dashboard.css)",
+        "Failed to load CSS for route Home: Error: Failed to load CSS for route: Home",
+        "❌ CSS Error: http://localhost:3000/src/styles/routes/dashboard.css - Failed to load"
+      ],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/dashboard-webkit-tablet.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "webkit",
+      "page": "tournament",
+      "device": "tablet",
+      "url": "/tournament/year-4-championship",
+      "timestamp": "2025-07-21T18:36:19.777Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        },
+        "responsive": {
+          "hasHorizontalScrollbar": false,
+          "hasVerticalScrollbar": true,
+          "viewportMeta": true,
+          "fontSize": 16,
+          "minTouchTargetSize": 6
+        }
+      },
+      "performance": {
+        "navigationTime": 98,
+        "navigationTiming": {
+          "domContentLoaded": 91,
+          "loadComplete": 153,
+          "firstPaint": 0,
+          "firstContentfulPaint": 151
+        },
+        "resourceCount": 49,
+        "memoryUsage": null
+      },
+      "errors": [],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/tournament-webkit-tablet.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "webkit",
+      "page": "dashboard",
+      "device": "mobile",
+      "url": "/",
+      "timestamp": "2025-07-21T18:36:22.199Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        },
+        "responsive": {
+          "hasHorizontalScrollbar": false,
+          "hasVerticalScrollbar": true,
+          "viewportMeta": true,
+          "fontSize": 16,
+          "minTouchTargetSize": 24
+        }
+      },
+      "performance": {
+        "navigationTime": 105,
+        "navigationTiming": {
+          "domContentLoaded": 101,
+          "loadComplete": 121,
+          "firstPaint": 0,
+          "firstContentfulPaint": 184
+        },
+        "resourceCount": 48,
+        "memoryUsage": null
+      },
+      "errors": [
+        "Did not parse stylesheet at 'http://localhost:3000/src/styles/routes/dashboard.css' because non CSS MIME types are not allowed in strict mode.",
+        "Did not parse stylesheet at 'http://localhost:3000/assets/mobile-enhancements.css' because non CSS MIME types are not allowed in strict mode.",
+        "❌ Failed to load route CSS: Home (/src/styles/routes/dashboard.css)",
+        "Failed to load CSS for route Home: Error: Failed to load CSS for route: Home",
+        "❌ CSS Error: http://localhost:3000/src/styles/routes/dashboard.css - Failed to load"
+      ],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/dashboard-webkit-mobile.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    },
+    {
+      "browser": "webkit",
+      "page": "tournament",
+      "device": "mobile",
+      "url": "/tournament/year-4-championship",
+      "timestamp": "2025-07-21T18:36:24.461Z",
+      "compatibility": {
+        "pageLoaded": true,
+        "responseStatus": 200,
+        "contentLoaded": true,
+        "cssFeatures": {
+          "flexbox": true,
+          "grid": true,
+          "customProperties": true,
+          "transforms": true,
+          "transitions": true,
+          "borderRadius": true,
+          "boxShadow": true,
+          "gradients": true,
+          "mediaQueries": true
+        },
+        "jsFeatures": {
+          "es6Classes": true,
+          "arrowFunctions": true,
+          "templateLiterals": true,
+          "destructuring": true,
+          "spread": true,
+          "asyncAwait": true,
+          "fetch": true,
+          "localStorage": true,
+          "sessionStorage": true,
+          "history": true
+        },
+        "responsive": {
+          "hasHorizontalScrollbar": false,
+          "hasVerticalScrollbar": true,
+          "viewportMeta": true,
+          "fontSize": 16,
+          "minTouchTargetSize": 24
+        }
+      },
+      "performance": {
+        "navigationTime": 94,
+        "navigationTiming": {
+          "domContentLoaded": 87,
+          "loadComplete": 146,
+          "firstPaint": 0,
+          "firstContentfulPaint": 144.00000000000003
+        },
+        "resourceCount": 49,
+        "memoryUsage": null
+      },
+      "errors": [],
+      "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/cross-browser-screenshots/tournament-webkit-mobile.png",
+      "compatibilityScore": 100,
+      "grade": "A",
+      "scoreDetails": {
+        "score": 100,
+        "maxScore": 100
+      }
+    }
+  ],
+  "testConfiguration": {
+    "browsers": [
+      {
+        "name": "chromium",
+        "userAgent": "Chrome"
+      },
+      {
+        "name": "firefox",
+        "userAgent": "Firefox"
+      },
+      {
+        "name": "webkit",
+        "userAgent": "Safari"
+      }
+    ],
+    "pages": [
+      {
+        "name": "dashboard",
+        "url": "/",
+        "description": "Main Dashboard",
+        "criticalSelectors": [
+          ".dashboard-container",
+          "main",
+          "body"
+        ]
+      },
+      {
+        "name": "tournament",
+        "url": "/tournament/year-4-championship",
+        "description": "Tournament View",
+        "criticalSelectors": [
+          ".tournament-header",
+          ".tournament-container",
+          "main",
+          "body"
+        ]
+      }
+    ],
+    "devices": [
+      {
+        "name": "desktop",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+      },
+      {
+        "name": "tablet",
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        },
+        "userAgent": "Mozilla/5.0 (iPad; CPU OS 15_0 like Mac OS X) AppleWebKit/605.1.15"
+      },
+      {
+        "name": "mobile",
+        "viewport": {
+          "width": 375,
+          "height": 667
+        },
+        "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15"
+      }
+    ]
+  }
+}

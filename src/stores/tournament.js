@@ -54,6 +54,12 @@ export const useTournamentStore = defineStore('tournament', {
       this.resetPlayback();
     },
 
+    // Set day without clearing selected matchup (for initial auto-loading)
+    setDayOnly(dayId) {
+      this.selectedDay = dayId;
+      this.resetPlayback();
+    },
+
     toggleLegend() {
       this.isLegendVisible = !this.isLegendVisible;
     },

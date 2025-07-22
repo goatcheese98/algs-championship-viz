@@ -4,8 +4,21 @@ import App from './App.vue';
 import router from './router';
 
 import './utils/GSAPDraggableManager.js';
-import './styles/main.css';
-import { initializePhase2Loading, CSSPerformance } from './utils/cssLoader.js';
+
+// Load main CSS asynchronously after critical path
+const loadMainCSS = () => {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = '/src/styles/main.css';
+  document.head.appendChild(link);
+};
+
+// Load after DOM content loaded for better performance
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadMainCSS);
+} else {
+  loadMainCSS();
+}
 
 const routerLinkStyles = document.createElement('style');
 routerLinkStyles.textContent = `
@@ -55,56 +68,37 @@ function resetBrowserZoom() {
 // Apply zoom reset on load
 resetBrowserZoom();
 
-// Initialize Phase 2 CSS loading strategy
-const cssManager = initializePhase2Loading();
+// Initialize Visual Enhancer after app mount
+import { visualEnhancer } from './utils/visualEnhancer.js';
 
-// Initialize Phase 3 Route-Based CSS System
-import { initializeRouteBasedCSS } from './utils/routeBasedCSS.js';
-const { cssManager: routeCSSManager, integration, monitor } = initializeRouteBasedCSS(router);
-
-// Initialize Phase 3 CSS Preloader
-import { initializeCSSPreloader } from './utils/cssPreloader.js';
-const preloader = initializeCSSPreloader();
-
-// Initialize Phase 3 Styled Components
-import { initializeStyledComponents } from './utils/styledComponents.js';
-const styledManager = initializeStyledComponents();
-
-// Initialize Phase 3 CSS Analytics
-import { initializeCSSAnalytics } from './utils/cssAnalytics.js';
-const analytics = initializeCSSAnalytics();
-
-// Initialize Phase 3 CSS Service Worker Caching
-import { initializeCSSServiceWorker } from './utils/cssServiceWorker.js';
-let swManager = null;
-
-// Initialize service worker asynchronously
-initializeCSSServiceWorker().then(manager => {
-  swManager = manager;
-}).catch(error => {
-  console.warn('Service Worker initialization failed:', error);
-});
-
-// Enable performance monitoring in development  
+// Simple performance monitoring in development
 if (import.meta.env.DEV) {
-  CSSPerformance.measureFCP();
-  CSSPerformance.measureLCP();
-  console.log('Phase 2 CSS optimization initialized:', cssManager.getStats());
-  
-  // Phase 3 performance monitoring
-  setTimeout(async () => {
-    console.log('🚀 Phase 3 Route CSS Stats:', routeCSSManager.getStats());
-    console.log('📊 Phase 3 Performance:', monitor.getPerformanceStats());
-    console.log('🎯 Phase 3 Preloader Stats:', preloader.getStats());
-    console.log('🎨 Phase 3 Styled Components:', styledManager.getStats());
-    console.log('📈 Phase 3 Analytics:', analytics.getQuickStats());
-    
-    // Service Worker stats (if available)
-    if (swManager) {
-      const swStats = await swManager.getCacheStats();
-      console.log('💾 Phase 3 Service Worker Cache:', swStats);
-    }
-  }, 2000);
+  // Basic performance tracking
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const perfData = performance.getEntriesByType('navigation')[0];
+      console.log('📊 Load Performance:', {
+        domContentLoaded: Math.round(perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart),
+        loadComplete: Math.round(perfData.loadEventEnd - perfData.loadEventStart),
+        firstPaint: performance.getEntriesByName('first-paint')[0]?.startTime || 'N/A',
+        firstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 'N/A'
+      });
+    }, 1000);
+  });
 }
 
-app.mount('#app'); 
+app.mount('#app');
+
+// Initialize visual enhancements after Vue app is mounted
+setTimeout(async () => {
+  await visualEnhancer.initialize();
+  
+  // Apply animations to existing elements (excluding chart-container to avoid conflicts with GSAP)
+  visualEnhancer.observeForAnimations('.tournament-card', 'fade-in-up');
+  // visualEnhancer.observeForAnimations('.chart-container', 'fade-in-left'); // Disabled - conflicts with TournamentView GSAP animations
+  visualEnhancer.applyStaggeredAnimation('.bento-grid');
+  
+  if (import.meta.env.DEV) {
+    console.log('🎨 Visual Enhancer Stats:', visualEnhancer.getStats());
+  }
+}, 200); 

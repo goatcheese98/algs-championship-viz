@@ -1,0 +1,61 @@
+/* =============================================================================
+   ALGS CHAMPIONSHIP VISUALIZATION - BUTTON COMPONENTS
+   Reusable button styles using @apply for component classes
+   Following CSS Guidelines best practices
+   ============================================================================= */
+
+/* Base Button Component - BEM Naming */
+.btn {
+  @apply inline-flex items-center justify-center gap-2 font-semibold rounded-lg transition-all duration-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 disabled:opacity-50 disabled:pointer-events-none;
+}
+
+/* Button Variants */
+.btn--primary {
+  @apply bg-primary hover:bg-primary-dark text-neutral-50 px-6 py-3 shadow-md hover:shadow-glow-primary transform hover:scale-105;
+}
+
+.btn--secondary {
+  @apply bg-neutral-800 hover:bg-neutral-700 text-neutral-50 border border-neutral-600 px-6 py-3;
+}
+
+.btn--accent {
+  @apply bg-accent hover:bg-accent-dark text-neutral-50 px-6 py-3 shadow-md hover:shadow-glow-accent transform hover:scale-105;
+}
+
+.btn--outline {
+  @apply border-2 border-primary text-primary hover:bg-primary hover:text-neutral-50 px-6 py-3;
+}
+
+.btn--ghost {
+  @apply text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 px-4 py-2;
+}
+
+/* Button Sizes */
+.btn--sm {
+  @apply px-3 py-1.5 text-sm;
+}
+
+.btn--lg {
+  @apply px-8 py-4 text-lg;
+}
+
+.btn--xl {
+  @apply px-10 py-5 text-xl;
+}
+
+/* Special Button Variants */
+.btn--hero {
+  @apply bg-gradient-to-r from-accent to-accent-dark hover:from-accent-dark hover:to-accent text-neutral-50 font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-glow-accent transform hover:scale-105;
+}
+
+.btn--glow {
+  @apply relative overflow-hidden;
+}
+
+.btn--glow::before {
+  @apply content-[''] absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-all duration-slow;
+}
+
+.btn--glow:hover::before {
+  @apply left-full;
+}

@@ -1,21 +1,53 @@
-/* Import Tailwind CSS */
-@import "tailwindcss";
+/* =============================================================================
+   ALGS CHAMPIONSHIP VISUALIZATION - TAILWIND EXTENSIONS
+   Custom utilities and component-specific classes extending Tailwind CSS
+   
+   Utility Extensions:
+   
+   Typography:
+   └── .text-2xs            - Extra small text (0.65rem)
+   
+   Spacing:
+   ├── .gap-sm to .gap-5xl   - Custom gap utilities
+   └── .gap-0.5 to .gap-3.5  - Fractional gap utilities
+   
+   Colors:
+   ├── .text-primary        - Brand red text
+   ├── .text-accent         - Orange accent text
+   ├── .bg-dark-primary     - Dark background variants
+   └── .bg-card, .bg-panel  - Component backgrounds
+   
+   Shadows:
+   ├── .shadow-glow-primary - Red glow effect
+   ├── .shadow-glow-accent  - Orange glow effect
+   └── .shadow-strong       - Enhanced drop shadow
+   
+   Component Classes:
+   ├── .with-*-glow         - Pseudo-element glow effects
+   ├── .btn-filter          - Filter button styling
+   ├── .tournament-*        - Tournament-specific components
+   └── .map-badge           - Map selection badges
+   
+   ============================================================================= */
 
-/* Additional Tailwind utilities for our design system */
+@import "tailwindcss";
 @layer utilities {
-  /* Our custom font sizes that match design tokens */
+  /* Extended typography */
   .text-2xs { font-size: 0.65rem; line-height: 1.2; }
 
-  /* Gap utilities that match our design tokens */
-  .gap-xs { gap: 3px; }
+  /* Extended spacing */
   .gap-sm { gap: 4px; }
   .gap-md { gap: 6px; }
   .gap-lg { gap: 8px; }
   .gap-2xl { gap: 12px; }
   .gap-4xl { gap: 16px; }
   .gap-5xl { gap: 20px; }
+  .gap-0\.5 { gap: 2px; }
+  .gap-1\.5 { gap: 6px; }
+  .gap-2\.5 { gap: 10px; }
+  .gap-3\.5 { gap: 14px; }
 
-  /* Custom colors */
+  /* Brand colors */
   .text-primary { color: #ef4444; }
   .text-accent { color: #d97706; }
   .text-muted { color: #cbd5e1; }
@@ -26,23 +58,13 @@
   .bg-card { background-color: rgba(45, 55, 72, 0.8); }
   .bg-panel { background-color: rgba(74, 85, 104, 0.6); }
 
-  /* Shadow utilities */
+  /* Custom shadows */
   .shadow-glow-primary { box-shadow: 0 0 8px rgba(239, 68, 68, 0.3); }
   .shadow-glow-accent { box-shadow: 0 0 8px rgba(217, 119, 6, 0.3); }
   .shadow-strong { box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6); }
-
-  /* Additional gap utilities for proper spacing */
-  .gap-0\.5 { gap: 2px; }
-  .gap-1\.5 { gap: 6px; }
-  .gap-2\.5 { gap: 10px; }
-  .gap-3\.5 { gap: 14px; }
 }
 
-
-
-
-
-/* Shared Pseudo-element Utilities - HIGH IMPACT */
+/* Component-specific utilities */
 .with-top-glow::before {
   content: '';
   position: absolute;
@@ -597,7 +619,7 @@
   }
 }
 
-/* Responsive adjustments - maintaining readability */
+/* Mobile responsiveness */
 @media (max-width: 768px) {
   .btn {
     min-height: 2rem;

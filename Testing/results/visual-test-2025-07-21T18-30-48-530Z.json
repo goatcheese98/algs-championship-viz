@@ -1,0 +1,206 @@
+{
+  "timestamp": "2025-07-21T18:30:48.530Z",
+  "testUrl": "http://localhost:3000",
+  "isBaseline": false,
+  "summary": {
+    "totalScenarios": 2,
+    "totalViewports": 3,
+    "totalScreenshots": 6,
+    "successfulTests": 2,
+    "failedTests": 0,
+    "averageAccessibilityScore": 72.5
+  },
+  "results": [
+    {
+      "browser": "chromium",
+      "scenario": "dashboard-home",
+      "description": "Main dashboard page",
+      "url": "/",
+      "screenshots": [
+        {
+          "scenario": "dashboard-home",
+          "viewport": "mobile",
+          "fullPagePath": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/current/dashboard-home-mobile-full-2025-07-21.png",
+          "viewportPath": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/current/dashboard-home-mobile-viewport-2025-07-21.png",
+          "url": "http://localhost:3000/",
+          "dimensions": "375x667",
+          "timestamp": "2025-07-21T18:30:23.447Z"
+        },
+        {
+          "scenario": "dashboard-home",
+          "viewport": "tablet",
+          "fullPagePath": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/current/dashboard-home-tablet-full-2025-07-21.png",
+          "viewportPath": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/current/dashboard-home-tablet-viewport-2025-07-21.png",
+          "url": "http://localhost:3000/",
+          "dimensions": "768x1024",
+          "timestamp": "2025-07-21T18:30:26.298Z"
+        },
+        {
+          "scenario": "dashboard-home",
+          "viewport": "desktop",
+          "fullPagePath": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/current/dashboard-home-desktop-full-2025-07-21.png",
+          "viewportPath": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/current/dashboard-home-desktop-viewport-2025-07-21.png",
+          "url": "http://localhost:3000/",
+          "dimensions": "1920x1080",
+          "timestamp": "2025-07-21T18:30:29.481Z"
+        }
+      ],
+      "visualMetrics": {
+        "layout": {
+          "scrollWidth": 1920,
+          "scrollHeight": 1252,
+          "clientWidth": 1920,
+          "clientHeight": 1080
+        },
+        "elements": {
+          "total": 112,
+          "visible": 93,
+          "hidden": 19,
+          "buttons": 3,
+          "forms": 0,
+          "images": 0,
+          "links": 4,
+          "headings": 6
+        },
+        "colors": {
+          "uniqueColors": 5,
+          "colorList": [
+            "rgb(0, 0, 0)",
+            "rgb(241, 245, 249)",
+            "rgb(241, 245, 249) rgb(241, 245, 249) rgb(220, 38, 38)",
+            "rgb(209, 213, 219)",
+            "rgb(156, 163, 175)"
+          ]
+        }
+      },
+      "accessibility": {
+        "hasTitle": true,
+        "hasLang": true,
+        "altTexts": {
+          "images": 0,
+          "imagesWithAlt": 0,
+          "imagesWithEmptyAlt": 0
+        },
+        "headingStructure": {
+          "h1": 1,
+          "h2": 2,
+          "h3": 3,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "aria": {
+          "ariaLabels": 0,
+          "ariaDescribedBy": 0,
+          "roles": 0
+        },
+        "forms": {
+          "inputs": 0,
+          "inputsWithLabels": 0,
+          "labels": 0
+        },
+        "score": 85,
+        "grade": "B"
+      },
+      "timestamp": "2025-07-21T18:30:20.429Z"
+    },
+    {
+      "browser": "chromium",
+      "scenario": "tournament-view",
+      "description": "Tournament championship view",
+      "url": "/tournament/year-4-championship",
+      "screenshots": [
+        {
+          "scenario": "tournament-view",
+          "viewport": "mobile",
+          "fullPagePath": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/current/tournament-view-mobile-full-2025-07-21.png",
+          "viewportPath": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/current/tournament-view-mobile-viewport-2025-07-21.png",
+          "url": "http://localhost:3000/tournament/year-4-championship",
+          "dimensions": "375x667",
+          "timestamp": "2025-07-21T18:30:37.918Z"
+        },
+        {
+          "scenario": "tournament-view",
+          "viewport": "tablet",
+          "fullPagePath": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/current/tournament-view-tablet-full-2025-07-21.png",
+          "viewportPath": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/current/tournament-view-tablet-viewport-2025-07-21.png",
+          "url": "http://localhost:3000/tournament/year-4-championship",
+          "dimensions": "768x1024",
+          "timestamp": "2025-07-21T18:30:41.487Z"
+        },
+        {
+          "scenario": "tournament-view",
+          "viewport": "desktop",
+          "fullPagePath": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/current/tournament-view-desktop-full-2025-07-21.png",
+          "viewportPath": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/current/tournament-view-desktop-viewport-2025-07-21.png",
+          "url": "http://localhost:3000/tournament/year-4-championship",
+          "dimensions": "1920x1080",
+          "timestamp": "2025-07-21T18:30:45.480Z"
+        }
+      ],
+      "visualMetrics": {
+        "layout": {
+          "scrollWidth": 1920,
+          "scrollHeight": 1327,
+          "clientWidth": 1920,
+          "clientHeight": 1080
+        },
+        "elements": {
+          "total": 460,
+          "visible": 418,
+          "hidden": 42,
+          "buttons": 11,
+          "forms": 1,
+          "images": 8,
+          "links": 1,
+          "headings": 6
+        },
+        "colors": {
+          "uniqueColors": 33,
+          "colorList": [
+            "rgb(0, 0, 0)",
+            "rgb(241, 245, 249)",
+            "rgb(241, 245, 249) rgb(241, 245, 249) rgb(220, 38, 38)",
+            "rgb(209, 213, 219)",
+            "rgb(248, 250, 252)",
+            "rgba(239, 68, 68, 0.3)",
+            "rgba(239, 68, 68, 0.8)",
+            "rgb(203, 213, 225)",
+            "rgba(255, 255, 0, 0.3)",
+            "rgba(239, 68, 68, 0.2)"
+          ]
+        }
+      },
+      "accessibility": {
+        "hasTitle": true,
+        "hasLang": true,
+        "altTexts": {
+          "images": 2,
+          "imagesWithAlt": 2,
+          "imagesWithEmptyAlt": 0
+        },
+        "headingStructure": {
+          "h1": 2,
+          "h2": 1,
+          "h3": 3,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "aria": {
+          "ariaLabels": 0,
+          "ariaDescribedBy": 0,
+          "roles": 0
+        },
+        "forms": {
+          "inputs": 1,
+          "inputsWithLabels": 0,
+          "labels": 0
+        },
+        "score": 60,
+        "grade": "D"
+      },
+      "timestamp": "2025-07-21T18:30:32.038Z"
+    }
+  ]
+}

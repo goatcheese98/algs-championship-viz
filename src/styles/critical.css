@@ -1,22 +1,22 @@
 /* =============================================================================
-   CRITICAL CSS - ABOVE-THE-FOLD STYLES
-   Phase 2 Implementation - Essential styles for immediate render
+   ALGS CHAMPIONSHIP VISUALIZATION - CRITICAL CSS
+   Essential styles for immediate page render (above-the-fold content)
    
-   Size Target: 25-30KB (75% reduction from 116KB total)
-   Purpose: Fastest possible First Contentful Paint (FCP)
-   Load Strategy: Inline in <head> or high-priority CSS bundle
+   Critical Styles Include:
+   ├── Global resets and base typography
+   ├── Layout containers and grid systems  
+   ├── Essential header and navigation
+   ├── Above-the-fold dashboard elements
+   └── Core Tailwind base layer
+   
+   Purpose: Prevent layout shifts and ensure fast initial paint
    ============================================================================= */
 
-/* =============================================================================
-   TAILWIND CSS BASE LAYER - CRITICAL FOUNDATION
-   ============================================================================= */
+/* Tailwind CSS base layer */
 
 @import "tailwindcss";
 
-/* =============================================================================
-   GLOBAL RESETS & FUNDAMENTALS
-   Essential for preventing layout shifts
-   ============================================================================= */
+/* Global resets */
 
 * {
     margin: 0;
@@ -361,26 +361,12 @@ html, body {
   }
 }
 
-/* =============================================================================
-   CRITICAL CSS SUMMARY
+/* CRITICAL CSS INCLUDES:
+   - Global resets and base typography
+   - Dark theme backgrounds 
+   - ALGS header system
+   - Essential layout components
+   - Core responsive design
    
-   Size: ~25KB (vs 116KB total = 78% reduction)
-   Purpose: Immediate rendering of above-the-fold content
-   Includes:
-   ✅ Global resets and typography base
-   ✅ Critical design tokens (colors, spacing, typography)
-   ✅ Dark theme backgrounds (prevents white flash)
-   ✅ ALGS header system (above-the-fold)
-   ✅ Essential button/panel components
-   ✅ Core layout system (flexbox/grid basics)
-   ✅ Tournament dashboard structure
-   ✅ Critical mobile responsive (header only)
-   
-   Excludes (moved to non-critical.css):
-   ❌ Hover effects and interactions
-   ❌ Animations and keyframes  
-   ❌ Advanced visual effects (glows, complex gradients)
-   ❌ Modal/tooltip styles
-   ❌ Carousel/slider functionality
-   ❌ Comprehensive mobile responsive styles
-   ============================================================================= */
+   Non-critical styles are loaded separately for better performance
+   */

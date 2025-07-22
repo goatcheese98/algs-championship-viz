@@ -1,0 +1,182 @@
+{
+  "timestamp": "2025-07-21T18:28:25.096Z",
+  "testUrl": "http://localhost:3000",
+  "browsers": [
+    {
+      "browser": "chromium",
+      "performance": {
+        "browser": "chromium",
+        "performance": {
+          "cssResources": [
+            {
+              "name": "main.css",
+              "duration": 7,
+              "transferSize": 87330,
+              "encodedBodySize": 87030,
+              "startTime": 28.19999999552965,
+              "responseEnd": 35.19999999552965
+            },
+            {
+              "name": "TournamentView.vue?vue&type=style&index=0&scoped=7feb9b86&lang.css",
+              "duration": 22.599999994039536,
+              "transferSize": 169450,
+              "encodedBodySize": 169150,
+              "startTime": 71.5,
+              "responseEnd": 94.09999999403954
+            },
+            {
+              "name": "ActionPanel.vue?vue&type=style&index=0&scoped=842b2b8a&lang.css",
+              "duration": 9.600000001490116,
+              "transferSize": 48056,
+              "encodedBodySize": 47756,
+              "startTime": 85.59999999403954,
+              "responseEnd": 95.19999999552965
+            },
+            {
+              "name": "InteractiveRaceChart.vue?vue&type=style&index=0&scoped=0b3d16cc&lang.css",
+              "duration": 7.700000002980232,
+              "transferSize": 101515,
+              "encodedBodySize": 101215,
+              "startTime": 91.59999999403954,
+              "responseEnd": 99.29999999701977
+            },
+            {
+              "name": "tournament-animations.css",
+              "duration": 2.5,
+              "transferSize": 1226,
+              "encodedBodySize": 926,
+              "startTime": 193.89999999850988,
+              "responseEnd": 196.39999999850988
+            },
+            {
+              "name": "chart-enhancements.css",
+              "duration": 3,
+              "transferSize": 1226,
+              "encodedBodySize": 926,
+              "startTime": 193.89999999850988,
+              "responseEnd": 196.89999999850988
+            },
+            {
+              "name": "dashboard.css",
+              "duration": 0.7999999970197678,
+              "transferSize": 25935,
+              "encodedBodySize": 25635,
+              "startTime": 204,
+              "responseEnd": 204.79999999701977
+            },
+            {
+              "name": "tournament.css",
+              "duration": 1.6000000014901161,
+              "transferSize": 30932,
+              "encodedBodySize": 30632,
+              "startTime": 212.09999999403954,
+              "responseEnd": 213.69999999552965
+            }
+          ],
+          "paintMetrics": [
+            {
+              "name": "first-paint",
+              "startTime": 224
+            },
+            {
+              "name": "first-contentful-paint",
+              "startTime": 272
+            }
+          ],
+          "domContentLoaded": 204.09999999403954,
+          "loadComplete": 306.69999999552965
+        },
+        "webVitals": {
+          "fcp": 272,
+          "lcp": 272,
+          "cls": 0.010057483779059516
+        },
+        "timestamp": "2025-07-21T18:27:46.956Z"
+      },
+      "responsive": [
+        {
+          "viewport": "mobile",
+          "dimensions": "375x667",
+          "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/screenshots/chromium-mobile-375x667.png",
+          "metrics": {
+            "scrollWidth": 375,
+            "scrollHeight": 1634,
+            "clientWidth": 375,
+            "clientHeight": 667,
+            "hasHorizontalScrollbar": false,
+            "hasLayoutShift": true
+          }
+        },
+        {
+          "viewport": "tablet",
+          "dimensions": "768x1024",
+          "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/screenshots/chromium-tablet-768x1024.png",
+          "metrics": {
+            "scrollWidth": 768,
+            "scrollHeight": 1435,
+            "clientWidth": 768,
+            "clientHeight": 1024,
+            "hasHorizontalScrollbar": false,
+            "hasLayoutShift": true
+          }
+        },
+        {
+          "viewport": "desktop",
+          "dimensions": "1920x1080",
+          "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/screenshots/chromium-desktop-1920x1080.png",
+          "metrics": {
+            "scrollWidth": 1920,
+            "scrollHeight": 1259,
+            "clientWidth": 1920,
+            "clientHeight": 1080,
+            "hasHorizontalScrollbar": false,
+            "hasLayoutShift": true
+          }
+        }
+      ],
+      "coverage": {
+        "files": [
+          {
+            "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
+            "filename": "css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
+            "totalBytes": 17549,
+            "usedBytes": 0,
+            "unusedBytes": 17549,
+            "usagePercentage": "0.00"
+          },
+          {
+            "url": "http://localhost:3000/assets/non-critical.css",
+            "filename": "non-critical.css",
+            "totalBytes": 924,
+            "usedBytes": 0,
+            "unusedBytes": 924,
+            "usagePercentage": "0.00"
+          }
+        ],
+        "summary": {
+          "totalFiles": 2,
+          "totalSize": 18473,
+          "totalUsed": 0,
+          "totalUnused": 18473,
+          "overallUsage": "0.00"
+        }
+      },
+      "timestamp": "2025-07-21T18:28:04.720Z"
+    },
+    {
+      "browser": "firefox",
+      "error": "coverage.startCSSCoverage: Cannot read properties of null (reading 'startCSSCoverage')",
+      "timestamp": "2025-07-21T18:28:12.961Z"
+    },
+    {
+      "browser": "webkit",
+      "error": "coverage.startCSSCoverage: Cannot read properties of null (reading 'startCSSCoverage')",
+      "timestamp": "2025-07-21T18:28:25.066Z"
+    }
+  ],
+  "summary": {
+    "totalBrowsers": 3,
+    "successfulTests": 1,
+    "failedTests": 2
+  }
+}

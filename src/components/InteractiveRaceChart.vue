@@ -8,6 +8,7 @@ import * as d3 from 'd3';
 import { useTournamentStore } from '../stores/tournament.js'; // Import the store
 import { GSAPDraggableManager } from '../utils/GSAPDraggableManager.js';
 import { gsap } from 'gsap';
+import { tooltipManager } from '../utils/TooltipManager.js'; // Import unified tooltip system
 
 // ============================================================================
 // 1. DEFINE PROPS (The component's public API)
@@ -242,7 +243,7 @@ const setupSVG = () => {
         .attr('stop-color', '#7f1d1d')
         .attr('stop-opacity', '1');
     
-    // Configure SVG
+    // Configure SVG - disable pointer events to allow action panel clicks
     svg
         .style('width', '100%')
         .style('height', '100%')
@@ -251,6 +252,7 @@ const setupSVG = () => {
         .style('z-index', '1')
         .style('overflow', 'visible')
         .style('background', 'transparent')
+        .style('pointer-events', 'none') // Disable pointer events on SVG root
         .attr('preserveAspectRatio', 'xMidYMid meet');
     
     // Initialize scales with default domains and ranges
@@ -702,7 +704,8 @@ const renderLegend = (visible) => {
     const legendGroup = mainGroup.value.append('g')
         .attr('class', 'legend-group')
         .attr('id', 'chart-legend-draggable') // Add ID for draggable functionality
-        .attr('transform', `translate(${legendX}, ${legendY})`);
+        .attr('transform', `translate(${legendX}, ${legendY})`)
+        .style('pointer-events', 'auto'); // Re-enable pointer events for legend interaction
     
     // Legend background with responsive sizing and draggable styling
     const legendBg = legendGroup.append('rect')
@@ -1060,6 +1063,7 @@ const renderTeamSegments = (teamGroup, teamData, config) => {
         .attr('width', 0)
         .style('opacity', 0)
         .style('cursor', 'pointer')
+        .style('pointer-events', 'auto') // Re-enable pointer events for interactive segments
         .on('mouseover', function(event, gameData) {
             // Highlight the segment on hover
             d3.select(this)
@@ -1071,13 +1075,8 @@ const renderTeamSegments = (teamGroup, teamData, config) => {
             showTooltip(event, gameData, teamData.team);
         })
         .on('mousemove', function(event, gameData) {
-            // Update tooltip position on mouse move
-            if (tooltip.value) {
-                const [mouseX, mouseY] = d3.pointer(event, document.body);
-                tooltip.value
-                    .style('left', (mouseX + 15) + 'px')
-                    .style('top', (mouseY - 10) + 'px');
-            }
+            // Update unified tooltip position
+            tooltipManager.updateTooltipPosition('chart-segment', event);
         })
         .on('mouseout', function() {
             // Remove highlight
@@ -1107,6 +1106,7 @@ const renderTeamSegments = (teamGroup, teamData, config) => {
     // Ensure ALL segments (new and existing) have event listeners
     allSegments.select('.segment-bar')
         .style('cursor', 'pointer')
+        .style('pointer-events', 'auto') // Re-enable pointer events for all segments
         .on('mouseover', function(event, gameData) {
             // Highlight the segment on hover
             d3.select(this)
@@ -1118,13 +1118,8 @@ const renderTeamSegments = (teamGroup, teamData, config) => {
             showTooltip(event, gameData, teamData.team);
         })
         .on('mousemove', function(event, gameData) {
-            // Update tooltip position on mouse move
-            if (tooltip.value) {
-                const [mouseX, mouseY] = d3.pointer(event, document.body);
-                tooltip.value
-                    .style('left', (mouseX + 15) + 'px')
-                    .style('top', (mouseY - 10) + 'px');
-            }
+            // Update unified tooltip position
+            tooltipManager.updateTooltipPosition('chart-segment', event);
         })
         .on('mouseout', function() {
             // Remove highlight
@@ -1290,45 +1285,10 @@ const renderInitialState = (data) => {
 // 4. TOOLTIP FUNCTIONALITY  
 // ============================================================================
 
-// Tooltip functionality
-const tooltip = ref(null);
+// Tooltip functionality - using unified TooltipManager system
 
-const createTooltip = () => {
-    // Remove existing tooltip
-    d3.select('body').selectAll('.chart-tooltip').remove();
-    
-    // Create tooltip element
-    tooltip.value = d3.select('body')
-        .append('div')
-        .attr('class', 'chart-tooltip')
-        .style('position', 'absolute')
-        .style('visibility', 'hidden')
-        .style('background', 'linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 100%)')
-        .style('backdrop-filter', 'blur(12px)')
-        .style('border', '1px solid rgba(239, 68, 68, 0.3)')
-        .style('border-radius', '8px')
-        .style('padding', '12px 16px')
-        .style('box-shadow', '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 16px rgba(239, 68, 68, 0.1)')
-        .style('color', '#ffffff')
-        .style('font-family', 'Inter, system-ui, sans-serif')
-        .style('font-size', '13px')
-        .style('font-weight', '500')
-        .style('line-height', '1.4')
-        .style('pointer-events', 'none')
-        .style('z-index', '9999')
-        .style('max-width', '200px')
-        .style('text-align', 'left');
-    
-    return tooltip.value;
-};
 
 const showTooltip = (event, gameData, teamName) => {
-    if (!tooltip.value) return;
-    
-    // Debug: Log the gameData structure to understand what we're getting
-    console.log('🔍 Tooltip gameData:', gameData);
-    console.log('🔍 Tooltip teamName:', teamName);
-    
     // Convert placement points back to placement (reverse lookup)
     const placementPoints = gameData.placementPoints || 0;
     const kills = gameData.kills || 0;
@@ -1354,90 +1314,26 @@ const showTooltip = (event, gameData, teamName) => {
         return null;
     };
     
-    // Format placement with ordinal suffix
-    const getOrdinalSuffix = (num) => {
-        if (typeof num !== 'number') return num;
-        const lastDigit = num % 10;
-        const lastTwoDigits = num % 100;
-        
-        if (lastTwoDigits >= 11 && lastTwoDigits <= 13) return `${num}th`;
-        switch (lastDigit) {
-            case 1: return `${num}st`;
-            case 2: return `${num}nd`;
-            case 3: return `${num}rd`;
-            default: return `${num}th`;
-        }
-    };
-    
     const placement = getPlacementFromPoints(placementPoints);
-    const placementText = placement ? getOrdinalSuffix(placement) : `${placementPoints} pts`;
     
-    tooltip.value
-        .style('visibility', 'visible')
-        .style('opacity', 0)
-        .transition()
-        .duration(200)
-        .style('opacity', 1)
-        .html(`
-            <div style="border-bottom: 1px solid rgba(239, 68, 68, 0.3); margin-bottom: 10px; padding-bottom: 8px;">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                    <strong style="color: #ef4444; font-size: 15px; font-weight: 700;">${teamName}</strong>
-                    <span style="color: #10b981; font-size: 12px; font-weight: 600; background: rgba(16, 185, 129, 0.1); padding: 2px 6px; border-radius: 4px;">Game ${gameNumber}</span>
-                </div>
-                <div style="color: #a0a0a0; font-size: 12px; font-weight: 500;">${mapName}</div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px 8px; align-items: center;">
-                <span style="color: #e0e0e0; font-weight: 500;">Placement:</span>
-                <span style="color: #4ade80; font-weight: 700; font-size: 14px;">${placementText}</span>
-                
-                <span style="color: #e0e0e0; font-weight: 500;">Kills:</span>
-                <span style="color: #f87171; font-weight: 700; font-size: 14px;">${kills}</span>
-                
-                <span style="color: #e0e0e0; font-weight: 500;">Total Points:</span>
-                <span style="color: #60a5fa; font-weight: 700; font-size: 14px;">${points}</span>
-                
-                ${placementPoints + kills > 0 ? `
-                <span style="color: #e0e0e0; font-weight: 500; font-size: 11px; grid-column: 1 / -1; margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.1);">
-                    ${placementPoints} placement + ${kills} kills = ${points} points
-                </span>
-                ` : ''}
-            </div>
-        `);
+    // Get team color from data if available
+    const teamColor = gameData.color || '#ef4444';
     
-    // Improved tooltip positioning with viewport boundary checking
-    const [mouseX, mouseY] = d3.pointer(event, document.body);
-    const tooltipWidth = 220; // Approximate tooltip width
-    const tooltipHeight = 140; // Approximate tooltip height
-    
-    // Calculate optimal position
-    let left = mouseX + 15;
-    let top = mouseY - 10;
-    
-    // Prevent tooltip from going off-screen
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    
-    if (left + tooltipWidth > viewportWidth) {
-        left = mouseX - tooltipWidth - 15; // Position to the left of cursor
-    }
-    
-    if (top + tooltipHeight > viewportHeight) {
-        top = mouseY - tooltipHeight - 10; // Position above cursor
-    }
-    
-    // Ensure minimum distance from edges
-    left = Math.max(10, Math.min(left, viewportWidth - tooltipWidth - 10));
-    top = Math.max(10, Math.min(top, viewportHeight - tooltipHeight - 10));
-    
-    tooltip.value
-        .style('left', left + 'px')
-        .style('top', top + 'px');
+    // Use unified tooltip system for consistent styling and performance
+    tooltipManager.showChartTooltip('chart-segment', event, {
+        teamName,
+        gameNumber,
+        mapName,
+        placement,
+        kills,
+        points,
+        teamColor
+    });
 };
 
 const hideTooltip = () => {
-    if (tooltip.value) {
-        tooltip.value.style('visibility', 'hidden');
-    }
+    // Hide unified tooltip
+    tooltipManager.hideTooltip('chart-segment');
 };
 
 // ============================================================================
@@ -1535,14 +1431,8 @@ onUnmounted(() => {
         legendGroupElement = null;
     }
     
-    // Clean up tooltip
-    if (tooltip.value) {
-        tooltip.value.remove();
-        tooltip.value = null;
-    }
-    
-    // Clean up any remaining tooltips in the DOM
-    d3.select('body').selectAll('.chart-tooltip').remove();
+    // Clean up unified tooltip system
+    tooltipManager.destroyAll();
     
     console.log('✅ InteractiveRaceChart: Cleanup completed');
 });
@@ -1856,7 +1746,7 @@ watch(isLegendVisible, (newVisible) => {
 .algs-chart-svg {
   width: 100%;
   height: 100%;
-  min-height: 400px;
+  min-height: 600px;
   max-height: 100%;
   overflow: visible;
   background: transparent;
@@ -1864,6 +1754,7 @@ watch(isLegendVisible, (newVisible) => {
   margin: 0;
   padding: 0;
   position: relative;
+  pointer-events: none; /* Disable pointer events on SVG root to allow action panel clicks */
 }
 
 
@@ -1918,6 +1809,7 @@ watch(isLegendVisible, (newVisible) => {
 :deep(.segment-bar) {
   stroke: rgba(255, 255, 255, 0.2);
   stroke-width: 1px;
+  pointer-events: auto; /* Re-enable pointer events for interactive segments */
 }
 
 :deep(.logo-background) {
@@ -1953,5 +1845,13 @@ watch(isLegendVisible, (newVisible) => {
   fill: white;
   font-size: 12px;
   text-anchor: middle;
+}
+
+:deep(.legend-group) {
+  pointer-events: auto; /* Re-enable pointer events for legend interaction */
+}
+
+:deep(.legend-background) {
+  pointer-events: auto; /* Ensure legend background can receive drag events */
 }
 </style> 

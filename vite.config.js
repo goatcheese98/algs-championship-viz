@@ -24,18 +24,29 @@ export default defineConfig({
       },
       output: {
         assetFileNames: 'assets/[name]-[hash][extname]',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
         manualChunks(id) {
-          // Only create chunks for files that actually exist
-          if (id.includes('/styles/critical.css')) return 'critical';
-          if (id.includes('/styles/non-critical.css')) return 'non-critical';
-          if (id.includes('/styles/optimized.css')) return 'optimized';
+          // Vendor chunks
+          if (id.includes('node_modules')) {
+            if (id.includes('vue')) return 'vendor-vue';
+            if (id.includes('d3')) return 'vendor-d3';
+            return 'vendor';
+          }
           
-          // Group route-based CSS
+          // CSS chunks - only for files that exist
+          if (id.includes('/styles/critical.css')) return 'critical-css';
+          if (id.includes('/styles/main.css')) return 'main-css';
           if (id.includes('/styles/routes/')) return 'route-css';
-          
-          // Group utility CSS
-          if (id.includes('/styles/') && !id.includes('/styles/main.css')) return 'css-utils';
         }
+      }
+    },
+    target: 'esnext',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: false,
+        drop_debugger: true
       }
     }
   },

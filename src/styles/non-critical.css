@@ -1,23 +1,22 @@
 /* =============================================================================
-   NON-CRITICAL CSS - ENHANCEMENT STYLES
-   Phase 2 Implementation - Styles for lazy loading after initial render
+   ALGS CHAMPIONSHIP VISUALIZATION - NON-CRITICAL CSS
+   Enhancement styles loaded after initial page render
    
-   Size Target: 85-90KB (loaded asynchronously)
-   Purpose: Visual enhancements, interactions, animations
-   Load Strategy: Async after First Contentful Paint or on user interaction
+   Non-Critical Styles Include:
+   ├── Advanced animations and transitions
+   ├── Hover states and interactive effects
+   ├── Enhanced visual styling and gradients
+   ├── Extended design tokens and variants
+   └── Performance-optimized component details
+   
+   Purpose: Visual enhancements without blocking initial render
    ============================================================================= */
 
-/* =============================================================================
-   TAILWIND COMPONENTS & UTILITIES
-   Non-critical Tailwind layers loaded after initial paint
-   ============================================================================= */
+/* Extended Tailwind utilities */
 
 /* Non-critical Tailwind layers loaded via main bundle */
 
-/* =============================================================================
-   EXTENDED DESIGN TOKENS
-   Complete design system tokens for enhanced styling
-   ============================================================================= */
+/* Extended design tokens */
 
 :root {
   /* Extended color system */
@@ -605,23 +604,11 @@
     margin-top: 20px;
 }
 
-/* =============================================================================
-   NON-CRITICAL CSS SUMMARY
+/* NON-CRITICAL CSS INCLUDES:
+   - Hover effects and interactions
+   - Advanced animations and visual effects
+   - Banner systems and enhanced components
+   - Comprehensive responsive design
    
-   Size: ~85KB (loaded asynchronously after initial paint)
-   Purpose: Visual enhancements, interactions, and advanced functionality
-   Includes:
-   ✅ All hover effects and micro-interactions
-   ✅ Complete animation system with keyframes
-   ✅ Advanced visual effects (glows, complex gradients, overlays)
-   ✅ EWC 2025 banner system with glow orbs
-   ✅ Carousel/slider functionality with navigation
-   ✅ Tournament cards enhancement system  
-   ✅ Comprehensive mobile responsive styles
-   ✅ Footer and supplementary components
-   
-   Load Strategy:
-   - Async after First Contentful Paint
-   - On user interaction/scroll
-   - Progressive enhancement approach
-   ============================================================================= */
+   Loaded after initial page render for better performance
+   */

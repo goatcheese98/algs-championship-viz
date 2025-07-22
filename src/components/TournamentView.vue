@@ -198,15 +198,6 @@
           </div>
           
         </div>
-        
-        
-        <ActionPanel
-          v-if="selectedMatchup"
-          :current-map="currentMap"
-          @export-requested="exportData"
-          :key="`action-panel-${selectedDay}-${selectedMatchup}`"
-          class="action-panel"
-        />
       </div>
       
       <!-- Right Column: Chart Visualization -->
@@ -313,7 +304,7 @@
               :class="{ compressed: isChartCompressed }"
               :teamConfig="teamConfig"
               :compressionFactor="isChartCompressed ? 0.8 : 1.0"
-              style="width: 100%; height: 100%; min-height: 400px;"
+              style="width: 100%; height: 100%; min-height: 600px;"
             />
             
             <transition name="fade">
@@ -390,6 +381,15 @@
         </div>
       </div>
     </div>
+    
+    <!-- ActionPanel positioned absolutely outside grid layout -->
+    <ActionPanel
+      v-if="selectedMatchup"
+      :current-map="currentMap"
+      @export-requested="exportData"
+      :key="`action-panel-${selectedDay}-${selectedMatchup}`"
+      class="action-panel-floating"
+    />
     
   </div>
 </template>
@@ -747,6 +747,7 @@ export default {
       'setPlaying',
       'setCurrentGame',
       'setDay',
+      'setDayOnly',
       'setTournamentType',
       'fetchDataForMatchup',
       'resetPlayback',
@@ -875,19 +876,11 @@ export default {
         // Clear any existing data first
         this.cleanupChart();
         
-        // Select the matchup in the store
+        // Select the matchup in the store (fetchDataForMatchup will be triggered by selectedMatchup watcher)
         await this.selectMatchup(matchupId);
         
-        // Add a small delay to ensure store state is updated
-        await this.$nextTick();
-        
-        // Trigger data fetching for the selected matchup
-        await this.fetchDataForMatchup();
-        
         console.log('✅ Matchup selection completed:', {
-          selectedMatchup: this.selectedMatchup,
-          hasData: !!(this.processedChartData && this.processedChartData.length > 0),
-          maxGames: this.maxGames
+          selectedMatchup: this.selectedMatchup
         });
         
         // Measure heights for compression after chart is loaded
@@ -911,24 +904,21 @@ export default {
           const firstDay = this.tournamentDays[0];
           console.log('📅 First day found:', firstDay.name);
           
-          // Set the day first
-          this.setDay(firstDay.id);
-          
-          // Wait for day to be set, then select first matchup
-          this.$nextTick(() => {
-            if (firstDay.matchups && firstDay.matchups.length > 0) {
-              const firstMatchup = firstDay.matchups[0];
-              console.log('⚔️ Auto-selecting first matchup:', firstMatchup.title);
-              
-              // Use a slight delay to ensure everything is ready
-              setTimeout(() => {
-                this.handleMatchupSelect(firstMatchup.id);
-                // Note: Controls positioning now handled by CSS Grid layout
-              }, 100);
-            } else {
-              console.warn('⚠️ No matchups found in first day');
-            }
-          });
+          if (firstDay.matchups && firstDay.matchups.length > 0) {
+            const firstMatchup = firstDay.matchups[0];
+            console.log('⚔️ Auto-selecting first matchup:', firstMatchup.title);
+            
+            // Set day without clearing selectedMatchup to avoid double animation
+            this.setDayOnly(firstDay.id);
+            
+            // Use a slight delay to ensure everything is ready, then select matchup
+            setTimeout(() => {
+              this.handleMatchupSelect(firstMatchup.id);
+              // Note: Controls positioning now handled by CSS Grid layout
+            }, 100);
+          } else {
+            console.warn('⚠️ No matchups found in first day');
+          }
         } else {
           console.warn('⚠️ No tournament days available for auto-loading');
         }
@@ -2615,10 +2605,11 @@ export default {
   flex: 1;
   position: relative;
   width: 100%;
-  min-height: 400px;
+  min-height: 600px;
   display: flex;
   flex-direction: column;
   transition: height 0.5s ease-out;
+  pointer-events: none; /* Allow clicks to pass through to action panel */
 }
 
 /* When compressed, allow the container to shrink */
@@ -2645,16 +2636,29 @@ export default {
   max-height: 320px;
 }
 
+/* Floating Action Panel - positioned absolutely outside grid layout */
+.action-panel-floating {
+  position: fixed !important;
+  top: 50px !important;
+  right: 20px !important;
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%) !important;
+  border: 2px solid rgba(239, 68, 68, 0.5) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
 /* Chart section - let it naturally size based on content */
 .chart-container-section {
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease;
 }
 
 /* When compressed, ensure no extra space */
 .chart-container-section.compressed {
-  transition: all 0.3s ease;
+  /* Removed transition to eliminate second animation on page refresh */
 }
 
 .commentary-panel {

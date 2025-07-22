@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-07-21T18:37:56.328Z",
+  "duration": "0s",
+  "summary": {
+    "totalTests": 5,
+    "completedTests": 0,
+    "failedTests": 0,
+    "successRate": "0%"
+  },
+  "results": {
+    "cssPerformance": {
+      "status": "completed",
+      "error": null
+    },
+    "browserPerformance": null,
+    "visualRegression": null,
+    "loadPerformance": null,
+    "crossBrowser": null,
+    "errors": []
+  }
+}

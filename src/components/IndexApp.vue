@@ -1,24 +1,76 @@
 <template>
   <div id="app">
+    <!-- Unified ALGS Header following tournament page design -->
     <header class="algs-header">
+      <div class="header-background">
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="glow-orb glow-orb-3"></div>
+        <div class="header-grid-pattern"></div>
+      </div>
+      
       <div class="header-content">
-        <div class="algs-branding">
-          <div class="algs-icon">🏆</div>
-          <div class="algs-info">
-            <h1 class="main-title">ALGS</h1>
-            <p class="subtitle">Apex Legends Global Series</p>
+        <div class="header-top">
+          <!-- Brand Section - consistent with tournament page -->
+          <div class="header-branding">
+            <div class="championship-logo">
+              <div class="logo-icon">🏆</div>
+            </div>
+            <div class="brand-info">
+              <div class="brand-subtitle">Apex Legends Global Series</div>
+              <div class="championship-title">
+                <h1 class="title-main">Tournament Dashboard</h1>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="platform-info">
-          <p class="tagline">Professional tournament visualization and analytics platform</p>
-          <button class="data-management-btn" @click="openDataManagement">
-            <span class="btn-icon">🔧</span>
-            Data Tools
-          </button>
+
+          <!-- Platform Info Cards - using established tournament-header-card pattern -->
+          <div class="header-actions">
+            <div class="tournament-info-inline">
+              <div class="tournament-header-card">
+                <div class="info-icon-container">
+                  <span class="info-icon">📊</span>
+                </div>
+                <div class="info-content">
+                  <div class="info-label">Platform</div>
+                  <div class="info-value">Analytics Dashboard</div>
+                </div>
+              </div>
+
+              <div class="tournament-header-card">
+                <div class="info-icon-container">
+                  <span class="info-icon">🌍</span>
+                </div>
+                <div class="info-content">
+                  <div class="info-label">Coverage</div>
+                  <div class="info-value">Global Tournaments</div>
+                </div>
+              </div>
+
+              <div class="tournament-header-card">
+                <div class="info-icon-container">
+                  <span class="info-icon">⚡</span>
+                </div>
+                <div class="info-content">
+                  <div class="info-label">Status</div>
+                  <div class="info-value">Real-time Data</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Unified Data Tools Button -->
+            <div class="header-nav">
+              <button @click="openDataManagement" class="data-management-btn">
+                <span class="btn-icon">🔧</span>
+                <span class="btn-text">Data Tools</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </header>
 
+    <!-- EWC 2025 Banner - Using established ewc-banner pattern -->
     <section class="ewc-banner">
       <div class="ewc-banner-content">
         <div class="ewc-banner-background">
@@ -52,12 +104,14 @@
       </div>
     </section>
 
+    <!-- Tournament Dashboard Section - Using established patterns -->
     <main class="dashboard-container">
       <div class="dashboard-title">
         <h2>Tournament Dashboard</h2>
         <p>Explore comprehensive visualizations and analytics for ALGS tournaments worldwide</p>
       </div>
 
+      <!-- Tournament Carousel using established carousel-container pattern -->
       <div class="carousel-container" @mouseenter="pauseAutoplay" @mouseleave="resumeAutoplay">
         <div class="carousel-wrapper">
           <div class="tournaments-carousel" ref="carousel">

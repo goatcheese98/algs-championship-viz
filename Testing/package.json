@@ -1,0 +1,33 @@
+{
+  "name": "algs-css-performance-testing",
+  "version": "1.0.0",
+  "description": "CSS Performance testing suite for ALGS Championship Visualization",
+  "scripts": {
+    "test:all": "node run-all-tests.js",
+    "test:bundle": "node bundle-analyzer.js",
+    "test:load": "node load-performance.js",
+    "test:browser": "node browser-perf-test.js",
+    "test:coverage": "node coverage-analyzer.js",
+    "test:visual": "node visual-regression.js",
+    "report": "node generate-report.js",
+    "benchmark": "node benchmark-suite.js"
+  },
+  "dependencies": {
+    "playwright": "^1.40.0",
+    "puppeteer": "^21.0.0",
+    "lighthouse": "^11.0.0",
+    "gzip-size": "^7.0.0",
+    "brotli-size": "^4.0.0",
+    "fs-extra": "^11.0.0",
+    "chalk": "^4.1.0",
+    "ora": "^6.3.0",
+    "table": "^6.8.0",
+    "pixelmatch": "^5.3.0",
+    "pngjs": "^7.0.0"
+  },
+  "devDependencies": {
+    "postcss": "^8.4.0",
+    "cssnano": "^6.0.0",
+    "purgecss": "^5.0.0"
+  }
+}

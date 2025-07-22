@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-07-21T18:18:05.874Z",
+  "summary": {
+    "rawSize": 0,
+    "gzippedSize": 0,
+    "brotliSize": 0,
+    "selectors": 0,
+    "mediaQueries": 0,
+    "customProperties": 0,
+    "avgGzipRatio": "NaN",
+    "avgBrotliRatio": "NaN",
+    "fileCount": 0
+  },
+  "files": [],
+  "recommendations": []
+}

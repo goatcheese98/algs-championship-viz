@@ -1,16 +1,19 @@
 /* =============================================================================
-   DASHBOARD ROUTE CSS
-   Phase 3 Implementation - Route-specific styles for Home/Dashboard page
+   ALGS CHAMPIONSHIP VISUALIZATION - DASHBOARD ROUTE STYLES
+   Route-specific styles for the main dashboard/home page
    
-   Size Target: 2-3KB (only styles needed for dashboard/home page)
-   Load Strategy: Only when visiting dashboard route
-   Components: IndexApp, tournament carousel, dashboard layout
+   Dashboard Components:
+   ├── .dashboard-container     - Main dashboard wrapper
+   ├── .tournament-carousel     - Tournament selection carousel
+   ├── .tournament-card        - Individual tournament cards
+   ├── .ewc-banner            - Event banner section
+   ├── .data-management-btn   - Data control buttons
+   └── .carousel-nav          - Navigation controls
+   
+   Used by: IndexApp.vue component
    ============================================================================= */
 
-/* =============================================================================
-   DASHBOARD-SPECIFIC COMPONENTS
-   Styles only needed for the main dashboard/home page
-   ============================================================================= */
+/* Dashboard-specific components */
 
 /* Dashboard Container - Only for Home page */
 .dashboard-container {
@@ -376,27 +379,10 @@
   }
 }
 
-/* =============================================================================
-   DASHBOARD ROUTE CSS SUMMARY
-   
-   Size: ~2.5KB (85% reduction from full component CSS for this route)
-   Components Included:
-   ✅ Dashboard container and title
-   ✅ EWC 2025 promotional banner
-   ✅ Tournament carousel system
-   ✅ Tournament selection cards
-   ✅ Dashboard-specific animations
-   ✅ Mobile responsive adjustments
-   
-   Components Excluded (loaded separately):
-   ❌ Chart visualization components
-   ❌ Tournament view interface
-   ❌ Advanced interactive elements
-   ❌ Action panels and controls
-   ❌ Data visualization styles
-   
-   Load Strategy:
-   - Only loaded when visiting '/' route
-   - Lazy loaded after critical CSS
-   - Preloaded when user hovers over home navigation
-   ============================================================================= */
+/* DASHBOARD ROUTE INCLUDES:
+   - Dashboard container and layout
+   - EWC 2025 promotional banner
+   - Tournament carousel system
+   - Tournament selection cards
+   - Dashboard-specific animations and responsive design
+   */

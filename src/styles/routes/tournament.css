@@ -1,30 +1,30 @@
 /* =============================================================================
-   TOURNAMENT ROUTE CSS
-   Phase 3 Implementation - Route-specific styles for Tournament pages
+   ALGS CHAMPIONSHIP VISUALIZATION - TOURNAMENT ROUTE STYLES
+   Route-specific styles for tournament visualization pages
    
-   Size Target: 3-4KB (only styles needed for tournament visualization)
-   Load Strategy: Only when visiting '/tournament/:id' route
-   Components: TournamentView, charts, action panels, interactive elements
+   Tournament Components:
+   ├── .main-layout.bento-grid  - Tournament grid layout
+   ├── .tournament-header      - Page header with tournament info
+   ├── .action-panel          - Left sidebar controls
+   ├── .chart-container       - Main visualization area
+   ├── .team-compact          - Team information display
+   ├── .progress-slider       - Game progression controls
+   └── .map-badge            - Map selection indicators
+   
+   Used by: TournamentView.vue, ActionPanel.vue, InteractiveRaceChart.vue
    ============================================================================= */
 
-/* =============================================================================
-   TOURNAMENT-SPECIFIC LAYOUT
-   Styles only needed for tournament visualization pages
-   ============================================================================= */
+/* Tournament-specific layout */
 
 /* Bento Grid Layout - Tournament View Only */
 .main-layout.bento-grid {
   display: grid;
-  grid-template-columns: 350px 1fr;
-  gap: var(--spacing-4xl);
+  grid-template-columns: 260px 1fr;
+  gap: var(--spacing-2xl);
   max-width: 1400px;
   margin: 0 auto;
-  padding: var(--spacing-4xl);
+  padding: var(--spacing-2xl);
   min-height: calc(100vh - 200px);
-  
-  /* Debug - temporary grid visualization */
-  background: linear-gradient(45deg, rgba(255, 0, 0, 0.1) 0%, rgba(0, 255, 0, 0.1) 100%);
-  border: 2px dashed rgba(255, 255, 0, 0.3);
 }
 
 /* Tournament Header System */
@@ -75,9 +75,26 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  pointer-events: none; /* Allow clicks to pass through to action panel */
   
   /* Debug - temporary visible background */
   border: 2px solid rgba(239, 68, 68, 0.5);
+}
+
+/* Re-enable pointer events for interactive chart elements */
+.chart-container svg {
+  pointer-events: auto;
+}
+
+.chart-container .algs-chart-svg {
+  pointer-events: none; /* Keep SVG root as pass-through */
+}
+
+.chart-container rect.segment-bar,
+.chart-container text.team-label,
+.chart-container .chart-segment,
+.chart-container g.legend-group {
+  pointer-events: auto !important;
 }
 
 .chart-title {
@@ -131,7 +148,7 @@
   top: clamp(20px, 50vh - 300px, calc(100vh - 600px));
   right: 20px;
   max-height: calc(100vh - 40px);
-  z-index: 1000;
+  z-index: 15000;
   background: rgba(15, 23, 42, 0.95);
   border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: var(--radius-3xl);
@@ -257,57 +274,7 @@
    Interactive data tooltips for charts
    ============================================================================= */
 
-.chart-tooltip {
-  position: absolute;
-  background: rgba(15, 23, 42, 0.95);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-2xl);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  z-index: var(--z-tooltip);
-  pointer-events: none;
-  font-size: var(--text-sm);
-  color: var(--color-text-primary);
-  max-width: 250px;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 0.2s ease;
-}
-
-.chart-tooltip.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.tooltip-header {
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-  margin-bottom: var(--spacing-md);
-  font-size: var(--text-md);
-}
-
-.tooltip-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
-
-.tooltip-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.tooltip-label {
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
-}
-
-.tooltip-value {
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-semibold);
-}
+/* Legacy tooltip classes removed - now using unified TooltipManager system */
 
 /* =============================================================================
    TOURNAMENT ANIMATIONS
@@ -406,29 +373,10 @@
   }
 }
 
-/* =============================================================================
-   TOURNAMENT ROUTE CSS SUMMARY
-   
-   Size: ~3.5KB (80% reduction from full component CSS for this route)
-   Components Included:
-   ✅ Bento grid tournament layout
-   ✅ Chart visualization container
-   ✅ Action panel system
-   ✅ Filter and control interfaces
-   ✅ Map badge system
-   ✅ Chart tooltip system
-   ✅ Tournament-specific animations
-   ✅ Mobile responsive adjustments
-   
-   Components Excluded (not needed for tournament view):
-   ❌ Dashboard carousel system
-   ❌ EWC promotional banner
-   ❌ Tournament selection cards
-   ❌ Home page specific layouts
-   ❌ Dashboard navigation elements
-   
-   Load Strategy:
-   - Only loaded when visiting '/tournament/:id' route
-   - Lazy loaded after critical CSS
-   - Preloaded when user navigates from dashboard to tournament
-   ============================================================================= */
+/* TOURNAMENT ROUTE INCLUDES:
+   - Bento grid layout system
+   - Chart visualization container
+   - Action panel controls
+   - Interactive elements and animations
+   - Tournament-specific responsive design
+   */

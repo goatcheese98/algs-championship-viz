@@ -2,12 +2,12 @@
   <div v-if="maxGames > 0" 
        ref="actionPanel"
        class="action-panel"
-       :class="{ expanded: panelExpanded }">
+       :class="{ expanded: level1Expanded }">
     
     <div class="panel-header">
       <div class="panel-title">
         <button class="btn btn-icon btn-primary" @click="togglePanel" @mousedown.stop" title="Toggle advanced controls">
-          {{ panelExpanded ? '−' : '+' }}
+          {{ level1Expanded ? '−' : '+' }}
         </button>
         <span class="title-text">Controls</span>
       </div>
@@ -59,7 +59,6 @@
                  @mouseleave="hideMapTooltip">
           </template>
           <span v-else class="map-icon">🗺️</span>
-          <span class="map-name" @mouseenter="showCurrentMapTooltip" @mousemove="updateTooltipPosition" @mouseleave="hideMapTooltip">{{ currentMap || 'Loading...' }}</span>
         </div>
 
         <!-- Quick Controls (Play/Reset) -->
@@ -73,30 +72,56 @@
         </div>
       </div>
 
-      <!-- Game Filter Controls Container -->
-      <div class="filter-buttons-container">
-        <div class="text-2xs text-gray-400 opacity-80 text-center mb-3">Click to filter | X to clear</div>
-        <div class="flex flex-wrap justify-center gap-2">
-          <button v-for="item in filterButtons" 
-                  :key="item.id"
-                  @click="item.type === 'game' ? toggleGameFilter(item.value) : resetGameFilter()"
-                  @mouseenter="item.type === 'game' ? showFilterTooltip($event, item.value) : showClearTooltip($event)"
-                  @mouseleave="hideFilterTooltip"
-                  :class="['btn', 'btn-sm', {
-                    'btn-active': item.type === 'game' && selectedGames.includes(item.value),
-                    'btn-primary': item.type === 'game' && item.value === currentGame,
-                    'btn-danger': item.type === 'clear'
-                  }]"
-                  :style="item.type === 'game' ? getGameButtonStyle(item.value) : getClearButtonStyle()">
-            {{ item.label }}
-          </button>
-        </div>
+      <!-- Level 1 Expansion Toggle -->
+      <div class="expansion-toggle-container">
+        <button @click="toggleLevel1" class="expansion-toggle-btn">
+          <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
+               :style="{ transform: level1Expanded ? 'rotate(180deg)' : 'rotate(0deg)' }">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+          <span>Game Filters</span>
+        </button>
       </div>
     </div>
 
-    <!-- Expanded Controls (Advanced Features) -->
+    <!-- Level 1: Game Filter Controls -->
     <transition name="slide-down">
-      <div v-if="panelExpanded" class="expanded-controls-container" @mousedown.stop>
+      <div v-if="level1Expanded" class="level1-controls-container" @mousedown.stop>
+        <div class="filter-buttons-container">
+          <div class="text-2xs text-gray-400 opacity-80 text-center mb-3">Click to filter | X to clear</div>
+          <div class="flex flex-wrap justify-center gap-2">
+            <button v-for="item in filterButtons" 
+                    :key="item.id"
+                    @click="item.type === 'game' ? toggleGameFilter(item.value) : resetGameFilter()"
+                    @mouseenter="item.type === 'game' ? showFilterTooltip($event, item.value) : showClearTooltip($event)"
+                    @mouseleave="hideFilterTooltip"
+                    :class="['btn', 'btn-sm', {
+                      'btn-active': item.type === 'game' && selectedGames.includes(item.value),
+                      'btn-primary': item.type === 'game' && item.value === currentGame,
+                      'btn-danger': item.type === 'clear'
+                    }]"
+                    :style="item.type === 'game' ? getGameButtonStyle(item.value) : getClearButtonStyle()">
+              {{ item.label }}
+            </button>
+          </div>
+        </div>
+        
+        <!-- Level 2 Expansion Toggle -->
+        <div class="expansion-toggle-container level2-toggle">
+          <button @click="toggleLevel2" class="expansion-toggle-btn">
+            <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
+                 :style="{ transform: level2Expanded ? 'rotate(180deg)' : 'rotate(0deg)' }">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+            <span>Advanced Controls</span>
+          </button>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Level 2: Advanced Controls (Export, Legend, Animation Speed) -->
+    <transition name="slide-down">
+      <div v-if="level1Expanded && level2Expanded" class="level2-controls-container" @mousedown.stop>
         
         <!-- Export & Legend Controls (Same Row) -->
         <div class="controls-section">
@@ -154,6 +179,7 @@ import { useTournamentStore } from '../stores/tournament.js' // Import the store
 import { mapState, mapActions } from 'pinia' // Import Pinia helpers
 import { GSAPDraggableManager } from '../utils/GSAPDraggableManager.js'
 import { getMapImageUrl } from '../data/tournaments'
+import { tooltipManager } from '../utils/TooltipManager.js' // Import unified tooltip system
 
 export default {
   name: 'ActionPanel',
@@ -166,13 +192,15 @@ export default {
   },
   
   emits: [
-    'export-requested'
+    'export-requested',
+    'game-filter-changed'
   ],
   
   data() {
     return {
       // Panel state
-      panelExpanded: false,
+      level1Expanded: false,  // First level: Filters
+      level2Expanded: false,  // Second level: Export, Legend, Animation
       
       // Game state
       manualSliderControl: false,
@@ -182,14 +210,6 @@ export default {
       
       // GSAP draggable instance
       draggableInstance: null,
-      
-      tooltipTimeout: null,
-      
-      // Filter tooltip
-      filterTooltip: null,
-      
-      // Map tooltip
-      mapTooltip: null,
     }
   },
   
@@ -259,22 +279,8 @@ export default {
       }
     }
     
-    // Clean up tooltip timeout
-    if (this.tooltipTimeout) {
-      clearTimeout(this.tooltipTimeout);
-    }
-    
-    // Clean up filter tooltip
-    if (this.filterTooltip) {
-      this.filterTooltip.remove();
-      this.filterTooltip = null;
-    }
-    
-    // Clean up map tooltip
-    if (this.mapTooltip) {
-      this.mapTooltip.remove();
-      this.mapTooltip = null;
-    }
+    // Clean up unified tooltip system
+    tooltipManager.destroyAll();
   },
   
   methods: {
@@ -286,17 +292,19 @@ export default {
         'resetPlayback',
         'setGameFilter'
     ]),
-    togglePanel() {
-      this.panelExpanded = !this.panelExpanded;
-      
-      if (typeof gsap !== 'undefined') {
-        if (this.panelExpanded) {
-          gsap.to(this.$refs.actionPanel, {
-            duration: 0.3,
-            ease: 'power2.out'
-          });
-        }
+    toggleLevel1() {
+      this.level1Expanded = !this.level1Expanded;
+      // Close level 2 when level 1 is closed
+      if (!this.level1Expanded) {
+        this.level2Expanded = false;
       }
+    },
+    toggleLevel2() {
+      this.level2Expanded = !this.level2Expanded;
+    },
+    // Legacy method for backward compatibility
+    togglePanel() {
+      this.toggleLevel1();
     },
     
     initDraggable() {
@@ -501,10 +509,6 @@ export default {
     },
     
     showCurrentMapTooltip(event) {
-      if (!this.mapTooltip) {
-        this.createMapTooltip();
-      }
-      
       if (!this.currentMap) {
         return;
       }
@@ -515,235 +519,66 @@ export default {
       }
       
       const imageUrl = this.getMapImageUrl(mapName);
-      
       if (!imageUrl) {
         return;
       }
       
-      // Create tooltip content - simplified
+      // Use unified tooltip system
       const isPreGame = mapName === 'Pre-game';
-      const tooltipTitle = isPreGame ? 'Tournament Status' : 'Current Map';
-      const tooltipSubtitle = isPreGame ? 'Pre-game Preparation' : mapName;
+      const subtitle = isPreGame ? 'Tournament Status' : 'Current Map';
       
-      this.mapTooltip.innerHTML = `
-        <div style="margin-bottom: 8px;">
-          <div style="font-weight: 600; color: #ef4444; font-size: 13px; margin-bottom: 4px;">
-            ${tooltipTitle}
-          </div>
-          <div style="font-weight: 500; color: #ffffff; font-size: 12px;">
-            ${tooltipSubtitle}
-          </div>
-        </div>
-        <div style="border-radius: 6px; overflow: hidden;">
-          <img src="${imageUrl}" 
-               alt="${mapName}" 
-               style="width: 100%; height: 80px; object-fit: cover; display: block;">
-        </div>
-      `;
-      
-      this.mapTooltip.style.visibility = 'visible';
-      
-      // Use client coordinates for accurate positioning
-      const mouseX = event.clientX;
-      const mouseY = event.clientY;
-      
-      // Position tooltip to the right of cursor (like bar graph tooltips)
-      const tooltipX = mouseX + 15; // 15px to the right of cursor
-      const tooltipY = mouseY; // At cursor level (top-left corner positioning)
-      
-      // Simple bounds checking
-      this.mapTooltip.style.left = Math.max(10, Math.min(tooltipX, window.innerWidth - 320)) + 'px';
-      this.mapTooltip.style.top = Math.max(10, tooltipY) + 'px';
+      tooltipManager.showMapTooltip('current-map', event, {
+        mapName: isPreGame ? 'Pre-game Preparation' : mapName,
+        imageUrl,
+        subtitle
+      });
     },
     
     updateTooltipPosition(event) {
-      if (!this.mapTooltip || this.mapTooltip.style.visibility === 'hidden') {
-        return;
-      }
-      
-      // Use client coordinates for accurate positioning
-      const mouseX = event.clientX;
-      const mouseY = event.clientY;
-      
-      // Position tooltip to the right of cursor (like bar graph tooltips)
-      const tooltipX = mouseX + 15; // 15px to the right of cursor
-      const tooltipY = mouseY; // At cursor level (top-left corner positioning)
-      
-      // Simple bounds checking
-      this.mapTooltip.style.left = Math.max(10, Math.min(tooltipX, window.innerWidth - 320)) + 'px';
-      this.mapTooltip.style.top = Math.max(10, tooltipY) + 'px';
+      // Update unified tooltip position
+      tooltipManager.updateTooltipPosition('current-map', event);
     },
     
     hideMapTooltip() {
-      if (this.mapTooltip) {
-        this.mapTooltip.style.visibility = 'hidden';
-      }
+      // Hide unified tooltip
+      tooltipManager.hideTooltip('current-map');
     },
     
-    createFilterTooltip() {
-      if (this.filterTooltip) {
-        this.filterTooltip.remove();
-      }
-      
-      this.filterTooltip = document.createElement('div');
-      this.filterTooltip.className = 'filter-tooltip';
-      this.filterTooltip.style.cssText = `
-        position: fixed;
-        visibility: hidden;
-        background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 100%);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        border-radius: 8px;
-        padding: 12px 16px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 16px rgba(239, 68, 68, 0.1);
-        color: #ffffff;
-        font-family: Inter, system-ui, sans-serif;
-        font-size: 13px;
-        font-weight: 500;
-        line-height: 1.4;
-        pointer-events: none;
-        z-index: 10000;
-        max-width: 200px;
-        text-align: left;
-        transform: translateX(-50%);
-      `;
-      
-      document.body.appendChild(this.filterTooltip);
-      return this.filterTooltip;
-    },
-    
-    createMapTooltip() {
-      if (this.mapTooltip) {
-        this.mapTooltip.remove();
-      }
-      
-      this.mapTooltip = document.createElement('div');
-      this.mapTooltip.className = 'map-tooltip';
-      this.mapTooltip.style.cssText = `
-        position: fixed;
-        visibility: hidden;
-        background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 100%);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        border-radius: 12px;
-        padding: 16px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 16px rgba(239, 68, 68, 0.1);
-        color: #ffffff;
-        font-family: Inter, system-ui, sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 1.4;
-        pointer-events: none;
-        z-index: 10000;
-        width: 320px;
-        max-width: 320px;
-        text-align: center;
-      `;
-      
-      document.body.appendChild(this.mapTooltip);
-      return this.mapTooltip;
-    },
     
     showFilterTooltip(event, gameNum) {
-      if (!this.filterTooltip) {
-        this.createFilterTooltip();
-      }
-      
       const mapName = this.getGameTooltip(gameNum);
       
-      this.filterTooltip.innerHTML = `
-        <div style="font-weight: 600; color: #ef4444; margin-bottom: 4px;">
-          Game ${gameNum}
-        </div>
-        <div style="color: #e5e7eb;">
-          ${mapName}
-        </div>
-      `;
-      
-      this.filterTooltip.style.visibility = 'visible';
-      
-      // Get the actual button element bounds
-      const button = event.currentTarget;
-      const buttonRect = button.getBoundingClientRect();
-      const tooltipWidth = 200; // max-width of tooltip
-      
-      // Center tooltip above the button using more precise positioning
-      const tooltipX = buttonRect.left + (buttonRect.width / 2);
-      const tooltipY = buttonRect.top - 60; // 60px above the button so numbers remain visible
-      
-      // Ensure tooltip stays within viewport with better bounds checking
-      const minX = tooltipWidth / 2 + 15;
-      const maxX = window.innerWidth - (tooltipWidth / 2) - 15;
-      const clampedX = Math.max(minX, Math.min(tooltipX, maxX));
-      const clampedY = Math.max(15, tooltipY);
-      
-      // Apply positioning with fixed positioning for accurate placement
-      this.filterTooltip.style.left = clampedX + 'px';
-      this.filterTooltip.style.top = clampedY + 'px';
+      // Use unified tooltip system with special positioning for filter buttons
+      tooltipManager.showTooltip(`filter-${gameNum}`, event, {
+        title: `Game ${gameNum}`,
+        content: mapName,
+        debounce: false,
+        offset: { x: 0, y: -60 }, // Position above button
+        position: 'above'
+      });
     },
     
     showClearTooltip(event) {
-      if (!this.filterTooltip) {
-        this.createFilterTooltip();
-      }
-      
-      this.filterTooltip.innerHTML = `
-        <div style="font-weight: 600; color: #ef4444;">
-          Clear Filters
-        </div>
-        <div style="color: #e5e7eb; margin-top: 4px;">
-          Remove all game filters and reset view
-        </div>
-      `;
-      
-      this.filterTooltip.style.visibility = 'visible';
-      
-      // Get the actual button element bounds  
-      const button = event.currentTarget;
-      const buttonRect = button.getBoundingClientRect();
-      const tooltipWidth = 200; // max-width of tooltip
-      
-      // Center tooltip above the button using more precise positioning
-      const tooltipX = buttonRect.left + (buttonRect.width / 2);
-      const tooltipY = buttonRect.top - 60; // 60px above the button so numbers remain visible
-      
-      // Ensure tooltip stays within viewport with better bounds checking
-      const minX = tooltipWidth / 2 + 15;
-      const maxX = window.innerWidth - (tooltipWidth / 2) - 15;
-      const clampedX = Math.max(minX, Math.min(tooltipX, maxX));
-      const clampedY = Math.max(15, tooltipY);
-      
-      // Apply positioning with fixed positioning for accurate placement
-      this.filterTooltip.style.left = clampedX + 'px';
-      this.filterTooltip.style.top = clampedY + 'px';
+      // Use unified tooltip system
+      tooltipManager.showTooltip('clear-filter', event, {
+        title: 'Clear Filters',
+        content: 'Remove all game filters and reset view',
+        debounce: false,
+        offset: { x: 0, y: -60 }, // Position above button
+        position: 'above'
+      });
     },
     
     hideFilterTooltip() {
-      if (this.filterTooltip) {
-        this.filterTooltip.style.visibility = 'hidden';
+      // Hide all filter-related tooltips
+      tooltipManager.hideTooltip('clear-filter');
+      // Hide game-specific filter tooltips (they use filter-{gameNum} pattern)
+      for (let i = 1; i <= this.maxGames; i++) {
+        tooltipManager.hideTooltip(`filter-${i}`);
       }
     },
     
     
-    handleImageError() {
-      this.$emit('hide-map-tooltip');
-    },
-    
-    adjustColor(hexColor, percent) {
-      if (!hexColor || typeof hexColor !== 'string' || !hexColor.startsWith('#')) {
-        return hexColor || '#dc2626';
-      }
-      
-      const num = parseInt(hexColor.slice(1), 16);
-      const amt = Math.round(2.55 * percent);
-      const R = (num >> 16) + amt;
-      const G = (num >> 8 & 0x00FF) + amt;
-      const B = (num & 0x0000FF) + amt;
-      
-      return `#${(0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
-        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
-        (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1)}`;
-    },
     
     getCurrentMapStyle() {
       let mapColor = '#ef4444';
@@ -767,7 +602,7 @@ export default {
     
     exportData() {
       this.$emit('export-requested', this.selectedMatchup);
-    },
+    }
 
   }
 }
@@ -775,28 +610,36 @@ export default {
 
 <style scoped>
 .action-panel {
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.8) 100%);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-4xl);
-  margin-top: var(--spacing-4xl);
-  backdrop-filter: blur(8px);
+  /* Compact draggable rectangle design */
+  width: 220px;
+  max-width: 220px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.7) 0%, rgba(30, 41, 59, 0.6) 100%);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  margin-top: var(--spacing-2xl);
+  backdrop-filter: blur(6px);
   box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    0 0 12px rgba(239, 68, 68, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  cursor: move;
+  position: absolute;
+  z-index: 15000;
+  pointer-events: auto;
 }
 
 .panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--spacing-4xl);
+  margin-bottom: var(--spacing-lg);
 }
 
 .panel-title {
   display: flex;
   align-items: center;
-  gap: var(--spacing-2xl);
+  gap: var(--spacing-lg);
 }
 
 .title-text {
@@ -810,7 +653,7 @@ export default {
 .compact-status {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4xl);
+  gap: var(--spacing-lg);
 }
 
 .progress-slider {
@@ -863,7 +706,7 @@ export default {
 .bento-controls-container {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2xl);
+  gap: var(--spacing-lg);
 }
 
 .map-badge {
@@ -940,4 +783,65 @@ export default {
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
 }
+
+/* Expansion Toggle Styling */
+.expansion-toggle-container {
+  margin-top: var(--spacing-sm);
+  border-top: 1px solid rgba(239, 68, 68, 0.15);
+  padding-top: var(--spacing-sm);
+}
+
+.level2-toggle {
+  margin-top: var(--spacing-2xl);
+  border-top: 1px solid rgba(239, 68, 68, 0.1);
+}
+
+.expansion-toggle-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.expansion-toggle-btn:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.08) 100%);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: var(--color-text-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.expand-icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+/* Level containers */
+.level1-controls-container,
+.level2-controls-container {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(239, 68, 68, 0.1);
+}
+
+.level2-controls-container {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
 </style> 

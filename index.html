@@ -7,9 +7,25 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- All CSS now loaded via main.js import for optimal caching and performance -->
+    <!-- Critical CSS inline for fastest FCP -->
+    <style>
+        /* Critical above-the-fold styles */
+        html, body { margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        #app { min-height: 100vh; }
+        .loading-spinner { 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; font-size: 24px; 
+        }
+    </style>
+    
+    <!-- Preload critical CSS -->
+    <link rel="preload" href="/src/styles/critical.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/src/styles/critical.css"></noscript>
+    
+    <!-- Async load fonts to prevent render blocking -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
 </head>
 <body>
     <div id="app">

@@ -1,31 +1,50 @@
 /* =============================================================================
-   ALGS Championship Visualization - Component System
-   Complete CSS Architecture - Phase 3 & 4 COMPLETED ✅
+   ALGS CHAMPIONSHIP VISUALIZATION - COMPONENT STYLES
+   All component-specific styling for dashboard and tournament views
    
-   Phase 3 - Core Architecture Migration:
-   ✅ Phase 3A: Layout & Grid System 
-   ✅ Phase 3B: Header & Navigation System
-   ✅ Phase 3C: Dashboard & Tournament Components
-   ✅ Phase 3D: Chart & Visualization Components
-   ✅ Phase 3E: Cleanup & championship.css removal
+   Component Structure:
    
-   Phase 4 - Functionality Restoration:
-   ✅ Phase 4A: Interactive Controls & Game Elements
-   ✅ Phase 4B: Map System & Interactive Tooltips  
-   ✅ Phase 4C: Chart Compression & Enhanced Interactivity
-   ✅ Phase 4D: Testing & Validation
+   Global Layout:
+   ├── html, body, #app      - Base page styling
+   ├── .main-layout          - Primary layout container
+   └── .bento-grid          - Dashboard grid system
    
-   Final bundle: ~91KB (vs original 122KB = -25% reduction)
-   Fully functional: All interactive controls, tooltips, animations restored
-   Architecture: design-tokens.css + components.css + tailwind.css
+   Headers & Navigation:
+   ├── .algs-header         - Main site header
+   ├── .tournament-header   - Tournament page header
+   ├── .tournament-nav-button - Navigation buttons
+   └── .tournament-header-card - Information cards
+   
+   Dashboard Components:
+   ├── .dashboard-container - Main dashboard wrapper
+   ├── .tournament-card     - Tournament selection cards
+   ├── .carousel-container  - Tournament carousel
+   ├── .ewc-banner         - Event banner
+   └── .data-management-btn - Data controls
+   
+   Interactive Controls:
+   ├── .action-panel        - Left sidebar controls
+   ├── .btn-filter         - Filter buttons
+   ├── .bento-controls-container - Control groupings
+   ├── .map-badge          - Map selection
+   └── .progress-slider    - Progress controls
+   
+   Chart & Visualization:
+   ├── .chart-container     - Chart wrapper
+   ├── .algs-chart-svg     - D3.js SVG elements
+   ├── .team-entry         - Team data rows
+   ├── .game-segment       - Game segments
+   └── .ranking-number     - Position indicators
+   
+   Interactive Elements:
+   ├── Button states (.btn-active, .btn-danger)
+   ├── Hover effects (:hover pseudo-classes)
+   ├── Animation keyframes (@keyframes)
+   └── Responsive design (@media queries)
+   
    ============================================================================= */
 
-/* =============================================================================
-   GLOBAL CONTAINER STYLES & MAIN BACKGROUNDS
-   Essential dark theme backgrounds for tournament view
-   ============================================================================= */
-
-/* Global HTML & Body Background */
+/* Global container backgrounds */
 html, body {
   margin: 0;
   padding: 0;
@@ -38,7 +57,6 @@ html, body {
   font-family: var(--font-primary);
 }
 
-/* Global App Background */
 #app {
   min-height: 100vh;
   background: 
@@ -49,7 +67,6 @@ html, body {
   font-family: var(--font-primary);
 }
 
-/* Main Layout Background */
 .main-layout.bento-grid {
   background: 
     linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 50%, rgba(15, 23, 42, 0.95) 100%),
@@ -74,7 +91,6 @@ html, body {
   pointer-events: none;
 }
 
-/* Chart Area Background */
 .right-column,
 .chart-container {
   background: 
@@ -85,19 +101,16 @@ html, body {
   box-shadow: 
     0 4px 16px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  position: relative;
+  z-index: 1;
 }
 
-/* Force dark backgrounds on all major containers */
 .left-column {
   background: 
     linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.8) 100%),
     radial-gradient(circle at 20% 80%, rgba(239, 68, 68, 0.03) 0%, transparent 60%);
 }
 
-/* White background override prevention */
-* {
-  background-color: transparent !important;
-}
 
 html, body, #app, .main-layout {
   background-color: rgba(15, 23, 42, 1) !important;
@@ -517,7 +530,7 @@ html, body, #app, .main-layout {
 
 /* =============================================================================
    LAYOUT & GRID SYSTEM
-   Migrated from championship.css - Phase 3A
+   Layout and grid components
    ============================================================================= */
 
 .mega-container {
@@ -554,10 +567,10 @@ html, body, #app, .main-layout {
 .left-column {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4xl);
-  width: 100%;
-  max-width: 280px;
-  min-height: 600px;
+  gap: var(--spacing-2xl);
+  width: 260px;
+  max-width: 260px;
+  min-height: 400px;
 }
 
 .left-column.adjust-controls-layout {
@@ -577,7 +590,7 @@ html, body, #app, .main-layout {
 .chart-container {
   width: 100%;
   height: 100%;
-  min-height: 600px;
+  min-height: 900px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -690,7 +703,7 @@ html, body, #app, .main-layout {
 
 /* =============================================================================
    HEADER & NAVIGATION SYSTEM
-   Migrated from championship.css - Phase 3B
+   Header and navigation components
    ============================================================================= */
 
 .tournament-header {
@@ -1077,27 +1090,27 @@ html, body, #app, .main-layout {
 
 /* =============================================================================
    DASHBOARD & TOURNAMENT COMPONENTS
-   Migrated from championship.css - Phase 3C
+   Dashboard and tournament components
    ============================================================================= */
 
 .dashboard-panel {
-  width: 100%;
-  max-width: 280px;
+  /* Compact rectangle design for performance */
+  width: 240px;
+  max-width: 240px;
   background: 
     linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.95) 50%, rgba(15, 23, 42, 0.98) 100%),
     radial-gradient(circle at 20% 20%, rgba(239, 68, 68, 0.08) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, rgba(217, 119, 6, 0.06) 0%, transparent 50%);
   border: 1px solid rgba(239, 68, 68, 0.3);
-  border-top: 3px solid var(--color-primary);
-  border-radius: var(--radius-2xl);
-  padding: var(--spacing-4xl);
-  backdrop-filter: blur(16px);
+  border-top: 2px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl);
+  backdrop-filter: blur(8px);
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 4px 16px rgba(0, 0, 0, 0.4),
     0 0 0 1px rgba(239, 68, 68, 0.1),
-    0 0 60px rgba(239, 68, 68, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    0 0 20px rgba(239, 68, 68, 0.08);
+  transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
 }
@@ -1141,14 +1154,14 @@ html, body, #app, .main-layout {
 .dashboard-header {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3xl);
-  margin-bottom: var(--spacing-4xl);
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-2xl);
 }
 
 .dashboard-main {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2xl);
+  gap: var(--spacing-lg);
 }
 
 .dashboard-title,
@@ -1609,7 +1622,7 @@ html, body, #app, .main-layout {
 
 /* =============================================================================
    CHART & VISUALIZATION COMPONENTS
-   Migrated from championship.css - Phase 3D
+   Chart and visualization components
    ============================================================================= */
 
 .chart-title-section {
@@ -2046,7 +2059,7 @@ html, body, #app, .main-layout {
 
 /* =============================================================================
    INTERACTIVE CONTROLS & GAME ELEMENTS
-   Phase 4A: Missing CSS for ActionPanel and TournamentView controls
+   Interactive controls and panels
    ============================================================================= */
 
 /* Action Panel Layout */
@@ -2398,27 +2411,7 @@ html, body, #app, .main-layout {
   color: var(--color-text-primary);
 }
 
-/* Tooltip System */
-.map-tooltip {
-  position: absolute;
-  z-index: 9999;
-  background: rgba(15, 23, 42, 0.95);
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-3xl);
-  max-width: 300px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(12px);
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 0.2s ease;
-  pointer-events: none;
-}
-
-.map-tooltip.show {
-  opacity: 1;
-  transform: translateY(0);
-}
+/* Legacy tooltip classes removed - now using unified TooltipManager system */
 
 .tooltip-content {
   display: flex;
@@ -2459,7 +2452,7 @@ html, body, #app, .main-layout {
 
 /* =============================================================================
    MAP SYSTEM & INTERACTIVE TOOLTIPS
-   Phase 4B: Map display, progression, and tooltip functionality
+   Map and tooltip functionality
    ============================================================================= */
 
 /* Current Map Display */
@@ -2596,8 +2589,8 @@ html, body, #app, .main-layout {
   font-weight: 600;
 }
 
-/* Enhanced Map Tooltips */
-.map-tooltip-enhanced {
+/* Legacy enhanced tooltip classes removed - now using unified TooltipManager system */
+.REMOVED-map-tooltip-enhanced {
   position: absolute;
   z-index: 10000;
   background: rgba(15, 23, 42, 0.98);
@@ -2825,7 +2818,7 @@ html, body, #app, .main-layout {
 
 /* =============================================================================
    CHART COMPRESSION & ENHANCED INTERACTIVITY
-   Phase 4C: Chart controls, compression, point values, and hover states
+   Chart controls and interactive states
    ============================================================================= */
 
 /* Chart Section with Compression */

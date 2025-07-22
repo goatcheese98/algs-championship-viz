@@ -1,0 +1,130 @@
+{
+  "timestamp": "2025-07-21T18:20:35.811Z",
+  "files": [
+    {
+      "file": "src/styles/critical.css",
+      "rawSize": 9665,
+      "gzippedSize": 2599,
+      "brotliSize": 2100,
+      "gzipRatio": "73.1",
+      "brotliRatio": "78.3",
+      "lines": 372,
+      "selectors": 35,
+      "mediaQueries": 1,
+      "customProperties": 19,
+      "comments": 20
+    },
+    {
+      "file": "src/styles/main.css",
+      "rawSize": 1915,
+      "gzippedSize": 757,
+      "brotliSize": 588,
+      "gzipRatio": "60.5",
+      "brotliRatio": "69.3",
+      "lines": 49,
+      "selectors": 0,
+      "mediaQueries": 0,
+      "customProperties": 0,
+      "comments": 2
+    },
+    {
+      "file": "src/styles/non-critical.css",
+      "rawSize": 14399,
+      "gzippedSize": 3522,
+      "brotliSize": 2900,
+      "gzipRatio": "75.5",
+      "brotliRatio": "79.9",
+      "lines": 614,
+      "selectors": 90,
+      "mediaQueries": 1,
+      "customProperties": 52,
+      "comments": 30
+    },
+    {
+      "file": "src/styles/routes/dashboard.css",
+      "rawSize": 8873,
+      "gzippedSize": 2201,
+      "brotliSize": 1799,
+      "gzipRatio": "75.2",
+      "brotliRatio": "79.7",
+      "lines": 388,
+      "selectors": 49,
+      "mediaQueries": 1,
+      "customProperties": 0,
+      "comments": 10
+    },
+    {
+      "file": "src/styles/routes/tournament.css",
+      "rawSize": 10606,
+      "gzippedSize": 2423,
+      "brotliSize": 1998,
+      "gzipRatio": "77.2",
+      "brotliRatio": "81.2",
+      "lines": 419,
+      "selectors": 46,
+      "mediaQueries": 3,
+      "customProperties": 0,
+      "comments": 15
+    },
+    {
+      "file": "src/styles/tailwind.css",
+      "rawSize": 15816,
+      "gzippedSize": 3189,
+      "brotliSize": 2666,
+      "gzipRatio": "79.8",
+      "brotliRatio": "83.1",
+      "lines": 669,
+      "selectors": 97,
+      "mediaQueries": 1,
+      "customProperties": 0,
+      "comments": 17
+    },
+    {
+      "file": "styles/components.css",
+      "rawSize": 71200,
+      "gzippedSize": 10872,
+      "brotliSize": 9145,
+      "gzipRatio": "84.7",
+      "brotliRatio": "87.2",
+      "lines": 3191,
+      "selectors": 435,
+      "mediaQueries": 8,
+      "customProperties": 10,
+      "comments": 57
+    },
+    {
+      "file": "styles/design-tokens.css",
+      "rawSize": 7681,
+      "gzippedSize": 2403,
+      "brotliSize": 1967,
+      "gzipRatio": "68.7",
+      "brotliRatio": "74.4",
+      "lines": 217,
+      "selectors": 1,
+      "mediaQueries": 0,
+      "customProperties": 130,
+      "comments": 32
+    }
+  ],
+  "summary": {
+    "totalRawSize": 140155,
+    "totalGzippedSize": 27966,
+    "totalBrotliSize": 23163,
+    "totalSelectors": 753,
+    "totalMediaQueries": 15,
+    "totalCustomProperties": 211,
+    "fileCount": 8,
+    "avgGzipRatio": 80,
+    "avgBrotliRatio": 83.5
+  },
+  "recommendations": [
+    {
+      "type": "size",
+      "priority": "high",
+      "message": "1 files are larger than 50KB",
+      "files": [
+        "styles/components.css"
+      ]
+    }
+  ]
+}

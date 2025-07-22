@@ -1,0 +1,109 @@
+/* =============================================================================
+   ALGS CHAMPIONSHIP VISUALIZATION - CARD COMPONENTS
+   Tournament and dashboard card components using @apply
+   Following CSS Guidelines best practices
+   ============================================================================= */
+
+/* Base Card Component - BEM Naming */
+.card {
+  @apply bg-neutral-900 border border-neutral-700 rounded-xl p-6 transition-all duration-base;
+}
+
+.card--elevated {
+  @apply shadow-lg hover:shadow-xl;
+}
+
+.card--interactive {
+  @apply cursor-pointer hover:border-primary/50 hover:shadow-glow-primary transform hover:scale-[1.02];
+}
+
+.card--glass {
+  @apply bg-neutral-800/50 backdrop-blur-sm border-neutral-700/50;
+}
+
+/* Tournament Card Components */
+.tournament-card {
+  @apply card card--elevated card--interactive bg-gradient-to-br from-neutral-900 to-neutral-800 p-8 group;
+}
+
+.tournament-card__header {
+  @apply flex items-start justify-between mb-6;
+}
+
+.tournament-card__icon {
+  @apply w-16 h-16 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-3xl shadow-lg group-hover:shadow-glow-primary transition-shadow duration-base;
+}
+
+.tournament-card__status {
+  @apply px-3 py-1 bg-success/20 text-success text-sm font-semibold rounded-full border border-success/30;
+}
+
+.tournament-card__content {
+  @apply space-y-6;
+}
+
+.tournament-card__title {
+  @apply text-2xl font-bold text-neutral-50 group-hover:text-primary transition-colors duration-base;
+}
+
+.tournament-card__description {
+  @apply text-neutral-300 leading-relaxed;
+}
+
+.tournament-card__details {
+  @apply grid grid-cols-2 gap-4;
+}
+
+.tournament-card__detail {
+  @apply bg-neutral-800/50 rounded-lg p-3 border border-neutral-700/50;
+}
+
+.tournament-card__detail-label {
+  @apply text-xs text-neutral-500 font-medium mb-1;
+}
+
+.tournament-card__detail-value {
+  @apply text-sm text-neutral-200 font-semibold;
+}
+
+.tournament-card__cta {
+  @apply btn btn--primary w-full;
+}
+
+/* Stat Card Components */
+.stat-card {
+  @apply card card--glass text-center p-4;
+}
+
+.stat-card__icon {
+  @apply text-2xl mb-2;
+}
+
+.stat-card__label {
+  @apply text-xs text-neutral-400 font-medium;
+}
+
+.stat-card__value {
+  @apply text-lg font-bold text-neutral-50;
+}
+
+/* Info Card Components */
+.info-card {
+  @apply card bg-primary/5 border-primary/20;
+}
+
+.info-card__header {
+  @apply flex items-center gap-3 mb-4;
+}
+
+.info-card__icon {
+  @apply w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center text-primary;
+}
+
+.info-card__title {
+  @apply font-semibold text-neutral-50;
+}
+
+.info-card__content {
+  @apply text-neutral-300 text-sm leading-relaxed;
+}

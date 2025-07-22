@@ -1,0 +1,182 @@
+{
+  "timestamp": "2025-07-21T18:27:04.300Z",
+  "testUrl": "http://localhost:3000",
+  "browsers": [
+    {
+      "browser": "chromium",
+      "performance": {
+        "browser": "chromium",
+        "performance": {
+          "cssResources": [
+            {
+              "name": "main.css",
+              "duration": 10.700000002980232,
+              "transferSize": 87330,
+              "encodedBodySize": 87030,
+              "startTime": 25.600000001490116,
+              "responseEnd": 36.30000000447035
+            },
+            {
+              "name": "TournamentView.vue?vue&type=style&index=0&scoped=7feb9b86&lang.css",
+              "duration": 15.300000004470348,
+              "transferSize": 169450,
+              "encodedBodySize": 169150,
+              "startTime": 56.899999998509884,
+              "responseEnd": 72.20000000298023
+            },
+            {
+              "name": "ActionPanel.vue?vue&type=style&index=0&scoped=842b2b8a&lang.css",
+              "duration": 7.799999997019768,
+              "transferSize": 48056,
+              "encodedBodySize": 47756,
+              "startTime": 64.70000000298023,
+              "responseEnd": 72.5
+            },
+            {
+              "name": "InteractiveRaceChart.vue?vue&type=style&index=0&scoped=0b3d16cc&lang.css",
+              "duration": 4.200000002980232,
+              "transferSize": 101515,
+              "encodedBodySize": 101215,
+              "startTime": 71,
+              "responseEnd": 75.20000000298023
+            },
+            {
+              "name": "tournament-animations.css",
+              "duration": 3.8000000044703484,
+              "transferSize": 1226,
+              "encodedBodySize": 926,
+              "startTime": 160,
+              "responseEnd": 163.80000000447035
+            },
+            {
+              "name": "chart-enhancements.css",
+              "duration": 5.100000001490116,
+              "transferSize": 1226,
+              "encodedBodySize": 926,
+              "startTime": 160,
+              "responseEnd": 165.10000000149012
+            },
+            {
+              "name": "dashboard.css",
+              "duration": 10.600000001490116,
+              "transferSize": 25935,
+              "encodedBodySize": 25635,
+              "startTime": 166.5,
+              "responseEnd": 177.10000000149012
+            },
+            {
+              "name": "tournament.css",
+              "duration": 1.2000000029802322,
+              "transferSize": 30932,
+              "encodedBodySize": 30632,
+              "startTime": 178.39999999850988,
+              "responseEnd": 179.60000000149012
+            }
+          ],
+          "paintMetrics": [
+            {
+              "name": "first-paint",
+              "startTime": 192
+            },
+            {
+              "name": "first-contentful-paint",
+              "startTime": 260
+            }
+          ],
+          "domContentLoaded": 166.70000000298023,
+          "loadComplete": 183.39999999850988
+        },
+        "webVitals": {
+          "fcp": 260,
+          "lcp": 260,
+          "cls": 0.010057483779059516
+        },
+        "timestamp": "2025-07-21T18:26:43.439Z"
+      },
+      "responsive": [
+        {
+          "viewport": "mobile",
+          "dimensions": "375x667",
+          "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/screenshots/chromium-mobile-375x667.png",
+          "metrics": {
+            "scrollWidth": 375,
+            "scrollHeight": 1634,
+            "clientWidth": 375,
+            "clientHeight": 667,
+            "hasHorizontalScrollbar": false,
+            "hasLayoutShift": true
+          }
+        },
+        {
+          "viewport": "tablet",
+          "dimensions": "768x1024",
+          "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/screenshots/chromium-tablet-768x1024.png",
+          "metrics": {
+            "scrollWidth": 768,
+            "scrollHeight": 1435,
+            "clientWidth": 768,
+            "clientHeight": 1024,
+            "hasHorizontalScrollbar": false,
+            "hasLayoutShift": true
+          }
+        },
+        {
+          "viewport": "desktop",
+          "dimensions": "1920x1080",
+          "screenshot": "/Users/rohanjasani/Projects/algs-championship-viz/Testing/results/screenshots/chromium-desktop-1920x1080.png",
+          "metrics": {
+            "scrollWidth": 1920,
+            "scrollHeight": 1259,
+            "clientWidth": 1920,
+            "clientHeight": 1080,
+            "hasHorizontalScrollbar": false,
+            "hasLayoutShift": true
+          }
+        }
+      ],
+      "coverage": {
+        "files": [
+          {
+            "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
+            "filename": "css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap",
+            "totalBytes": 17549,
+            "usedBytes": 0,
+            "unusedBytes": 17549,
+            "usagePercentage": "0.00"
+          },
+          {
+            "url": "http://localhost:3000/assets/non-critical.css",
+            "filename": "non-critical.css",
+            "totalBytes": 924,
+            "usedBytes": 0,
+            "unusedBytes": 924,
+            "usagePercentage": "0.00"
+          }
+        ],
+        "summary": {
+          "totalFiles": 2,
+          "totalSize": 18473,
+          "totalUsed": 0,
+          "totalUnused": 18473,
+          "overallUsage": "0.00"
+        }
+      },
+      "timestamp": "2025-07-21T18:27:04.264Z"
+    },
+    {
+      "browser": "firefox",
+      "error": "browserType.launch: Executable doesn't exist at /Users/rohanjasani/Library/Caches/ms-playwright/firefox-1489/firefox/Nightly.app/Contents/MacOS/firefox\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝",
+      "timestamp": "2025-07-21T18:27:04.298Z"
+    },
+    {
+      "browser": "webkit",
+      "error": "browserType.launch: Executable doesn't exist at /Users/rohanjasani/Library/Caches/ms-playwright/webkit-2191/pw_run.sh\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝",
+      "timestamp": "2025-07-21T18:27:04.300Z"
+    }
+  ],
+  "summary": {
+    "totalBrowsers": 3,
+    "successfulTests": 1,
+    "failedTests": 2
+  }
+}
