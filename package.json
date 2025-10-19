@@ -45,9 +45,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Gareth-Seaward/algs-y4-viz.git"
+    "url": "https://github.com/goatcheese49/algs-championship-viz.git"
   },
-  "homepage": "https://gareth-seaward.github.io/algs-y4-viz",
+  "homepage": "https://goatcheese49.github.io/algs-championship-viz",
   "engines": {
     "node": ">=14.0.0",
     "npm": ">=6.0.0"

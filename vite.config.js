@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   plugins: [vue()],
-  base: '/algs-y4-viz/',
+  base: '/algs-championship-viz/',
   root: '.',
   server: {
     port: 3000,
