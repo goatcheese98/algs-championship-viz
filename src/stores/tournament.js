@@ -136,12 +136,13 @@ export const useTournamentStore = defineStore('tournament', {
     },
 
     _buildCsvPath(matchupId) {
+      const base = import.meta.env.BASE_URL || '/';
       if (this.tournamentType === 'ewc2025') {
-        return `/ewc2025/raw/${matchupId}.csv`;
+        return `${base}ewc2025/raw/${matchupId}.csv`;
       } else if (this.tournamentType === 'year5') {
-        return `/year5champions/raw/${matchupId}.csv`;
+        return `${base}year5champions/raw/${matchupId}.csv`;
       } else {
-        return `/year4champions/raw/${matchupId}.csv`;
+        return `${base}year4champions/raw/${matchupId}.csv`;
       }
     },
 
