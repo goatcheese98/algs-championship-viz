@@ -247,6 +247,70 @@
           </div>
         </div>
         
+        <!-- Commentary Panel (moved above chart, below title) -->
+        <div v-if="selectedMatchup" class="commentary-panel" ref="commentarySection">
+          <div class="panel-border">
+            <div class="corner-accent top-left"></div>
+            <div class="corner-accent top-right"></div>
+            <div class="corner-accent bottom-left"></div>
+            <div class="corner-accent bottom-right"></div>
+          </div>
+          
+          <!-- Side by Side Content Layout -->
+          <div class="commentary-layout">
+            <!-- Left Side - Commentary Text with Inline Map Badge -->
+            <div class="commentary-content">
+              <div class="commentary-with-badge">
+                <div v-if="currentGame > 0" class="inline-map-badge" :style="getCurrentGameBadgeStyle()">
+                  <div class="badge-glow"></div>
+                  <span class="game-number">{{ currentGame }}</span>
+                  <span class="divider">//</span>
+                  <span class="game-map" 
+                        @mouseenter="showCommentaryMapTooltip"
+                        @mousemove="updateCommentaryTooltipPosition"
+                        @mouseleave="hideCommentaryMapTooltip">{{ getCurrentMapName() }}</span>
+                </div>
+                <p class="commentary-text">{{ commentaryText }}</p>
+              </div>
+            </div>
+
+            <!-- Right Side - Compact Dominance Containers -->
+            <div class="dominance-containers" v-if="currentGame > 0">
+              <!-- Current Dominance (Cumulative) -->
+              <div class="dominance-compact current" v-if="getTopTeams().length > 0">
+                <div class="dominance-header">
+                  <span class="dominance-title">CURRENT DOMINANCE</span>
+                </div>
+                <div class="teams-compact">
+                  <div v-for="(team, index) in getTopTeams().slice(0, 3)" 
+                       :key="`current-${team.team}`" 
+                       :class="['team-compact', `rank-${index + 1}`]">
+                    <span class="rank">{{ index + 1 }}</span>
+                    <span class="name">{{ team.team }}</span>
+                    <span class="points">{{ team.totalPoints }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Match Dominance (Single Game) -->
+              <div class="dominance-compact match" v-if="getMatchTopTeams().length > 0">
+                <div class="dominance-header">
+                  <span class="dominance-title">MATCH DOMINANCE</span>
+                </div>
+                <div class="teams-compact">
+                  <div v-for="(team, index) in getMatchTopTeams().slice(0, 3)" 
+                       :key="`match-${team.team}`" 
+                       :class="['team-compact', `rank-${index + 1}`]">
+                    <span class="rank">{{ index + 1 }}</span>
+                    <span class="name">{{ team.team }}</span>
+                    <span class="points">{{ team.matchPoints }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <transition name="chart-fade" mode="out-in">
           
           <!-- Loading State -->
@@ -324,70 +388,6 @@
           </div>
           
         </transition>
-        
-        <!-- Commentary Panel (independent, outside transition) -->
-        <div v-if="selectedMatchup" class="commentary-panel" ref="commentarySection">
-          <div class="panel-border">
-            <div class="corner-accent top-left"></div>
-            <div class="corner-accent top-right"></div>
-            <div class="corner-accent bottom-left"></div>
-            <div class="corner-accent bottom-right"></div>
-          </div>
-          
-          <!-- Side by Side Content Layout -->
-          <div class="commentary-layout">
-            <!-- Left Side - Commentary Text with Inline Map Badge -->
-            <div class="commentary-content">
-              <div class="commentary-with-badge">
-                <div v-if="currentGame > 0" class="inline-map-badge" :style="getCurrentGameBadgeStyle()">
-                  <div class="badge-glow"></div>
-                  <span class="game-number">{{ currentGame }}</span>
-                  <span class="divider">//</span>
-                  <span class="game-map" 
-                        @mouseenter="showCommentaryMapTooltip"
-                        @mousemove="updateCommentaryTooltipPosition"
-                        @mouseleave="hideCommentaryMapTooltip">{{ getCurrentMapName() }}</span>
-                </div>
-                <p class="commentary-text">{{ commentaryText }}</p>
-              </div>
-            </div>
-
-            <!-- Right Side - Compact Dominance Containers -->
-            <div class="dominance-containers" v-if="currentGame > 0">
-              <!-- Current Dominance (Cumulative) -->
-              <div class="dominance-compact current" v-if="getTopTeams().length > 0">
-                <div class="dominance-header">
-                  <span class="dominance-title">CURRENT DOMINANCE</span>
-                </div>
-                <div class="teams-compact">
-                  <div v-for="(team, index) in getTopTeams().slice(0, 3)" 
-                       :key="`current-${team.team}`" 
-                       :class="['team-compact', `rank-${index + 1}`]">
-                    <span class="rank">{{ index + 1 }}</span>
-                    <span class="name">{{ team.team }}</span>
-                    <span class="points">{{ team.totalPoints }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Match Dominance (Single Game) -->
-              <div class="dominance-compact match" v-if="getMatchTopTeams().length > 0">
-                <div class="dominance-header">
-                  <span class="dominance-title">MATCH DOMINANCE</span>
-                </div>
-                <div class="teams-compact">
-                  <div v-for="(team, index) in getMatchTopTeams().slice(0, 3)" 
-                       :key="`match-${team.team}`" 
-                       :class="['team-compact', `rank-${index + 1}`]">
-                    <span class="rank">{{ index + 1 }}</span>
-                    <span class="name">{{ team.team }}</span>
-                    <span class="points">{{ team.matchPoints }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
     
@@ -2874,6 +2874,45 @@ export default {
   font-size: 12px;
   color: #94a3b8;
   font-style: italic;
+}
+
+/* Loading overlay styles */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid #fbbf24;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Fade transition styles */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
 
