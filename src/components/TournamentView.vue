@@ -1,2919 +1,532 @@
 <template>
-  <div id="app">
-    
-    <header class="tournament-header">
-      <div class="header-background">
-        <div class="glow-orb glow-orb-1"></div>
-        <div class="glow-orb glow-orb-2"></div>
-        <div class="glow-orb glow-orb-3"></div>
-        <div class="header-grid-pattern"></div>
-      </div>
-      
-      <div class="header-content">
-        <div class="header-top">
-          <div class="header-branding">
-            <div ref="championshipLogo" class="championship-logo">
-              <div ref="logoIcon" class="logo-icon apex-logo">
-                <object data="/src/assets/svg/apex-logo.svg" 
-                        type="image/svg+xml" 
-                        class="apex-logo-svg">
-                  <img src="/src/assets/svg/apex-logo.svg" 
-                       alt="ALGS Apex Logo" 
-                       class="apex-logo-fallback" />
-                </object>
-              </div>
-              <div ref="logoParticles" class="logo-particles"></div>
+  <div class="min-h-screen bg-surface-950">
+    <!-- Header with Selectors -->
+    <header class="sticky top-0 z-50 glass-heavy border-b border-surface-800">
+      <div class="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Top Row: Logo -->
+        <div class="flex items-center h-14 border-b border-surface-800/50">
+          <RouterLink to="/" class="flex items-center gap-3 group">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-lg shadow-glow transition-transform group-hover:scale-105">
+              🏆
             </div>
-            
-            <div class="brand-info">
-              <div class="brand-subtitle">Apex Legends Global Series</div>
-              <div class="tournament-status">
-                <span class="status-indicator ended"></span>
-                <span class="status-text">Tournament Ended</span>
-              </div>
-              <div ref="championshipTitle" class="championship-title">
-                <h1 ref="titleMain" class="title-main">
-                  {{ isEwc2025Tournament ? '' : (isYear5Tournament ? 'ALGS Year 5 Open' : '') }}
-                </h1>
-              </div>
-            </div>
+            <span class="font-bold text-surface-100 group-hover:text-brand-400 transition-colors">ALGS Dashboard</span>
+          </RouterLink>
+        </div>
+        
+        <!-- Bottom Row: Selectors -->
+        <div class="flex items-center gap-2 py-3 overflow-x-auto no-scrollbar">
+          <!-- Tournament Selector -->
+          <div class="relative">
+            <select 
+              v-model="selectedTournament"
+              @change="handleTournamentChange"
+              class="input text-sm py-2 pl-3 pr-10 min-w-[160px] cursor-pointer appearance-none bg-surface-800/50"
+            >
+              <option value="year-4-championship">Year 4 Championship</option>
+              <option value="year-5-open">Year 5 Open</option>
+              <option value="ewc-2025">EWC 2025</option>
+            </select>
+            <svg class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-surface-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
           </div>
-
-          <div class="header-actions">
-            <div ref="tournamentInfo" class="tournament-info-inline">
-              <div ref="infoItem1" class="tournament-header-card">
-                <div class="info-icon-container">
-                  <span ref="infoIcon1" class="info-icon">
-                    {{ isEwc2025Tournament ? '🏆' : (isYear5Tournament ? '🌍' : '📍') }}
-                  </span>
-                </div>
-                <div class="info-content">
-                  <div class="info-label">Event</div>
-                  <div ref="infoText1" class="info-value">
-                    {{ isEwc2025Tournament ? 'Championship Tournament' : (isYear5Tournament ? 'Global Tournament' : 'Sapporo, Japan') }}
-                  </div>
-                </div>
-              </div>
-
-              <div ref="infoItem2" class="tournament-header-card">
-                <div class="info-icon-container">
-                  <span ref="infoIcon2" class="info-icon">📅</span>
-                </div>
-                <div class="info-content">
-                  <div class="info-label">Schedule</div>
-                  <div ref="infoText2" class="info-value">
-                    {{ isEwc2025Tournament ? 'Day 1 - Group A' : (isYear5Tournament ? 'Split 1 - 2025' : 'Jan 29 - Feb 2, 2025') }}
-                  </div>
-                </div>
-              </div>
-
-              <div ref="infoItem3" class="tournament-header-card">
-                <div class="info-icon-container">
-                  <span ref="infoIcon3" class="info-icon">⚔️</span>
-                </div>
-                <div class="info-content">
-                  <div class="info-label">Format</div>
-                  <div ref="infoText3" class="info-value">
-                    {{ isEwc2025Tournament ? '20 Teams' : (isYear5Tournament ? '6 Tournament Rounds' : '40 Teams') }}
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <nav class="header-nav">
-              <router-link to="/" class="tournament-nav-button">
-                <span class="tournament-text">Dashboard</span>
-              </router-link>
-              <router-link v-if="isYear5Tournament" to="/tournament/year-4-championship" class="tournament-nav-button">
-                <span class="tournament-text">Year 4</span>
-              </router-link>
-              <router-link v-if="isEwc2025Tournament" to="/tournament/year-4-championship" class="tournament-nav-button">
-                <span class="tournament-text">Year 4</span>
-              </router-link>
-              <router-link v-if="isEwc2025Tournament" to="/tournament/year-5-open" class="tournament-nav-button">
-                <span class="tournament-text">Year 5</span>
-              </router-link>
-            </nav>
+          
+          <!-- Day Selector -->
+          <div class="flex items-center gap-1">
+            <button
+              v-for="day in tournamentDays"
+              :key="day.id"
+              @click="handleDaySelect(day.id)"
+              :class="[
+                'px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all',
+                selectedDay === day.id
+                  ? 'bg-brand-600 text-white'
+                  : 'bg-surface-800/50 text-surface-400 hover:bg-surface-700 hover:text-surface-200'
+              ]"
+            >
+              {{ day.shortName || day.name }}
+            </button>
+          </div>
+          
+          <div class="w-px h-6 bg-surface-700 mx-1" />
+          
+          <!-- Matchup Selector -->
+          <div class="flex items-center gap-1">
+            <button
+              v-for="matchup in currentDayMatchups"
+              :key="matchup.id"
+              @click="handleMatchupSelect(matchup.id)"
+              :class="[
+                'px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all',
+                selectedMatchup === matchup.id
+                  ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
+                  : 'bg-surface-800/30 text-surface-400 hover:bg-surface-800 hover:text-surface-200'
+              ]"
+            >
+              {{ matchup.title }}
+            </button>
           </div>
         </div>
       </div>
     </header>
 
-    <div class="main-layout bento-grid">
-      
-      <TournamentSelector
-        ref="tournamentSelector"
-        :is-year5-tournament="isYear5Tournament"
-        :is-ewc2025-tournament="isEwc2025Tournament"
-        :loaded-matchups="loadedMatchups"
-        :loading-matchups="loadingMatchups"
-        style="display: none;"
-      />
-      
-      
-      <div class="left-column" :class="{ 'adjust-controls-layout': shouldAdjustControlsLayout }">
-        
-        <div class="dashboard-panel" :class="{ 'has-collapsed-sections': hasCollapsedSections }">
-          
-          
-          <div class="dashboard-header">
-            <div class="dashboard-main">
-              <div ref="dashboardTitle" class="dashboard-title-enhanced">
-                <span ref="dashboardText" class="dashboard-text">Tournament Dashboard</span>
-                <div ref="dashboardGlow" class="dashboard-glow"></div>
-              </div>
-            </div>
-          </div>
-          
-          
-          <div class="dashboard-section">
-            <div class="section-header" @click="toggleTournamentDays">
-              <div class="section-main">
-                <div class="section-icon">
-                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="16" y1="2" x2="16" y2="6"/>
-                    <line x1="8" y1="2" x2="8" y2="6"/>
-                    <line x1="3" y1="10" x2="21" y2="10"/>
-                  </svg>
-                </div>
-                <span class="section-title">Tournament Days</span>
-              </div>
-              <div class="collapse-icon">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
-                     :style="{ transform: tournamentDaysCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }">
-                  <path d="m6 9 6 6 6-6"/>
-                </svg>
-              </div>
-            </div>
-            <transition name="slide-down">
-              <div v-show="!tournamentDaysCollapsed" class="section-content">
-                <div class="algs-day-cards">
-                  <div v-for="day in tournamentDays" 
-                       :key="day.id"
-                       :class="['algs-day-card', { active: selectedDay === day.id }]"
-                       @click="setDay(day.id)"
-                       :title="day.name">
-                    {{ day.name }}
-                  </div>
-                </div>
-              </div>
-            </transition>
-          </div>
-
-          
-          <div class="dashboard-section">
-            <div class="section-header" @click="toggleMatchups">
-              <div class="section-main">
-                <div class="section-icon">
-                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                    <line x1="3" y1="6" x2="21" y2="6"/>
-                    <path d="M16 10a4 4 0 0 1-8 0"/>
-                  </svg>
-                </div>
-                <span class="section-title">Matchups</span>
-              </div>
-              <div class="collapse-icon">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
-                     :style="{ transform: matchupsCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }">
-                  <path d="m6 9 6 6 6-6"/>
-                </svg>
-              </div>
-            </div>
-            <transition name="slide-down">
-              <div v-show="!matchupsCollapsed" class="section-content">
-                <div class="algs-matchup-list">
-                  <div v-for="matchup in currentDayMatchups" 
-                       :key="matchup.id"
-                       :class="['algs-sidebar-matchup', { active: selectedMatchup === matchup.id }]"
-                       @click="handleMatchupSelect(matchup.id)"
-                       :title="matchup.description">
-                    <span class="matchup-name">{{ matchup.title }}</span>
-                    <span class="matchup-games">{{ matchup.games === 'auto' ? '' : matchup.games + 'G' }}</span>
-                  </div>
-                </div>
-              </div>
-            </transition>
-          </div>
-          
-        </div>
-        
-        
-        <ActionPanel
-          v-if="selectedMatchup"
-          :current-map="currentMap"
-          @export-requested="exportData"
-          :key="`action-panel-${selectedDay}-${selectedMatchup}`"
-          class="controls-panel-grid"
-        />
+    <!-- Main Content - Full Width Chart -->
+    <main class="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex flex-col items-center justify-center py-32">
+        <div class="w-12 h-12 border-2 border-brand-500/30 border-t-brand-500 rounded-full animate-spin mb-4" />
+        <p class="text-surface-500">Loading tournament data...</p>
       </div>
-      
-      
 
-      <div class="chart-section" :class="{ compressed: isChartCompressed }">
-        
-        <div class="chart-title-section" v-if="selectedMatchup">
-          <div class="chart-title-accent"></div>
-          <div class="chart-title-corners"></div>
-          <div class="chart-title-container">
-            <div class="chart-title-main">
-              <h2 class="chart-title">{{ dynamicChartTitle }}</h2>
-              <div class="chart-subtitle" v-if="dynamicChartSubtitle">{{ dynamicChartSubtitle }}</div>
-            </div>
-            
-            <!-- Chart View Toggle Button -->
-            <div class="chart-view-toggle">
-              <button @click="toggleChartView" 
-                      class="view-toggle-btn"
-                      :title="isChartCompressed ? 'Expand Chart View' : 'Compress Chart View'">
-                <div class="toggle-icon">
-                  <svg v-if="isChartCompressed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="15,3 21,3 21,9"></polyline>
-                    <polyline points="9,21 3,21 3,15"></polyline>
-                    <line x1="21" y1="3" x2="14" y2="10"></line>
-                    <line x1="3" y1="21" x2="10" y2="14"></line>
-                  </svg>
-                  <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="4,14 10,14 10,20"></polyline>
-                    <polyline points="20,10 14,10 14,4"></polyline>
-                    <line x1="14" y1="10" x2="21" y2="3"></line>
-                    <line x1="3" y1="21" x2="10" y2="14"></line>
-                  </svg>
-                </div>
-                <span class="toggle-label">{{ isChartCompressed ? 'EXPAND' : 'COMPRESS' }}</span>
-              </button>
-            </div>
-          </div>
+      <!-- Error State -->
+      <div v-else-if="error" class="flex flex-col items-center justify-center py-32 text-center">
+        <div class="w-16 h-16 rounded-2xl bg-accent-danger/10 flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-accent-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
         </div>
-        
-        <!-- Commentary Panel (moved above chart, below title) -->
-        <div v-if="selectedMatchup" class="commentary-panel" ref="commentarySection">
-          <div class="panel-border">
-            <div class="corner-accent top-left"></div>
-            <div class="corner-accent top-right"></div>
-            <div class="corner-accent bottom-left"></div>
-            <div class="corner-accent bottom-right"></div>
-          </div>
-          
-          <!-- Side by Side Content Layout -->
-          <div class="commentary-layout">
-            <!-- Left Side - Commentary Text with Inline Map Badge -->
-            <div class="commentary-content">
-              <div class="commentary-with-badge">
-                <div v-if="currentGame > 0" class="inline-map-badge" :style="getCurrentGameBadgeStyle()">
-                  <div class="badge-glow"></div>
-                  <span class="game-number">{{ currentGame }}</span>
-                  <span class="divider">//</span>
-                  <span class="game-map" 
-                        @mouseenter="showCommentaryMapTooltip"
-                        @mousemove="updateCommentaryTooltipPosition"
-                        @mouseleave="hideCommentaryMapTooltip">{{ getCurrentMapName() }}</span>
-                </div>
-                <p class="commentary-text">{{ commentaryText }}</p>
-              </div>
-            </div>
+        <h3 class="text-lg font-semibold text-surface-200 mb-2">Failed to Load Data</h3>
+        <p class="text-surface-500">{{ error }}</p>
+      </div>
 
-            <!-- Right Side - Compact Dominance Containers -->
-            <div class="dominance-containers" v-if="currentGame > 0">
-              <!-- Current Dominance (Cumulative) -->
-              <div class="dominance-compact current" v-if="getTopTeams().length > 0">
-                <div class="dominance-header">
-                  <span class="dominance-title">CURRENT DOMINANCE</span>
-                </div>
-                <div class="teams-compact">
-                  <div v-for="(team, index) in getTopTeams().slice(0, 3)" 
-                       :key="`current-${team.team}`" 
-                       :class="['team-compact', `rank-${index + 1}`]">
-                    <span class="rank">{{ index + 1 }}</span>
-                    <span class="name">{{ team.team }}</span>
-                    <span class="points">{{ team.totalPoints }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Match Dominance (Single Game) -->
-              <div class="dominance-compact match" v-if="getMatchTopTeams().length > 0">
-                <div class="dominance-header">
-                  <span class="dominance-title">MATCH DOMINANCE</span>
-                </div>
-                <div class="teams-compact">
-                  <div v-for="(team, index) in getMatchTopTeams().slice(0, 3)" 
-                       :key="`match-${team.team}`" 
-                       :class="['team-compact', `rank-${index + 1}`]">
-                    <span class="rank">{{ index + 1 }}</span>
-                    <span class="name">{{ team.team }}</span>
-                    <span class="points">{{ team.matchPoints }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <transition name="chart-fade" mode="out-in">
-          
-          <!-- Loading State -->
-          <div v-if="!selectedMatchup" key="loading" ref="chartLoadingContainer" class="chart-loading-container">
-            
-            <div ref="centralGlow" class="central-glow"></div>
-            
-            <div class="chart-bars-container">
-              <div ref="chartBar1" class="chart-bar chart-bar-1"></div>
-              <div ref="chartBar2" class="chart-bar chart-bar-2"></div>
-              <div ref="chartBar3" class="chart-bar chart-bar-3"></div>
-              <div ref="chartBar4" class="chart-bar chart-bar-4"></div>
-              <div ref="chartBar5" class="chart-bar chart-bar-5"></div>
-              
-              <div ref="connectingLine" class="connecting-line"></div>
-            </div>
-            
-            <div ref="outerRing" class="outer-ring">
-              <div class="ring-circle"></div>
-              <div class="ring-dot ring-dot-1"></div>
-              <div class="ring-dot ring-dot-2"></div>
-            </div>
-            
-            <div ref="innerRing" class="inner-ring">
-              <div class="inner-ring-circle"></div>
-              <div class="inner-ring-dot"></div>
-            </div>
-            
-            <div ref="roamingCircle1" class="roaming-circle roaming-circle-1"></div>
-            <div ref="roamingCircle2" class="roaming-circle roaming-circle-2"></div>
-            <div ref="roamingCircle3" class="roaming-circle roaming-circle-3"></div>
-            <div ref="roamingCircle4" class="roaming-circle roaming-circle-4"></div>
-            
-            <div ref="scanningLine" class="scanning-line"></div>
-            
-            <div class="loading-content">
-              <h3 ref="mainHeading" class="loading-heading">
-                Select a matchup to view the interactive chart
-              </h3>
-              <div class="loading-text-container">
-                <p ref="subText1" class="loading-text">
-                  Choose from the tournament matchups in the side panel to see detailed race charts with game-by-game progression.
-                </p>
-              </div>
-            </div>
-            
-            <div ref="accentLine" class="accent-line"></div>
-            
-            <div class="corner-accent corner-accent-tl"></div>
-            <div class="corner-accent corner-accent-tr"></div>
-            <div class="corner-accent corner-accent-bl"></div>
-            <div class="corner-accent corner-accent-br"></div>
-            
-            <div ref="floatingDot1" class="floating-dot floating-dot-1"></div>
-            <div ref="floatingDot2" class="floating-dot floating-dot-2"></div>
-            <div ref="floatingDot3" class="floating-dot floating-dot-3"></div>
-            <div ref="floatingDot4" class="floating-dot floating-dot-4"></div>
-            
-          </div>
-          
-          <!-- Chart State - Direct Component -->
-          <div v-else key="chart" class="chart-component-container">
-            <InteractiveRaceChart
-              ref="interactiveChart"
-              :class="{ compressed: isChartCompressed }"
-              :teamConfig="teamConfig"
-              :compressionFactor="isChartCompressed ? 0.8 : 1.0"
+      <!-- Chart + Side Panel Layout -->
+      <div v-else class="grid lg:grid-cols-[1fr_400px] gap-4">
+        <!-- Chart Area -->
+        <div class="glass-card p-1 relative overflow-hidden">
+          <!-- Filter Button - Top Right -->
+          <div class="absolute top-4 right-4 z-30">
+            <GameFilter
+              :max-games="maxGames"
+              :selected-games="filteredGameIndices"
+              :is-filtered="isFiltered"
+              @update:filter="setGameFilter"
             />
-            
-            <transition name="fade">
-              <div v-if="isLoading" class="loading-overlay">
-                <div class="loading-spinner"></div>
-              </div>
-            </transition>
           </div>
-          
-        </transition>
+
+          <!-- Chart (fills entire area) -->
+          <div class="p-4 pt-8 min-h-[600px]">
+            <RaceChartEcharts />
+          </div>
+
+          <!-- Map Legend & Game Info - Bottom Right (overlays on chart) -->
+          <div class="absolute bottom-6 right-6 z-20 flex flex-col items-end gap-3 pointer-events-none">
+            <!-- Map Legend -->
+            <div class="pointer-events-auto">
+              <MapLegend
+                :data="processedChartData"
+                :is-visible="isLegendVisible"
+                @toggle="toggleLegend"
+              />
+            </div>
+
+            <!-- Game Badge -->
+            <div class="glass-heavy px-4 py-2 rounded-xl border border-surface-700/50 backdrop-blur-xl pointer-events-none shadow-xl">
+              <div class="text-xs text-surface-500 uppercase tracking-wider mb-0.5">Current Game</div>
+              <div class="text-2xl font-bold text-brand-400">
+                {{ currentGame }}<span class="text-surface-500 text-base">/{{ maxGames }}</span>
+              </div>
+              <div v-if="currentMap" class="text-xs text-surface-400 mt-0.5">{{ currentMap }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side Panel -->
+        <div class="space-y-4">
+          <!-- Game Breakdown - Top Gainers -->
+          <div class="glass-card overflow-hidden">
+            <div class="section-header border-b border-surface-700/50">
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-accent-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                <span class="section-title">{{ currentGame === 0 ? 'Controls' : `Game ${currentGame} Breakdown` }}</span>
+              </div>
+            </div>
+
+            <!-- Controls Guide (when no game selected) -->
+            <div v-if="currentGame === 0" class="p-4 space-y-4">
+              <div class="space-y-3">
+                <div class="flex items-start gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-brand-600/20 border border-brand-500/30 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <h4 class="text-sm font-semibold text-surface-200 mb-1">Playback Controls</h4>
+                    <p class="text-xs text-surface-500">Use the controls below to play through tournament games automatically or navigate manually.</p>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-surface-700/50 border border-surface-600/30 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <h4 class="text-sm font-semibold text-surface-200 mb-1">Filter Games</h4>
+                    <p class="text-xs text-surface-500">Click the "Filter Games" button above the chart to select specific games to analyze.</p>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-surface-700/50 border border-surface-600/30 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <h4 class="text-sm font-semibold text-surface-200 mb-1">Hover for Details</h4>
+                    <p class="text-xs text-surface-500">Hover over any colored segment in the chart to see placement, kills, and points for that game.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-3 border-t border-surface-700/50">
+                <button
+                  @click="setCurrentGame(1)"
+                  class="w-full btn-primary text-sm py-2"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  </svg>
+                  Start from Game 1
+                </button>
+              </div>
+            </div>
+
+            <!-- Game Breakdown (when game is selected) -->
+            <div v-else>
+              <!-- Top 3 Highlight -->
+              <div class="p-3 bg-surface-800/30 border-b border-surface-700/50">
+                <div class="text-xs text-surface-500 uppercase tracking-wider mb-2">Top Gainers</div>
+                <div class="space-y-2">
+                  <div 
+                    v-for="(team, i) in currentGameRankings.slice(0, 3)" 
+                    :key="team.team"
+                    class="flex items-center gap-3"
+                  >
+                    <div class="flex items-center justify-center w-6 h-6 rounded-full bg-surface-800 text-xs font-bold"
+                      :class="i === 0 ? 'text-accent-gold' : i === 1 ? 'text-surface-300' : i === 2 ? 'text-amber-600' : 'text-surface-500'"
+                    >
+                      {{ i + 1 }}
+                    </div>
+                    <span class="flex-1 font-medium text-surface-200 text-sm truncate">{{ team.team }}</span>
+                    <span class="font-mono text-accent-gold font-semibold">+{{ team.gamePoints }}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- All Rankings - Scrollable with Column Headers -->
+              <div class="max-h-[320px] overflow-y-auto thin-scrollbar">
+                <!-- Column Headers -->
+                <div class="grid grid-cols-[auto_1fr_auto_auto_auto] gap-2 px-3 py-2 bg-surface-900/50 text-xs text-surface-500 font-medium border-b border-surface-700/30">
+                  <span class="w-6 text-center">#</span>
+                  <span>Team</span>
+                  <span class="w-12 text-right">Place</span>
+                  <span class="w-10 text-right">Kills</span>
+                  <span class="w-12 text-right">Pts</span>
+                </div>
+                
+                <div class="p-1">
+                  <div 
+                    v-for="(team, i) in currentGameRankings" 
+                    :key="team.team"
+                    class="grid grid-cols-[auto_1fr_auto_auto_auto] gap-2 px-2 py-1.5 rounded-lg hover:bg-surface-800/50 transition-colors items-center"
+                    :class="i < 3 ? 'bg-surface-800/20' : ''"
+                  >
+                    <span class="w-6 text-center text-xs font-medium" :class="i < 3 ? 'text-surface-300' : 'text-surface-500'">
+                      {{ i + 1 }}
+                    </span>
+                    <span class="text-sm text-surface-300 truncate">{{ team.team }}</span>
+                    <span class="w-12 text-right text-xs" :class="getPlacementColor(team.placement)">
+                      {{ formatPlacement(team.placement) }}
+                    </span>
+                    <span class="w-10 text-right text-xs text-surface-400">{{ team.kills }}</span>
+                    <span class="w-12 text-right font-mono text-brand-400 text-sm">+{{ team.gamePoints }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Playback Controls -->
+          <PlaybackControls 
+            :max-games="maxGames"
+            :current-game="currentGame"
+            :is-playing="isPlaying"
+            :animation-speed="animationSpeed"
+            @update:current-game="setCurrentGame"
+            @toggle-playback="togglePlayback"
+            @update:speed="setAnimationSpeed"
+          />
+        </div>
       </div>
-    </div>
-    
+    </main>
   </div>
 </template>
 
-<script>
-import { useTeamConfig } from '../composables/useTeamConfig.js'
-import TournamentSelector from './TournamentSelector.vue'
-import ActionPanel from './ActionPanel.vue'
-import InteractiveRaceChart from './InteractiveRaceChart.vue'
-import { useTournamentStore } from '../stores/tournament.js'
-import { mapActions, mapState } from 'pinia'
-import { gsap } from 'gsap'
-import { createCommentary } from '../data/commentary.js'
-import { getMapImageUrl } from '../data/tournaments'
+<script setup>
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useTournamentStore } from '@/stores/tournament'
+import { storeToRefs } from 'pinia'
+import PlaybackControls from './PlaybackControls.vue'
+import GameFilter from './GameFilter.vue'
+import RaceChartEcharts from './RaceChartEcharts.vue'
+import MapLegend from './MapLegend.vue'
 
-export default {
-  name: 'TournamentView',
+// Router & Store
+const route = useRoute()
+const router = useRouter()
+const store = useTournamentStore()
+
+const {
+  selectedMatchup,
+  selectedDay,
+  currentGame,
+  isPlaying,
+  maxGames,
+  isFiltered,
+  filteredGameIndices,
+  isLegendVisible,
+  animationSpeed,
+  processedChartData,
+  isLoading,
+  error,
+  currentMap
+} = storeToRefs(store)
+
+const { 
+  setTournamentType, 
+  setDay, 
+  selectMatchup, 
+  setCurrentGame,
+  togglePlayback,
+  toggleLegend,
+  setAnimationSpeed,
+  setGameFilter,
+  fetchDataForMatchup
+} = store
+
+// Local state for tournament selector
+const selectedTournament = ref('year-4-championship')
+
+// Playback interval
+let playbackInterval = null
+const SPEED_INTERVALS = {
+  slow: 1500,
+  medium: 800,
+  fast: 400
+}
+
+// Tournament detection
+const isYear5 = computed(() => selectedTournament.value === 'year-5-open')
+const isEwc2025 = computed(() => selectedTournament.value === 'ewc-2025')
+
+// Tournament days configuration
+const tournamentDays = computed(() => {
+  if (isEwc2025.value) {
+    return [
+      { id: 'day1', name: 'Day 1 - Group A', shortName: 'Day 1', matchups: [
+        { id: 'Day1-A', title: 'Group A', games: 10 }
+      ]},
+      { id: 'day2', name: 'Day 2 - Group B', shortName: 'Day 2', matchups: [
+        { id: 'Day2-B', title: 'Group B', games: 9 }
+      ]},
+      { id: 'day3', name: 'Day 3 - Last Chance', shortName: 'Day 3', matchups: [
+        { id: 'Day3-LastChance', title: 'Last Chance', games: 6 }
+      ]}
+    ]
+  }
   
-  components: {
-    TournamentSelector,
-    ActionPanel,
-    InteractiveRaceChart
-  },
+  if (isYear5.value) {
+    return [
+      { id: 'day1', name: 'Winners Round 1', shortName: 'Winners R1', matchups: [
+        { id: 'Day1-WinnersRound1-1', title: 'Match 1', games: 6 },
+        { id: 'Day1-WinnersRound1-2', title: 'Match 2', games: 6 },
+        { id: 'Day1-WinnersRound1-3', title: 'Match 3', games: 6 },
+        { id: 'Day1-WinnersRound1-4', title: 'Match 4', games: 6 },
+        { id: 'Day1-WinnersRound1-5', title: 'Match 5', games: 6 },
+        { id: 'Day1-WinnersRound1-6', title: 'Match 6', games: 6 }
+      ]}
+    ]
+  }
   
-  props: {
-    id: {
-      type: String,
-      required: true
-    }
-  },
+  // Year 4 Championship
+  return [
+    { id: 'day1', name: 'Day 1', shortName: 'Day 1', matchups: [
+      { id: 'AvsB', title: 'A vs B', games: 6 },
+      { id: 'CvsD', title: 'C vs D', games: 6 },
+      { id: 'BvsD', title: 'B vs D', games: 6 }
+    ]},
+    { id: 'day2', name: 'Day 2', shortName: 'Day 2', matchups: [
+      { id: 'AvsC', title: 'A vs C', games: 6 },
+      { id: 'BvsC', title: 'B vs C', games: 6 },
+      { id: 'AvsD', title: 'A vs D', games: 6 }
+    ]},
+    { id: 'day3', name: 'Day 3', shortName: 'Day 3', matchups: [
+      { id: 'ER1', title: 'Elim R1', games: 8 }
+    ]},
+    { id: 'day4', name: 'Day 4', shortName: 'Day 4', matchups: [
+      { id: 'ER2', title: 'Elim R2', games: 8 },
+      { id: 'WR1', title: 'Winners R1', games: 8 }
+    ]}
+  ]
+})
+
+const currentDayMatchups = computed(() => {
+  const day = tournamentDays.value.find(d => d.id === selectedDay.value)
+  return day?.matchups || []
+})
+
+// Get placement color
+const getPlacementColor = (placement) => {
+  if (placement <= 3) return 'text-accent-gold'
+  if (placement <= 10) return 'text-surface-300'
+  return 'text-surface-500'
+}
+
+// Format placement with suffix
+const formatPlacement = (placement) => {
+  if (!placement || placement === '-') return '-'
+  const suffixes = { 1: 'st', 2: 'nd', 3: 'rd' }
+  const suffix = suffixes[placement] || 'th'
+  return `${placement}${suffix}`
+}
+
+// Current game rankings with actual placement from data
+const currentGameRankings = computed(() => {
+  if (!processedChartData.value.length || currentGame.value === 0) return []
   
-  setup() {
-    // Initialize team configuration composable
-    const teamConfig = useTeamConfig();
-    
-    // Return for template usage
-    return {
-      teamConfig
-    };
-  },
-  
-  data() {
-    console.log('📋 TournamentView data() called - Vue is initializing');
-    
-    // Detect tournament type from route parameter
-    const tournamentId = this.id;
-    const isYear5 = tournamentId === 'year-5-open';
-    const isEwc2025 = tournamentId === 'ewc-2025';
-    
-    console.log('🎯 Tournament Detection:', {
-      tournamentId,
-      isYear5: isYear5,
-      isEwc2025: isEwc2025,
-      tournamentType: isEwc2025 ? 'ALGS Championship' : (isYear5 ? 'Year 5 Open' : 'Year 4 Championship')
-    });
-    
-    return {
-      // Tournament detection
-      isYear5Tournament: isYear5,
-      isEwc2025Tournament: isEwc2025,
-
-      // Simple UI state (non-data related)
-      currentMap: '',
-      
-      // Status tracking for UI
-      loadedMatchups: new Set(),
-      loadingMatchups: new Set(),
-      
-      // Animation intervals
-      playInterval: null,
-      
-      // Game selection state
-      selectedGames: [],
-      
-      // ALGS Championship state
-      isGroupStageActive: true,
-      isBracketStageActive: false,
-      isTeamsActive: false,
-      championTeam: '',
-      
-      // Advanced controls state
-      advancedControlsExpanded: false,
-      
-      // Collapsible sections state
-      tournamentDaysCollapsed: false,
-      matchupsCollapsed: false,
-      
-      // Debug collision detection
-      collisionDebug: {
-        dashboardRect: null,
-        controlsRect: null,
-        horizontalOverlap: false,
-        verticallyRelated: false,
-        isInOriginalPosition: false,
-        shouldAffect: false
-      },
-      
-      // Tournament days data
-      tournamentDays: [],
-      
-      // ResizeObserver for dynamic positioning
-      dashboardResizeObserver: null,
-      
-      // Chart view state
-      isChartCompressed: false,
-      
-      // Dynamic height measurement for synchronized compression
-      originalChartHeight: 0,
-      originalSectionHeight: 0,
-      compressionReduction: 0,
-      nonChartContentHeight: 0,
-      
-      // Map tooltip for commentary section
-      mapTooltip: null,
-      
-    }
-  },
-  
-  watch: {
-    // Watch for route changes to update tournament type
-    '$route'(newRoute, oldRoute) {
-      console.log('🔄 Route changed:', { from: oldRoute.params.id, to: newRoute.params.id });
-      
-      if (newRoute.params.id !== oldRoute.params.id) {
-        // Update tournament detection flags
-        this.isYear5Tournament = newRoute.params.id === 'year-5-open';
-        this.isEwc2025Tournament = newRoute.params.id === 'ewc-2025';
-        
-        // Set tournament type in store
-        const tournamentType = this.isEwc2025Tournament ? 'ewc2025' : 
-                               (this.isYear5Tournament ? 'year5' : 'year4');
-        this.setTournamentType(tournamentType);
-        
-        // Re-initialize tournament days data
-        this.initializeTournamentDays();
-        
-        // Clear existing selections
-        this.cleanupChart();
-        
-        console.log('✅ Tournament type updated:', {
-          tournamentType,
-          isYear5: this.isYear5Tournament,
-          isEwc2025: this.isEwc2025Tournament
-        });
-      }
-    },
-    
-    // Watch for play/pause state changes to handle animation
-    isPlaying: {
-      handler(newIsPlaying, oldIsPlaying) {
-        console.log('🎮 Play state changed:', { from: oldIsPlaying, to: newIsPlaying });
-        
-        if (newIsPlaying) {
-          this.startAnimation();
-        } else {
-          this.stopAnimation();
-        }
-      },
-      immediate: false
-    },
-    
-    // Watch for matchup changes and fetch data from store
-    selectedMatchup(newMatchup, oldMatchup) {
-      console.log('📊 TournamentView: selectedMatchup changed:', { from: oldMatchup, to: newMatchup });
-      if (newMatchup) {
-        this.fetchDataForMatchup();
-        this.updateCurrentMap();
-        // Note: Controls positioning now handled by CSS Grid layout
-      }
-    },
-    
-    selectedDay() {
-      this.cleanupChart();
-    },
-    
-    maxGames(newMaxGames, oldMaxGames) {
-      if (newMaxGames !== oldMaxGames) {
-        console.log('🎮 TournamentView: maxGames changed from', oldMaxGames, 'to', newMaxGames);
-      }
-    },
-
-    // Watch for data changes to update current map
-    processedChartData() {
-      this.updateCurrentMap();
-      this.adjustCommentaryWidth();
-    },
-
-    currentGame() {
-      this.updateCurrentMap();
-    },
-    
-    // Note: Controls positioning now handled by CSS Grid layout
-    tournamentDays() {
-      // Grid layout automatically handles positioning
-    },
-
-    // Watch for collapse changes to update collision detection
-    hasCollapsedSections() {
-      // Trigger collision detection when collapse state changes
-      this.$nextTick(() => {
-        this.isControlsInDashboardLane();
-      });
-    }
-  },
-  
-  computed: {
-    ...mapState(useTournamentStore, [
-      'selectedMatchup',
-      'selectedDay',
-      'isPlaying',
-      'currentGame',
-      'processedChartData',
-      'isLoading',
-      'errorMessage',
-      'maxGames',
-      'isLegendVisible',
-      'animationSpeed'
-    ]),
-    
-    currentDayMatchups() {
-      const currentDay = this.tournamentDays.find(day => day.id === this.selectedDay);
-      return currentDay ? currentDay.matchups : [];
-    },
-    
-    // Dynamic chart title based on tournament day and matchup
-    dynamicChartTitle() {
-      if (!this.selectedDay || !this.selectedMatchup) return '';
-      
-      const currentDay = this.tournamentDays.find(day => day.id === this.selectedDay);
-      const currentMatchup = this.currentDayMatchups.find(matchup => matchup.id === this.selectedMatchup);
-      
-      if (!currentDay || !currentMatchup) return '';
-      
-      // Format: "Day Name - Matchup Title"
-      const dayName = currentDay.name;
-      const matchupTitle = currentMatchup.title;
-      
-      return `${dayName} - ${matchupTitle}`;
-    },
-    
-    // Dynamic chart subtitle with additional context
-    dynamicChartSubtitle() {
-      if (!this.selectedMatchup) return '';
-      
-      const currentMatchup = this.currentDayMatchups.find(matchup => matchup.id === this.selectedMatchup);
-      if (!currentMatchup) return '';
-      
-      // Show tournament type only
-      const tournamentType = this.isEwc2025Tournament ? '' : 
-                             (this.isYear5Tournament ? 'ALGS Year 5 Open' : '');
-      
-      return tournamentType;
-    },
-
-    // Check if any sections are collapsed to adjust layout
-    hasCollapsedSections() {
-      return this.tournamentDaysCollapsed || this.matchupsCollapsed;
-    },
-
-    // Check if Controls panel should be affected by collapse (only if in same lane)
-    shouldAdjustControlsLayout() {
-      if (!this.hasCollapsedSections) return false;
-      
-      // Check if Controls panel is in its original position or overlapping with dashboard
-      return this.isControlsInDashboardLane();
-    },
-
-    // Commentary functionality
-    commentary() {
-      return createCommentary(
-        this.dynamicChartTitle,
-        this.getTeamCount(),
-        this.maxGames
-      );
-    },
-
-    commentaryTitle() {
-      return this.commentary.getTitle(this.currentGame);
-    },
-
-    commentaryText() {
-      return this.commentary.getText(
-        this.currentGame,
-        this.getTopTeams(),
-        this.getCurrentMapName()
-      );
-    }
-  },
-  
-  mounted() {
-    console.log('🎯 TournamentView mounted() called - Vue component is ready');
-    
-    // Set tournament type in store based on route
-    const tournamentType = this.isEwc2025Tournament ? 'ewc2025' : 
-                           (this.isYear5Tournament ? 'year5' : 'year4');
-    this.setTournamentType(tournamentType);
-    
-    // Initialize tournament days data
-    this.initializeTournamentDays();
-    
-    // Auto-load first matchup on initial load
-    this.autoLoadFirstMatchup();
-    
-    // Enable fluid dragging for controls panel
-    this.enableControlsDragging();
-    
-    // Initialize professional header animations with GSAP
-    this.initializeHeaderAnimations();
-    
-    // Initialize dashboard title animations
-    this.initializeDashboardAnimations();
-    
-    // Initialize chart loading animation
-    this.initializeChartLoadingAnimation();
-    
-    // Adjust commentary width to match chart
-    this.adjustCommentaryWidth();
-    
-    // Add window resize listener for commentary width
-    window.addEventListener('resize', this.adjustCommentaryWidth);
-    
-    // Add debug method to global scope for troubleshooting
-    window.debugTournamentView = () => {
-      console.log('🔍 Tournament View Debug Info:', {
-        selectedDay: this.selectedDay,
-        selectedMatchup: this.selectedMatchup,
-        computedMaxGames: this.maxGames,
-        isEwc2025Tournament: this.isEwc2025Tournament,
-        tournamentSelector: !!this.$refs.tournamentSelector,
-        processedChartData: this.processedChartData?.length || 0
-      });
-    };
-    
-    // Filter out browser extension errors
-    window.addEventListener('error', (event) => {
-      if (event.message.includes('message channel closed') || 
-          event.message.includes('listener indicated an asynchronous response')) {
-        console.debug('🔧 Filtered browser extension error:', event.message);
-        event.preventDefault();
-        return false;
-      }
-    });
-    
-    window.addEventListener('unhandledrejection', (event) => {
-      if (event.reason?.message?.includes('message channel closed') ||
-          event.reason?.message?.includes('listener indicated an asynchronous response')) {
-        console.debug('🔧 Filtered browser extension promise rejection:', event.reason.message);
-        event.preventDefault();
-        return false;
-      }
-    });
-  },
-  
-  methods: {
-    ...mapActions(useTournamentStore, [
-      'selectMatchup',
-      'setPlaying',
-      'setCurrentGame',
-      'setDay',
-      'setTournamentType',
-      'fetchDataForMatchup',
-      'resetPlayback',
-      'toggleLegend',
-      'setAnimationSpeed',
-      'setGameFilter'
-    ]),
-    
-    // ALGS Championship stage selection methods
-    selectGroupStage() {
-      this.isGroupStageActive = true;
-      this.isBracketStageActive = false;
-      this.isTeamsActive = false;
-      console.log('📊 Selected Group Stage');
-    },
-    
-    selectBracketStage() {
-      this.isGroupStageActive = false;
-      this.isBracketStageActive = true;
-      this.isTeamsActive = false;
-      console.log('🏆 Selected Bracket Stage');
-    },
-    
-    selectTeams() {
-      this.isGroupStageActive = false;
-      this.isBracketStageActive = false;
-      this.isTeamsActive = true;
-      console.log('👥 Selected Teams');
-    },
-    
-    // Set champion team for demonstration
-    setChampionTeam(teamName) {
-      this.championTeam = teamName;
-      console.log('🏆 Champion team set:', teamName);
-    },
-    
-    // Initialize tournament days data
-    initializeTournamentDays() {
-      this.tournamentDays = this.isEwc2025Tournament ? [
-        {
-          id: 'day1',
-          name: 'Day 1',
-          matchups: [{
-            id: 'Day1-A',
-            title: 'Group A',
-            description: 'Day 1 Group A featuring 20 elite teams',
-            games: 'auto'
-          }]
-        },
-        {
-          id: 'day2',
-          name: 'Day 2',
-          matchups: [{
-            id: 'Day2-B',
-            title: 'Group B',
-            description: 'Day 2 Group B featuring 20 elite teams',
-            games: 'auto'
-          }]
-        },
-        {
-          id: 'day3',
-          name: 'Day 3',
-          matchups: [{
-            id: 'Day3-LastChance',
-            title: 'Last Chance',
-            description: 'Day 3 Last Chance featuring 20 elite teams',
-            games: 'auto'
-          }]
-        }
-      ] : this.isYear5Tournament ? [
-        {
-          id: 'day1',
-          name: 'Day 1 - Winners R1',
-          matchups: [
-            { id: 'Day1-WinnersRound1-1', title: 'Winners R1 #1', description: 'Year 5 Winners Round 1 #1', games: 6 },
-            { id: 'Day1-WinnersRound1-2', title: 'Winners R1 #2', description: 'Year 5 Winners Round 1 #2', games: 6 },
-            { id: 'Day1-WinnersRound1-3', title: 'Winners R1 #3', description: 'Year 5 Winners Round 1 #3', games: 6 },
-            { id: 'Day1-WinnersRound1-4', title: 'Winners R1 #4', description: 'Year 5 Winners Round 1 #4', games: 6 },
-            { id: 'Day1-WinnersRound1-5', title: 'Winners R1 #5', description: 'Year 5 Winners Round 1 #5', games: 6 },
-            { id: 'Day1-WinnersRound1-6', title: 'Winners R1 #6', description: 'Year 5 Winners Round 1 #6', games: 6 }
-          ]
-        }
-      ] : [
-        {
-          id: 'day1',
-          name: 'Day 1',
-          matchups: [
-            { id: 'AvsB', title: 'A vs B', description: 'Group A vs Group B matchup', games: 6 },
-            { id: 'CvsD', title: 'C vs D', description: 'Group C vs Group D matchup', games: 6 },
-            { id: 'BvsD', title: 'B vs D', description: 'Group B vs Group D matchup', games: 6 }
-          ]
-        },
-        {
-          id: 'day2',
-          name: 'Day 2',
-          matchups: [
-            { id: 'AvsC', title: 'A vs C', description: 'Group A vs Group C matchup', games: 6 },
-            { id: 'BvsC', title: 'B vs C', description: 'Group B vs Group C matchup', games: 6 },
-            { id: 'AvsD', title: 'A vs D', description: 'Group A vs Group D matchup', games: 6 }
-          ]
-        },
-        {
-          id: 'day3',
-          name: 'Day 3',
-          matchups: [
-            { id: 'ER1', title: 'Elimination R1', description: 'First elimination round', games: 8 }
-          ]
-        },
-        {
-          id: 'day4',
-          name: 'Day 4',
-          matchups: [
-            { id: 'ER2', title: 'Elimination R2', description: 'Second elimination round', games: 8 },
-            { id: 'WR1', title: 'Winners R1', description: 'Winners bracket final', games: 8 }
-          ]
-        }
-      ];
-    },
-    
-    
-    // Handle matchup selection with proper data fetching
-    async handleMatchupSelect(matchupId) {
-      console.log('🎯 Handling matchup selection:', matchupId);
-      
-      try {
-        // Clear any existing data first
-        this.cleanupChart();
-        
-        // Select the matchup in the store
-        await this.selectMatchup(matchupId);
-        
-        // Add a small delay to ensure store state is updated
-        await this.$nextTick();
-        
-        // Trigger data fetching for the selected matchup
-        await this.fetchDataForMatchup();
-        
-        console.log('✅ Matchup selection completed:', {
-          selectedMatchup: this.selectedMatchup,
-          hasData: !!(this.processedChartData && this.processedChartData.length > 0),
-          maxGames: this.maxGames
-        });
-        
-        // Measure heights for compression after chart is loaded
-        setTimeout(() => {
-          this.measureOriginalHeights();
-        }, 500); // Wait for chart to render fully
-        
-      } catch (error) {
-        console.error('❌ Error handling matchup selection:', error);
-      }
-    },
-    
-    // Auto-load first available matchup
-    autoLoadFirstMatchup() {
-      console.log('🚀 Auto-loading first matchup...');
-      
-      // Use nextTick to ensure tournament days are fully initialized
-      this.$nextTick(() => {
-        if (this.tournamentDays && this.tournamentDays.length > 0) {
-          // Get first day
-          const firstDay = this.tournamentDays[0];
-          console.log('📅 First day found:', firstDay.name);
-          
-          // Set the day first
-          this.setDay(firstDay.id);
-          
-          // Wait for day to be set, then select first matchup
-          this.$nextTick(() => {
-            if (firstDay.matchups && firstDay.matchups.length > 0) {
-              const firstMatchup = firstDay.matchups[0];
-              console.log('⚔️ Auto-selecting first matchup:', firstMatchup.title);
-              
-              // Use a slight delay to ensure everything is ready
-              setTimeout(() => {
-                this.handleMatchupSelect(firstMatchup.id);
-                // Note: Controls positioning now handled by CSS Grid layout
-              }, 100);
-            } else {
-              console.warn('⚠️ No matchups found in first day');
-            }
-          });
-        } else {
-          console.warn('⚠️ No tournament days available for auto-loading');
-        }
-      });
-    },
-    
-    // Position controls panel below dashboard
-    positionControlsPanel() {
-      // Use multiple attempts to ensure DOM is fully rendered and positioned
-      const attemptPositioning = () => {
-        const dashboardPanel = document.querySelector('.dashboard-panel');
-        const controlsPanel = document.querySelector('.standalone-controls');
-        
-        if (dashboardPanel && controlsPanel) {
-          // Get dashboard position and dimensions
-          const dashboardRect = dashboardPanel.getBoundingClientRect();
-          const dashboardHeight = dashboardPanel.offsetHeight;
-          const mainLayout = document.querySelector('.main-layout');
-          const mainLayoutRect = mainLayout ? mainLayout.getBoundingClientRect() : { left: 0, top: 0 };
-          
-          // Calculate position directly below dashboard, centered
-          const topPosition = dashboardHeight + 48; // 40px (main-layout padding) + 8px gap
-          const dashboardLeft = dashboardRect.left - mainLayoutRect.left;
-          
-          // Force positioning immediately - centered with dashboard
-          controlsPanel.style.position = 'absolute';
-          controlsPanel.style.top = `${topPosition}px`;
-          controlsPanel.style.left = `${dashboardLeft}px`; // Align with dashboard left edge
-          controlsPanel.style.width = '280px'; // Match dashboard width exactly
-          controlsPanel.style.zIndex = '1000';
-          
-          console.log('📍 Controls positioned below dashboard (centered):', {
-            dashboardHeight,
-            dashboardLeft,
-            calculatedTop: topPosition,
-            dashboardRect: dashboardRect,
-            mainLayoutRect: mainLayoutRect
-          });
-          
-          // Set up ResizeObserver to handle dynamic resizing
-          if (!this.dashboardResizeObserver) {
-            this.dashboardResizeObserver = new ResizeObserver(() => {
-              const newDashboardRect = dashboardPanel.getBoundingClientRect();
-              const newMainLayoutRect = mainLayout ? mainLayout.getBoundingClientRect() : { left: 0, top: 0 };
-              const newDashboardHeight = dashboardPanel.offsetHeight;
-              const newTopPosition = newDashboardHeight + 48;
-              const newDashboardLeft = newDashboardRect.left - newMainLayoutRect.left;
-              
-              controlsPanel.style.top = `${newTopPosition}px`;
-              controlsPanel.style.left = `${newDashboardLeft}px`;
-              
-              console.log('📍 Controls repositioned on resize:', {
-                top: newTopPosition,
-                left: newDashboardLeft
-              });
-            });
-            this.dashboardResizeObserver.observe(dashboardPanel);
-          }
-          
-          return true; // Successfully positioned
-        }
-        return false; // Failed to position
-      };
-      
-      // Try positioning immediately
-      if (!attemptPositioning()) {
-        // If immediate positioning fails, try again after a short delay
-        setTimeout(() => {
-          if (!attemptPositioning()) {
-            // Final attempt after DOM is definitely ready
-            setTimeout(attemptPositioning, 200);
-          }
-        }, 50);
-      }
-    },
-    
-    // Enable fluid dragging for controls panel
-    enableControlsDragging() {
-      // Wait for controls panel to be rendered
-      this.$nextTick(() => {
-        const controlsPanel = document.querySelector('.controls-panel-grid');
-        
-        if (controlsPanel && typeof gsap !== 'undefined' && gsap.plugins.Draggable) {
-          // Create highly fluid draggable instance
-          gsap.registerPlugin(Draggable);
-          
-          Draggable.create(controlsPanel, {
-            type: "x,y",
-            edgeResistance: 0.1,
-            inertia: true,
-            autoScroll: 1,
-            minimumMovement: 2,
-            // Extremely smooth movement settings
-            dragResistance: 0,
-            throwResistance: 200,
-            maxDuration: 0.8,
-            // Bounds to keep it within viewport
-            bounds: window,
-            // Smooth cursor changes
-            onDragStart: function() {
-              gsap.set(controlsPanel, { scale: 1.02, rotationZ: 0.01 });
-            },
-            onDrag: function() {
-              // Smooth real-time updates
-              gsap.set(controlsPanel, { 
-                force3D: true,
-                transformOrigin: "center center"
-              });
-            },
-            onDragEnd: function() {
-              gsap.to(controlsPanel, {
-                scale: 1,
-                rotationZ: 0,
-                duration: 0.3,
-                ease: "power2.out"
-              });
-            }
-          });
-          
-          console.log('✅ Fluid dragging enabled for controls panel');
-        }
-      });
-    },
-    
-    // Professional Championship Header Animations
-    initializeHeaderAnimations() {
-      console.log('🎭 Initializing sophisticated header animations...');
-      
-      // Check if GSAP is available
-      if (typeof gsap === 'undefined') {
-        console.warn('⚠️ GSAP not available - header animations disabled');
-        return;
-      }
-      
-      // Wait for DOM to be ready
-      this.$nextTick(() => {
-        // Check if refs exist before animating
-        const elementsToAnimate = [
-          this.$refs.championshipLogo,
-          this.$refs.championshipTitle,
-          this.$refs.tournamentInfo
-        ].filter(Boolean);
-        
-        if (elementsToAnimate.length === 0) {
-          console.warn('⚠️ Header animation refs not found - skipping animations');
-          return;
-        }
-        
-        // Set initial states for elements that will be animated
-        gsap.set(elementsToAnimate, {
-          opacity: 0,
-          y: 30,
-          scale: 0.9
-        });
-        
-        // Set specific states for individual info items (check if they exist)
-        const infoItems = [
-          this.$refs.infoItem1,
-          this.$refs.infoItem2,
-          this.$refs.infoItem3
-        ].filter(Boolean);
-        
-        if (infoItems.length > 0) {
-          gsap.set(infoItems, {
-            opacity: 0,
-            x: -20,
-            scale: 0.95
-          });
-        }
-        
-        // Create simplified master timeline
-        const masterTimeline = gsap.timeline();
-        
-        // 1. Championship Logo animation
-        if (this.$refs.championshipLogo) {
-          masterTimeline.to(this.$refs.championshipLogo, {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.8,
-            ease: 'back.out(1.7)'
-          });
-        }
-        
-        // 2. Championship Title animation
-        if (this.$refs.championshipTitle) {
-          masterTimeline.to(this.$refs.championshipTitle, {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.6,
-            ease: 'power2.out'
-          }, '-=0.4');
-        }
-        
-        // 3. Tournament Info animation
-        if (this.$refs.tournamentInfo) {
-          masterTimeline.to(this.$refs.tournamentInfo, {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.6,
-            ease: 'power2.out'
-          }, '-=0.3');
-        }
-        
-        // 4. Individual info items animation
-        if (infoItems.length > 0) {
-          masterTimeline.to(infoItems, {
-            opacity: 1,
-            x: 0,
-            scale: 1,
-            duration: 0.5,
-            ease: 'power2.out',
-            stagger: 0.1
-          }, '-=0.3');
-        }
-        
-        // 5. Setup continuous animations
-        this.setupContinuousAnimations();
-      });
-    },
-    
-    setupContinuousAnimations() {
-      // Only animate elements that exist
-      if (this.$refs.logoIcon) {
-        // Continuous logo glow effect
-        gsap.to(this.$refs.logoIcon, {
-          textShadow: '0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.6)',
-          duration: 2,
-          ease: 'power2.inOut',
-          yoyo: true,
-          repeat: -1
-        });
-      }
-      
-      // Subtle floating animation for info items (only if they exist)
-      const infoItems = [
-        this.$refs.infoItem1,
-        this.$refs.infoItem2,
-        this.$refs.infoItem3
-      ].filter(Boolean);
-      
-      if (infoItems.length > 0) {
-        gsap.to(infoItems, {
-          y: -2,
-          duration: 3,
-          ease: 'power2.inOut',
-          yoyo: true,
-          repeat: -1,
-          stagger: 0.5
-        });
-      }
-      
-      // Particle animation for logo (only if it exists)
-      if (this.$refs.logoParticles) {
-        gsap.to(this.$refs.logoParticles, {
-          opacity: 0.7,
-          scale: 1.1,
-          duration: 1.5,
-          ease: 'power2.inOut',
-          yoyo: true,
-          repeat: -1
-        });
-      }
-    },
-
-    // Dashboard Title Animations
-    initializeDashboardAnimations() {
-      console.log('🎮 Initializing dashboard title animations...');
-      
-      // Check if GSAP is available
-      if (typeof gsap === 'undefined') {
-        console.warn('⚠️ GSAP not available - dashboard animations disabled');
-        return;
-      }
-      
-      // Set initial state for dashboard title
-      gsap.set(this.$refs.dashboardTitle, {
-        opacity: 0,
-        scale: 0.8,
-        rotationX: -15,
-        filter: 'blur(3px)'
-      });
-      
-      gsap.set(this.$refs.dashboardText, {
-        opacity: 0,
-        y: 20,
-        backgroundPosition: '-200% center'
-      });
-      
-      gsap.set(this.$refs.dashboardGlow, {
-        opacity: 0,
-        scale: 0
-      });
-      
-      // Create dashboard animation timeline
-      const dashboardTimeline = gsap.timeline({ delay: 0.8 });
-      
-      // Animate dashboard container
-      dashboardTimeline
-        .to(this.$refs.dashboardTitle, {
-          opacity: 1,
-          scale: 1,
-          rotationX: 0,
-          filter: 'blur(0px)',
-          duration: 1,
-          ease: 'back.out(1.7)'
-        })
-        .to(this.$refs.dashboardText, {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: 'power3.out'
-        }, '-=0.5')
-        .to(this.$refs.dashboardText, {
-          backgroundPosition: '200% center',
-          duration: 2,
-          ease: 'power2.inOut'
-        }, '-=0.3')
-        .to(this.$refs.dashboardGlow, {
-          opacity: 0.6,
-          scale: 1,
-          duration: 0.6,
-          ease: 'power2.out'
-        }, '-=1');
-      
-      // Setup continuous dashboard effects
-      this.setupDashboardContinuousEffects();
-    },
-    
-    setupDashboardContinuousEffects() {
-      // Continuous glow pulse
-      gsap.to(this.$refs.dashboardGlow, {
-        opacity: 0.3,
-        scale: 1.1,
-        duration: 2,
-        ease: 'power2.inOut',
-        yoyo: true,
-        repeat: -1
-      });
-      
-      // Subtle text shimmer effect
-      gsap.to(this.$refs.dashboardText, {
-        textShadow: '0 0 10px rgba(220, 38, 38, 0.8), 0 0 20px rgba(245, 158, 11, 0.4)',
-        duration: 3,
-        ease: 'power2.inOut',
-        yoyo: true,
-        repeat: -1
-      });
-    },
-
-    // Vue.js + GSAP Chart Loading Animation
-    initializeChartLoadingAnimation() {
-      console.log('📊 Initializing chart loading animations...');
-      
-      // Check if GSAP is available
-      if (typeof gsap === 'undefined') {
-        console.warn('⚠️ GSAP not available - chart loading animations disabled');
-        return;
-      }
-      
-      // Wait for refs to be available
-      this.$nextTick(() => {
-        // Central glow pulsing animation - optimized for performance
-        if (this.$refs.centralGlow) {
-          gsap.to(this.$refs.centralGlow, {
-            scale: 1.125,
-            duration: 3,
-            ease: "power1.inOut",
-            repeat: -1,
-            yoyo: true,
-            force3D: true
-          });
-        }
-        
-        // Chart bars animation - optimized with transform3d
-        const chartBars = [
-          this.$refs.chartBar1,
-          this.$refs.chartBar2,
-          this.$refs.chartBar3,
-          this.$refs.chartBar4,
-          this.$refs.chartBar5
-        ].filter(Boolean);
-        
-        if (chartBars.length > 0) {
-          chartBars.forEach((bar, index) => {
-            const originalHeight = parseInt(getComputedStyle(bar).height);
-            const animationHeight = originalHeight * 1.8; // Increased amplitude
-            
-            gsap.to(bar, {
-              scaleY: 1.8,
-              duration: 1.0 + (index * 0.15), // Faster, more varied timing
-              ease: "power2.inOut",
-              repeat: -1,
-              yoyo: true,
-              delay: index * 0.08,
-              force3D: true,
-              transformOrigin: "bottom"
-            });
-          });
-        }
-        
-        // Connecting line opacity animation
-        if (this.$refs.connectingLine) {
-          gsap.to(this.$refs.connectingLine, {
-            opacity: 0.9,
-            duration: 2.5,
-            ease: "power1.inOut",
-            repeat: -1,
-            yoyo: true
-          });
-        }
-        
-        // Outer ring rotation - optimized
-        if (this.$refs.outerRing) {
-          gsap.to(this.$refs.outerRing, {
-            rotation: 360,
-            duration: 20,
-            ease: "none",
-            repeat: -1,
-            force3D: true,
-            transformOrigin: "center"
-          });
-        }
-        
-        // Inner ring rotation - counter-clockwise
-        if (this.$refs.innerRing) {
-          gsap.to(this.$refs.innerRing, {
-            rotation: -360,
-            duration: 15,
-            ease: "none",
-            repeat: -1,
-            force3D: true,
-            transformOrigin: "center"
-          });
-        }
-        
-        // Roaming circles animation - smooth orbital movement
-        const roamingCircles = [
-          this.$refs.roamingCircle1,
-          this.$refs.roamingCircle2,
-          this.$refs.roamingCircle3,
-          this.$refs.roamingCircle4
-        ].filter(Boolean);
-        
-        if (roamingCircles.length > 0) {
-          roamingCircles.forEach((circle, index) => {
-            // Create orbital movement patterns
-            const radius = 80 + (index * 15);
-            const duration = 8 + (index * 2);
-            const offset = (index * 90); // Distribute around circle
-            
-            gsap.to(circle, {
-              rotation: 360,
-              duration: duration,
-              ease: "none",
-              repeat: -1,
-              force3D: true,
-              transformOrigin: `${radius}px center`,
-              delay: offset / 360 * duration
-            });
-          });
-        }
-        
-        // Scanning line animation - vertical movement
-        if (this.$refs.scanningLine) {
-          gsap.to(this.$refs.scanningLine, {
-            y: "100vh",
-            duration: 8,
-            ease: "power1.inOut",
-            repeat: -1,
-            yoyo: true,
-            force3D: true
-          });
-        }
-        
-        // Text content fade in animation - staggered for better alignment
-        const textElements = [
-          this.$refs.mainHeading,
-          this.$refs.subText1
-        ].filter(Boolean);
-        
-        if (textElements.length > 0) {
-          gsap.set(textElements, {
-            opacity: 0,
-            y: 30,
-            force3D: true
-          });
-          
-          gsap.to(textElements, {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: "power2.out",
-            stagger: 0.15,
-            delay: 0.5,
-            force3D: true
-          });
-        }
-        
-        // Accent line pulsing - enhanced
-        if (this.$refs.accentLine) {
-          gsap.to(this.$refs.accentLine, {
-            opacity: 0.8,
-            scaleX: 1.2,
-            duration: 3,
-            ease: "power1.inOut",
-            repeat: -1,
-            yoyo: true,
-            force3D: true
-          });
-        }
-        
-        // Floating dots pulsing animation - improved performance
-        const floatingDots = [
-          this.$refs.floatingDot1,
-          this.$refs.floatingDot2,
-          this.$refs.floatingDot3,
-          this.$refs.floatingDot4
-        ].filter(Boolean);
-        
-        if (floatingDots.length > 0) {
-          floatingDots.forEach((dot, index) => {
-            gsap.to(dot, {
-              opacity: 0.9,
-              scale: 1.8,
-              duration: 1.2 + (index * 0.25),
-              ease: "power2.inOut",
-              repeat: -1,
-              yoyo: true,
-              delay: index * 0.4,
-              force3D: true
-            });
-          });
-        }
-        
-        console.log('✨ Chart loading animations initialized successfully!');
-      });
-    },
-    
-    
-    
-    updateCurrentMap() {
-      // Get map name from chart data based on current game
-      if (this.currentGame === 0) {
-        this.currentMap = 'Pre-game';
-      } else if (this.processedChartData && this.processedChartData.length > 0) {
-        const firstTeam = this.processedChartData[0];
-        if (firstTeam && firstTeam.games) {
-          const currentGameData = firstTeam.games.find(game => game.gameNumber === this.currentGame);
-          if (currentGameData && currentGameData.map) {
-            this.currentMap = `Game ${this.currentGame} - ${currentGameData.map}`;
-          } else {
-            this.currentMap = `Game ${this.currentGame}`;
-          }
-        } else {
-          this.currentMap = `Game ${this.currentGame}`;
-          }
-      } else {
-        this.currentMap = `Game ${this.currentGame}`;
-      }
-    },
-
-    async cleanupChart() {
-      console.log('🧹 TournamentView: Cleaning up chart resources');
-      
-      try {
-        // Reset UI state (data clearing is handled by the store)
-        this.setCurrentGame(0);
-        this.currentMap = '';
-        this.setPlaying(false);
-        
-        // Stop any ongoing animation
-        this.stopAnimation();
-        
-        console.log('✅ Chart cleanup completed successfully');
-      } catch (error) {
-        console.warn('⚠️ Error during chart cleanup:', error);
-      }
-    },
-    
-    // Add new methods for side panel game controls
-    updateGameFromSlider(event) {
-      const gameValue = Math.min(Math.max(0, parseInt(event.target.value)), this.maxGames);
-      this.setCurrentGame(gameValue);
-    },
-    
-    selectGame(gameNum) {
-      // Set the current game to the selected game
-      this.setCurrentGame(gameNum);
-    },
-    
-    // Combined game click handler - jump to game or toggle filter
-    handleGameClick(gameNum, event) {
-      console.log('🎮 Game button clicked:', { gameNum, shiftKey: event?.shiftKey });
-      
-      if (event && event.shiftKey) {
-        // Shift+click to toggle filter
-        console.log('🎯 Toggling filter for game:', gameNum);
-        this.toggleGameFilter(gameNum);
-      } else {
-        // Regular click to jump to game
-        console.log('🎮 Jumping to game:', gameNum);
-        this.selectGame(gameNum);
-      }
-    },
-    
-    togglePlayback() {
-      this.setPlaying(!this.isPlaying);
-    },
-    
-    restart() {
-      this.resetPlayback();
-    },
-    
-    getGameButtonStyle(gameNum) {
-      const isActive = this.currentGame === gameNum;
-      
-      // Get map color for this game from chart data
-      let gameColor = '#6366f1'; // default fallback
-      
-      if (this.processedChartData && this.processedChartData.length > 0) {
-        const firstTeam = this.processedChartData[0];
-        if (firstTeam && firstTeam.games) {
-          const gameData = firstTeam.games.find(game => game.gameNumber === gameNum);
-          if (gameData && gameData.color) {
-            gameColor = gameData.color;
-          }
-        }
-      }
-      
+  // Get raw data for current game and sort by points
+  const gameData = processedChartData.value
+    .map(team => {
+      const game = team.games.find(g => g.gameNumber === currentGame.value)
       return {
-        background: `linear-gradient(135deg, ${gameColor} 0%, ${this.adjustColor(gameColor, -10)} 100%)`,
-        border: `2px solid ${gameColor}`,
-        color: '#ffffff',
-        boxShadow: isActive ? `0 0 8px ${gameColor}60, 0 2px 4px rgba(0,0,0,0.3)` : 'none',
-        transform: isActive ? 'scale(1.05)' : 'scale(1)'
-      };
-    },
-    
-    // Circular game style with highlighting for current, filtered, and passed games
-    getCircularGameStyle(gameNum) {
-      const isCurrent = this.currentGame === gameNum;
-      const isFiltered = this.selectedGames.includes(gameNum);
-      const isPassed = gameNum < this.currentGame;
-      
-      // Get map color for this game from chart data
-      let gameColor = '#6366f1'; // default fallback
-      
-      if (this.processedChartData && this.processedChartData.length > 0) {
-        const firstTeam = this.processedChartData[0];
-        if (firstTeam && firstTeam.games) {
-          const gameData = firstTeam.games.find(game => game.gameNumber === gameNum);
-          if (gameData && gameData.color) {
-            gameColor = gameData.color;
-          }
-        }
+        team: team.team,
+        gamePoints: game?.points || 0,
+        kills: game?.kills || 0,
+        // Calculate actual placement based on game points ranking
       }
-      
-      // Base styles
-      let baseStyles = {
-        background: `linear-gradient(135deg, ${gameColor} 0%, ${this.adjustColor(gameColor, -10)} 100%)`,
-        border: `2px solid ${gameColor}`,
-        color: '#ffffff'
-      };
-      
-      // Filtered games - unique visual style with inner glow
-      if (isFiltered) {
-        baseStyles.background = `radial-gradient(circle at center, ${gameColor} 0%, ${this.adjustColor(gameColor, -20)} 70%, ${this.adjustColor(gameColor, -40)} 100%)`;
-        baseStyles.border = `3px solid ${gameColor}`;
-        baseStyles.boxShadow = `inset 0 0 12px ${this.adjustColor(gameColor, 30)}, 0 0 16px ${gameColor}60`;
-        baseStyles.transform = 'scale(1.05)';
-        baseStyles.position = 'relative';
-      }
-      // Current game highlighting (only if not filtered)
-      else if (isCurrent) {
-        baseStyles.boxShadow = `0 0 12px ${gameColor}80, 0 0 24px ${gameColor}40`;
-        baseStyles.transform = 'scale(1.15)';
-        baseStyles.zIndex = '10';
-      }
-      // Passed games highlighting
-      else if (isPassed) {
-        baseStyles.opacity = '0.7';
-        baseStyles.background = `linear-gradient(135deg, ${this.adjustColor(gameColor, -20)} 0%, ${this.adjustColor(gameColor, -30)} 100%)`;
-        baseStyles.border = `2px solid ${this.adjustColor(gameColor, -15)}`;
-      }
-      // Future games (default state)
-      else {
-        baseStyles.opacity = '0.6';
-        baseStyles.background = `linear-gradient(135deg, ${this.adjustColor(gameColor, -40)} 0%, ${this.adjustColor(gameColor, -50)} 100%)`;
-        baseStyles.border = `2px solid ${this.adjustColor(gameColor, -35)}`;
-      }
-      
-      return baseStyles;
-    },
-    
-    adjustColor(hexColor, percent) {
-      // Simple color adjustment utility
-      if (!hexColor || typeof hexColor !== 'string' || !hexColor.startsWith('#')) {
-        return hexColor || '#dc2626';
-      }
-      
-      const num = parseInt(hexColor.slice(1), 16);
-      const amt = Math.round(2.55 * percent);
-      const R = (num >> 16) + amt;
-      const G = (num >> 8 & 0x00FF) + amt;
-      const B = (num & 0x0000FF) + amt;
-      
-      return `#${(0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
-        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
-        (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1)}`;
-    },
-    
-    // Smart grid layout based on number of games
-    getGridStyle() {
-      const totalGames = this.maxGames || 0;
-      if (totalGames === 0) return {};
-      
-      // Calculate optimal rows and columns
-      const cols = Math.ceil(Math.sqrt(totalGames));
-      const rows = Math.ceil(totalGames / cols);
-      
-      return {
-        gridTemplateColumns: `repeat(${cols}, 1fr)`,
-        gridTemplateRows: `repeat(${rows}, 1fr)`,
-        gap: '6px'
-      };
-    },
-    
-    // Get current tournament display text
-    getCurrentTournamentText() {
-      if (!this.selectedMatchup) return '';
-      
-      // Get matchup info from tournament selector
-      const matchupInfo = this.$refs.tournamentSelector?.getMatchupInfo(this.selectedMatchup);
-      if (!matchupInfo) return '';
-      
-      // Format based on tournament type
-      if (this.isEwc2025Tournament) {
-        if (this.selectedMatchup.includes('Day1')) return 'T1 Group A';
-        if (this.selectedMatchup.includes('Day2')) return 'T2 Group B';
-        if (this.selectedMatchup.includes('Day3')) return 'T3 Last Chance';
-      } else if (this.isYear5Tournament) {
-        return 'T1 Winners R1';
-      } else {
-        // Year 4 tournament
-        if (this.selectedMatchup.includes('ER1')) return 'T3 Elimination R1';
-        if (this.selectedMatchup.includes('ER2')) return 'T4 Elimination R2';
-        if (this.selectedMatchup.includes('WR1')) return 'T4 Winners R1';
-        if (this.selectedDay === 'day1') return 'T1 Group Stage';
-        if (this.selectedDay === 'day2') return 'T2 Cross Groups';
-      }
-      
-      return 'Tournament';
-    },
-
-    // Commentary Methods
-    getCurrentMapName() {
-      if (this.currentGame === 0) return 'Pre-Game';
-      
-      if (this.processedChartData && this.processedChartData.length > 0) {
-        const firstTeam = this.processedChartData[0];
-        if (firstTeam && firstTeam.games) {
-          const currentGameData = firstTeam.games.find(game => game.gameNumber === this.currentGame);
-          if (currentGameData && currentGameData.map) {
-            return currentGameData.map;
-          }
-        }
-      }
-      
-      return `Game ${this.currentGame}`;
-    },
-
-    getCurrentGameBadgeStyle() {
-      let gameColor = '#ef4444';
-      
-      if (this.processedChartData && this.processedChartData.length > 0 && this.currentGame > 0) {
-        const firstTeam = this.processedChartData[0];
-        if (firstTeam && firstTeam.games) {
-          const currentGameData = firstTeam.games.find(game => game.gameNumber === this.currentGame);
-          if (currentGameData && currentGameData.color) {
-            gameColor = currentGameData.color;
-          }
-        }
-      }
-      
-      return {
-        background: `linear-gradient(135deg, ${gameColor} 0%, ${this.adjustColor(gameColor, -20)} 100%)`,
-        border: `2px solid ${gameColor}`,
-        boxShadow: `0 0 15px ${gameColor}60, 0 4px 8px rgba(0,0,0,0.3)`
-      };
-    },
-
-    getTeamCount() {
-      return this.processedChartData ? this.processedChartData.length : 0;
-    },
-
-    getTopTeams() {
-      if (!this.processedChartData || this.currentGame === 0) return [];
-      
-      return this.processedChartData
-        .map(team => ({
-          team: team.team,
-          totalPoints: team.games?.slice(0, this.currentGame).reduce((sum, game) => sum + (game.points || 0), 0) || 0
-        }))
-        .sort((a, b) => b.totalPoints - a.totalPoints);
-    },
-
-    getMatchTopTeams() {
-      if (!this.processedChartData || this.currentGame === 0) return [];
-      
-      return this.processedChartData
-        .map(team => {
-          const currentGameData = team.games?.find(game => game.gameNumber === this.currentGame);
-          return {
-            team: team.team,
-            matchPoints: currentGameData?.points || 0
-          };
-        })
-        .filter(team => team.matchPoints > 0)
-        .sort((a, b) => b.matchPoints - a.matchPoints);
-    },
-
-    
-    // Game filter methods
-    async toggleGameFilter(gameNum) {
-      const wasSelected = this.selectedGames.includes(gameNum);
-      
-      if (wasSelected) {
-        // If already selected, toggle it off
-        this.selectedGames.splice(this.selectedGames.indexOf(gameNum), 1);
-        console.log(`🎮 Removed game ${gameNum} from filter. Selected: [${this.selectedGames.join(', ')}]`);
-      } else {
-        // If not selected, add it to the selection (allow multiple)
-        this.selectedGames.push(gameNum);
-        console.log(`🎮 Added game ${gameNum} to filter. Selected: [${this.selectedGames.join(', ')}]`);
-        
-        // Auto-progress to max level when any filter is selected
-        if (this.currentGame < this.maxGames) {
-          console.log(`🎯 Auto-progressing to game ${this.maxGames} for filtering`);
-          this.setCurrentGame(this.maxGames);
-        }
-      }
-      
-      // Call the store action
-      this.setGameFilter({ 
-        games: this.selectedGames, 
-        action: wasSelected ? 'remove' : 'add',
-        gameNum,
-        maxGames: this.maxGames
-      });
-    },
-    
-    resetGameFilter() {
-      console.log('🔄 Resetting game filter and returning to initial state');
-      this.selectedGames = [];
-      
-      this.setGameFilter({ games: [], action: 'clear', maxGames: this.maxGames });
-      this.setCurrentGame(0); // Also reset game progress
-    },
-    
-    getGameTooltip(gameNum) {
-      // Get map name from chart data if available
-      let mapName = '';
-      
-      if (this.processedChartData && this.processedChartData.length > 0) {
-        const firstTeam = this.processedChartData[0];
-        if (firstTeam && firstTeam.games) {
-          const gameData = firstTeam.games.find(game => game.gameNumber === gameNum);
-          if (gameData && gameData.map) {
-            mapName = ` - ${gameData.map}`;
-          }
-        }
-      }
-      
-      return `Game ${gameNum}${mapName}`;
-    },
-    
-    getCurrentMapStyle() {
-      let mapColor = '#10b981'; // default fallback
-      
-      // Get map color for current game from chart data
-      if (this.processedChartData && this.processedChartData.length > 0 && this.currentGame > 0) {
-        const firstTeam = this.processedChartData[0];
-        if (firstTeam && firstTeam.games) {
-          const currentGameData = firstTeam.games.find(game => game.gameNumber === this.currentGame);
-          if (currentGameData && currentGameData.color) {
-            mapColor = currentGameData.color;
-          }
-        }
-      }
-      
-      return {
-        background: `linear-gradient(135deg, ${mapColor} 0%, ${this.adjustColor(mapColor, -20)} 100%)`,
-        border: `2px solid ${mapColor}`,
-        color: '#ffffff',
-        boxShadow: `0 0 15px ${mapColor}60, 0 4px 8px rgba(0,0,0,0.3)`
-      };
-    },
-    
-    // Advanced controls toggle
-    toggleAdvancedControls() {
-      this.advancedControlsExpanded = !this.advancedControlsExpanded;
-    },
-
-    // Collapsible sections toggle
-    toggleTournamentDays() {
-      this.tournamentDaysCollapsed = !this.tournamentDaysCollapsed;
-    },
-
-    toggleMatchups() {
-      this.matchupsCollapsed = !this.matchupsCollapsed;
-    },
-
-    // Check if Controls panel is in the same lane as Dashboard
-    isControlsInDashboardLane() {
-      try {
-        const dashboardPanel = document.querySelector('.dashboard-panel');
-        const controlsPanel = document.querySelector('.enhanced-action-panel, .controls-panel-grid');
-        
-        if (!dashboardPanel || !controlsPanel) {
-          this.collisionDebug = {
-            ...this.collisionDebug,
-            panelsFound: false,
-            reason: 'Missing DOM elements - Dashboard or Controls panel not found'
-          };
-          console.log('🔍 Collision Check: Missing panels', { 
-            dashboardPanel: !!dashboardPanel, 
-            controlsPanel: !!controlsPanel 
-          });
-          return true; // Default to safe behavior
-        }
-
-        const dashboardRect = dashboardPanel.getBoundingClientRect();
-        const controlsRect = controlsPanel.getBoundingClientRect();
-        
-        // Check horizontal overlap - stricter detection
-        const horizontalOverlap = !(controlsRect.right < dashboardRect.left - 20 || controlsRect.left > dashboardRect.right + 20);
-        
-        // Check if controls are vertically related (roughly same area or below) 
-        const verticallyRelated = controlsRect.top >= dashboardRect.top - 100; // More tolerance
-        
-        // Check if controls are in original position (left side of screen) - more specific
-        const isInOriginalPosition = controlsRect.left < (window.innerWidth * 0.4); // Controls should be in left 40% of screen
-        
-        // Additional check: Controls panel should be relatively close to dashboard
-        const isNearDashboard = Math.abs(controlsRect.left - dashboardRect.left) < 100;
-        
-        const shouldAdjust = horizontalOverlap && verticallyRelated && isInOriginalPosition && isNearDashboard;
-        
-        // Update debug data with comprehensive information
-        this.collisionDebug = {
-          panelsFound: true,
-          dashboard: {
-            left: Math.round(dashboardRect.left),
-            right: Math.round(dashboardRect.right),
-            top: Math.round(dashboardRect.top),
-            bottom: Math.round(dashboardRect.bottom),
-            width: Math.round(dashboardRect.width),
-            height: Math.round(dashboardRect.height)
-          },
-          controls: {
-            left: Math.round(controlsRect.left),
-            right: Math.round(controlsRect.right),
-            top: Math.round(controlsRect.top),
-            bottom: Math.round(controlsRect.bottom),
-            width: Math.round(controlsRect.width),
-            height: Math.round(controlsRect.height)
-          },
-          analysis: {
-            horizontalOverlap,
-            verticallyRelated,
-            isInOriginalPosition,
-            isNearDashboard,
-            windowWidth: window.innerWidth,
-            shouldAdjust
-          },
-          reason: shouldAdjust ? 
-            'Controls panel is spatially related to Dashboard' : 
-            `Controls panel is not spatially related: ${!horizontalOverlap ? 'no horizontal overlap' : ''} ${!verticallyRelated ? 'not vertically related' : ''} ${!isInOriginalPosition ? 'not in original position' : ''} ${!isNearDashboard ? 'not near dashboard' : ''}`.trim()
-        };
-        
-        // Enhanced console logging with visual indicators
-        console.log('🔍 COLLISION DETECTION REPORT:');
-        console.log('📊 Panel Positions:', {
-          dashboard: this.collisionDebug.dashboard,
-          controls: this.collisionDebug.controls
-        });
-        console.log('🧠 Analysis:', this.collisionDebug.analysis);
-        console.log(`💡 Decision: ${shouldAdjust ? '✅ APPLY LAYOUT ADJUSTMENT' : '❌ NO LAYOUT ADJUSTMENT'}`);
-        console.log(`📝 Reason: ${this.collisionDebug.reason}`);
-        
-        return shouldAdjust;
-      } catch (error) {
-        console.error('❌ Collision detection error:', error);
-        this.collisionDebug = {
-          panelsFound: false,
-          error: error.message,
-          reason: 'Error occurred during collision detection'
-        };
-        return true; // Default to safe behavior
-      }
-    },
-    
-    // Export data handler
-    exportData() {
-      if (this.processedChartData && this.processedChartData.length > 0) {
-        const selectedMatchup = this.selectedMatchup;
-        
-        // Generate CSV content from processed chart data
-        const csvContent = this.generateCSVContent(this.processedChartData, selectedMatchup);
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${selectedMatchup}_export.csv`;
-        a.click();
-        
-        URL.revokeObjectURL(url);
-      } else {
-        console.warn('⚠️ No chart data available for export');
-      }
-    },
-
-    handleExportRequested(selectedMatchup) {
-      console.log('📤 Export requested for:', selectedMatchup);
-      
-      if (this.processedChartData && this.processedChartData.length > 0) {
-        // Generate CSV content from processed chart data
-        const csvContent = this.generateCSVContent(this.processedChartData, selectedMatchup);
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${selectedMatchup}_export.csv`;
-        a.click();
-        
-        URL.revokeObjectURL(url);
-      } else {
-        console.warn('⚠️ No chart data available for export');
-      }
-    },
-
-    startAnimation() {
-      console.log('🎬 Starting animation from game', this.currentGame);
-      
-      // Clear any existing animation
-      this.stopAnimation();
-        
-      // If we're at the end, restart from game 1
-      if (this.currentGame >= this.maxGames) {
-        this.setCurrentGame(1);
-      } else if (this.currentGame === 0) {
-        // If at initial state, start from game 1
-        this.setCurrentGame(1);
-      }
-      
-      // Start the animation interval
-      this.playInterval = setInterval(() => {
-        if (this.currentGame < this.maxGames) {
-          this.setCurrentGame(this.currentGame + 1);
-        this.updateCurrentMap();
-          console.log('🎮 Animation progressed to game', this.currentGame);
-        } else {
-          // Reached the end, stop playing
-          console.log('🏁 Animation completed');
-          this.setPlaying(false); // Use the action to update the store
-        }
-      }, 3000); // 3 seconds per game - adjust speed as needed
-    },
-
-    generateCSVContent(data, matchupName) {
-      if (!data || data.length === 0) return '';
-      
-      // Create CSV header
-      const maxGames = Math.max(...data.map(team => team.games?.length || 0));
-      const headers = ['Team', 'Total Points'];
-      for (let i = 1; i <= maxGames; i++) {
-        headers.push(`Game ${i} Points`, `Game ${i} Map`);
-        }
-        
-      // Create CSV rows
-      const rows = [headers.join(',')];
-      
-      data.forEach(team => {
-        const row = [team.team];
-        
-        // Calculate total points
-        const totalPoints = team.games?.reduce((sum, game) => sum + (game.points || 0), 0) || 0;
-        row.push(totalPoints);
-        
-        // Add game-by-game data
-        for (let i = 1; i <= maxGames; i++) {
-          const game = team.games?.find(g => g.gameNumber === i);
-          row.push(game?.points || 0);
-          row.push(game?.map || '');
-        }
-        
-        rows.push(row.join(','));
-      });
-      
-      return rows.join('\n');
-    },
-
-    stopAnimation() {
-      if (this.animationInterval) {
-        clearInterval(this.animationInterval);
-        this.animationInterval = null;
-      }
-      this.setPlaying(false);
-    },
-
-    adjustCommentaryWidth() {
-      this.$nextTick(() => {
-        const commentaryElement = this.$refs.commentarySection;
-        
-        if (!commentaryElement || !this.selectedMatchup) {
-          return; // No commentary panel to adjust when no matchup is selected
-        }
-        
-        // Direct targeting of the chart SVG
-        const chartElement = this.$el.querySelector('.algs-chart-svg') || 
-                            this.$refs.interactiveChart?.$el?.querySelector('svg');
-        
-        if (chartElement) {
-          const chartWidth = chartElement.getBoundingClientRect().width;
-          console.log(`🎯 Adjusting commentary width to match chart: ${chartWidth}px`);
-          commentaryElement.style.width = `${chartWidth}px`;
-          commentaryElement.style.maxWidth = `${chartWidth}px`;
-          commentaryElement.style.minWidth = `${chartWidth}px`;
-        } else {
-          console.warn('⚠️ Chart SVG element not found for width adjustment');
-        }
-      });
-    },
-
-    measureOriginalHeights() {
-      this.$nextTick(() => {
-        const chartSection = this.$el.querySelector('.chart-section');
-        const chartSvg = this.$el.querySelector('.algs-chart-svg');
-        
-        console.log('🔍 Element check:', {
-          chartSection: !!chartSection,
-          chartSvg: !!chartSvg,
-          isCompressed: this.isChartCompressed
-        });
-        
-        if (chartSection && chartSvg && !this.isChartCompressed) {
-          // Get more detailed measurements
-          const chartTitleSection = this.$el.querySelector('.chart-title-section');
-          const chartComponentContainer = this.$el.querySelector('.chart-component-container');
-          
-          this.originalSectionHeight = chartSection.getBoundingClientRect().height;
-          this.originalChartHeight = chartSvg.getBoundingClientRect().height;
-          
-          // Calculate the non-chart content height (title section, padding, etc.)
-          this.nonChartContentHeight = this.originalSectionHeight - this.originalChartHeight;
-          
-          // Calculate 20% reduction (80% of original = 20% reduction) 
-          const compressedChartHeight = this.originalChartHeight * 0.8;
-          this.compressionReduction = this.originalChartHeight - compressedChartHeight;
-          
-          console.log('📏 Detailed Height Analysis:', {
-            chartSection: {
-              element: 'chart-section',
-              height: this.originalSectionHeight
-            },
-            chartTitleSection: {
-              element: 'chart-title-section', 
-              height: chartTitleSection ? chartTitleSection.getBoundingClientRect().height : 'not found'
-            },
-            chartComponentContainer: {
-              element: 'chart-component-container',
-              height: chartComponentContainer ? chartComponentContainer.getBoundingClientRect().height : 'not found'
-            },
-            chartSvg: {
-              element: 'algs-chart-svg',
-              height: this.originalChartHeight
-            },
-            calculations: {
-              nonChartContentHeight: this.nonChartContentHeight,
-              compressedChartHeight: compressedChartHeight,
-              compressionReduction: this.compressionReduction,
-              expectedCompressedSectionHeight: compressedChartHeight + this.nonChartContentHeight
-            }
-          });
-          
-          // Set CSS custom properties for dynamic compression
-          this.setCSSCompressionProperties();
-        }
-      });
-    },
-
-    setCSSCompressionProperties() {
-      const root = document.documentElement;
-      const compressedChartHeight = this.originalChartHeight * 0.8;
-      
-      root.style.setProperty('--original-chart-height', `${this.originalChartHeight}px`);
-      root.style.setProperty('--original-section-height', `${this.originalSectionHeight}px`);
-      root.style.setProperty('--compressed-chart-height', `${compressedChartHeight}px`);
-      root.style.setProperty('--compression-reduction', `${this.compressionReduction}px`);
-      
-      console.log('🎨 Simplified approach - letting layout naturally compress:', {
-        originalChartHeight: this.originalChartHeight,
-        compressedChartHeight: compressedChartHeight,
-        reduction: this.compressionReduction
-      });
-    },
-
-    toggleChartView() {
-      this.isChartCompressed = !this.isChartCompressed;
-      console.log(`📊 Chart view toggled: ${this.isChartCompressed ? 'COMPRESSED' : 'EXPANDED'}`);
-      
-      // Measure heights if not already done
-      if (this.originalChartHeight === 0) {
-        this.measureOriginalHeights();
-      }
-      
-      // Trigger chart resize and width adjustment after view change
-      this.$nextTick(() => {
-        // Dispatch resize event to make chart recalculate dimensions
-        window.dispatchEvent(new Event('resize'));
-        
-        // Adjust commentary width after chart resizes
-        setTimeout(() => {
-          this.adjustCommentaryWidth();
-        }, 100);
-      });
-    },
-
-    // Map tooltip methods for commentary section
-    getMapImageUrl(mapName) {
-      return getMapImageUrl(mapName);
-    },
-
-    createCommentaryMapTooltip() {
-      if (this.mapTooltip) {
-        this.mapTooltip.remove();
-      }
-      
-      this.mapTooltip = document.createElement('div');
-      this.mapTooltip.className = 'commentary-map-tooltip';
-      this.mapTooltip.style.cssText = `
-        position: fixed;
-        visibility: hidden;
-        background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 100%);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        border-radius: 12px;
-        padding: 16px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 16px rgba(239, 68, 68, 0.1);
-        color: #ffffff;
-        font-family: Inter, system-ui, sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 1.4;
-        pointer-events: none;
-        z-index: 10000;
-        width: 320px;
-        max-width: 320px;
-        text-align: center;
-      `;
-      
-      document.body.appendChild(this.mapTooltip);
-      return this.mapTooltip;
-    },
-
-    showCommentaryMapTooltip(event) {
-      if (!this.mapTooltip) {
-        this.createCommentaryMapTooltip();
-      }
-      
-      const currentMapName = this.getCurrentMapName();
-      if (!currentMapName) {
-        return;
-      }
-      
-      let mapName = currentMapName;
-      if (mapName && mapName.includes(' - ')) {
-        mapName = mapName.split(' - ')[1];
-      }
-      
-      const imageUrl = this.getMapImageUrl(mapName);
-      
-      if (!imageUrl) {
-        return;
-      }
-      
-      // Create tooltip content
-      const isPreGame = mapName === 'Pre-game';
-      const tooltipTitle = isPreGame ? 'Tournament Status' : 'Current Map';
-      const tooltipSubtitle = isPreGame ? 'Pre-game Preparation' : mapName;
-      
-      this.mapTooltip.innerHTML = `
-        <div style="margin-bottom: 8px;">
-          <div style="font-weight: 600; color: #ef4444; font-size: 13px; margin-bottom: 4px;">
-            ${tooltipTitle}
-          </div>
-          <div style="font-weight: 500; color: #ffffff; font-size: 12px;">
-            ${tooltipSubtitle}
-          </div>
-        </div>
-        <div style="border-radius: 6px; overflow: hidden;">
-          <img src="${imageUrl}" 
-               alt="${mapName}" 
-               style="width: 100%; height: 80px; object-fit: cover; display: block;">
-        </div>
-      `;
-      
-      this.mapTooltip.style.visibility = 'visible';
-      
-      // Position tooltip to the right of cursor
-      const mouseX = event.clientX;
-      const mouseY = event.clientY;
-      
-      const tooltipX = mouseX + 15; // 15px to the right of cursor
-      const tooltipY = mouseY; // At cursor level
-      
-      // Simple bounds checking
-      this.mapTooltip.style.left = Math.max(10, Math.min(tooltipX, window.innerWidth - 320)) + 'px';
-      this.mapTooltip.style.top = Math.max(10, tooltipY) + 'px';
-    },
-    
-    updateCommentaryTooltipPosition(event) {
-      if (!this.mapTooltip || this.mapTooltip.style.visibility === 'hidden') {
-        return;
-      }
-      
-      // Update tooltip position based on mouse movement
-      const mouseX = event.clientX;
-      const mouseY = event.clientY;
-      
-      const tooltipX = mouseX + 15; // 15px to the right of cursor
-      const tooltipY = mouseY; // At cursor level
-      
-      // Simple bounds checking
-      this.mapTooltip.style.left = Math.max(10, Math.min(tooltipX, window.innerWidth - 320)) + 'px';
-      this.mapTooltip.style.top = Math.max(10, tooltipY) + 'px';
-    },
-    
-    hideCommentaryMapTooltip() {
-      if (this.mapTooltip) {
-        this.mapTooltip.style.visibility = 'hidden';
-      }
-    }
-  },
+    })
+    .sort((a, b) => b.gamePoints - a.gamePoints)
   
-  beforeUnmount() {
-    console.log('🧹 TournamentView beforeUnmount() called - cleaning up');
-    
-    // Stop any ongoing animation
-    this.stopAnimation();
-    
-    // Remove window resize listener
-    window.removeEventListener('resize', this.adjustCommentaryWidth);
-    
-    // Clean up chart
-    this.cleanupChart();
-    
-    // Clean up ResizeObserver
-    if (this.dashboardResizeObserver) {
-      this.dashboardResizeObserver.disconnect();
-      this.dashboardResizeObserver = null;
+  // Assign actual placements (1st, 2nd, 3rd, etc.)
+  return gameData.map((team, index) => ({
+    ...team,
+    placement: index + 1
+  }))
+})
+
+// Playback control
+const startPlayback = () => {
+  if (playbackInterval) clearInterval(playbackInterval)
+  
+  if (currentGame.value >= maxGames.value) {
+    setCurrentGame(0)
+  }
+  
+  const interval = SPEED_INTERVALS[animationSpeed.value] || SPEED_INTERVALS.medium
+  
+  playbackInterval = setInterval(() => {
+    if (currentGame.value < maxGames.value) {
+      setCurrentGame(currentGame.value + 1)
+    } else {
+      stopPlayback()
     }
-    
-    // Clean up map tooltip
-    if (this.mapTooltip) {
-      this.mapTooltip.remove();
-      this.mapTooltip = null;
-    }
+  }, interval)
+}
+
+const stopPlayback = () => {
+  if (playbackInterval) {
+    clearInterval(playbackInterval)
+    playbackInterval = null
   }
 }
+
+// Watch for play state changes
+watch(isPlaying, (playing) => {
+  if (playing) startPlayback()
+  else stopPlayback()
+})
+
+// Watch for speed changes
+watch(animationSpeed, () => {
+  if (isPlaying.value) startPlayback()
+})
+
+// Tournament change handler
+const handleTournamentChange = () => {
+  stopPlayback()
+  router.push(`/tournament/${selectedTournament.value}`)
+}
+
+// Day selection - auto-select first matchup
+const handleDaySelect = async (dayId) => {
+  stopPlayback()
+  setDay(dayId)
+  
+  // Auto-select first matchup of the new day
+  const day = tournamentDays.value.find(d => d.id === dayId)
+  if (day && day.matchups.length > 0) {
+    const firstMatchup = day.matchups[0]
+    selectMatchup(firstMatchup.id)
+    await fetchDataForMatchup()
+  }
+}
+
+// Matchup selection
+const handleMatchupSelect = async (matchupId) => {
+  stopPlayback()
+  selectMatchup(matchupId)
+  await fetchDataForMatchup()
+}
+
+// Initialize
+onMounted(() => {
+  // Set initial tournament from route
+  const routeTournament = route.params.id
+  if (routeTournament) {
+    selectedTournament.value = routeTournament
+  }
+  
+  const type = isEwc2025.value ? 'ewc2025' : isYear5.value ? 'year5' : 'year4'
+  setTournamentType(type)
+  
+  // Auto-select first day/matchup
+  const firstDay = tournamentDays.value[0]
+  if (firstDay) {
+    setDay(firstDay.id)
+    if (firstDay.matchups[0]) {
+      selectMatchup(firstDay.matchups[0].id)
+      fetchDataForMatchup()
+    }
+  }
+})
+
+// Watch for route changes
+watch(() => route.params.id, (newId) => {
+  if (newId) {
+    selectedTournament.value = newId
+    const type = newId === 'ewc-2025' ? 'ewc2025' : newId === 'year-5-open' ? 'year5' : 'year4'
+    setTournamentType(type)
+    
+    const firstDay = tournamentDays.value[0]
+    if (firstDay) {
+      setDay(firstDay.id)
+      if (firstDay.matchups[0]) {
+        selectMatchup(firstDay.matchups[0].id)
+        fetchDataForMatchup()
+      }
+    }
+  }
+})
+
+// Cleanup
+onUnmounted(() => {
+  stopPlayback()
+})
 </script>
-
-<style scoped>
-/* Enhanced Gaming Commentary Panel - Main Container */
-.commentary-panel {
-  margin-top: 0;
-  width: 100%;
-  max-width: none;
-  background: linear-gradient(135deg, 
-    rgba(10, 10, 15, 0.98) 0%, 
-    rgba(15, 15, 25, 0.98) 50%, 
-    rgba(20, 20, 30, 0.98) 100%);
-  border: 2px solid transparent;
-  border-radius: 12px;
-  backdrop-filter: blur(20px);
-  position: relative;
-  overflow: hidden;
-  box-shadow: 
-    0 8px 32px rgba(239, 68, 68, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  box-sizing: border-box;
-  padding: 12px 14px;
-}
-
-.commentary-panel::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, 
-    transparent 30%, 
-    rgba(239, 68, 68, 0.1) 50%, 
-    transparent 70%);
-  pointer-events: none;
-  animation: scan-line 3s linear infinite;
-}
-
-@keyframes scan-line {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-.panel-border {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-}
-
-.corner-accent {
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(239, 68, 68, 0.6);
-}
-
-.corner-accent.top-left {
-  top: 0;
-  left: 0;
-  border-right: none;
-  border-bottom: none;
-}
-
-.corner-accent.top-right {
-  top: 0;
-  right: 0;
-  border-left: none;
-  border-bottom: none;
-}
-
-.corner-accent.bottom-left {
-  bottom: 0;
-  left: 0;
-  border-right: none;
-  border-top: none;
-}
-
-.corner-accent.bottom-right {
-  bottom: 0;
-  right: 0;
-  border-left: none;
-  border-top: none;
-}
-
-/* Side by Side Layout */
-.commentary-layout {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  flex-wrap: nowrap;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.commentary-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.commentary-with-badge {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.inline-map-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid currentColor;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  position: relative;
-  overflow: hidden;
-  align-self: flex-start;
-  margin-bottom: 4px;
-}
-
-.inline-map-badge .badge-glow {
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 255, 255, 0.2), 
-    transparent);
-  animation: badge-shine 2s linear infinite;
-}
-
-@keyframes badge-shine {
-  0% { left: -100%; }
-  100% { left: 100%; }
-}
-
-.inline-map-badge .game-number {
-  font-weight: 900;
-  text-shadow: 0 0 6px currentColor;
-}
-
-.inline-map-badge .divider {
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 300;
-}
-
-.inline-map-badge .game-map {
-  font-weight: 600;
-  opacity: 0.95;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.inline-map-badge .game-map:hover {
-  opacity: 1;
-  text-shadow: 0 0 8px currentColor;
-  transform: scale(1.02);
-}
-
-/* Responsive Design */
-@media (max-width: 1100px) {
-  .commentary-layout {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .dominance-containers {
-    flex-direction: row;
-    width: 100%;
-  }
-}
-
-@media (max-width: 600px) {
-  .dominance-containers {
-    flex-direction: column;
-    width: 100%;
-  }
-  
-  .dominance-compact {
-    min-width: 0;
-    width: 100%;
-  }
-}
-
-/* Dynamic text sizing based on container */
-@media (min-width: 1200px) {
-  .commentary-text {
-    font-size: 14px;
-    line-height: 1.6;
-  }
-}
-
-@media (max-width: 800px) {
-  .commentary-text {
-    font-size: 12px;
-    line-height: 1.4;
-  }
-}
-
-.commentary-text {
-  font-size: 13px;
-  line-height: 1.5;
-  color: #e5e7eb;
-  margin: 0;
-  font-weight: 400;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-/* Compact Dominance Containers - 50% Bigger */
-.dominance-containers {
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  flex-shrink: 0;
-  flex-basis: auto;
-}
-
-.dominance-compact {
-  flex: 1;
-  background: linear-gradient(135deg, 
-    rgba(0, 0, 0, 0.6) 0%, 
-    rgba(239, 68, 68, 0.1) 100%);
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  border-radius: 9px;
-  padding: 9px 12px;
-  position: relative;
-  overflow: hidden;
-  min-width: 0;
-}
-
-.dominance-compact::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    #ef4444, 
-    transparent);
-  animation: compact-glow 3s linear infinite;
-}
-
-@keyframes compact-glow {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
-}
-
-.dominance-compact.current {
-  border-color: rgba(16, 185, 129, 0.4);
-}
-
-.dominance-compact.current::before {
-  background: linear-gradient(90deg, 
-    transparent, 
-    #10b981, 
-    transparent);
-}
-
-.dominance-compact.match {
-  border-color: rgba(251, 191, 36, 0.4);
-}
-
-.dominance-compact.match::before {
-  background: linear-gradient(90deg, 
-    transparent, 
-    #fbbf24, 
-    transparent);
-}
-
-.dominance-header {
-  margin-bottom: 6px;
-}
-
-.dominance-title {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.9px;
-  color: #ef4444;
-  text-shadow: 0 0 6px rgba(239, 68, 68, 0.8);
-}
-
-.current .dominance-title {
-  color: #10b981;
-  text-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
-}
-
-.match .dominance-title {
-  color: #fbbf24;
-  text-shadow: 0 0 6px rgba(251, 191, 36, 0.8);
-}
-
-.teams-compact {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.team-compact {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 4.5px 6px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 4.5px;
-  border-left: 3px solid transparent;
-  transition: all 0.2s ease;
-  font-size: 13.5px;
-}
-
-.team-compact:hover {
-  background: rgba(255, 255, 255, 0.06);
-  transform: translateX(1px);
-}
-
-.team-compact.rank-1 {
-  border-left-color: #ffd700;
-}
-
-.team-compact.rank-2 {
-  border-left-color: #c0c0c0;
-}
-
-.team-compact.rank-3 {
-  border-left-color: #cd7f32;
-}
-
-.team-compact .rank {
-  font-size: 12px;
-  font-weight: 900;
-  color: #ffffff;
-  width: 15px;
-  text-align: center;
-  text-shadow: 0 0 4.5px currentColor;
-}
-
-.rank-1 .rank {
-  color: #ffd700;
-}
-
-.rank-2 .rank {
-  color: #c0c0c0;
-}
-
-.rank-3 .rank {
-  color: #cd7f32;
-}
-
-.team-compact .name {
-  flex: 1;
-  font-weight: 600;
-  color: #ffffff;
-  text-transform: uppercase;
-  letter-spacing: 0.2px;
-  font-size: 11px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 120px;
-}
-
-.team-compact .points {
-  font-size: 13.5px;
-  font-weight: 800;
-  color: #10b981;
-  text-shadow: 0 0 4.5px #10b981;
-  min-width: 27px;
-  text-align: right;
-}
-
-.leaderboard-compact {
-  margin-top: 8px;
-}
-
-/* Chart Title Container Positioning */
-.chart-title-container {
-  position: relative;
-}
-
-/* Chart View Toggle Button */
-.chart-view-toggle {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-}
-
-.view-toggle-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: linear-gradient(135deg, 
-    rgba(239, 68, 68, 0.2) 0%, 
-    rgba(239, 68, 68, 0.1) 100%);
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  border-radius: 6px;
-  color: #ef4444;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(8px);
-  position: relative;
-  overflow: hidden;
-}
-
-.view-toggle-btn:hover {
-  background: linear-gradient(135deg, 
-    rgba(239, 68, 68, 0.3) 0%, 
-    rgba(239, 68, 68, 0.2) 100%);
-  border-color: rgba(239, 68, 68, 0.6);
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
-  transform: translateY(-1px);
-}
-
-.view-toggle-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
-}
-
-.toggle-icon {
-  width: 16px;
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.toggle-icon svg {
-  width: 100%;
-  height: 100%;
-  color: currentColor;
-}
-
-.toggle-label {
-  font-size: 10px;
-  font-weight: 700;
-  text-shadow: 0 0 4px rgba(239, 68, 68, 0.6);
-}
-
-/* Ultra-simplified chart section layout */
-.chart-section {
-  display: flex;
-  flex-direction: column;
-}
-
-.chart-loading-container {
-  flex: 1;
-}
-
-/* Chart component container */
-.chart-component-container {
-  flex: 1;
-  position: relative;
-  transition: height 0.5s ease-out;
-}
-
-/* When compressed, allow the container to shrink */
-.compressed .chart-component-container {
-  flex: none;
-  min-height: 0;
-}
-
-/* Direct compression on InteractiveRaceChart component - 20% reduction (400px → 320px) */
-.interactive-race-chart {
-  width: 100%;
-  height: 100%;
-  transition: height 0.5s ease-out;
-}
-
-.interactive-race-chart.compressed {
-  height: 320px;
-  max-height: 320px;
-  overflow: hidden;
-}
-
-.chart-component-container:has(.compressed) {
-  height: 320px;
-  max-height: 320px;
-}
-
-/* Chart section - let it naturally size based on content */
-.chart-section {
-  display: flex;
-  flex-direction: column;
-  transition: all 0.3s ease;
-}
-
-/* When compressed, ensure no extra space */
-.chart-section.compressed {
-  transition: all 0.3s ease;
-}
-
-.commentary-panel {
-  flex-shrink: 0;
-}
-
-/* Subtle transition between loading and chart states */
-.chart-fade-enter-active,
-.chart-fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.chart-fade-enter-from,
-.chart-fade-leave-to {
-  opacity: 0;
-}
-
-.leaderboard-compact h4 {
-  font-size: 12px;
-  font-weight: 600;
-  color: #fbbf24;
-  margin: 0 0 8px 0;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.top-teams {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.top-team-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 0;
-  font-size: 12px;
-}
-
-.top-team-item .position {
-  font-weight: 700;
-  color: #ef4444;
-  min-width: 16px;
-}
-
-.top-team-item .team-name {
-  flex: 1;
-  color: #e2e8f0;
-  font-weight: 500;
-}
-
-.top-team-item .team-points {
-  color: #4ade80;
-  font-weight: 600;
-}
-
-.no-data {
-  font-size: 12px;
-  color: #94a3b8;
-  font-style: italic;
-}
-
-/* Loading overlay styles */
-.loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top: 3px solid #fbbf24;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Fade transition styles */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>
-
- 

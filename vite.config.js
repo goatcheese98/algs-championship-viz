@@ -1,32 +1,32 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
   plugins: [vue()],
   base: '/algs-championship-viz/',
-  root: '.',
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
   server: {
     port: 3000,
-    open: true
+    open: true,
   },
   build: {
     outDir: 'dist',
+    sourcemap: true,
     rollupOptions: {
-      input: {
-        main: './index.html'
-      }
-    }
-  },
-  resolve: {
-    alias: {
-      '@': '/src'
-    }
+      output: {
+        manualChunks: {
+          'vendor': ['vue', 'vue-router', 'pinia'],
+          'd3': ['d3'],
+        },
+      },
+    },
   },
   optimizeDeps: {
-    include: ['vue', 'd3']
+    include: ['vue', 'd3'],
   },
-  define: {
-    __VUE_OPTIONS_API__: true,
-    __VUE_PROD_DEVTOOLS__: false
-  }
-}) 
+})

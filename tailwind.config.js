@@ -4,133 +4,131 @@ export default {
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        // Integrate with our existing design tokens
-        primary: {
-          50: '#fef2f2',
-          100: '#fee2e2',
-          200: '#fecaca',
-          300: '#fca5a5',
-          400: '#f87171',
-          500: '#ef4444', // Our main --color-primary
-          600: '#dc2626', // Our --color-primary-dark
-          700: '#b91c1c',
-          800: '#991b1b',
-          900: '#7f1d1d',
+        // Primary brand colors - clean slate with blue accent
+        brand: {
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0284c7',
+          700: '#0369a1',
+          800: '#075985',
+          900: '#0c4a6e',
+          950: '#082f49',
         },
-        accent: {
-          50: '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24', // Our --color-accent-light
-          500: '#d97706', // Our main --color-accent
-          600: '#b45309',
-          700: '#92400e',
-          800: '#78350f',
-          900: '#451a03',
-        },
-        gray: {
-          50: '#f8fafc',  // Our --color-text-light
-          100: '#f1f5f9', // Our --color-text-primary
+        // Surface colors for glassmorphism
+        surface: {
+          0: '#ffffff',
+          50: '#f8fafc',
+          100: '#f1f5f9',
           200: '#e2e8f0',
-          300: '#cbd5e1', // Our --color-text-muted
-          400: '#94a3b8', // Our --color-text-subtle
+          300: '#cbd5e1',
+          400: '#94a3b8',
           500: '#64748b',
           600: '#475569',
           700: '#334155',
           800: '#1e293b',
           900: '#0f172a',
+          950: '#020617',
         },
-        dark: {
-          primary: '#1a0f0f',   // Our --color-bg-primary
-          secondary: '#2d1b1b', // Our --color-bg-secondary
-          tertiary: '#0f0f0f',  // Our --color-bg-tertiary
+        // Accent colors for tournament stats
+        accent: {
+          gold: '#fbbf24',
+          silver: '#94a3b8',
+          bronze: '#b45309',
+          success: '#22c55e',
+          warning: '#f59e0b',
+          danger: '#ef4444',
+          info: '#3b82f6',
+        },
+        // Map colors for chart
+        map: {
+          'storm-point': '#f97316',
+          'worlds-edge': '#ef4444',
+          'e-district': '#8b5cf6',
+          'broken-moon': '#06b6d4',
+          'olympus': '#10b981',
+          'kings-canyon': '#f59e0b',
         }
       },
-      spacing: {
-        // Map our design tokens to Tailwind spacing
-        'xs': '3px',   // --spacing-xs
-        'sm': '4px',   // --spacing-sm
-        'md': '6px',   // --spacing-md
-        'lg': '8px',   // --spacing-lg
-        'xl': '10px',  // --spacing-xl
-        '2xl': '12px', // --spacing-2xl
-        '3xl': '14px', // --spacing-3xl
-        '4xl': '16px', // --spacing-4xl
-        '5xl': '20px', // --spacing-5xl
-        '6xl': '24px', // --spacing-6xl
-        '7xl': '30px', // --spacing-7xl
-        '8xl': '40px', // --spacing-8xl
-        '9xl': '60px', // --spacing-9xl
-        '10xl': '80px', // --spacing-10xl
-        '11xl': '100px', // --spacing-11xl
+      fontFamily: {
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace'],
       },
       fontSize: {
-        // Map our text tokens
-        '2xs': ['0.65rem', { lineHeight: '1.2' }], // --text-2xs
-        'xs': ['0.7rem', { lineHeight: '1.2' }],   // --text-xs
-        'sm': ['0.75rem', { lineHeight: '1.2' }],  // --text-sm
-        'base': ['0.8rem', { lineHeight: '1.4' }], // --text-base (most common)
-        'md': ['0.85rem', { lineHeight: '1.4' }],  // --text-md
-        'lg': ['0.9rem', { lineHeight: '1.4' }],   // --text-lg
-        'xl': ['0.95rem', { lineHeight: '1.4' }],  // --text-xl
-        '2xl': ['1rem', { lineHeight: '1.4' }],    // --text-2xl
-        '3xl': ['1.1rem', { lineHeight: '1.4' }],  // --text-3xl
-        '4xl': ['1.2rem', { lineHeight: '1.4' }],  // --text-4xl
-        '5xl': ['1.3rem', { lineHeight: '1.6' }],  // --text-5xl
-        '6xl': ['1.8rem', { lineHeight: '1.6' }],  // --text-6xl
+        '2xs': ['0.625rem', { lineHeight: '0.875rem' }],
+        'xs': ['0.75rem', { lineHeight: '1rem' }],
+        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+        'base': ['1rem', { lineHeight: '1.5rem' }],
+        'lg': ['1.125rem', { lineHeight: '1.75rem' }],
+        'xl': ['1.25rem', { lineHeight: '1.75rem' }],
+        '2xl': ['1.5rem', { lineHeight: '2rem' }],
+        '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+        '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+        '5xl': ['3rem', { lineHeight: '1' }],
+      },
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+        '128': '32rem',
       },
       borderRadius: {
-        // Map our radius tokens
-        'xs': '1px',  // --radius-xs
-        'sm': '2px',  // --radius-sm
-        'base': '3px', // --radius-base
-        'md': '4px',  // --radius-md
-        'DEFAULT': '6px', // --radius-lg (most common)
-        'lg': '6px',  // --radius-lg
-        'xl': '8px',  // --radius-xl
-        '2xl': '10px', // --radius-2xl
-        '3xl': '12px', // --radius-3xl
-        '4xl': '16px', // --radius-4xl
-        '5xl': '18px', // --radius-5xl
-        '6xl': '20px', // --radius-6xl
-      },
-      transitionDuration: {
-        // Map our animation tokens
-        'fast': '0.2s',   // --duration-base
-        'base': '0.25s',  // --duration-medium
-        'slow': '0.3s',   // --duration-slow
+        '4xl': '2rem',
       },
       boxShadow: {
-        // Map our shadow tokens
-        'sm': '0 1px 2px rgba(0, 0, 0, 0.4)',
-        'DEFAULT': '0 2px 4px rgba(0, 0, 0, 0.3)',
-        'md': '0 4px 8px rgba(0, 0, 0, 0.3)',
-        'lg': '0 8px 16px rgba(0, 0, 0, 0.6)',
-        'xl': '0 12px 24px rgba(0, 0, 0, 0.6)',
-        '2xl': '0 16px 32px rgba(0, 0, 0, 0.5)',
-        // Glow effects
-        'primary': '0 0 8px rgba(239, 68, 68, 0.3)',
-        'primary-strong': '0 0 15px rgba(239, 68, 68, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3)',
-        'accent': '0 0 8px rgba(217, 119, 6, 0.3)',
-        'accent-strong': '0 0 12px rgba(217, 119, 6, 0.4)',
+        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.08)',
+        'glass-lg': '0 16px 48px 0 rgba(0, 0, 0, 0.12)',
+        'glow': '0 0 20px rgba(14, 165, 233, 0.3)',
+        'glow-lg': '0 0 40px rgba(14, 165, 233, 0.4)',
       },
       backdropBlur: {
         'xs': '2px',
-        'sm': '4px',
-        'DEFAULT': '8px',
-        'md': '12px',
-        'lg': '16px',
-        'xl': '20px',
-        '2xl': '24px',
-        '3xl': '32px',
-      }
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.3s ease-out',
+        'fade-out': 'fadeOut 0.2s ease-in',
+        'slide-up': 'slideUp 0.3s ease-out',
+        'slide-down': 'slideDown 0.3s ease-out',
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'shimmer': 'shimmer 2s linear infinite',
+        'float': 'float 6s ease-in-out infinite',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        fadeOut: {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideDown: {
+          '0%': { transform: 'translateY(-10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+      },
+      transitionTimingFunction: {
+        'bounce-out': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+      },
     },
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-  ],
+  plugins: [],
 }

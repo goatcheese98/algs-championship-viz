@@ -1,47 +1,30 @@
-import { createApp } from 'vue';
-import { createPinia } from 'pinia';
-import App from './App.vue';
-import router from './router';
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import App from './App.vue'
+import router from './router'
 
-import './utils/GSAPDraggableManager.js';
-import './styles/tailwind.css';
+// Import global styles
+import './styles/main.css'
 
-const routerLinkStyles = document.createElement('style');
-routerLinkStyles.textContent = `
-  a, router-link {
-    text-decoration: none;
-    color: inherit;
-    cursor: pointer;
-    display: inline-block;
-  }
-  
-  router-link.nav-link,
-  router-link.ewc-banner-button,
-  router-link.enter-button {
-    color: inherit;
-    text-decoration: none;
-    cursor: pointer;
-    display: inherit;
-    border: inherit;
-    background: inherit;
-    padding: inherit;
-    margin: inherit;
-    border-radius: inherit;
-    box-shadow: inherit;
-    transition: inherit;
-  }
-  
-  router-link:hover {
-    color: inherit;
-    text-decoration: none;
-  }
-`;
-document.head.appendChild(routerLinkStyles);
+// Create app instance
+const app = createApp(App)
 
-const app = createApp(App);
-const pinia = createPinia();
+// Provide ECharts theme globally
+app.provide('echarts-theme', 'dark')
 
-app.use(pinia);
-app.use(router);
+// Create and use Pinia store
+const pinia = createPinia()
+app.use(pinia)
 
-app.mount('#app'); 
+// Use router
+app.use(router)
+
+// Global error handler
+app.config.errorHandler = (err, vm, info) => {
+  console.error('Vue Error:', err)
+  console.error('Component:', vm?.$options?.name || 'Anonymous')
+  console.error('Info:', info)
+}
+
+// Mount app
+app.mount('#app')

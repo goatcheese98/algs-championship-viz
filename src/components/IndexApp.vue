@@ -1,282 +1,191 @@
 <template>
-  <div id="app">
-    <header class="algs-header">
-      <div class="header-content">
-        <div class="algs-branding">
-          <div class="algs-icon">🏆</div>
-          <div class="algs-info">
-            <h1 class="main-title">ALGS</h1>
-            <p class="subtitle">Apex Legends Global Series</p>
+  <div class="min-h-screen bg-surface-950">
+    <!-- Header with Tournament Selector -->
+    <header class="glass-heavy border-b border-surface-800">
+      <div class="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo -->
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-xl shadow-glow">
+              🏆
+            </div>
+            <div>
+              <h1 class="font-bold text-surface-100">ALGS Dashboard</h1>
+              <p class="text-xs text-surface-500">Esports Analytics Platform</p>
+            </div>
           </div>
-        </div>
-        <div class="platform-info">
-          <p class="tagline">Professional tournament visualization and analytics platform</p>
-          <button class="data-management-btn" @click="openDataManagement">
-            <span class="btn-icon">🔧</span>
-            Data Tools
-          </button>
+          
+          <!-- Tournament Selector -->
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-surface-400 hidden sm:inline">Select Tournament:</span>
+            <div class="relative">
+              <select 
+                v-model="selectedTournament"
+                class="input text-sm py-2 pl-3 pr-10 min-w-[180px] cursor-pointer appearance-none bg-surface-800/50"
+              >
+                <option value="year-4-championship">Year 4 Championship</option>
+                <option value="year-5-open">Year 5 Open</option>
+                <option value="ewc-2025">EWC 2025</option>
+              </select>
+              <svg class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-surface-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+            <button @click="enterTournament" class="btn-primary">
+              View Tournament
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </header>
 
-    <section class="ewc-banner">
-      <div class="ewc-banner-content">
-        <div class="ewc-banner-background">
-          <div class="ewc-glow-orb ewc-glow-orb-1"></div>
-          <div class="ewc-glow-orb ewc-glow-orb-2"></div>
-          <div class="ewc-glow-orb ewc-glow-orb-3"></div>
-        </div>
+    <!-- Hero Section -->
+    <main>
+      <div class="relative overflow-hidden">
+        <!-- Background -->
+        <div class="absolute inset-0 bg-gradient-to-br from-brand-950 via-surface-950 to-surface-950" />
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(14,165,233,0.1),transparent_50%)]" />
         
-        <div class="ewc-banner-info">
-          <div class="ewc-banner-logo">
-            <span class="ewc-banner-icon">🏆</span>
-          </div>
-          
-          <div class="ewc-banner-text">
-            <h2 class="ewc-banner-title">EWC 2025 - NOW LIVE!</h2>
-            <p class="ewc-banner-subtitle">Experience the Esports World Cup 2025 featuring 20 elite teams</p>
-            <div class="ewc-banner-stats">
-              <span class="ewc-stat">🌍 Global Event</span>
-              <span class="ewc-stat">👥 20 Teams</span>
-              <span class="ewc-stat">🎮 10 Games</span>
+        <div class="relative max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+          <div class="text-center max-w-3xl mx-auto">
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-sm font-medium mb-6">
+              <span class="w-2 h-2 rounded-full bg-brand-400 animate-pulse" />
+              Live Tournament Analytics
             </div>
-          </div>
-          
-          <div class="ewc-banner-action">
-            <router-link to="/tournament/ewc-2025" class="ewc-banner-button">
-              <span class="ewc-button-text">View EWC 2025</span>
-              <span class="ewc-button-arrow">→</span>
-            </router-link>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <main class="dashboard-container">
-      <div class="dashboard-title">
-        <h2>Tournament Dashboard</h2>
-        <p>Explore comprehensive visualizations and analytics for ALGS tournaments worldwide</p>
-      </div>
-
-      <div class="carousel-container" @mouseenter="pauseAutoplay" @mouseleave="resumeAutoplay">
-        <div class="carousel-wrapper">
-          <div class="tournaments-carousel" ref="carousel">
-            <div class="tournament-card" v-for="tournament in tournaments" :key="tournament.url" @click="goToTournament(tournament.url)">
-              <div class="tournament-icon">{{ tournament.icon }}</div>
-              <h3>{{ tournament.name }}</h3>
-              <div class="tournament-status">Available Now</div>
-              
-              <p class="tournament-description">
-                {{ tournament.description }}
-              </p>
-
-              <div class="tournament-details">
-                <div class="detail-item" v-for="detail in tournament.details" :key="detail.label">
-                  <div class="detail-label">{{ detail.label }}</div>
-                  <div class="detail-value">{{ detail.value }}</div>
+            
+            <!-- Title -->
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+              <span class="text-gradient">ALGS Tournament</span>
+              <span class="text-surface-100"> Dashboard</span>
+            </h1>
+            
+            <!-- Description -->
+            <p class="text-lg sm:text-xl text-surface-400 mb-10 leading-relaxed">
+              Professional-grade analytics and visualization for Apex Legends Global Series tournaments. 
+              Track team performance, analyze match data, and explore championship statistics in real-time.
+            </p>
+            
+            <!-- Quick Tournament Cards -->
+            <div class="grid gap-4 sm:grid-cols-3 mb-12">
+              <button 
+                @click="selectAndEnter('year-4-championship')"
+                class="glass-card-hover group text-left p-6"
+              >
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500/20 to-orange-500/20 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+                  🏆
                 </div>
+                <h3 class="text-lg font-semibold text-surface-100 mb-1">Year 4 Championship</h3>
+                <p class="text-sm text-surface-500">Sapporo, Japan • 40 Teams</p>
+              </button>
+
+              <button 
+                @click="selectAndEnter('year-5-open')"
+                class="glass-card-hover group text-left p-6"
+              >
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+                  🌍
+                </div>
+                <h3 class="text-lg font-semibold text-surface-100 mb-1">Year 5 Open</h3>
+                <p class="text-sm text-surface-500">Global Tournament • 40 Teams</p>
+              </button>
+
+              <button 
+                @click="selectAndEnter('ewc-2025')"
+                class="glass-card-hover group text-left p-6"
+              >
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+                  ⚔️
+                </div>
+                <h3 class="text-lg font-semibold text-surface-100 mb-1">EWC 2025</h3>
+                <p class="text-sm text-surface-500">Esports World Cup • 20 Teams</p>
+              </button>
+            </div>
+
+            <!-- Features -->
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <div class="glass-card p-4">
+                <div class="w-10 h-10 rounded-lg bg-brand-500/10 flex items-center justify-center mx-auto mb-3">
+                  <svg class="w-5 h-5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <h3 class="font-medium text-surface-200 text-sm mb-1">Live Charts</h3>
+                <p class="text-xs text-surface-500">Interactive race charts with real-time tracking</p>
               </div>
 
-              <router-link :to="'/tournament/' + tournament.url" class="enter-button">
-                {{ tournament.buttonText }}
-              </router-link>
+              <div class="glass-card p-4">
+                <div class="w-10 h-10 rounded-lg bg-brand-500/10 flex items-center justify-center mx-auto mb-3">
+                  <svg class="w-5 h-5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0121 18.382V7.618a1 1 0 01-1.447-.894L15 7m0 13V7m0 0L9 7" />
+                  </svg>
+                </div>
+                <h3 class="font-medium text-surface-200 text-sm mb-1">Map Analysis</h3>
+                <p class="text-xs text-surface-500">Color-coded map sequences and performance</p>
+              </div>
+
+              <div class="glass-card p-4">
+                <div class="w-10 h-10 rounded-lg bg-brand-500/10 flex items-center justify-center mx-auto mb-3">
+                  <svg class="w-5 h-5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <h3 class="font-medium text-surface-200 text-sm mb-1">Team Stats</h3>
+                <p class="text-xs text-surface-500">Comprehensive performance metrics</p>
+              </div>
+
+              <div class="glass-card p-4">
+                <div class="w-10 h-10 rounded-lg bg-brand-500/10 flex items-center justify-center mx-auto mb-3">
+                  <svg class="w-5 h-5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 class="font-medium text-surface-200 text-sm mb-1">Playback</h3>
+                <p class="text-xs text-surface-500">Animated tournament progression</p>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div class="carousel-nav">
-          <button class="carousel-btn prev" @click="prevSlide">
-            <span>‹</span>
-          </button>
-          <div class="carousel-dots">
-            <span class="dot" 
-                  v-for="(card, index) in tournaments" 
-                  :key="index"
-                  :class="{ active: index === currentSlide }"
-                  @click="goToSlide(index)"></span>
-          </div>
-          <button class="carousel-btn next" @click="nextSlide">
-            <span>›</span>
-          </button>
         </div>
       </div>
     </main>
 
-    <footer>
-      <p>&copy; 2025 ALGS Tournament Dashboard. Built for competitive Apex Legends visualization.</p>
+    <!-- Footer -->
+    <footer class="border-t border-surface-800">
+      <div class="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p class="text-sm text-surface-500">
+            ALGS Tournament Dashboard • Built for esports analytics
+          </p>
+          <a href="https://github.com/goatcheese49/algs-championship-viz" 
+             target="_blank" 
+             class="text-surface-500 hover:text-surface-300 transition-colors">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+            </svg>
+          </a>
+        </div>
+      </div>
     </footer>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'IndexApp',
-  
-  data() {
-    console.log('🏠 IndexApp data() called - Vue is initializing')
-    return {
-      message: 'Welcome to ALGS Tournament Dashboard',
-      currentSlide: 0,
-      tournaments: [
-        { 
-          name: 'ALGS Year 4 Championship', 
-          url: 'year-4-championship',
-          icon: '🏆',
-          description: 'Experience the ultimate championship with 40 professional teams competing across 4 days of intense competition in Sapporo, Japan.',
-          details: [
-            { label: 'Location', value: 'Sapporo, Japan' },
-            { label: 'Teams', value: '40 Professionals' }
-          ],
-          buttonText: 'Enter Championship'
-        },
-        { 
-          name: 'ALGS Year 5 Open', 
-          url: 'year-5-open',
-          icon: '🌍',
-          description: 'Explore the global Year 5 Open tournament featuring 12 intense rounds across Winners Round 1, Winners Round 2, and Elimination Round 1.',
-          details: [
-            { label: 'Format', value: 'Global Open' },
-            { label: 'Rounds', value: '12 Total Matches' }
-          ],
-          buttonText: 'Enter Tournament'
-        },
-        { 
-          name: 'EWC 2025', 
-          url: 'ewc-2025',
-          icon: '🏆',
-          description: 'Experience the prestigious Esports World Cup 2025 featuring 20 elite teams competing in Group A across 10 intense games with diverse maps and strategic legend bans.',
-          details: [
-            { label: 'Event', value: 'Esports World Cup' },
-            { label: 'Teams', value: '20 Elite Teams' }
-          ],
-          buttonText: 'Enter EWC 2025'
-        }
-      ],
-      autoplayInterval: null,
-      isAutoplaying: true
-    }
-  },
-  
-  mounted() {
-    console.log('🎯 IndexApp mounted() called - Vue component is ready')
-    this.initializeAnimations()
-    this.initializeCarousel()
-  },
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-  beforeUnmount() {
-    clearInterval(this.autoplayInterval)
-  },
-  
-  methods: {
-    initializeAnimations() {
-      console.log('🎭 Initializing index page animations...')
-      
-      if (typeof gsap !== 'undefined') {
-        gsap.fromTo('.main-title', {
-          y: -30,
-          opacity: 0
-        }, {
-          y: 0,
-          opacity: 1,
-          duration: 1,
-          ease: 'power2.out'
-        })
-        
-        gsap.fromTo('.tournament-card', {
-          y: 50,
-          opacity: 0,
-          scale: 0.9
-        }, {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.8,
-          stagger: 0.2,
-          delay: 0.3,
-          ease: 'back.out(1.7)'
-        })
-      }
-    },
-    
-    initializeCarousel() {
-      this.resumeAutoplay();
-    },
+const router = useRouter()
+const selectedTournament = ref('year-4-championship')
 
-    pauseAutoplay() {
-      this.isAutoplaying = false;
-      clearInterval(this.autoplayInterval);
-    },
-
-    resumeAutoplay() {
-      this.isAutoplaying = true;
-      this.autoplayInterval = setInterval(() => {
-        this.nextSlide();
-      }, 8000);
-    },
-    
-    goToTournament(tournamentId) {
-      this.$router.push(`/tournament/${tournamentId}`)
-    },
-    
-    nextSlide() {
-      this.currentSlide = (this.currentSlide + 1) % this.tournaments.length
-      this.updateCarousel()
-    },
-    
-    prevSlide() {
-      this.currentSlide = this.currentSlide === 0 ? this.tournaments.length - 1 : this.currentSlide - 1
-      this.updateCarousel()
-    },
-    
-    goToSlide(index) {
-      this.currentSlide = index
-      this.updateCarousel()
-    },
-    
-    updateCarousel() {
-      const carousel = this.$refs.carousel;
-      if (!carousel) return;
-
-      if (typeof gsap !== 'undefined') {
-        gsap.to(carousel, {
-          xPercent: -this.currentSlide * 100,
-          duration: 0.8,
-          ease: 'power3.inOut'
-        });
-      } else {
-        const translateX = -this.currentSlide * 100;
-        carousel.style.transform = `translateX(${translateX}%)`;
-      }
-    },
-    
-    openDataManagement() {
-      const automationServerUrl = 'http://localhost:3002'
-      
-      try {
-        window.open(automationServerUrl, '_blank')
-      } catch (error) {
-        const message = `
-🔧 Data Management Tools
-
-To access the data management interface:
-
-1. Navigate to: src/data-extraction/
-2. Run: npm install (if not already done)
-3. Run: node automation-server.js
-4. Open: http://localhost:3002
-
-This will open the automation server GUI where you can:
-• Process tournament URLs
-• Manage concurrent processing
-• Rename files with day prefixes
-• Monitor processing results
-
-The automation server provides full control over data extraction and file management operations.
-        `
-        
-        alert(message)
-      }
-    }
-  }
+const enterTournament = () => {
+  router.push(`/tournament/${selectedTournament.value}`)
 }
-</script> 
+
+const selectAndEnter = (tournament) => {
+  selectedTournament.value = tournament
+  router.push(`/tournament/${tournament}`)
+}
+</script>

@@ -1,13 +1,13 @@
 {
   "name": "algs-tournament-dashboard",
-  "version": "2.0.0",
-  "description": "ALGS Tournament Dashboard - Professional tournament visualization platform for Year 4 Championship with Vue.js, D3.js, and GSAP",
+  "version": "3.0.0",
+  "description": "ALGS Tournament Dashboard - Modern esports analytics platform",
   "type": "module",
-  "main": "index.html",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.ts,.tsx --fix",
     "automation-server": "node start-automation-server.js"
   },
   "keywords": [
@@ -20,28 +20,25 @@
     "d3js",
     "vue",
     "vuejs",
-    "gsap",
-    "race-chart",
     "esports",
-    "github-pages"
+    "analytics"
   ],
   "author": "ALGS Viz Team",
   "license": "MIT",
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.11",
-    "@tailwindcss/typography": "^0.5.16",
-    "@vitejs/plugin-vue": "5.2.4",
+    "@vitejs/plugin-vue": "^5.2.4",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.11",
-    "vite": "5.4.19"
+    "tailwindcss": "^3.4.17",
+    "vite": "^6.0.11"
   },
   "dependencies": {
     "d3": "^7.9.0",
-    "gsap": "^3.13.0",
-    "pinia": "^2.1.7",
-    "vue": "^3.5.17",
-    "vue-router": "^4.5.1"
+    "echarts": "^6.0.0",
+    "pinia": "^2.3.0",
+    "vue": "^3.5.13",
+    "vue-echarts": "^8.0.1",
+    "vue-router": "^4.5.0"
   },
   "repository": {
     "type": "git",
@@ -49,7 +46,7 @@
   },
   "homepage": "https://goatcheese49.github.io/algs-championship-viz",
   "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=6.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }

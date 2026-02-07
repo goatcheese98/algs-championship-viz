@@ -1,297 +1,261 @@
-import { defineStore } from 'pinia';
-import * as d3 from 'd3';
-import { getMapColorByOccurrence, calculateMapOccurrence } from '../chart/MapColoringLogic.js';
-import { getMapSequence } from '../chart/MapSequenceData.js';
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+import * as d3 from 'd3'
+import { getMapSequence } from '@/chart/MapSequenceData'
+import { getMapColorByOccurrence, calculateMapOccurrence } from '@/chart/MapColoringLogic'
 
-export const useTournamentStore = defineStore('tournament', {
-  state: () => ({
-    selectedMatchup: '',
-    selectedDay: 'day1',
-    isLegendVisible: false,
-    animationSpeed: 'medium',
-    isPlaying: false,
-    currentGame: 0,
-    isFiltered: false,
-    filteredGameIndices: [],
-    processedChartData: [],
-    isLoading: false,
-    errorMessage: '',
-    tournamentType: 'year4',
-  }),
+// ALGS Point System
+const PLACEMENT_POINTS = {
+  1: 12, 2: 9, 3: 7, 4: 5, 5: 4,
+  6: 3, 7: 3, 8: 2, 9: 2, 10: 2,
+  11: 1, 12: 1, 13: 1, 14: 1, 15: 1,
+  16: 0, 17: 0, 18: 0, 19: 0, 20: 0
+}
 
-  getters: {
-    maxGames: (state) => {
-      if (state.processedChartData && state.processedChartData.length > 0) {
-        const firstTeam = state.processedChartData[0];
-        if (firstTeam && firstTeam.games && firstTeam.games.length > 0) {
-          return firstTeam.games.length;
-        }
-      }
-      
-      const fallbackGameCount = state.tournamentType === 'ewc2025' ? 
-        (state.selectedDay === 'day1' ? 10 : 
-         state.selectedDay === 'day2' ? 9 : 
-         state.selectedDay === 'day3' ? 6 : 6) :
-        (state.tournamentType === 'year5' ? 6 : 8);
-      
-      return fallbackGameCount;
+export const useTournamentStore = defineStore('tournament', () => {
+  // ============ State ============
+  const selectedMatchup = ref('')
+  const selectedDay = ref('day1')
+  const tournamentType = ref('year4')
+  const currentGame = ref(0)
+  const isPlaying = ref(false)
+  const isFiltered = ref(false)
+  const filteredGameIndices = ref([])
+  const isLegendVisible = ref(true)
+  const animationSpeed = ref('medium')
+  
+  const processedChartData = ref([])
+  const isLoading = ref(false)
+  const error = ref(null)
+
+  // ============ Getters ============
+  const maxGames = computed(() => {
+    if (processedChartData.value.length > 0) {
+      const firstTeam = processedChartData.value[0]
+      return firstTeam?.games?.length || 6
     }
-  },
-
-  actions: {
-    setTournamentType(type) {
-      this.tournamentType = type;
-    },
-
-    selectMatchup(matchupId) {
-      this.selectedMatchup = matchupId;
-      this.resetPlayback();
-    },
-
-    setDay(dayId) {
-      this.selectedDay = dayId;
-      this.selectedMatchup = '';
-      this.resetPlayback();
-    },
-
-    toggleLegend() {
-      this.isLegendVisible = !this.isLegendVisible;
-    },
-
-    setAnimationSpeed(speed) {
-      this.animationSpeed = speed;
-    },
-
-    togglePlayback() {
-      this.isPlaying = !this.isPlaying;
-    },
-
-    setPlaying(status) {
-      this.isPlaying = status;
-    },
-
-    setCurrentGame(gameIndex) {
-      this.currentGame = gameIndex;
-      if (gameIndex === 0) {
-        this.isFiltered = false;
-        this.filteredGameIndices = [];
-      }
-    },
-
-    resetPlayback() {
-      this.isPlaying = false;
-      this.currentGame = 0;
-      this.isFiltered = false;
-      this.filteredGameIndices = [];
-    },
-
-    setGameFilter({ games, action, maxGames }) {
-      if (action === 'clear' || games.length === 0) {
-        this.isFiltered = false;
-        this.filteredGameIndices = [];
-      } else {
-        this.isFiltered = true;
-        // Sort filtered game indices to ensure consistent order.
-        this.filteredGameIndices = [...games].sort((a, b) => a - b);
-        // If filtering, auto-progress the current game to the max filtered game.
-        if (maxGames && this.currentGame < maxGames) {
-          this.currentGame = maxGames;
-        }
-      }
-    },
-
-    async fetchDataForMatchup() {
-      if (!this.selectedMatchup) return;
-
-      console.log('📊 [Store] Fetching data for matchup:', this.selectedMatchup);
-      
-      this.isLoading = true;
-      this.processedChartData = [];
-      this.errorMessage = '';
-
-      try {
-        const csvPath = this._buildCsvPath(this.selectedMatchup);
-        console.log(`📂 [Store] Loading CSV for ${this.tournamentType}:`, csvPath);
-
-        const rawData = await this._loadCsvData(csvPath);
-
-        const processedData = await this._processRawDataForChart(rawData);
-
-        this.processedChartData = processedData;
-
-        console.log('✅ [Store] Data fetched successfully:', {
-          teams: this.processedChartData.length,
-          maxGames: this.maxGames,
-          sampleTeam: this.processedChartData[0]
-        });
-
-        this.setCurrentGame(0);
-
-      } catch (error) {
-        this.errorMessage = error.message;
-        this.processedChartData = [];
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    _buildCsvPath(matchupId) {
-      const base = import.meta.env.BASE_URL || '/';
-      if (this.tournamentType === 'ewc2025') {
-        return `${base}ewc2025/raw/${matchupId}.csv`;
-      } else if (this.tournamentType === 'year5') {
-        return `${base}year5champions/raw/${matchupId}.csv`;
-      } else {
-        return `${base}year4champions/raw/${matchupId}.csv`;
-      }
-    },
-
-    async _loadCsvData(csvPath) {
-      console.log('📂 [Store] Loading CSV data from:', csvPath);
-      
-      const response = await fetch(csvPath);
-      
-      const csvText = await response.text();
-      const rawData = d3.csvParse(csvText);
-      
-      console.log('✅ [Store] CSV loaded:', {
-        path: csvPath,
-        rows: rawData.length,
-        columns: rawData.columns
-      });
-      
-      return rawData;
-    },
-
-    async _processRawDataForChart(rawData) {
-      console.log('🔄 [Store] Processing raw data for chart...');
-      
-      const columns = rawData.columns || [];
-      const isLongFormat = columns.includes('Game') && columns.includes('Team') && columns.includes('Placement');
-      const isWideFormat = columns.some(col => col.includes('Game ') && col.includes(' P'));
-
-      let processedData;
-      
-      if (isLongFormat) {
-        console.log('📊 [Store] Detected long format data (EWC/Year5 style)');
-        // Transform long format data into wide format.
-        processedData = this._transformLongDataToWide(rawData);
-      } else if (isWideFormat) {
-        console.log('📊 [Store] Detected wide format data (Year4 style)');
-        processedData = rawData; // Wide format data can be used directly.
-      } else {
-        console.warn('⚠️ [Store] Unknown data format, attempting wide format processing');
-        processedData = rawData; // Fallback to using raw data as is.
-      }
-      
-      const chartData = this._preComputeGameData(processedData);
-      
-      console.log('✅ [Store] Data processed for chart:', {
-        teams: chartData.length,
-        maxGames: this.maxGames,
-        sampleTeam: chartData[0]
-      });
-      
-      return chartData;
-    },
-
-    _transformLongDataToWide(rawData) {
-      console.log('🔄 [Store] Transforming long format data to wide format...');
-      
-      const placementPointsMap = {
-        '1': 12, '2': 9, '3': 7, '4': 5, '5': 4,
-        '6': 3, '7': 3, '8': 2, '9': 2, '10': 2,
-        '11': 1, '12': 1, '13': 1, '14': 1, '15': 1,
-        '16': 0, '17': 0, '18': 0, '19': 0, '20': 0
-      };
-      
-      const teamsData = {};
-      
-      rawData.forEach(row => {
-        const teamName = row.Team;
-        const gameNumber = parseInt(row.Game); // Convert game number to integer.
-        const placement = row.Placement;
-        const kills = parseInt(row.Kills) || 0; // Convert kills to integer, default to 0 if not present.
-        
-        if (!teamsData[teamName]) {
-          teamsData[teamName] = {
-            Team: teamName,
-            'Overall Points': 0 // Initialize overall points for the team.
-          };
-        }
-        
-        const placementPoints = placementPointsMap[placement] || 0;
-        
-        const placementProp = `Game ${gameNumber} P`;
-        const killsProp = `Game ${gameNumber} K`;
-        
-        teamsData[teamName][placementProp] = placementPoints;
-        teamsData[teamName][killsProp] = kills;
-        
-        teamsData[teamName]['Overall Points'] += placementPoints + kills;
-      });
-      
-      const transformedData = Object.values(teamsData).sort((a, b) => b['Overall Points'] - a['Overall Points']);
-      
-      console.log('✅ [Store] Long data transformed:', {
-        originalRows: rawData.length,
-        transformedTeams: transformedData.length
-      });
-      
-      return transformedData;
-    },
-
-    _preComputeGameData(data) {
-      console.log('⚡ [Store] Pre-computing game-by-game data...');
-      
-      if (!data || data.length === 0) return [];
-
-      const firstTeam = data[0];
-      const gameColumns = Object.keys(firstTeam).filter(col => 
-        col.startsWith('Game ') && col.endsWith(' P')
-      );
-      const maxGames = gameColumns.length;
-      
-      const mapSequence = getMapSequence(this.selectedMatchup);
-      console.log('🗺️ [Store] Using map sequence for', this.selectedMatchup, ':', mapSequence);
-      
-      const chartData = data.map(team => {
-        const games = [];
-        let cumulativeScore = 0;
-        
-        for (let gameNum = 1; gameNum <= maxGames; gameNum++) {
-          const placementPoints = team[`Game ${gameNum} P`] || 0;
-          const kills = team[`Game ${gameNum} K`] || 0;
-          const gamePoints = placementPoints + kills;
-          
-          const mapName = mapSequence?.maps?.[gameNum] || 'Unknown';
-          const occurrenceCount = calculateMapOccurrence(mapName, gameNum, mapSequence);
-          const gameColor = getMapColorByOccurrence(mapName, occurrenceCount);
-          
-          games.push({
-            gameNumber: gameNum,
-            placementPoints,
-            kills,
-            points: gamePoints,
-            startX: cumulativeScore, // Starting score for this game segment on the chart.
-            map: mapName,
-            color: gameColor // Color associated with the map.
-          });
-          
-          cumulativeScore += gamePoints;
-        }
-        
-        return {
-          team: team.Team,
-          games,
-          totalScore: cumulativeScore,
-          cumulativeScore: cumulativeScore
-        };
-      });
-      
-      chartData.sort((a, b) => b.totalScore - a.totalScore);
-      
-      return chartData;
+    
+    // Fallback based on tournament type
+    if (tournamentType.value === 'ewc2025') {
+      if (selectedDay.value === 'day1') return 10
+      if (selectedDay.value === 'day2') return 9
+      return 6
     }
-  },
-}); 
+    return tournamentType.value === 'year5' ? 6 : 8
+  })
+
+  const currentMap = computed(() => {
+    if (!selectedMatchup.value) return ''
+    const sequence = getMapSequence(selectedMatchup.value)
+    return sequence?.maps?.[currentGame.value] || ''
+  })
+
+  // ============ Actions ============
+  const setTournamentType = (type) => {
+    tournamentType.value = type
+  }
+
+  const setDay = (dayId) => {
+    selectedDay.value = dayId
+    selectedMatchup.value = ''
+    resetPlayback()
+  }
+
+  const selectMatchup = (matchupId) => {
+    selectedMatchup.value = matchupId
+    resetPlayback()
+  }
+
+  const setCurrentGame = (game) => {
+    currentGame.value = game
+    if (game === 0) {
+      isFiltered.value = false
+      filteredGameIndices.value = []
+    }
+  }
+
+  const togglePlayback = () => {
+    isPlaying.value = !isPlaying.value
+  }
+
+  const stopPlayback = () => {
+    isPlaying.value = false
+  }
+
+  const resetPlayback = () => {
+    isPlaying.value = false
+    currentGame.value = 0
+    isFiltered.value = false
+    filteredGameIndices.value = []
+  }
+
+  const toggleLegend = () => {
+    isLegendVisible.value = !isLegendVisible.value
+  }
+
+  const setAnimationSpeed = (speed) => {
+    animationSpeed.value = speed
+  }
+
+  const setGameFilter = (games) => {
+    if (!games || games.length === 0) {
+      isFiltered.value = false
+      filteredGameIndices.value = []
+    } else {
+      isFiltered.value = true
+      filteredGameIndices.value = [...games].sort((a, b) => a - b)
+    }
+  }
+
+  const fetchDataForMatchup = async () => {
+    if (!selectedMatchup.value) return
+
+    isLoading.value = true
+    error.value = null
+    processedChartData.value = []
+
+    try {
+      const csvPath = buildCsvPath(selectedMatchup.value)
+      const response = await fetch(csvPath)
+      
+      if (!response.ok) {
+        throw new Error(`Failed to load data: ${response.status}`)
+      }
+      
+      const csvText = await response.text()
+      const rawData = d3.csvParse(csvText)
+      processedChartData.value = processData(rawData)
+      
+    } catch (err) {
+      error.value = err.message
+      processedChartData.value = []
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  // ============ Helpers ============
+  const buildCsvPath = (matchupId) => {
+    const base = import.meta.env.BASE_URL || '/'
+    const paths = {
+      ewc2025: `ewc2025/raw/${matchupId}.csv`,
+      year5: `year5champions/raw/${matchupId}.csv`,
+      year4: `year4champions/raw/${matchupId}.csv`
+    }
+    return `${base}${paths[tournamentType.value] || paths.year4}`
+  }
+
+  const processData = (rawData) => {
+    if (!rawData || rawData.length === 0) return []
+
+    const columns = rawData.columns || []
+    const isLongFormat = columns.includes('Game') && columns.includes('Team')
+    
+    const data = isLongFormat 
+      ? transformLongToWide(rawData) 
+      : rawData
+
+    return computeGameData(data)
+  }
+
+  const transformLongToWide = (rawData) => {
+    const teams = {}
+
+    rawData.forEach(row => {
+      const teamName = row.Team
+      const gameNum = parseInt(row.Game)
+      const placement = row.Placement
+      const kills = parseInt(row.Kills) || 0
+
+      if (!teams[teamName]) {
+        teams[teamName] = { Team: teamName, 'Overall Points': 0 }
+      }
+
+      const placementPoints = PLACEMENT_POINTS[placement] || 0
+      teams[teamName][`Game ${gameNum} P`] = placementPoints
+      teams[teamName][`Game ${gameNum} K`] = kills
+      teams[teamName]['Overall Points'] += placementPoints + kills
+    })
+
+    return Object.values(teams).sort((a, b) => 
+      b['Overall Points'] - a['Overall Points']
+    )
+  }
+
+  const computeGameData = (data) => {
+    const firstTeam = data[0]
+    const gameColumns = Object.keys(firstTeam).filter(col => 
+      col.startsWith('Game ') && col.endsWith(' P')
+    )
+    const maxGames = gameColumns.length
+
+    const mapSequence = getMapSequence(selectedMatchup.value)
+
+    const chartData = data.map(team => {
+      const games = []
+      let cumulativeScore = 0
+
+      for (let i = 1; i <= maxGames; i++) {
+        const placementPoints = team[`Game ${i} P`] || 0
+        const kills = team[`Game ${i} K`] || 0
+        const points = placementPoints + kills
+        const mapName = mapSequence?.maps?.[i] || 'Unknown'
+        const occurrence = calculateMapOccurrence(mapName, i, mapSequence)
+        const color = getMapColorByOccurrence(mapName, occurrence)
+
+        games.push({
+          gameNumber: i,
+          placementPoints,
+          kills,
+          points,
+          startX: cumulativeScore,
+          map: mapName,
+          color
+        })
+
+        cumulativeScore += points
+      }
+
+      return {
+        team: team.Team,
+        games,
+        totalScore: cumulativeScore
+      }
+    })
+
+    return chartData.sort((a, b) => b.totalScore - a.totalScore)
+  }
+
+  return {
+    // State
+    selectedMatchup,
+    selectedDay,
+    tournamentType,
+    currentGame,
+    isPlaying,
+    isFiltered,
+    filteredGameIndices,
+    isLegendVisible,
+    animationSpeed,
+    processedChartData,
+    isLoading,
+    error,
+    
+    // Getters
+    maxGames,
+    currentMap,
+    
+    // Actions
+    setTournamentType,
+    setDay,
+    selectMatchup,
+    setCurrentGame,
+    togglePlayback,
+    stopPlayback,
+    resetPlayback,
+    toggleLegend,
+    setAnimationSpeed,
+    setGameFilter,
+    fetchDataForMatchup
+  }
+})
