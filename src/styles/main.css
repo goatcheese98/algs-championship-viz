@@ -3,6 +3,82 @@
 @tailwind utilities;
 
 /* ============================================
+   CSS CUSTOM PROPERTIES — Dark (default)
+   ============================================ */
+
+:root {
+  --bg-base: #020617;
+  --bg-card: rgba(15, 23, 42, 0.6);
+  --bg-heavy: rgba(15, 23, 42, 0.8);
+  --bg-overlay: rgba(15, 23, 42, 0.92);
+  --bg-element: #1e293b;
+  --bg-element-hover: #334155;
+  --bg-element-faint: rgba(30, 41, 59, 0.3);
+  --bg-element-faint-hover: rgba(30, 41, 59, 0.5);
+
+  --border-strong: rgba(51, 65, 85, 0.5);
+  --border-medium: rgba(51, 65, 85, 0.3);
+  --border-subtle: rgba(100, 116, 139, 0.25);
+  --border-faint: rgba(100, 116, 139, 0.15);
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #e2e8f0;
+  --text-tertiary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
+
+  --shadow-card: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06), inset 0 1px 0 0 rgba(255,255,255,0.05);
+  --shadow-card-hover: 0 10px 15px -3px rgba(0,0,0,0.2), 0 4px 6px -2px rgba(0,0,0,0.1), inset 0 1px 0 0 rgba(255,255,255,0.08);
+
+  --chart-text: #64748b;
+  --chart-grid: rgba(100, 116, 139, 0.15);
+  --chart-tooltip-bg: rgba(15, 23, 42, 0.98);
+  --chart-tooltip-border: rgba(100, 116, 139, 0.3);
+  --chart-tooltip-text: #f1f5f9;
+  --chart-score-color: #38bdf8;
+  --chart-team-name: #e2e8f0;
+  --chart-rank-subtle: #64748b;
+}
+
+/* ============================================
+   CSS CUSTOM PROPERTIES — Light
+   ============================================ */
+
+html.light {
+  --bg-base: #f1f5f9;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-heavy: rgba(248, 250, 252, 0.95);
+  --bg-overlay: rgba(255, 255, 255, 0.97);
+  --bg-element: #e2e8f0;
+  --bg-element-hover: #cbd5e1;
+  --bg-element-faint: rgba(226, 232, 240, 0.5);
+  --bg-element-faint-hover: rgba(226, 232, 240, 0.8);
+
+  --border-strong: rgba(203, 213, 225, 0.8);
+  --border-medium: rgba(203, 213, 225, 0.5);
+  --border-subtle: rgba(148, 163, 184, 0.4);
+  --border-faint: rgba(148, 163, 184, 0.2);
+
+  --text-primary: #0f172a;
+  --text-secondary: #1e293b;
+  --text-tertiary: #334155;
+  --text-muted: #475569;
+  --text-subtle: #64748b;
+
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 0 rgba(255,255,255,0.9);
+  --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04), inset 0 1px 0 0 rgba(255,255,255,0.9);
+
+  --chart-text: #475569;
+  --chart-grid: rgba(100, 116, 139, 0.2);
+  --chart-tooltip-bg: rgba(255, 255, 255, 0.99);
+  --chart-tooltip-border: rgba(148, 163, 184, 0.4);
+  --chart-tooltip-text: #0f172a;
+  --chart-score-color: #0284c7;
+  --chart-team-name: #1e293b;
+  --chart-rank-subtle: #64748b;
+}
+
+/* ============================================
    BASE STYLES
    ============================================ */
 
@@ -10,10 +86,13 @@
   html {
     @apply scroll-smooth;
   }
-  
+
   body {
-    @apply bg-surface-950 text-surface-100 font-sans antialiased;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    @apply font-sans antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
   
   /* Selection styling */
@@ -51,103 +130,132 @@
 @layer components {
   /* Glass Card - Primary UI Component */
   .glass-card {
-    @apply bg-surface-900/60 backdrop-blur-xl border border-surface-700/50 rounded-2xl;
-    box-shadow: 
-      0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+    background: var(--bg-card);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--border-strong);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-card);
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
-  
+
   .glass-card-hover {
     @apply glass-card transition-all duration-300;
   }
-  
+
   .glass-card-hover:hover {
-    @apply bg-surface-800/60 border-surface-600/50;
-    box-shadow: 
-      0 10px 15px -3px rgba(0, 0, 0, 0.2),
-      0 4px 6px -2px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+    background: var(--bg-element-faint-hover);
+    border-color: var(--border-subtle);
+    box-shadow: var(--shadow-card-hover);
   }
-  
+
   /* Button Variants */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-950;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 focus-visible:ring-2 focus-visible:ring-brand-500;
   }
-  
+
   .btn-primary {
-    @apply btn bg-brand-600 text-white hover:bg-brand-500 focus-visible:ring-brand-500;
+    @apply btn bg-brand-600 text-white hover:bg-brand-500;
     box-shadow: 0 0 20px rgba(14, 165, 233, 0.2);
   }
-  
+
   .btn-primary:hover {
     box-shadow: 0 0 30px rgba(14, 165, 233, 0.3);
   }
-  
+
   .btn-secondary {
-    @apply btn bg-surface-800 text-surface-200 border border-surface-700 hover:bg-surface-700 hover:text-surface-100 focus-visible:ring-surface-500;
+    @apply btn;
+    background: var(--bg-element);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-strong);
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
   }
-  
+
+  .btn-secondary:hover {
+    background: var(--bg-element-hover);
+    color: var(--text-primary);
+  }
+
   .btn-ghost {
-    @apply btn text-surface-400 hover:text-surface-100 hover:bg-surface-800/50 focus-visible:ring-surface-500;
+    @apply btn;
+    color: var(--text-muted);
+    transition: background 0.2s, color 0.2s;
   }
-  
+
+  .btn-ghost:hover {
+    color: var(--text-primary);
+    background: var(--bg-element-faint);
+  }
+
   .btn-active {
     @apply bg-brand-600/20 text-brand-300 border border-brand-500/30;
   }
-  
+
   /* Input Styles */
   .input {
-    @apply w-full px-4 py-2.5 bg-surface-900/80 border border-surface-700 rounded-xl text-surface-100 placeholder-surface-500 transition-all duration-200;
+    @apply w-full px-4 py-2.5 rounded-xl transition-all duration-200;
+    background: var(--bg-overlay);
+    border: 1px solid var(--border-strong);
+    color: var(--text-primary);
   }
-  
+
+  .input::placeholder { color: var(--text-subtle); }
+
   .input:focus {
-    @apply border-brand-500/50 bg-surface-900;
+    outline: none;
+    border-color: rgba(14, 165, 233, 0.5);
     box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
   }
-  
+
   /* Navigation */
   .nav-link {
-    @apply relative px-3 py-2 text-sm font-medium text-surface-400 hover:text-surface-100 transition-colors;
+    @apply relative px-3 py-2 text-sm font-medium transition-colors;
+    color: var(--text-muted);
   }
-  
+
+  .nav-link:hover { color: var(--text-primary); }
+
   .nav-link-active {
     @apply text-brand-400;
   }
-  
+
   .nav-link-active::after {
     @apply content-[''] absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-brand-400 rounded-full;
   }
-  
+
   /* Section Headers */
   .section-header {
     @apply flex items-center justify-between px-4 py-3 cursor-pointer select-none;
   }
-  
+
   .section-title {
-    @apply text-sm font-semibold text-surface-200 uppercase tracking-wider;
+    @apply text-sm font-semibold uppercase tracking-wider;
+    color: var(--text-secondary);
   }
-  
+
   /* Status Badges */
   .badge {
     @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium;
   }
-  
+
   .badge-live {
     @apply badge bg-accent-danger/10 text-accent-danger border border-accent-danger/20;
   }
-  
+
   .badge-ended {
-    @apply badge bg-surface-700 text-surface-300;
+    @apply badge;
+    background: var(--bg-element);
+    color: var(--text-tertiary);
   }
-  
+
   .badge-upcoming {
     @apply badge bg-accent-warning/10 text-accent-warning border border-accent-warning/20;
   }
-  
+
   /* Loading Skeleton */
   .skeleton {
-    @apply bg-surface-800 rounded animate-pulse;
+    background: var(--bg-element);
+    @apply rounded animate-pulse;
   }
   
   .skeleton-shimmer {
@@ -182,55 +290,66 @@
   
   /* Day cards */
   .day-card {
-    @apply relative p-4 rounded-xl border border-surface-700/50 bg-surface-800/30 cursor-pointer transition-all;
+    @apply relative p-4 rounded-xl cursor-pointer transition-all;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-element-faint);
   }
-  
+
   .day-card:hover {
-    @apply bg-surface-800/60 border-surface-600;
+    background: var(--bg-element-faint-hover);
+    border-color: var(--border-subtle);
   }
-  
+
   .day-card-active {
     @apply bg-brand-600/10 border-brand-500/30;
     box-shadow: 0 0 20px rgba(14, 165, 233, 0.1);
   }
-  
+
   /* Stat cards */
   .stat-card {
     @apply glass-card p-4 flex flex-col gap-1;
   }
-  
+
   .stat-label {
-    @apply text-xs font-medium text-surface-500 uppercase tracking-wider;
+    @apply text-xs font-medium uppercase tracking-wider;
+    color: var(--text-subtle);
   }
-  
+
   .stat-value {
-    @apply text-2xl font-bold text-surface-100;
+    @apply text-2xl font-bold;
+    color: var(--text-primary);
   }
-  
+
   /* Divider */
   .divider {
-    @apply h-px bg-gradient-to-r from-transparent via-surface-700 to-transparent;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border-strong), transparent);
   }
-  
+
   /* Rank badges */
   .rank-badge {
     @apply w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold;
   }
-  
+
   .rank-1 {
     @apply rank-badge bg-accent-gold/20 text-accent-gold border border-accent-gold/30;
   }
-  
+
   .rank-2 {
-    @apply rank-badge bg-surface-400/20 text-surface-300 border border-surface-400/30;
+    @apply rank-badge;
+    background: var(--bg-element);
+    color: var(--text-tertiary);
+    border: 1px solid var(--border-subtle);
   }
-  
+
   .rank-3 {
     @apply rank-badge bg-amber-700/30 text-amber-500 border border-amber-600/30;
   }
-  
+
   .rank-other {
-    @apply rank-badge bg-surface-800 text-surface-500;
+    @apply rank-badge;
+    background: var(--bg-element);
+    color: var(--text-subtle);
   }
 }
 
@@ -243,18 +362,24 @@
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-400 to-brand-600;
   }
-  
+
   /* Glass effect intensity variants */
   .glass-light {
-    @apply bg-white/5 backdrop-blur-sm;
+    background: var(--bg-element-faint);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
-  
+
   .glass-medium {
-    @apply bg-surface-900/40 backdrop-blur-lg;
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
-  
+
   .glass-heavy {
-    @apply bg-surface-900/80 backdrop-blur-2xl;
+    background: var(--bg-heavy);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
   }
   
   /* Hide scrollbar */
@@ -307,4 +432,55 @@
   .aspect-chart {
     aspect-ratio: 16 / 10;
   }
+}
+
+/* ============================================
+   LIGHT MODE — Tailwind utility overrides
+   ============================================ */
+
+html.light .min-h-screen { background-color: var(--bg-base); }
+
+/* Text */
+html.light .text-surface-100 { color: var(--text-primary); }
+html.light .text-surface-200 { color: var(--text-secondary); }
+html.light .text-surface-300 { color: var(--text-tertiary); }
+html.light .text-surface-400 { color: var(--text-muted); }
+html.light .text-surface-500 { color: var(--text-subtle); }
+
+/* Backgrounds */
+html.light .bg-surface-950 { background-color: var(--bg-base); }
+html.light .bg-surface-900 { background-color: white; }
+html.light .bg-surface-800 { background-color: var(--bg-element); }
+
+/* Borders */
+html.light .border-surface-800 { border-color: var(--border-strong); }
+html.light .border-surface-700 { border-color: var(--border-strong); }
+html.light .border-surface-700\/50 { border-color: var(--border-strong); }
+html.light .border-surface-700\/30 { border-color: var(--border-medium); }
+
+/* Hover overrides */
+html.light .hover\:bg-surface-700:hover { background-color: var(--bg-element-hover); }
+html.light .hover\:bg-surface-800:hover { background-color: var(--bg-element); }
+html.light .hover\:text-surface-100:hover { color: var(--text-primary); }
+html.light .hover\:text-surface-200:hover { color: var(--text-secondary); }
+
+/* Opacity variants */
+html.light .bg-surface-900\/50 { background-color: rgba(255,255,255,0.6); }
+html.light .bg-surface-900\/60 { background-color: rgba(255,255,255,0.85); }
+html.light .bg-surface-900\/80 { background-color: rgba(255,255,255,0.95); }
+html.light .bg-surface-800\/20 { background-color: rgba(226,232,240,0.3); }
+html.light .bg-surface-800\/30 { background-color: rgba(226,232,240,0.5); }
+html.light .bg-surface-800\/50 { background-color: rgba(226,232,240,0.6); }
+html.light .hover\:bg-surface-800\/50:hover { background-color: rgba(226,232,240,0.7); }
+
+/* Scrollbar in light mode */
+html.light ::-webkit-scrollbar-track { background: var(--bg-element-faint); }
+html.light ::-webkit-scrollbar-thumb { background: var(--border-strong); }
+html.light ::-webkit-scrollbar-thumb:hover { background: var(--border-subtle); }
+
+/* Transitions for smooth mode switching */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
 }

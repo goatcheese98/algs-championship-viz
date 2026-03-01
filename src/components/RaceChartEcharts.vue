@@ -6,11 +6,46 @@
       :autoresize="true"
       class="chart"
     />
+
+    <div
+      v-if="leftSidebarTeams.length"
+      class="left-team-overlay"
+      :style="{ gridTemplateRows: `repeat(${leftSidebarTeams.length}, minmax(0, 1fr))` }"
+    >
+      <div
+        v-for="team in leftSidebarTeams"
+        :key="team.team"
+        class="left-team-row"
+      >
+        <span class="left-team-rank" :style="{ color: getRankColor(team.rank) }">
+          {{ team.rank }}
+        </span>
+
+        <img
+          v-if="team.logoUrl"
+          :src="team.logoUrl"
+          :alt="`${team.team} logo`"
+          class="left-team-logo"
+          @error="handleLogoError(team.team)"
+        />
+
+        <div
+          v-else
+          class="left-team-logo left-team-logo-fallback"
+          :style="{ backgroundColor: team.fallbackColor }"
+        >
+          {{ team.fallbackInitials }}
+        </div>
+
+        <span class="left-team-name">{{ team.team }}</span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { useTheme } from '@/composables/useTheme'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { BarChart } from 'echarts/charts'
@@ -23,6 +58,7 @@ import {
 import VChart from 'vue-echarts'
 import { useTournamentStore } from '@/stores/tournament'
 import { storeToRefs } from 'pinia'
+import { useTeamConfig } from '@/composables/useTeamConfig'
 
 // Register ECharts components
 use([
@@ -34,6 +70,8 @@ use([
   LegendComponent
 ])
 
+const { isDark } = useTheme()
+
 const store = useTournamentStore()
 const {
   processedChartData,
@@ -42,8 +80,47 @@ const {
   filteredGameIndices
 } = storeToRefs(store)
 
+// Reactive chart palette based on theme
+const chartColors = computed(() => isDark.value ? {
+  axisLabel: '#64748b',
+  gridLine: 'rgba(100, 116, 139, 0.15)',
+  tooltipBg: 'rgba(15, 23, 42, 0.98)',
+  tooltipBorder: 'rgba(100, 116, 139, 0.3)',
+  tooltipText: '#f1f5f9',
+  score: '#38bdf8',
+  teamName: '#e2e8f0',
+  rankSubtle: '#64748b',
+} : {
+  axisLabel: '#475569',
+  gridLine: 'rgba(100, 116, 139, 0.2)',
+  tooltipBg: 'rgba(255, 255, 255, 0.99)',
+  tooltipBorder: 'rgba(148, 163, 184, 0.4)',
+  tooltipText: '#0f172a',
+  score: '#0284c7',
+  teamName: '#1e293b',
+  rankSubtle: '#64748b',
+})
+
 const chartRef = ref(null)
 const chartContainer = ref(null)
+const failedLogos = ref(new Set())
+
+const { getTeamLogo, getFallbackConfig } = useTeamConfig()
+
+const getRankColor = (rank) => {
+  if (rank === 1) return '#fbbf24'
+  if (rank === 2) return '#94a3b8'
+  if (rank === 3) return '#b45309'
+  return '#64748b'
+}
+
+const handleLogoError = (teamName) => {
+  if (failedLogos.value.has(teamName)) return
+
+  const updatedSet = new Set(failedLogos.value)
+  updatedSet.add(teamName)
+  failedLogos.value = updatedSet
+}
 
 // Process data for current game state
 const getProcessedData = () => {
@@ -74,9 +151,26 @@ const getProcessedData = () => {
   }).sort((a, b) => b.totalScore - a.totalScore)
 }
 
+const displayTeams = computed(() => getProcessedData())
+
+const leftSidebarTeams = computed(() => {
+  return displayTeams.value.map((team, index) => {
+    const fallback = getFallbackConfig(team.team)
+    const logoUrl = failedLogos.value.has(team.team) ? null : getTeamLogo(team.team)
+
+    return {
+      ...team,
+      rank: index + 1,
+      logoUrl,
+      fallbackColor: fallback.backgroundColor,
+      fallbackInitials: fallback.initials
+    }
+  })
+})
+
 // Generate ECharts option
 const chartOption = computed(() => {
-  const data = getProcessedData()
+  const data = displayTeams.value
 
   if (!data.length) {
     return {
@@ -162,13 +256,14 @@ const chartOption = computed(() => {
       axisTick: { show: false },
       splitLine: {
         lineStyle: {
-          color: 'rgba(100, 116, 139, 0.15)',
+          color: chartColors.value.gridLine,
           type: 'dashed'
         }
       },
       axisLabel: {
-        color: '#64748b',
-        fontSize: 10
+        color: chartColors.value.axisLabel,
+        fontSize: 13,
+        fontWeight: 500
       }
     },
     yAxis: {
@@ -184,11 +279,11 @@ const chartOption = computed(() => {
     series: series,
     tooltip: {
       trigger: 'item',
-      backgroundColor: 'rgba(15, 23, 42, 0.98)',
-      borderColor: 'rgba(100, 116, 139, 0.3)',
+      backgroundColor: chartColors.value.tooltipBg,
+      borderColor: chartColors.value.tooltipBorder,
       borderWidth: 1,
       textStyle: {
-        color: '#f1f5f9',
+        color: chartColors.value.tooltipText,
         fontSize: 12
       },
       formatter: (params) => {
@@ -226,60 +321,17 @@ const chartOption = computed(() => {
         `
       }
     },
-    // Add custom labels and scores
+    // Add total scores on the right
     graphic: [
-      // Team labels (rank + name) on the left
       ...data.map((team, index) => {
-        const rank = index + 1
-        const yPos = 20 + (index + 0.5) * (100 / data.length)
-        const rankColor = rank === 1 ? '#fbbf24' :
-                         rank === 2 ? '#94a3b8' :
-                         rank === 3 ? '#b45309' :
-                         '#64748b'
-
-        return [
-          // Rank number
-          {
-            type: 'text',
-            left: 20,
-            top: yPos + '%',
-            style: {
-              text: rank.toString(),
-              fill: rankColor,
-              font: 'bold 13px system-ui',
-              textAlign: 'right',
-              textVerticalAlign: 'middle'
-            },
-            z: 100
-          },
-          // Team name
-          {
-            type: 'text',
-            left: 50,
-            top: yPos + '%',
-            style: {
-              text: team.team,
-              fill: '#e2e8f0',
-              font: '12px system-ui',
-              textAlign: 'left',
-              textVerticalAlign: 'middle',
-              width: 150,
-              overflow: 'truncate'
-            },
-            z: 100
-          }
-        ]
-      }).flat(),
-      // Total scores on the right
-      ...data.map((team, index) => {
-        const yPos = 20 + (index + 0.5) * (100 / data.length)
+        const yPos = (index + 0.5) * (100 / data.length)
         return {
           type: 'text',
           right: 30,
           top: yPos + '%',
           style: {
             text: team.totalScore.toString(),
-            fill: '#38bdf8',
+            fill: chartColors.value.score,
             font: 'bold 13px "JetBrains Mono", monospace',
             textAlign: 'right',
             textVerticalAlign: 'middle'
@@ -292,7 +344,7 @@ const chartOption = computed(() => {
 })
 
 // Watch for data changes and update chart (optimized)
-watch([processedChartData, currentGame, isFiltered, filteredGameIndices], () => {
+watch([processedChartData, currentGame, isFiltered, filteredGameIndices, isDark], () => {
   nextTick(() => {
     if (chartRef.value && processedChartData.value.length > 0) {
       // Use notMerge: false and lazyUpdate: false for better performance
@@ -317,13 +369,65 @@ onMounted(() => {
 .race-chart-echarts {
   width: 100%;
   height: 100%;
-  min-height: 600px;
+  min-height: 400px;
   position: relative;
 }
 
 .chart {
   width: 100%;
   height: 100%;
-  min-height: 600px;
+  min-height: 400px;
+}
+
+.left-team-overlay {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  bottom: 40px;
+  width: 180px;
+  display: grid;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.left-team-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.left-team-rank {
+  width: 20px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.left-team-logo {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(100, 116, 139, 0.35);
+}
+
+.left-team-logo-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f8fafc;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.left-team-name {
+  color: var(--chart-team-name);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

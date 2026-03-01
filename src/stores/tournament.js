@@ -17,7 +17,7 @@ export const useTournamentStore = defineStore('tournament', () => {
   const selectedMatchup = ref('')
   const selectedDay = ref('day1')
   const tournamentType = ref('year4')
-  const currentGame = ref(0)
+  const currentGame = ref(1)
   const isPlaying = ref(false)
   const isFiltered = ref(false)
   const filteredGameIndices = ref([])
@@ -68,10 +68,6 @@ export const useTournamentStore = defineStore('tournament', () => {
 
   const setCurrentGame = (game) => {
     currentGame.value = game
-    if (game === 0) {
-      isFiltered.value = false
-      filteredGameIndices.value = []
-    }
   }
 
   const togglePlayback = () => {
@@ -84,7 +80,7 @@ export const useTournamentStore = defineStore('tournament', () => {
 
   const resetPlayback = () => {
     isPlaying.value = false
-    currentGame.value = 0
+    currentGame.value = 1
     isFiltered.value = false
     filteredGameIndices.value = []
   }

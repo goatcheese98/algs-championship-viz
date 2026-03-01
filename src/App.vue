@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-surface-950">
+  <div class="min-h-screen">
     <RouterView v-slot="{ Component }">
       <Transition name="fade" mode="out-in">
         <component :is="Component" />
@@ -9,7 +9,8 @@
 </template>
 
 <script setup>
-// App root component - simple and clean
+import { useTheme } from '@/composables/useTheme'
+useTheme() // Initialize theme from localStorage
 </script>
 
 <style>

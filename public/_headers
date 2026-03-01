@@ -1,0 +1,10 @@
+# Hashed JS/CSS bundles — cache forever
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML — always revalidate so users get fresh deploys
+/*
+  Cache-Control: public, max-age=0, must-revalidate
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin

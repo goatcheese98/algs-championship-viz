@@ -9,9 +9,6 @@ import './styles/main.css'
 // Create app instance
 const app = createApp(App)
 
-// Provide ECharts theme globally
-app.provide('echarts-theme', 'dark')
-
 // Create and use Pinia store
 const pinia = createPinia()
 app.use(pinia)

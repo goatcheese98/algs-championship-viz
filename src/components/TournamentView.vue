@@ -11,6 +11,23 @@
             </div>
             <span class="font-bold text-surface-100 group-hover:text-brand-400 transition-colors">ALGS Dashboard</span>
           </RouterLink>
+
+          <div class="ml-auto">
+            <button
+              @click="toggleTheme"
+              class="btn-ghost p-2 rounded-xl"
+              :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+            >
+              <!-- Sun icon (shown in dark mode to switch to light) -->
+              <svg v-if="isDark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+              </svg>
+              <!-- Moon icon (shown in light mode to switch to dark) -->
+              <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            </button>
+          </div>
         </div>
         
         <!-- Bottom Row: Selectors -->
@@ -92,7 +109,7 @@
       <!-- Chart + Side Panel Layout -->
       <div v-else class="grid lg:grid-cols-[1fr_400px] gap-4">
         <!-- Chart Area -->
-        <div class="glass-card p-1 relative overflow-hidden">
+        <div class="glass-card p-1 relative overflow-hidden flex flex-col">
           <!-- Filter Button - Top Right -->
           <div class="absolute top-4 right-4 z-30">
             <GameFilter
@@ -103,8 +120,8 @@
             />
           </div>
 
-          <!-- Chart (fills entire area) -->
-          <div class="p-4 pt-8 min-h-[600px]">
+          <!-- Chart (fills entire card) -->
+          <div class="p-4 pt-8 flex-1 min-h-0">
             <RaceChartEcharts />
           </div>
 
@@ -123,7 +140,7 @@
             <div class="glass-heavy px-4 py-2 rounded-xl border border-surface-700/50 backdrop-blur-xl pointer-events-none shadow-xl">
               <div class="text-xs text-surface-500 uppercase tracking-wider mb-0.5">Current Game</div>
               <div class="text-2xl font-bold text-brand-400">
-                {{ currentGame }}<span class="text-surface-500 text-base">/{{ maxGames }}</span>
+                {{ currentGame }}<span class="text-surface-500 text-base"> / {{ maxGames }}</span>
               </div>
               <div v-if="currentMap" class="text-xs text-surface-400 mt-0.5">{{ currentMap }}</div>
             </div>
@@ -139,66 +156,12 @@
                 <svg class="w-5 h-5 text-accent-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
-                <span class="section-title">{{ currentGame === 0 ? 'Controls' : `Game ${currentGame} Breakdown` }}</span>
+                <span class="section-title">Game {{ currentGame }} Breakdown</span>
               </div>
             </div>
 
-            <!-- Controls Guide (when no game selected) -->
-            <div v-if="currentGame === 0" class="p-4 space-y-4">
-              <div class="space-y-3">
-                <div class="flex items-start gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-brand-600/20 border border-brand-500/30 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div class="flex-1">
-                    <h4 class="text-sm font-semibold text-surface-200 mb-1">Playback Controls</h4>
-                    <p class="text-xs text-surface-500">Use the controls below to play through tournament games automatically or navigate manually.</p>
-                  </div>
-                </div>
-
-                <div class="flex items-start gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-surface-700/50 border border-surface-600/30 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-4 h-4 text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                    </svg>
-                  </div>
-                  <div class="flex-1">
-                    <h4 class="text-sm font-semibold text-surface-200 mb-1">Filter Games</h4>
-                    <p class="text-xs text-surface-500">Click the "Filter Games" button above the chart to select specific games to analyze.</p>
-                  </div>
-                </div>
-
-                <div class="flex items-start gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-surface-700/50 border border-surface-600/30 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-4 h-4 text-surface-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div class="flex-1">
-                    <h4 class="text-sm font-semibold text-surface-200 mb-1">Hover for Details</h4>
-                    <p class="text-xs text-surface-500">Hover over any colored segment in the chart to see placement, kills, and points for that game.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="pt-3 border-t border-surface-700/50">
-                <button
-                  @click="setCurrentGame(1)"
-                  class="w-full btn-primary text-sm py-2"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  </svg>
-                  Start from Game 1
-                </button>
-              </div>
-            </div>
-
-            <!-- Game Breakdown (when game is selected) -->
-            <div v-else>
+            <!-- Game Breakdown -->
+            <div>
               <!-- Top 3 Highlight -->
               <div class="p-3 bg-surface-800/30 border-b border-surface-700/50">
                 <div class="text-xs text-surface-500 uppercase tracking-wider mb-2">Top Gainers</div>
@@ -273,10 +236,14 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTournamentStore } from '@/stores/tournament'
 import { storeToRefs } from 'pinia'
+import { useTheme } from '@/composables/useTheme'
 import PlaybackControls from './PlaybackControls.vue'
 import GameFilter from './GameFilter.vue'
 import RaceChartEcharts from './RaceChartEcharts.vue'
 import MapLegend from './MapLegend.vue'
+
+// Theme
+const { isDark, toggleTheme } = useTheme()
 
 // Router & Store
 const route = useRoute()
@@ -399,7 +366,7 @@ const formatPlacement = (placement) => {
 
 // Current game rankings with actual placement from data
 const currentGameRankings = computed(() => {
-  if (!processedChartData.value.length || currentGame.value === 0) return []
+  if (!processedChartData.value.length) return []
   
   // Get raw data for current game and sort by points
   const gameData = processedChartData.value
@@ -426,7 +393,7 @@ const startPlayback = () => {
   if (playbackInterval) clearInterval(playbackInterval)
   
   if (currentGame.value >= maxGames.value) {
-    setCurrentGame(0)
+    setCurrentGame(1)
   }
   
   const interval = SPEED_INTERVALS[animationSpeed.value] || SPEED_INTERVALS.medium

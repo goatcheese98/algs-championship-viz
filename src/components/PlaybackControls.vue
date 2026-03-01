@@ -19,7 +19,7 @@
         </div>
         <input
           type="range"
-          :min="0"
+          :min="1"
           :max="maxGames"
           :value="currentGame"
           @input="$emit('update:currentGame', parseInt($event.target.value))"
@@ -29,8 +29,8 @@
 
       <!-- Control Buttons -->
       <div class="flex items-center justify-center gap-2">
-        <button 
-          @click="$emit('update:currentGame', 0)"
+        <button
+          @click="$emit('update:currentGame', 1)"
           class="btn-ghost p-2"
           title="Reset to Start"
         >
@@ -40,10 +40,10 @@
         </button>
         
         <button 
-          @click="$emit('update:currentGame', Math.max(0, currentGame - 1))"
+          @click="$emit('update:currentGame', Math.max(1, currentGame - 1))"
           class="btn-ghost p-2"
           title="Previous Game"
-          :disabled="currentGame <= 0"
+          :disabled="currentGame <= 1"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -112,7 +112,7 @@
 <script setup>
 defineProps({
   maxGames: { type: Number, default: 6 },
-  currentGame: { type: Number, default: 0 },
+  currentGame: { type: Number, default: 1 },
   isPlaying: { type: Boolean, default: false },
   animationSpeed: { type: String, default: 'medium' }
 })
