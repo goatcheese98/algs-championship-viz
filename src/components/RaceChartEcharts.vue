@@ -87,18 +87,18 @@ const chartColors = computed(() => isDark.value ? {
   tooltipBg: 'rgba(15, 23, 42, 0.98)',
   tooltipBorder: 'rgba(100, 116, 139, 0.3)',
   tooltipText: '#f1f5f9',
-  score: '#38bdf8',
+  score: '#f87171',
   teamName: '#e2e8f0',
   rankSubtle: '#64748b',
 } : {
-  axisLabel: '#475569',
-  gridLine: 'rgba(100, 116, 139, 0.2)',
-  tooltipBg: 'rgba(255, 255, 255, 0.99)',
-  tooltipBorder: 'rgba(148, 163, 184, 0.4)',
-  tooltipText: '#0f172a',
-  score: '#0284c7',
-  teamName: '#1e293b',
-  rankSubtle: '#64748b',
+  axisLabel: '#7a5c3c',
+  gridLine: 'rgba(139, 110, 80, 0.2)',
+  tooltipBg: 'rgba(252, 247, 240, 0.99)',
+  tooltipBorder: 'rgba(139, 110, 80, 0.35)',
+  tooltipText: '#1a0e00',
+  score: '#b91c1c',
+  teamName: '#2d1e08',
+  rankSubtle: '#7a5c3c',
 })
 
 const chartRef = ref(null)
@@ -207,6 +207,17 @@ const chartOption = computed(() => {
       stack: 'total',
       barWidth: '75%',
       barGap: '0%',
+      label: {
+        show: true,
+        position: 'inside',
+        formatter: (params) => params.value >= 4 ? String(params.value) : '',
+        color: 'rgba(255, 255, 255, 0.92)',
+        fontSize: 10,
+        fontWeight: 'bold',
+        fontFamily: '"JetBrains Mono", monospace',
+        textShadowBlur: 3,
+        textShadowColor: 'rgba(0, 0, 0, 0.6)',
+      },
       data: data.map(team => {
         const game = team.games.find(g => g.gameNumber === gameNum)
         return {
@@ -314,7 +325,7 @@ const chartOption = computed(() => {
               </div>
               <div style="display: flex; justify-content: space-between; gap: 16px;">
                 <span style="color: #94a3b8;">Points:</span>
-                <span style="color: #38bdf8; font-weight: 600;">${gameData.points}</span>
+                <span style="color: #f87171; font-weight: 600;">${gameData.points}</span>
               </div>
             </div>
           </div>

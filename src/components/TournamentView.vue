@@ -1,15 +1,20 @@
 <template>
-  <div class="min-h-screen bg-surface-950">
+  <div class="min-h-screen bg-surface-950 relative">
+    <!-- Subtle red radial glow in top-left corner -->
+    <div class="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(185,28,28,0.12),transparent_45%)] z-0" />
     <!-- Header with Selectors -->
-    <header class="sticky top-0 z-50 glass-heavy border-b border-surface-800">
+    <header class="sticky top-0 z-50 glass-heavy border-b border-surface-800 relative">
+      <!-- Red accent line at bottom of header -->
+      <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-700/60 to-transparent" />
       <div class="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Top Row: Logo -->
         <div class="flex items-center h-14 border-b border-surface-800/50">
           <RouterLink to="/" class="flex items-center gap-3 group">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-lg shadow-glow transition-transform group-hover:scale-105">
-              🏆
-            </div>
-            <span class="font-bold text-surface-100 group-hover:text-brand-400 transition-colors">ALGS Dashboard</span>
+            <img
+              src="/apex-legends.svg"
+              alt="Apex Legends"
+              class="apex-logo"
+            />
           </RouterLink>
 
           <div class="ml-auto">
@@ -88,7 +93,7 @@
     </header>
 
     <!-- Main Content - Full Width Chart -->
-    <main class="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <main class="relative z-10 max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
       <!-- Loading State -->
       <div v-if="isLoading" class="flex flex-col items-center justify-center py-32">
         <div class="w-12 h-12 border-2 border-brand-500/30 border-t-brand-500 rounded-full animate-spin mb-4" />
@@ -497,3 +502,21 @@ onUnmounted(() => {
   stopPlayback()
 })
 </script>
+
+<style scoped>
+.apex-logo {
+  height: 28px;
+  width: auto;
+  filter: invert(1);
+  opacity: 0.9;
+  transition: opacity 0.2s;
+}
+
+.apex-logo:hover {
+  opacity: 1;
+}
+
+html.light .apex-logo {
+  filter: invert(0);
+}
+</style>

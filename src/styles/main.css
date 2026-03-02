@@ -7,19 +7,19 @@
    ============================================ */
 
 :root {
-  --bg-base: #020617;
-  --bg-card: rgba(15, 23, 42, 0.6);
-  --bg-heavy: rgba(15, 23, 42, 0.8);
-  --bg-overlay: rgba(15, 23, 42, 0.92);
-  --bg-element: #1e293b;
-  --bg-element-hover: #334155;
-  --bg-element-faint: rgba(30, 41, 59, 0.3);
-  --bg-element-faint-hover: rgba(30, 41, 59, 0.5);
+  --bg-base: #09090b;
+  --bg-card: rgba(24, 24, 27, 0.6);
+  --bg-heavy: rgba(24, 24, 27, 0.85);
+  --bg-overlay: rgba(9, 9, 11, 0.94);
+  --bg-element: #27272a;
+  --bg-element-hover: #3f3f46;
+  --bg-element-faint: rgba(39, 39, 42, 0.3);
+  --bg-element-faint-hover: rgba(39, 39, 42, 0.5);
 
-  --border-strong: rgba(51, 65, 85, 0.5);
-  --border-medium: rgba(51, 65, 85, 0.3);
-  --border-subtle: rgba(100, 116, 139, 0.25);
-  --border-faint: rgba(100, 116, 139, 0.15);
+  --border-strong: rgba(63, 63, 70, 0.6);
+  --border-medium: rgba(63, 63, 70, 0.35);
+  --border-subtle: rgba(82, 82, 91, 0.25);
+  --border-faint: rgba(82, 82, 91, 0.15);
 
   --text-primary: #f1f5f9;
   --text-secondary: #e2e8f0;
@@ -35,7 +35,7 @@
   --chart-tooltip-bg: rgba(15, 23, 42, 0.98);
   --chart-tooltip-border: rgba(100, 116, 139, 0.3);
   --chart-tooltip-text: #f1f5f9;
-  --chart-score-color: #38bdf8;
+  --chart-score-color: #f87171;
   --chart-team-name: #e2e8f0;
   --chart-rank-subtle: #64748b;
 }
@@ -45,37 +45,38 @@
    ============================================ */
 
 html.light {
-  --bg-base: #f1f5f9;
-  --bg-card: rgba(255, 255, 255, 0.85);
-  --bg-heavy: rgba(248, 250, 252, 0.95);
-  --bg-overlay: rgba(255, 255, 255, 0.97);
-  --bg-element: #e2e8f0;
-  --bg-element-hover: #cbd5e1;
-  --bg-element-faint: rgba(226, 232, 240, 0.5);
-  --bg-element-faint-hover: rgba(226, 232, 240, 0.8);
+  /* Warm cream/ivory — white logos pop, complements crimson accent */
+  --bg-base: #ede4d6;
+  --bg-card: rgba(250, 244, 234, 0.9);
+  --bg-heavy: rgba(237, 228, 214, 0.96);
+  --bg-overlay: rgba(252, 247, 240, 0.98);
+  --bg-element: #d4c4ad;
+  --bg-element-hover: #bfad93;
+  --bg-element-faint: rgba(212, 196, 173, 0.35);
+  --bg-element-faint-hover: rgba(212, 196, 173, 0.6);
 
-  --border-strong: rgba(203, 213, 225, 0.8);
-  --border-medium: rgba(203, 213, 225, 0.5);
-  --border-subtle: rgba(148, 163, 184, 0.4);
-  --border-faint: rgba(148, 163, 184, 0.2);
+  --border-strong: rgba(139, 110, 80, 0.28);
+  --border-medium: rgba(139, 110, 80, 0.18);
+  --border-subtle: rgba(160, 128, 96, 0.15);
+  --border-faint: rgba(160, 128, 96, 0.08);
 
-  --text-primary: #0f172a;
-  --text-secondary: #1e293b;
-  --text-tertiary: #334155;
-  --text-muted: #475569;
-  --text-subtle: #64748b;
+  --text-primary: #1a0e00;
+  --text-secondary: #2d1e08;
+  --text-tertiary: #3d2d14;
+  --text-muted: #5c4228;
+  --text-subtle: #7a5c3c;
 
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 0 rgba(255,255,255,0.9);
-  --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04), inset 0 1px 0 0 rgba(255,255,255,0.9);
+  --shadow-card: 0 1px 3px rgba(80,50,20,0.1), 0 1px 2px rgba(80,50,20,0.07);
+  --shadow-card-hover: 0 4px 12px rgba(80,50,20,0.14), 0 2px 4px rgba(80,50,20,0.09);
 
-  --chart-text: #475569;
-  --chart-grid: rgba(100, 116, 139, 0.2);
-  --chart-tooltip-bg: rgba(255, 255, 255, 0.99);
-  --chart-tooltip-border: rgba(148, 163, 184, 0.4);
-  --chart-tooltip-text: #0f172a;
-  --chart-score-color: #0284c7;
-  --chart-team-name: #1e293b;
-  --chart-rank-subtle: #64748b;
+  --chart-text: #5c4228;
+  --chart-grid: rgba(139, 110, 80, 0.2);
+  --chart-tooltip-bg: rgba(252, 247, 240, 0.99);
+  --chart-tooltip-border: rgba(139, 110, 80, 0.35);
+  --chart-tooltip-text: #1a0e00;
+  --chart-score-color: #b91c1c;
+  --chart-team-name: #2d1e08;
+  --chart-rank-subtle: #7a5c3c;
 }
 
 /* ============================================
@@ -156,11 +157,11 @@ html.light {
 
   .btn-primary {
     @apply btn bg-brand-600 text-white hover:bg-brand-500;
-    box-shadow: 0 0 20px rgba(14, 165, 233, 0.2);
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.2);
   }
 
   .btn-primary:hover {
-    box-shadow: 0 0 30px rgba(14, 165, 233, 0.3);
+    box-shadow: 0 0 30px rgba(220, 38, 38, 0.3);
   }
 
   .btn-secondary {
@@ -203,8 +204,8 @@ html.light {
 
   .input:focus {
     outline: none;
-    border-color: rgba(14, 165, 233, 0.5);
-    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    border-color: rgba(220, 38, 38, 0.5);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
   }
 
   /* Navigation */
@@ -260,7 +261,7 @@ html.light {
   
   .skeleton-shimmer {
     @apply relative overflow-hidden;
-    background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+    background: linear-gradient(90deg, #27272a 25%, #3f3f46 50%, #27272a 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
   }
@@ -302,7 +303,7 @@ html.light {
 
   .day-card-active {
     @apply bg-brand-600/10 border-brand-500/30;
-    box-shadow: 0 0 20px rgba(14, 165, 233, 0.1);
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.1);
   }
 
   /* Stat cards */
@@ -449,7 +450,7 @@ html.light .text-surface-500 { color: var(--text-subtle); }
 
 /* Backgrounds */
 html.light .bg-surface-950 { background-color: var(--bg-base); }
-html.light .bg-surface-900 { background-color: white; }
+html.light .bg-surface-900 { background-color: var(--bg-card); }
 html.light .bg-surface-800 { background-color: var(--bg-element); }
 
 /* Borders */
@@ -465,13 +466,28 @@ html.light .hover\:text-surface-100:hover { color: var(--text-primary); }
 html.light .hover\:text-surface-200:hover { color: var(--text-secondary); }
 
 /* Opacity variants */
-html.light .bg-surface-900\/50 { background-color: rgba(255,255,255,0.6); }
-html.light .bg-surface-900\/60 { background-color: rgba(255,255,255,0.85); }
-html.light .bg-surface-900\/80 { background-color: rgba(255,255,255,0.95); }
-html.light .bg-surface-800\/20 { background-color: rgba(226,232,240,0.3); }
-html.light .bg-surface-800\/30 { background-color: rgba(226,232,240,0.5); }
-html.light .bg-surface-800\/50 { background-color: rgba(226,232,240,0.6); }
-html.light .hover\:bg-surface-800\/50:hover { background-color: rgba(226,232,240,0.7); }
+html.light .bg-surface-900\/50 { background-color: rgba(250,244,234,0.6); }
+html.light .bg-surface-900\/60 { background-color: rgba(250,244,234,0.8); }
+html.light .bg-surface-900\/80 { background-color: rgba(250,244,234,0.92); }
+html.light .bg-surface-800\/20 { background-color: rgba(212,196,173,0.2); }
+html.light .bg-surface-800\/30 { background-color: rgba(212,196,173,0.35); }
+html.light .bg-surface-800\/50 { background-color: rgba(212,196,173,0.5); }
+html.light .hover\:bg-surface-800\/50:hover { background-color: rgba(212,196,173,0.65); }
+
+/* Brand color overrides — swap light brand tints for dark readable reds */
+html.light .text-brand-300 { color: #991b1b; }
+html.light .text-brand-400 { color: #b91c1c; }
+html.light .text-brand-500 { color: #dc2626; }
+
+html.light .bg-brand-500\/10 { background-color: rgba(185, 28, 28, 0.1); }
+html.light .bg-brand-600\/10 { background-color: rgba(185, 28, 28, 0.1); }
+html.light .bg-brand-600\/20 { background-color: rgba(185, 28, 28, 0.14); }
+
+html.light .border-brand-500\/20 { border-color: rgba(185, 28, 28, 0.35); }
+html.light .border-brand-500\/30 { border-color: rgba(185, 28, 28, 0.45); }
+
+html.light .bg-brand-400 { background-color: #b91c1c; }
+html.light .bg-brand-500 { background-color: #dc2626; }
 
 /* Scrollbar in light mode */
 html.light ::-webkit-scrollbar-track { background: var(--bg-element-faint); }
