@@ -32,11 +32,10 @@ jobs:
       - name: Build
         run: npm run build
 
+      # The Pages project is the older public address. The Worker
+      # (algs-dashboard) is the main one and is deployed with `npm run deploy`.
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: algs-championship-viz
-          directory: .cloudflare/output/v0/workers/default/assets
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+        run: npx --yes wrangler@4 pages deploy .cloudflare/output/v0/workers/default/assets --project-name=algs-championship-viz --branch=main
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
