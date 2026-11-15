@@ -1,128 +1,73 @@
-# ALGS Tournament Dashboard v3.0
+# ALGS Dashboard
 
-A modern, professional esports analytics platform for the Apex Legends Global Series (ALGS). Built with Vue 3, D3.js, and Tailwind CSS.
+Standings from the Apex Legends Global Series, replayed one game at a time.
+Select a series and press play. The page shows the same replay in four views:
 
-![Version](https://img.shields.io/badge/version-3.0.0-blue)
-![Vue](https://img.shields.io/badge/Vue-3.5+-green)
-![License](https://img.shields.io/badge/license-MIT-yellow)
+| View   | What it shows                                                          |
+| ------ | ---------------------------------------------------------------------- |
+| Race   | One bar for each team, built from one block for each game.             |
+| Ranks  | The place of each team after each game, as one line for each team.     |
+| Games  | A grid of the score of each team in each game.                         |
+| Styles | Kill points against placement points, to show how a team earns points. |
 
-## ✨ What's New in v3.0
+Colour shows the map in all views. A followed team is shown with ink weight,
+not with a colour.
 
-Complete overhaul with modern architecture and design:
+The data covers three events, 36 series and 234 games: the ALGS Year 4
+Championship, the ALGS Year 5 Open and the Esports World Cup 2025.
 
-- **🎨 Modern Glassmorphism UI** - Clean, professional design with subtle depth effects
-- **📱 Fully Responsive** - Optimized for all screen sizes
-- **⚡ Performance** - 60fps animations, chunked bundle loading
-- **🎯 Composition API** - Modern Vue 3 patterns throughout
-- **🔧 TypeScript-Ready** - Clean code structure ready for TS migration
-- **♿ Accessible** - Keyboard navigation, ARIA labels, focus states
+This is a fan project. It is not affiliated with Electronic Arts, Respawn
+Entertainment or the ALGS.
 
-## 🚀 Quick Start
+## Run it
 
 ```bash
-# Install dependencies
 npm install
-
-# Start development server
-npm run dev
-
-# Build for production
+npm run dev      # http://localhost:4630
+npm run check    # format, lint, types and tests
 npm run build
-
-# Preview production build
-npm run preview
 ```
 
-## 🏗️ Architecture
+The toolchain is Vite+ (`vp`) with TypeScript. The app is vanilla TypeScript
+that draws SVG. There is no framework and no chart library.
 
-```
-src/
-├── components/           # Vue components
-│   ├── IndexApp.vue     # Landing page
-│   ├── TournamentView.vue # Main tournament view
-│   ├── RaceChart.vue    # D3.js race chart
-│   ├── PlaybackControls.vue # Playback UI
-│   └── GameFilter.vue   # Game filter dropdown
-├── stores/              # Pinia stores
-│   └── tournament.js    # Tournament state management
-├── chart/               # Chart utilities
-│   ├── MapSequenceData.js
-│   └── MapColoringLogic.js
-├── router/              # Vue Router
-│   └── index.js
-├── styles/              # Global styles
-│   └── main.css         # Tailwind + custom CSS
-├── App.vue              # Root component
-└── main.js              # Entry point
-```
+## Where things are
 
-## 🎨 Design System
+| Path                     | What it is                                                            |
+| ------------------------ | --------------------------------------------------------------------- |
+| `data/tournaments.json`  | The events, stages, series and the map of each game.                  |
+| `data/<event>/<id>.csv`  | One row for each team in each game: place, kills and points.          |
+| `scripts/build-data.mjs` | Checks the CSV files and writes `src/data/algs.json`.                 |
+| `src/model.ts`           | Standings after each game, and the facts that the panel puts in words. |
+| `src/lenses/`            | The four views. Each one draws from the model and a playhead.         |
+| `src/panel.ts`           | The text beside the chart.                                            |
+| `src/main.ts`            | The page: series selection, the playhead, the timeline, the address.  |
 
-### Colors
-- **Primary**: Sky blue (`#0ea5e9`) - interactive elements
-- **Surface**: Slate grays - backgrounds and cards
-- **Accents**: Gold, silver, bronze - rankings and stats
-- **Maps**: Unique colors for each map type
+Run `npm run data` after a change to a file in `data/`.
 
-### Components
-- **Glass Cards** - Translucent backgrounds with blur
-- **Buttons** - Primary, secondary, ghost variants
-- **Badges** - Status indicators (live, ended, upcoming)
-- **Rank Badges** - Special styling for top 3 ranks
+## Data quality
 
-## 📊 Features
+`scripts/build-data.mjs` checks that the placement points in each game form a
+valid set. The Year 4 Championship files do not pass this check, because their
+kills and places do not add up to the scores. For that event the app shows game
+scores only, and a small number of its scores differ from the official ones by
+a point. The finals of each event are not in the data.
 
-### Tournament Support
-- **Year 4 Championship** - Sapporo, Japan (40 teams, 4 days)
-- **Year 5 Open** - Global Tournament (40 teams)
-- **EWC 2025** - Esports World Cup (20 teams)
+## Deploy
 
-### Interactive Chart
-- Race chart with smooth animations
-- Game-by-game progression
-- Map color coding
-- Hover tooltips with detailed stats
-- Filter by specific games
+The app is one Cloudflare Worker that serves static files, configured in
+`cloudflare.config.ts`.
 
-### Playback Controls
-- Play/Pause animation
-- Adjustable speed (1x, 2x, 4x)
-- Slider scrubbing
-- Jump to start/end
-
-## 🛠️ Technology Stack
-
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| Vue | 3.5+ | UI Framework |
-| Vue Router | 4.5+ | Client-side routing |
-| Pinia | 2.3+ | State management |
-| D3.js | 7.9+ | Data visualization |
-| Tailwind CSS | 3.4+ | Styling |
-| Vite | 6.0+ | Build tool |
-
-## 📦 Bundle Analysis
-
-```
-dist/
-├── index.html          (0.69 kB gzip)
-├── index-[hash].css    (5.58 kB gzip)
-├── index-[hash].js     (13.35 kB gzip)
-├── d3-[hash].js        (19.15 kB gzip) - Lazy loaded
-└── vendor-[hash].js    (38.52 kB gzip) - Vue, Router, Pinia
+```bash
+npm run deploy
 ```
 
-## 🌐 Browser Support
+`scripts/cf-personal` gets the Cloudflare token from Doppler for that one
+command. A push to `main` also runs `.github/workflows/deploy.yml`, which
+publishes the same build to the older Pages address.
 
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
+## History
 
-## 📝 License
-
-MIT License - see LICENSE for details
-
----
-
-Built with ❤️ for the ALGS community
+The first version (2025) was a Vue app with D3 and GSAP. It was rebuilt in
+November 2026. The old code is in the git history before the `rebuild-2026-11`
+branch.

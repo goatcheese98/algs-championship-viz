@@ -1,0 +1,821 @@
+/* ALGS Dashboard. Colour means map everywhere. A followed team is marked with
+   ink weight, not with a hue. Light and dark are light-dark() pairs. */
+
+:root {
+	color-scheme: light dark;
+	--paper: light-dark(#f3f4f6, #0d0f13);
+	--raised: light-dark(#ffffff, #171b22);
+	--ink: light-dark(#12151b, #eef0f4);
+	--muted: light-dark(#59616f, #98a1b0);
+	--line: light-dark(#dcdfe6, #272d38);
+	--we: light-dark(#d5462a, #ff6f4e);
+	--sp: light-dark(#0c8a85, #2ecbc0);
+	--ed: light-dark(#6a48dc, #a08aff);
+	--bm: light-dark(#a57200, #ecb93f);
+	--on-map: light-dark(#ffffff, #0d0f13);
+	--body: "Sofia Sans Variable", system-ui, sans-serif;
+	--label: "Sofia Sans Condensed Variable", "Sofia Sans Variable", sans-serif;
+	--display: "Sofia Sans Extra Condensed Variable", "Sofia Sans Condensed Variable", sans-serif;
+}
+:root[data-theme="light"] {
+	color-scheme: light;
+}
+:root[data-theme="dark"] {
+	color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+html,
+body {
+	margin: 0;
+}
+body {
+	background: var(--paper);
+	color: var(--ink);
+	font: 400 16px/1.45 var(--body);
+	-webkit-font-smoothing: antialiased;
+}
+button {
+	font: inherit;
+	color: inherit;
+	background: none;
+	border: 0;
+	padding: 0;
+	cursor: pointer;
+}
+:focus-visible {
+	outline: 2px solid var(--ink);
+	outline-offset: 2px;
+	border-radius: 4px;
+}
+h1,
+h2,
+h3,
+p,
+ul,
+dl,
+dd {
+	margin: 0;
+}
+ul {
+	padding: 0;
+	list-style: none;
+}
+
+/* ---- Page frame ---------------------------------------------------------- */
+
+#app {
+	display: grid;
+	grid-template-rows: auto auto minmax(0, 1fr);
+	height: 100dvh;
+	min-height: 660px;
+}
+
+.bar {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	padding: 10px 24px;
+	border-bottom: 1px solid var(--line);
+}
+.brand {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	font: 800 24px/1 var(--display);
+	letter-spacing: 0.01em;
+	color: inherit;
+	text-decoration: none;
+	white-space: nowrap;
+}
+.brand svg {
+	width: 22px;
+	height: 22px;
+}
+.tournaments,
+.lenses {
+	display: flex;
+	gap: 2px;
+	padding: 3px;
+	border: 1px solid var(--line);
+	border-radius: 9px;
+	background: var(--raised);
+}
+.tournaments button,
+.lenses button {
+	padding: 5px 13px;
+	border-radius: 6px;
+	font: 600 15px/1.2 var(--label);
+	color: var(--muted);
+	white-space: nowrap;
+}
+.tournaments button:hover,
+.lenses button:hover {
+	color: var(--ink);
+}
+.tournaments [aria-selected="true"],
+.lenses [aria-selected="true"] {
+	background: var(--ink);
+	color: var(--paper);
+}
+.bar__end {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	margin-left: auto;
+}
+.link {
+	font: 600 15px/1.2 var(--label);
+	color: var(--muted);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	text-decoration-color: var(--line);
+	white-space: nowrap;
+}
+.link:hover {
+	color: var(--ink);
+	text-decoration-color: currentColor;
+}
+.icon {
+	display: grid;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	border-radius: 8px;
+	color: var(--muted);
+}
+.icon:hover {
+	color: var(--ink);
+	background: var(--raised);
+}
+.icon svg {
+	width: 18px;
+	height: 18px;
+}
+
+.seriesnav {
+	display: flex;
+	gap: 22px;
+	padding: 9px 24px;
+	overflow-x: auto;
+	border-bottom: 1px solid var(--line);
+	scrollbar-width: thin;
+}
+.stagegroup {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	flex: none;
+}
+.stagegroup > span {
+	font: 600 13px/1 var(--label);
+	color: var(--muted);
+	white-space: nowrap;
+}
+.stagegroup > div {
+	display: flex;
+	gap: 4px;
+}
+.chip {
+	padding: 4px 10px;
+	border: 1px solid var(--line);
+	border-radius: 999px;
+	font: 600 14px/1.2 var(--label);
+	color: var(--muted);
+	white-space: nowrap;
+}
+.chip:hover {
+	color: var(--ink);
+	border-color: var(--muted);
+}
+.chip[aria-current="true"] {
+	background: var(--ink);
+	border-color: var(--ink);
+	color: var(--paper);
+}
+
+.work {
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr) auto;
+	gap: 14px;
+	padding: 16px 24px 14px;
+	min-height: 0;
+}
+
+.head {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: end;
+	gap: 4px 24px;
+}
+.head__where {
+	font: 500 14px/1.3 var(--label);
+	color: var(--muted);
+}
+.head h1 {
+	font: 800 clamp(30px, 3.4vw, 44px) / 0.98 var(--display);
+	letter-spacing: 0.005em;
+	text-wrap: balance;
+}
+.head__note {
+	grid-column: 1 / -1;
+	max-width: 100ch;
+	font-size: 14px;
+	text-wrap: pretty;
+	color: var(--muted);
+}
+
+.board {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 312px;
+	gap: 24px;
+	min-height: 0;
+}
+.stage {
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+}
+.stage svg {
+	display: block;
+}
+
+/* ---- Charts -------------------------------------------------------------- */
+
+.lens {
+	user-select: none;
+	-webkit-user-select: none;
+}
+.lens text {
+	font: 600 13px var(--label);
+	fill: var(--ink);
+	font-variant-numeric: tabular-nums;
+}
+.lens .tick {
+	font-weight: 500;
+	font-size: 12px;
+	fill: var(--muted);
+}
+.lens .rank {
+	font-weight: 500;
+	font-size: 12px;
+	fill: var(--muted);
+}
+.lens .total {
+	font-weight: 700;
+}
+.lens .grid {
+	stroke: var(--line);
+	stroke-width: 1;
+}
+.lens .hit {
+	fill: transparent;
+}
+.lens .row,
+.lens .line,
+.lens .team,
+.lens--ranks .name {
+	cursor: pointer;
+	transition: opacity 0.16s;
+}
+.lens.has-focus .row:not(.is-on),
+.lens.has-focus .team:not(.is-on) {
+	opacity: 0.38;
+}
+.lens .row.is-on .name,
+.lens .row.is-on .total {
+	font-weight: 800;
+}
+.lens .row.is-picked .hit {
+	fill: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+
+.lens--race .seg--kills {
+	opacity: 0.45;
+}
+
+.lens--ranks .band {
+	fill-opacity: 0.055;
+}
+.lens--ranks .line__hit {
+	fill: none;
+	stroke: transparent;
+	stroke-width: 14;
+}
+.lens--ranks .line__path {
+	fill: none;
+	stroke: var(--muted);
+	stroke-width: 1.4;
+	stroke-opacity: 0.45;
+	stroke-linecap: round;
+}
+.lens--ranks .dot:not(.dot--win) {
+	fill: var(--muted);
+	fill-opacity: 0.6;
+}
+.lens--ranks .dot--win {
+	fill-opacity: 1;
+	stroke: var(--paper);
+	stroke-width: 1.5;
+}
+.lens--ranks .line.is-top .line__path {
+	stroke: var(--ink);
+	stroke-width: 2.2;
+	stroke-opacity: 1;
+}
+.lens--ranks .line.is-top .dot:not(.dot--win) {
+	fill: var(--ink);
+	fill-opacity: 1;
+}
+.lens--ranks .name {
+	font-weight: 500;
+	fill: var(--muted);
+}
+.lens--ranks .name.is-top {
+	font-weight: 700;
+	fill: var(--ink);
+}
+.lens--ranks .pts {
+	font-weight: 500;
+	fill: var(--muted);
+}
+.lens--ranks.has-focus .line:not(.is-on) {
+	opacity: 0.16;
+}
+.lens--ranks.has-focus .name:not(.is-on) {
+	opacity: 0.4;
+}
+.lens--ranks .line.is-on .line__path {
+	stroke: var(--ink);
+	stroke-width: 3.4;
+	stroke-opacity: 1;
+}
+.lens--ranks .name.is-on {
+	font-weight: 800;
+	fill: var(--ink);
+}
+
+.lens--games .cell__win {
+	stroke: var(--ink);
+	stroke-width: 1.6;
+}
+.lens--games .cell__zero {
+	fill: none;
+	stroke: var(--line);
+}
+.lens--games .cell__n {
+	font-size: 12px;
+	font-weight: 600;
+	pointer-events: none;
+}
+.lens--games .cell__n--on {
+	fill: var(--on-map);
+	font-weight: 700;
+}
+
+.lens--styles .iso {
+	stroke: var(--line);
+}
+.lens--styles .iso__label,
+.lens--styles .axis {
+	font-size: 12px;
+	font-weight: 500;
+	fill: var(--muted);
+}
+.lens--styles .axis {
+	font-weight: 700;
+}
+.lens--styles .even {
+	stroke: var(--muted);
+	stroke-dasharray: 4 5;
+}
+.lens--styles .trail {
+	fill: none;
+	stroke: var(--ink);
+	stroke-width: 1.6;
+	stroke-linejoin: round;
+}
+.lens--styles .dot {
+	fill: var(--ink);
+	fill-opacity: 0.55;
+	stroke: var(--paper);
+	stroke-width: 1.5;
+}
+.lens--styles .name {
+	display: none;
+	paint-order: stroke;
+	stroke: var(--paper);
+	stroke-width: 4px;
+	stroke-linejoin: round;
+}
+.lens--styles .team.is-named .name,
+.lens--styles .team.is-on .name {
+	display: inline;
+}
+.lens--styles .team.is-named .dot,
+.lens--styles .team.is-on .dot {
+	fill-opacity: 1;
+}
+.lens--styles .team.is-on .dot {
+	r: 8px;
+}
+
+.lens-note {
+	display: grid;
+	align-content: center;
+	gap: 8px;
+	height: 100%;
+	max-width: 52ch;
+	margin: 0 auto;
+}
+.lens-note h3 {
+	font: 800 28px/1 var(--display);
+}
+.lens-note p {
+	color: var(--muted);
+}
+
+/* ---- Panel --------------------------------------------------------------- */
+
+.panel {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+	padding-left: 24px;
+	border-left: 1px solid var(--line);
+	overflow-y: auto;
+	min-height: 0;
+}
+.when {
+	font: 600 14px/1.2 var(--label);
+	color: var(--muted);
+}
+.story h2 {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	margin: 2px 0 10px;
+	font: 800 30px/1 var(--display);
+}
+.swatch {
+	width: 12px;
+	height: 22px;
+	border-radius: 2px;
+	flex: none;
+}
+.maplist {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 14px;
+	margin-bottom: 12px;
+	font: 600 14px/1.3 var(--label);
+}
+.mapname {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	white-space: nowrap;
+}
+.mapname i {
+	width: 10px;
+	height: 10px;
+	border-radius: 2px;
+}
+.lines {
+	display: grid;
+	gap: 7px;
+	font-size: 15px;
+	line-height: 1.38;
+}
+.lines b {
+	font-weight: 700;
+}
+.hint {
+	padding-top: 14px;
+	border-top: 1px solid var(--line);
+	font-size: 14px;
+	color: var(--muted);
+}
+
+.card,
+.ending {
+	padding-top: 14px;
+	border-top: 1px solid var(--line);
+}
+.card header {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 10px;
+}
+.card h3,
+.ending h3 {
+	font: 800 22px/1.05 var(--display);
+}
+.ending h3 {
+	margin-bottom: 9px;
+}
+.card__clear {
+	flex: none;
+	font: 600 13px/1 var(--label);
+	color: var(--muted);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+.card__clear:hover {
+	color: var(--ink);
+}
+.card__now {
+	margin-top: 2px;
+	font: 600 14px/1.2 var(--label);
+	color: var(--muted);
+}
+.spark {
+	display: flex;
+	align-items: flex-end;
+	gap: 3px;
+	height: 76px;
+	margin: 12px 0 10px;
+}
+.spark__col {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 3px;
+	height: 100%;
+	min-width: 0;
+}
+.spark__bar {
+	width: 100%;
+	border-radius: 2px;
+	background: linear-gradient(to top, var(--c) calc(100% - var(--kills)), color-mix(in srgb, var(--c) 45%, transparent) 0);
+}
+.spark__col.is-ahead .spark__bar {
+	background: var(--line);
+}
+.spark__col.is-win .spark__bar {
+	outline: 1.6px solid var(--ink);
+	outline-offset: 1px;
+}
+.spark__col span {
+	height: 13px;
+	font: 600 11px/13px var(--label);
+	font-variant-numeric: tabular-nums;
+	color: var(--muted);
+}
+.stats {
+	display: flex;
+	gap: 18px;
+}
+.stats dt {
+	font: 500 13px/1.2 var(--label);
+	color: var(--muted);
+}
+.stats dd {
+	font: 800 26px/1.05 var(--display);
+	font-variant-numeric: tabular-nums;
+}
+
+/* ---- Timeline ------------------------------------------------------------ */
+
+.tl {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	align-items: start;
+	gap: 14px;
+	padding-top: 12px;
+	border-top: 1px solid var(--line);
+}
+.tl__play {
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	background: var(--ink);
+	color: var(--paper);
+}
+.tl__play svg {
+	width: 18px;
+	height: 18px;
+}
+.tl__speed {
+	min-width: 46px;
+	height: 34px;
+	padding: 0 8px;
+	border: 1px solid var(--line);
+	border-radius: 8px;
+	font: 700 14px/1 var(--label);
+	font-variant-numeric: tabular-nums;
+	color: var(--muted);
+}
+.tl__speed:hover {
+	color: var(--ink);
+	border-color: var(--muted);
+}
+.tl__track {
+	position: relative;
+	cursor: pointer;
+	touch-action: none;
+	user-select: none;
+	-webkit-user-select: none;
+}
+.tl__games {
+	display: flex;
+	gap: 2px;
+	height: 34px;
+}
+.tl__game {
+	position: relative;
+	display: grid;
+	flex: 1;
+	place-items: center;
+	overflow: hidden;
+	border-radius: 3px;
+	background: color-mix(in srgb, var(--c) 20%, var(--paper));
+}
+.tl__game i {
+	position: absolute;
+	inset: 0;
+	background: var(--c);
+	transform: scaleX(0);
+	transform-origin: left;
+}
+.tl__game b {
+	position: relative;
+	font: 700 13px/1 var(--label);
+	font-variant-numeric: tabular-nums;
+}
+.tl__game.is-done b {
+	color: var(--on-map);
+}
+.tl__maps {
+	display: flex;
+	gap: 2px;
+	margin-top: 5px;
+	font: 600 12px/1.2 var(--label);
+	color: var(--muted);
+}
+.tl__maps span {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.tl__head {
+	position: absolute;
+	top: -5px;
+	width: 2px;
+	height: 44px;
+	margin-left: -1px;
+	border-radius: 1px;
+	background: var(--ink);
+	pointer-events: none;
+}
+.tl__head::before {
+	content: "";
+	position: absolute;
+	top: -3px;
+	left: -4px;
+	width: 10px;
+	height: 6px;
+	border-radius: 2px;
+	background: var(--ink);
+}
+
+/* ---- Tooltip and dialog -------------------------------------------------- */
+
+.tip {
+	position: fixed;
+	z-index: 10;
+	max-width: 240px;
+	padding: 7px 10px;
+	border-radius: 7px;
+	background: var(--ink);
+	color: var(--paper);
+	font: 500 13px/1.35 var(--label);
+	font-variant-numeric: tabular-nums;
+	pointer-events: none;
+}
+.tip b {
+	display: block;
+	font-weight: 800;
+	font-size: 14px;
+}
+
+.about {
+	width: min(560px, calc(100vw - 32px));
+	padding: 26px 28px 22px;
+	border: 1px solid var(--line);
+	border-radius: 14px;
+	background: var(--raised);
+	color: var(--ink);
+}
+.about::backdrop {
+	background: rgb(8 10 14 / 0.55);
+}
+.about h2 {
+	margin-bottom: 12px;
+	font: 800 32px/1 var(--display);
+}
+.about p {
+	margin-bottom: 10px;
+	font-size: 15px;
+}
+.about a {
+	color: inherit;
+	text-underline-offset: 3px;
+}
+.about form {
+	margin-top: 16px;
+	text-align: right;
+}
+.button {
+	padding: 8px 18px;
+	border-radius: 8px;
+	background: var(--ink);
+	color: var(--paper);
+	font: 700 15px/1.2 var(--label);
+}
+
+/* ---- Narrow screens ------------------------------------------------------ */
+
+@media (max-width: 860px) {
+	#app {
+		height: auto;
+		min-height: 100dvh;
+		grid-template-rows: auto auto auto;
+	}
+	.bar {
+		flex-wrap: wrap;
+		gap: 10px 14px;
+		padding: 10px 16px;
+	}
+	.tournaments {
+		order: 3;
+		width: 100%;
+	}
+	.tournaments button {
+		flex: 1;
+		padding: 6px 4px;
+	}
+	.seriesnav {
+		padding: 9px 16px;
+	}
+	.work {
+		padding: 14px 16px 0;
+		grid-template-rows: auto auto auto;
+	}
+	.head {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	.lenses {
+		margin-top: 8px;
+	}
+	.lenses button {
+		flex: 1;
+	}
+	.board {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 18px;
+	}
+	.stage {
+		height: 500px;
+	}
+	.panel {
+		padding: 16px 0 0;
+		border-left: 0;
+		border-top: 1px solid var(--line);
+		overflow: visible;
+	}
+	.tl {
+		position: sticky;
+		bottom: 0;
+		z-index: 5;
+		gap: 10px;
+		margin: 0 -16px;
+		padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+		background: var(--paper);
+	}
+	.tl__maps {
+		display: none;
+	}
+	.tl__head {
+		height: 44px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.lens .row,
+	.lens .line,
+	.lens .team,
+	.lens--ranks .name {
+		transition: none;
+	}
+}

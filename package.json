@@ -1,52 +1,34 @@
 {
-  "name": "algs-tournament-dashboard",
-  "version": "3.0.0",
-  "description": "ALGS Tournament Dashboard - Modern esports analytics platform",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "lint": "eslint . --ext .vue,.js,.jsx,.ts,.tsx --fix",
-    "automation-server": "node start-automation-server.js"
-  },
-  "keywords": [
-    "algs",
-    "apex-legends",
-    "championship",
-    "tournament",
-    "dashboard",
-    "visualization",
-    "d3js",
-    "vue",
-    "vuejs",
-    "esports",
-    "analytics"
-  ],
-  "author": "ALGS Viz Team",
-  "license": "MIT",
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.4",
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.17",
-    "vite": "^6.0.11"
-  },
-  "dependencies": {
-    "d3": "^7.9.0",
-    "echarts": "^6.0.0",
-    "pinia": "^2.3.0",
-    "vue": "^3.5.13",
-    "vue-echarts": "^8.0.1",
-    "vue-router": "^4.5.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/goatcheese49/algs-championship-viz.git"
-  },
-  "homepage": "https://goatcheese49.github.io/algs-championship-viz",
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
-  }
+	"name": "algs-dashboard",
+	"version": "4.0.0",
+	"private": true,
+	"description": "Replay Apex Legends Global Series standings game by game",
+	"type": "module",
+	"scripts": {
+		"data": "node scripts/build-data.mjs",
+		"dev": "cf dev -- --port 4630 --strictPort",
+		"build": "npm run typecheck && cf build",
+		"typecheck": "vp check --no-fmt --no-lint",
+		"test": "vp test run",
+		"lint": "vp lint --deny-warnings",
+		"format": "vp fmt",
+		"check": "vp check --deny-warnings && vp test run",
+		"deploy": "npm run check && ./scripts/cf-personal deploy"
+	},
+	"dependencies": {
+		"@fontsource-variable/sofia-sans": "^5.3.0",
+		"@fontsource-variable/sofia-sans-condensed": "^5.3.0",
+		"@fontsource-variable/sofia-sans-extra-condensed": "^5.3.0"
+	},
+	"devDependencies": {
+		"@cloudflare/vite-plugin": "2.0.0-beta.v.17",
+		"cf": "1.0.0-beta.32",
+		"typescript": "^7.0.2",
+		"vite": "npm:@voidzero-dev/vite-plus-core@1.6.0",
+		"vite-plus": "1.6.0"
+	},
+	"overrides": {
+		"vite": "npm:@voidzero-dev/vite-plus-core@1.6.0",
+		"vitest": "5.1.0"
+	}
 }

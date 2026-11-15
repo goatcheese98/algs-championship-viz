@@ -1,0 +1,551 @@
+[
+  {
+    "id": "year-4-championship",
+    "name": "ALGS Year 4 Championship",
+    "short": "Year 4 Championship",
+    "place": "Sapporo, Japan",
+    "stages": [
+      {
+        "name": "Day 1, group stage",
+        "series": [
+          {
+            "id": "AvsB",
+            "title": "Group A vs Group B",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "CvsD",
+            "title": "Group C vs Group D",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "BvsD",
+            "title": "Group B vs Group D",
+            "maps": [
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge",
+              "E-District",
+              "E-District"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Day 2, group stage",
+        "series": [
+          {
+            "id": "AvsC",
+            "title": "Group A vs Group C",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "BvsC",
+            "title": "Group B vs Group C",
+            "maps": [
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge",
+              "E-District",
+              "E-District"
+            ]
+          },
+          {
+            "id": "AvsD",
+            "title": "Group A vs Group D",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Day 3, bracket",
+        "series": [
+          {
+            "id": "ER1",
+            "title": "Elimination Round 1",
+            "maps": [
+              "E-District",
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge",
+              "World's Edge"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Day 4, bracket",
+        "series": [
+          {
+            "id": "ER2",
+            "title": "Elimination Round 2",
+            "maps": [
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge",
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "WR1",
+            "title": "Winners Round 1",
+            "maps": [
+              "World's Edge",
+              "World's Edge",
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "E-District"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "year-5-open",
+    "name": "ALGS Year 5 Open",
+    "short": "Year 5 Open",
+    "place": "",
+    "stages": [
+      {
+        "name": "Day 1, Winners Round 1",
+        "series": [
+          {
+            "id": "Day1-WinnersRound1-1",
+            "title": "Winners Round 1, lobby 1",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day1-WinnersRound1-2",
+            "title": "Winners Round 1, lobby 2",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day1-WinnersRound1-3",
+            "title": "Winners Round 1, lobby 3",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day1-WinnersRound1-4",
+            "title": "Winners Round 1, lobby 4",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day1-WinnersRound1-5",
+            "title": "Winners Round 1, lobby 5",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day1-WinnersRound1-6",
+            "title": "Winners Round 1, lobby 6",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day1-WinnersRound1-7",
+            "title": "Winners Round 1, lobby 7",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day1-WinnersRound1-8",
+            "title": "Winners Round 1, lobby 8",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Day 1, Winners Round 2",
+        "series": [
+          {
+            "id": "Day1-WinnersRound2-3",
+            "title": "Winners Round 2, lobby 3",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day1-WinnersRound2-4",
+            "title": "Winners Round 2, lobby 4",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Day 1, Elimination Round 1",
+        "series": [
+          {
+            "id": "Day1-EliminationRound1-3",
+            "title": "Elimination Round 1, lobby 3",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day1-EliminationRound1-4",
+            "title": "Elimination Round 1, lobby 4",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Day 2, Winners Round 2",
+        "series": [
+          {
+            "id": "Day2-WinnersRound2-1",
+            "title": "Winners Round 2, lobby 1",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day2-WinnersRound2-2",
+            "title": "Winners Round 2, lobby 2",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Day 2, Winners Round 3",
+        "series": [
+          {
+            "id": "Day2-WinnersRound3-1",
+            "title": "Winners Round 3, lobby 1",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day2-WinnersRound3-2",
+            "title": "Winners Round 3, lobby 2",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Day 2, Elimination Round 1",
+        "series": [
+          {
+            "id": "Day2-EliminationRound1-1",
+            "title": "Elimination Round 1, lobby 1",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day2-EliminationRound1-2",
+            "title": "Elimination Round 1, lobby 2",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Day 2, Elimination Round 2",
+        "series": [
+          {
+            "id": "Day2-EliminationRound2-1",
+            "title": "Elimination Round 2, lobby 1",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day2-EliminationRound2-2",
+            "title": "Elimination Round 2, lobby 2",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day2-EliminationRound2-3",
+            "title": "Elimination Round 2, lobby 3",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day2-EliminationRound2-4",
+            "title": "Elimination Round 2, lobby 4",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Day 2, Elimination Round 3",
+        "series": [
+          {
+            "id": "Day2-EliminationRound3-1",
+            "title": "Elimination Round 3, lobby 1",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          },
+          {
+            "id": "Day2-EliminationRound3-2",
+            "title": "Elimination Round 3, lobby 2",
+            "maps": [
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ewc-2025",
+    "name": "Esports World Cup 2025",
+    "short": "EWC 2025",
+    "place": "",
+    "stages": [
+      {
+        "name": "Day 1",
+        "series": [
+          {
+            "id": "Day1-A",
+            "title": "Group A",
+            "maps": [
+              "World's Edge",
+              "World's Edge",
+              "E-District",
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "Storm Point",
+              "Broken Moon",
+              "Broken Moon"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Day 2",
+        "series": [
+          {
+            "id": "Day2-B",
+            "title": "Group B",
+            "maps": [
+              "World's Edge",
+              "World's Edge",
+              "E-District",
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "Storm Point",
+              "Broken Moon",
+              "Broken Moon"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Day 3",
+        "series": [
+          {
+            "id": "Day3-LastChance",
+            "title": "Last Chance",
+            "maps": [
+              "Broken Moon",
+              "Broken Moon",
+              "Broken Moon",
+              "E-District",
+              "E-District",
+              "Storm Point",
+              "Storm Point",
+              "World's Edge",
+              "World's Edge",
+              "World's Edge"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

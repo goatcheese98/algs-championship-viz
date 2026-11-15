@@ -1,0 +1,7 @@
+#!/bin/sh
+# Run the cf CLI against Rohan's personal Cloudflare account, for the commands
+# that need to sign in (deploy, secrets, logs). The API token lives in Doppler
+# and is injected for this one command; it is never printed or written to disk.
+# Building and running locally need no account, so `npx cf dev` and
+# `npx cf build` are run directly.
+exec doppler run --project sketchcast --config prd -- npx cf "$@"
