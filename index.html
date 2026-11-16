@@ -16,14 +16,17 @@
 		<meta property="og:type" content="website" />
 		<meta property="og:image" content="/og.png" />
 		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="theme-color" content="#f3f4f6" media="(prefers-color-scheme: light)" />
-		<meta name="theme-color" content="#0d0f13" media="(prefers-color-scheme: dark)" />
+		<meta name="theme-color" content="#0d0f13" />
 		<link rel="icon" href="/mark.svg" type="image/svg+xml" />
 		<script>
 			try {
+				// The dashboard opens in the dark theme, which shows the map colours best.
+				// A choice made with the theme button is kept and wins.
 				const t = localStorage.getItem("theme");
-				if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
-			} catch {}
+				document.documentElement.dataset.theme = t === "light" ? "light" : "dark";
+			} catch {
+				document.documentElement.dataset.theme = "dark";
+			}
 		</script>
 		<script type="module" src="/src/main.ts"></script>
 	</head>
